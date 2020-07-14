@@ -14,7 +14,12 @@ class CreatePlayersTable extends Migration
     public function up()
     {
         Schema::create('players', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->bigInteger('user_id')->length(18)->unsigned();
+            $table->unique('user_id');
+            $table->string('user_name', 50);
+            $table->boolean('ban')->default(false);
+            $table->integer('votes')->default(0);
             $table->timestamps();
         });
     }

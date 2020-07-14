@@ -22,6 +22,7 @@ use Discord\Discord;
 
 $discord = new Discord([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
+	'prefix' => '!'
 ]);
 
 $discord->on('ready', function ($discord) {
@@ -31,6 +32,29 @@ $discord->on('ready', function ($discord) {
 	$discord->on('message', function ($message, $discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
 	});
+
+    $discord->registerCommand('test', function ($message) use ($discord) {
+
+        var_dump($discord->options);
+        $message->channel->sendMessage('test')->then(
+            function ($response) /*use ($deferred)*/ {
+                $response->react('🥓');
+            }
+        );
+    },[
+        'description' => 'A basic test command',
+		'usage' => "!test",
+		'aliases' => array('t','tes')
+    ]);
+    
+
+/*
+		, [
+			'description' => 'Provides a list of commands available.',
+			'usage'       => '[command]',
+		]);
+*/
+	
 });
 
 $discord->run();
