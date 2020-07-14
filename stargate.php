@@ -10,17 +10,18 @@ $app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
     ->handle(Illuminate\Http\Request::capture());
 
+/*
 use App\Player;
-
 $players = Player::all();
 foreach ($players as $player) {
     echo 'aaaaaaaabbbbbbbb////';
     echo $player->name;
-}
+}*/
 
-use Discord\Discord;
+//use Discord\Discord;
+use Discord\DiscordCommandClient;
 
-$discord = new Discord([
+$discord = new DiscordCommandClient([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
 	'prefix' => '!'
 ]);
