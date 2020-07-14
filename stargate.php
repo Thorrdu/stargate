@@ -28,7 +28,7 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) {
 	echo "Bot is ready!", PHP_EOL;
-
+	$discord->updatePresence($discord->factory(Game::class,['name' => 'test']));
 	// Listen for messages.
 	$discord->on('message', function ($message, $discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
@@ -36,7 +36,7 @@ $discord->on('ready', function ($discord) {
 
     $discord->registerCommand('test', function ($message) use ($discord) {
 
-        var_dump($discord->options);
+        //var_dump($discord->options->prefix);
         $message->channel->sendMessage('test')->then(
             function ($response) /*use ($deferred)*/ {
                 $response->react('🥓');
@@ -46,16 +46,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'A basic test command',
 		'usage' => "!test",
 		'aliases' => array('t','tes')
-    ]);
-    
-
-/*
-		, [
-			'description' => 'Provides a list of commands available.',
-			'usage'       => '[command]',
-		]);
-*/
-	
+    ]);	
 });
 
 $discord->run();
