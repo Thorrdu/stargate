@@ -28,7 +28,10 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) {
 	echo "Bot is ready!", PHP_EOL;
+	echo 'UPDATING PRESENCE'.PHP_EOL;
 	$discord->updatePresence($discord->factory(Game::class,['name' => 'test']));
+	echo 'AFTER PRESENCE'.PHP_EOL;
+
 	// Listen for messages.
 	$discord->on('message', function ($message, $discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
