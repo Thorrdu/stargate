@@ -17,6 +17,8 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
+use App\Commands\{Start};
+
 /*
 $players = Player::all();
 foreach ($players as $player) {
@@ -49,7 +51,13 @@ catch(\Exception $e)
 	echo $e->getMessage();
 }*/
 
+
 try{
+	$startCommand = new Start( [] );
+	echo PHP_EOL.$startCommand->help();
+	echo PHP_EOL.$startCommand->execute();
+	die();
+
 	$player = Player::where('user_id', 125641223544373248)->firstOrFail();
 	//print_r($player->colonies[0]->buildings[0]->attributesToArray());
 

@@ -18,8 +18,17 @@ foreach ($players as $player) {
     echo $player->name;
 }*/
 
+use App\Building;
+use App\Player;
+use App\Colony;
+use Illuminate\Support\Str;
+
+use App\Commands\{Start};
+
+
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
+use Discord\Parts\User\Game;
 
 $discord = new DiscordCommandClient([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
@@ -29,26 +38,39 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) {
 	echo "Bot is ready!", PHP_EOL;
 	echo 'UPDATING PRESENCE'.PHP_EOL;
-	$discord->updatePresence($discord->factory(Game::class,['name' => 'test']));
-	echo 'AFTER PRESENCE'.PHP_EOL;
+    try
+    {
+        $game = $discord->factory(Game::class, [
+            'name' => "!help | Watching {$discord->users->count()} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($game);
+    }
+    catch(\Exception $e)
+    {
+        echo $e->getMessage();
+    }   
 
 	// Listen for messages.
-	$discord->on('message', function ($message, $discord) {
+	$discord->on('message', function ($message) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
 	});
 
-    $discord->registerCommand('test', function ($message) use ($discord) {
+    $discord->registerCommand('start', function ($message, $args) {
 
-        //var_dump($discord->options->prefix);
+        $startCommand = new Start($message,$args);
+        return $startCommand->execute();
+        /*
         $message->channel->sendMessage('test')->then(
-            function ($response) /*use ($deferred)*/ {
+            function ($response) { //use ($deferred)
                 $response->react('🥓');
             }
-        );
+        );*/
+
     },[
-        'description' => 'A basic test command',
-		'usage' => "!test",
-		'aliases' => array('t','tes')
+        'description' => config('stargate.commands.start.description'),
+		'usage' => config('stargate.commands.start.usage'),
+		'aliases' => array('s','start')
     ]);	
 });
 
