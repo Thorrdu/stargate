@@ -35,7 +35,7 @@ class CreateColoniesTable extends Migration
             /*
             Production et energie actuelle pour éviter recalcul permanent
             */
-            $table->big('production_iron')->length(10)->unsigned()->default(20);
+            $table->integer('production_iron')->length(10)->unsigned()->default(20);
             $table->integer('production_gold')->length(10)->unsigned()->default(10);
             $table->integer('production_quartz')->length(10)->unsigned()->default(5);
             $table->integer('production_naqahdah')->length(10)->unsigned()->default(2);
