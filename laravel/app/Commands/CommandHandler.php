@@ -8,6 +8,7 @@ class CommandHandler
 {
     public $message;
     public $args;
+    public $discord;
 
     public function __toString()
     {

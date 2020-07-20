@@ -58,7 +58,10 @@ $discord->on('ready', function ($discord) {
 
     $discord->registerCommand('start', function ($message, $args) {
 
+        //return 'test part 0';
+        echo 'avant';
         $startCommand = new Start($message,$args);
+        echo 'milieu';
         return $startCommand->execute();
         /*
         $message->channel->sendMessage('test')->then(

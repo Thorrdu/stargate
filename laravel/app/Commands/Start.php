@@ -3,6 +3,8 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
+use Discord\DiscordCommandClient;
+use \Discord\Parts\Channel\Message as Message;
 
 class Start extends CommandHandler implements CommandInterface
 {
@@ -18,17 +20,14 @@ class Start extends CommandHandler implements CommandInterface
 
     //CLI VERSION
     public function __construct1(array $args) {
-
-
-        $this->message =  config('stargate.commands.start.usage');
-        $this->args =  config('stargate.commands.start.usage');
+        $this->message = null; //Factory message?
+        $this->args = $args;
     }
 
     //BASIC CALL
-    public function __construct2(\Discord\Parts\Channel\Message $message,array $args) {
-
-        $this->message =  config('stargate.commands.start.usage');
-        $this->args =  config('stargate.commands.start.usage');
+    public function __construct2(Message $message,array $args) {
+        $this->message = $message;
+        $this->args = $args;
     }
 
     public function execute()
