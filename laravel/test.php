@@ -1,4 +1,6 @@
 <?php
+global $arrayCalc;
+$arrayCalc = ['iron','gold','quartz','naqahdah'];
 
 //DiscordPHP
 //include __DIR__.'/vendor/autoload.php';
@@ -55,7 +57,13 @@ try{
 	{
 		echo PHP_EOL.$building->name.' --> '.$building->pivot->level;
 	}
-	echo PHP_EOL.$player->colonies[0]->active_building_end;
+	echo PHP_EOL.'Prod Iron: '.$player->colonies[0]->production_iron;
+	echo PHP_EOL.'Prod Gold: '.$player->colonies[0]->production_gold;
+	echo PHP_EOL.'Prod Quartz: '.$player->colonies[0]->production_quartz;
+	echo PHP_EOL.'Prod Naqahdah: '.$player->colonies[0]->production_naqahdah;
+
+	if(!is_null($player->colonies[0]->active_building_end))
+		echo PHP_EOL.'Building ends: '.$player->colonies[0]->active_building_end;
 }
 catch(\Exception $e)
 {

@@ -30,7 +30,7 @@ class CreateBuildingsTable extends Migration
             $table->decimal('production_coefficient', 5, 2)->nullable();
 
             $table->integer('energy_base')->length(5)->nullable();
-            $table->string('energy_coefficient', 5, 2)->nullable();
+            $table->decimal('energy_coefficient', 5, 2)->nullable();
 
             $table->decimal('upgrade_coefficient', 5, 2);
             $table->integer('level_max')->nullable();
