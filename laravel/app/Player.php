@@ -25,7 +25,7 @@ class Player extends Model
         $newColony = new Colony;
         $newColony->colony_type = 1;
         $newColony->player_id = $this->id;
-        $newColony->name = 'P'.rand(1, 9).Str::random(1).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
+        $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
         $newColony->save();
 
         $this->colonies->push($newColony);

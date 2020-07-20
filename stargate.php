@@ -25,7 +25,6 @@ use Illuminate\Support\Str;
 
 use App\Commands\{Start};
 
-
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
 use Discord\Parts\User\Game;
@@ -57,24 +56,28 @@ $discord->on('ready', function ($discord) {
 	});
 
     $discord->registerCommand('start', function ($message, $args) {
-
-        //return 'test part 0';
-        echo 'avant';
         $startCommand = new Start($message,$args);
-        echo 'milieu';
         return $startCommand->execute();
-        /*
-        $message->channel->sendMessage('test')->then(
-            function ($response) { //use ($deferred)
-                $response->react('🥓');
-            }
-        );*/
-
     },[
         'description' => config('stargate.commands.start.description'),
 		'usage' => config('stargate.commands.start.usage'),
 		'aliases' => array('s','start')
     ]);	
+
+    $discord->registerCommand('command2', function ($message, $args) {
+        $message->channel->sendMessage('test')->then(
+            function ($response) { //use ($deferred)
+                $response->react('🥓');
+            }
+        );
+        return;
+    },[
+        'description' => 'command2',
+		'usage' => '`!command2`',
+		'aliases' => array('c','cm2')
+    ]);	
+
+
 });
 
 $discord->run();

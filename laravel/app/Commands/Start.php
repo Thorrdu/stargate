@@ -5,6 +5,7 @@ namespace App\Commands;
 use Illuminate\Database\Eloquent\Model;
 use Discord\DiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
+use App\Player;
 
 class Start extends CommandHandler implements CommandInterface
 {
@@ -32,8 +33,16 @@ class Start extends CommandHandler implements CommandInterface
 
     public function execute()
     {
-        $this->message->channel->sendMessage('test executed');
-        return 'test part 2';
-
+        $newPlayer = new Player;
+        $newPlayer->user_id = 125641223544373248;
+        $newPlayer->user_name = 'Thorrdu';
+        $newPlayer->ban = false;
+        $newPlayer->votes = 0;
+        $newPlayer->last_claim = date("Y-m-d H:i:s");
+        $newPlayer->save();        
+        $newPlayer->addColony();
+        
+        //$this->message->channel->sendMessage('test executed');
+        return '[Blabla Synopsis]\n\nPour afficher votre profile utilisez `!p`';
     }
 }
