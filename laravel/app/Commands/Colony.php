@@ -11,7 +11,7 @@ class Colony extends CommandHandler implements CommandInterface
 {
     public function execute()
     {
-        if(is_null($this->player))
+        if(!is_null($this->player))
         {
             echo PHP_EOL.'Execute Colony';
 
