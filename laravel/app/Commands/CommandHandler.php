@@ -5,12 +5,14 @@ namespace App\Commands;
 use Illuminate\Database\Eloquent\Model;
 use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
+use App\Player;
 
 class CommandHandler
 {
     public $name;
     public $message;
     public $args;
+    public $player;
     public $discord;
 
     public function __construct()
@@ -23,26 +25,32 @@ class CommandHandler
         }
     }
 
+    /*
     //CLI VERSION
     public function __construct1(array $args) {
         $this->message = null; //Factory message?
         $this->args = $args;
-    }
+    }*/
 
     //BASIC CALL
     public function __construct2(Message $message,array $args) {
         $this->message = $message;
         $this->args = $args;
+        $this->player = Player::where('user_id', $message->author->id)->first();
+        $this->log();
     }
 
     public function log()
     {
         try{
-            $log = new CommandLog;
-            $log->player_id = $this->message->author->id;
-            $log->command_type = $this->name;
-            $log->command_raw = $this->message->content;
-            $log->save();
+            if(!is_null($this->player))
+            {
+                $log = new CommandLog;
+                $log->player_id = $this->player->id;
+                $log->command_type = explode(' ',trim($this->message->content))[0];
+                $log->command_raw = $this->message->content;
+                $log->save();
+            }
         }
         catch(\Exception $e) {
             echo $e->getMessage();

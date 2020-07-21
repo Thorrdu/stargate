@@ -11,14 +11,11 @@ class Start extends CommandHandler implements CommandInterface
 {
     public function execute()
     {
-        $this->log();
-
-        $player = Player::where('user_id', 125641223544373248)->first();
-        if(is_null($player))
+        if(is_null($this->player))
         {
             echo PHP_EOL.'Execute Start';
             $newPlayer = new Player;
-            $newPlayer->user_id = $this->message->author->id;
+            $newPlayer->user_id = $this->player->id;
             $newPlayer->user_name = $this->message->author->user_name;
             $newPlayer->ban = false;
             $newPlayer->votes = 0;
