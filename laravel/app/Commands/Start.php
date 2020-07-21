@@ -33,15 +33,19 @@ class Start extends CommandHandler implements CommandInterface
 
     public function execute()
     {
+        echo PHP_EOL.'Execute';
         $newPlayer = new Player;
+        echo PHP_EOL.'After Declaraction';
         $newPlayer->user_id = 125641223544373248;
         $newPlayer->user_name = 'Thorrdu';
         $newPlayer->ban = false;
         $newPlayer->votes = 0;
         $newPlayer->last_claim = date("Y-m-d H:i:s");
-        $newPlayer->save();        
+        echo PHP_EOL.'Before Save';
+        $newPlayer->save();   
+        echo PHP_EOL.'Before Colony';     
         $newPlayer->addColony();
-        
+        echo PHP_EOL.'After Colony';
         //$this->message->channel->sendMessage('test executed');
         return '[Blabla Synopsis]\n\nPour afficher votre profile utilisez `!p`';
     }
