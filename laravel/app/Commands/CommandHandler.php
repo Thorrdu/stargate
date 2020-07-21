@@ -37,11 +37,16 @@ class CommandHandler
 
     public function log()
     {
-        $log = new CommandLog;
-        $log->player_id = $this->message->author->id;
-        $log->command_type = $this->name;
-        $log->command_raw = $this->message->content;
-        $log->save();
+        try{
+            $log = new CommandLog;
+            $log->player_id = $this->message->author->id;
+            $log->command_type = $this->name;
+            $log->command_raw = $this->message->content;
+            $log->save();
+        }
+        catch(\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function help()
