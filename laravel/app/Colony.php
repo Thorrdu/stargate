@@ -9,6 +9,15 @@ use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class Colony extends Model
 {
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'last_claim' => 'datetime',
+    ];
+
     protected static function boot()
     {
         parent::boot();
