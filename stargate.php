@@ -118,8 +118,8 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) use ($discord) {
-        $startCommand = new ColonyCommand($message,$args);
-        return $startCommand->execute();
+        $colonyCommand = new ColonyCommand($message,$args);
+        return $colonyCommand->execute();
     },[
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
