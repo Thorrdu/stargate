@@ -11,6 +11,8 @@ class Start extends CommandHandler implements CommandInterface
 {
     public function execute()
     {
+        $this->log();
+        
         $player = Player::where('user_id', 125641223544373248)->first();
         if(is_null($player))
         {
