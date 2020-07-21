@@ -19,6 +19,10 @@ class Player extends Model
     {
         return $this->hasMany('App\Colony');
     }
+    public function commandLogs()
+    {
+        return $this->hasMany('App\CommandLogs');
+    }
 
     public function addColony()
     {

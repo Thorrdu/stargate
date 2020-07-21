@@ -38,8 +38,9 @@ class CommandHandler
     public function log()
     {
         $log = new CommandLog;
-        $log->type = $this->name;
-        $log->raw = $this->message->content;
+        $log->player_id = $this->message->author->id;
+        $log->command_type = $this->name;
+        $log->command_raw = $this->message->content;
         $log->save();
     }
 

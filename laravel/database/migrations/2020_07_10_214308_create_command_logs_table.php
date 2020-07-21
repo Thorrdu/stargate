@@ -14,7 +14,9 @@ class CreateCommandLogsTable extends Migration
     public function up()
     {
         Schema::create('command_logs', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->integer('player_id')->unsigned();
+            $table->foreign('player_id','log_player_id')->references('id')->on('players');
             $table->string('command_type', 50);
             $table->string('command_raw', 255);
             $table->timestamps();
