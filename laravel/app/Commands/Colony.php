@@ -15,6 +15,33 @@ class Colony extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute Colony';
 
+            //$table->enum('type', ['Energy', 'Production', 'Storage', 'Science', 'Military']);
+            //$table->enum('production_type', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'space', 'special']);
+
+            $prodBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                return $value->type == 'Production';
+            });
+
+            $prodBuildingsValue = "";
+            foreach($prodBuildings as $prodBuilding)
+            {
+                if(!empty($prodBuildingsValue))
+                    $prodBuildingsValue .= "\n";
+                $prodBuildingsValue .= "\n".$prodBuilding->building->name.' | LVL '.$prodBuilding->pivot->level;
+            }
+            if(!is_null($this->player->colonies[0]->active_building_end))
+                $buildingEnd = $this->player->colonies[0]->active_building_end;
+
+            $resourcesValue = '';
+            foreach (config('stargate.resources') as $resource)
+            {
+                if(!empty($resourcesValue))
+                    $resourcesValue .= "\n";
+                $resourcesValue .= $this->player->colonies[0]->$resource;
+            }
+
+
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -25,7 +52,7 @@ class Colony extends CommandHandler implements CommandInterface
                 'fields' =>array(
                     '0' => array(
                         'name' => 'Ressources',
-                        'value' => 'Fer lalala',
+                        'value' => $resourcesValue,
                         'inline' => true
                     ),
                     '1' => array(
@@ -35,7 +62,7 @@ class Colony extends CommandHandler implements CommandInterface
                     ),
                     '2' => array(
                         'name' => 'Bâtiments de production',
-                        'value' => 'Mine lalala',
+                        'value' => $prodBuildingsValue,
                         'inline' => true
                     ),
                     '3' => array(
@@ -60,6 +87,7 @@ class Colony extends CommandHandler implements CommandInterface
                     'text'  => 'Stargate',
                 ),
             ];
+            print_r($embed);
 
             $this->message->channel->sendMessage('Colony Embed', false, $embed);
         }
