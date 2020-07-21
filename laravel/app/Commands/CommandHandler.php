@@ -33,6 +33,8 @@ class CommandHandler
     public function __construct2(Message $message,array $args) {
         $this->message = $message;
         $this->args = $args;
+
+        $this->log();
     }
 
     public function log()
