@@ -15,15 +15,6 @@ class Colony extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute Colony';
 
-
-            $newPlayer = new Player;
-            $newPlayer->user_id = $this->player->id;
-            $newPlayer->user_name = $this->message->author->user_name;
-            $newPlayer->ban = false;
-            $newPlayer->votes = 0;
-            $newPlayer->save();   
-            $newPlayer->addColony();
-
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,

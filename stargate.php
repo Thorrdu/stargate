@@ -18,12 +18,63 @@ foreach ($players as $player) {
     echo $player->name;
 }*/
 
+/*
+
+$embed = [
+            'image' => [
+                'url' => 'http://web.thorr.ovh/point.jpg',
+            ],
+            'thumbnail' => [
+                //'url' => 'http://web.thorr.ovh/point.jpg',
+            ],
+            //'color' => '#0099ff',
+            'author' => [
+                'name' => 'Le joueur',
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+            ],
+            //"title" => "",
+            //"description" => "",
+            'fields' =>array(
+                '0' => array(
+                    'name' => 'Fields',
+                    'value' => 'They can have different fields with small headlines.',
+                    'inline' => true
+                ),
+                '1' => array(
+                    'name' => 'Fields',
+                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                    'inline' => true
+                ),
+                '2' => array(
+                    'name' => 'Fields',
+                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                    'inline' => true
+                ),
+                '3' => array(
+                    'name' => 'Fields',
+                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                    'inline' => false
+                ),
+                '4' => array(
+                    'name' => 'Fields',
+                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                    'inline' => false
+                ),
+            ),
+            'footer' => array(
+                'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                'text'  => 'Stargate',
+            ),
+        ];
+ * 
+ */
+
 use App\Building;
 use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start};
+use App\Commands\{Start,Colony as ColonyCommand};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -67,77 +118,8 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) use ($discord) {
-        
-        try {
-
-
-
-            echo '1';
-            $embed = [
-                        /*'image' => [
-                            'url' => 'http://web.thorr.ovh/point.jpg',
-                        ],*/
-                        'thumbnail' => [
-                            //'url' => 'http://web.thorr.ovh/point.jpg',
-                        ],
-                        //'color' => '#0099ff',
-                        'author' => [
-                            'name' => 'Le joueur',
-                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
-                        ],
-                        //"title" => "",
-                        //"description" => "",
-                        'fields' =>array(
-                            '0' => array(
-                                'name' => 'Fields',
-                                'value' => 'They can have different fields with small headlines.',
-                                'inline' => true
-                            ),
-                            '1' => array(
-                                'name' => 'Fields',
-                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                                'inline' => true
-                            ),
-                            '2' => array(
-                                'name' => 'Fields',
-                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                                'inline' => true
-                            ),
-                            '3' => array(
-                                'name' => 'Fields',
-                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                                'inline' => false
-                            ),
-                            '4' => array(
-                                'name' => 'Fields',
-                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                                'inline' => false
-                            ),
-                        ),
-                        'footer' => array(
-                            'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
-                            'text'  => 'Stargate',
-                        ),
-                    ];
-            echo '2';
-            //print_r($embed);
-
-
-            $message->channel->sendMessage("", false, $embed)->then(function () {
-                echo "Embed sent";
-            }, function (Exception $e) {
-                echo $e->getMessage();
-            });
-
-        }catch(\Exception $e)
-        {
-            echo PHP_EOL.$e->getMessage();
-        }
-        
-
-
-
-        return;
+        $startCommand = new ColonyCommand($message,$args);
+        return $startCommand->execute();
     },[
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
