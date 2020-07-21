@@ -42,7 +42,7 @@ class CreateColoniesTable extends Migration
             $table->integer('energy_used')->length(10)->unsigned()->default(0);
             $table->integer('energy_max')->length(10)->unsigned()->default(0);
 
-            $table->integer('E2PZ')->length(18)->default(0);
+            $table->decimal('E2PZ', 10, 4)->length(18)->default(0);
 
             $table->integer('active_building_id')->unsigned()->nullable();
             $table->foreign('active_building_id','c_active_building_id')->references('id')->on('buildings');

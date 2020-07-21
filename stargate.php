@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start,Colony as ColonyCommand};
+use App\Commands\{Start, Colony as ColonyCommand, Build};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -124,6 +124,15 @@ $discord->on('ready', function ($discord) {
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
 		'aliases' => array('c','co','col')
+    ]);	
+
+    $discord->registerCommand('build', function ($message, $args) use ($discord) {
+        $colonyCommand = new Build($message,$args);
+        return $colonyCommand->execute();
+    },[
+        'description' => 'Liste ou construit un bâtiment',
+		'usage' => "`!build list`\n`!build [Numéro]`",
+		'aliases' => array('b','bu')
     ]);	
 
 
