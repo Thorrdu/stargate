@@ -28,6 +28,8 @@ use App\Commands\{Start};
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
 use Discord\Parts\User\Game;
+use Discord\Parts\Embed\Embed;
+
 
 $discord = new DiscordCommandClient([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
@@ -40,7 +42,7 @@ $discord->on('ready', function ($discord) {
     try
     {
         $game = $discord->factory(Game::class, [
-            'name' => "!help | Watching {$discord->users->count()} users",
+            'name' => "!help | {$discord->users->count()} users",
             'type' => 3
         ]);
         $discord->updatePresence($game);
@@ -64,17 +66,82 @@ $discord->on('ready', function ($discord) {
 		'aliases' => array('s','start')
     ]);	
 
-    $discord->registerCommand('command2', function ($message, $args) {
-        $message->channel->sendMessage('test')->then(
-            function ($response) { //use ($deferred)
-                $response->react('🥓');
-            }
-        );
+    $discord->registerCommand('colony', function ($message, $args) use ($discord) {
+        
+        try {
+
+
+
+            echo '1';
+            $embed = [
+                        /*'image' => [
+                            'url' => 'http://web.thorr.ovh/point.jpg',
+                        ],*/
+                        'thumbnail' => [
+                            //'url' => 'http://web.thorr.ovh/point.jpg',
+                        ],
+                        //'color' => '#0099ff',
+                        'author' => [
+                            'name' => 'Le joueur',
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                        ],
+                        //"title" => "",
+                        //"description" => "",
+                        'fields' =>array(
+                            '0' => array(
+                                'name' => 'Fields',
+                                'value' => 'They can have different fields with small headlines.',
+                                'inline' => true
+                            ),
+                            '1' => array(
+                                'name' => 'Fields',
+                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                                'inline' => true
+                            ),
+                            '2' => array(
+                                'name' => 'Fields',
+                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                                'inline' => true
+                            ),
+                            '3' => array(
+                                'name' => 'Fields',
+                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                                'inline' => false
+                            ),
+                            '4' => array(
+                                'name' => 'Fields',
+                                'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
+                                'inline' => false
+                            ),
+                        ),
+                        'footer' => array(
+                            'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+            echo '2';
+            //print_r($embed);
+
+
+            $message->channel->sendMessage("", false, $embed)->then(function () {
+                echo "Embed sent";
+            }, function (Exception $e) {
+                echo $e->getMessage();
+            });
+
+        }catch(\Exception $e)
+        {
+            echo PHP_EOL.$e->getMessage();
+        }
+        
+
+
+
         return;
     },[
-        'description' => 'command2',
-		'usage' => '`!command2`',
-		'aliases' => array('c','cm2')
+        'description' => 'Affiche les infos de votre colonie',
+		'usage' => '`!colony`',
+		'aliases' => array('c','co','col')
     ]);	
 
 
