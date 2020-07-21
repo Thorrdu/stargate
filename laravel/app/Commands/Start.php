@@ -21,10 +21,9 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->votes = 0;
             $newPlayer->save();   
             $newPlayer->addColony();
-            //$this->message->channel->sendMessage('test executed');
             return "[Blabla Synopsis]\n\nPour afficher votre profile utilisez `!p`";
         }
         else
-            return "Joueur déjà xistant\n\nPour afficher votre profile utilisez `!p`";
+            return "Joueur déjà créé\n\nPour afficher votre profile utilisez `!p`";
     }
 }
