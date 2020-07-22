@@ -75,14 +75,20 @@ class Colony extends Model
     {
         $current = Carbon::now();
         $currentLevel = $this->hasBuilding($building);
-        if($currentLevel)
-            $levelMultiplier = $currentLevel + 1;
-        else
-            $levelMultiplier = 1;
+        if(!$currentLevel)
+            $currentLevel = 0;
+
+        $buildingTime = $building->time_base;
+        if($currentLevel > 0)    
+            $buildingTime = $building->time_base * pow($building->time_coefficient, $currentLevel);
+
+        $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
+        if($currentRobotic)
+            $buildingTime *= pow(0.9, $currentRobotic);
+
+        $buildingEnd = $current->addSeconds($buildingTime);
 
         $this->active_building_id = $building->id;
-        $buildingTime = $building->time_base * pow($building->time_coefficient, $levelMultiplier);
-        $buildingEnd = $current->addSeconds($buildingTime);
         $this->active_building_end = $buildingEnd;
         $this->save();
         return $this->active_building_end;

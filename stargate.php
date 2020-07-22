@@ -88,7 +88,7 @@ $discord = new DiscordCommandClient([
 ]);
 
 $discord->on('ready', function ($discord) {
-	echo "Bot is ready!", PHP_EOL;
+	echo "Bot is starting up!", PHP_EOL;
 	echo 'UPDATING PRESENCE'.PHP_EOL;
     try
     {
@@ -135,6 +135,13 @@ $discord->on('ready', function ($discord) {
 		'aliases' => array('b','bu')
     ]);	
 
+    $mainGuild = $discord->guilds->get('id', 735390211130916904);
+    $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
+    $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
+        echo PHP_EOL.'Bot is ready';
+    }, function ($e) {
+       echo $e->getMessage();
+    });
 
 });
 

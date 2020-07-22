@@ -28,7 +28,7 @@ class Colony extends CommandHandler implements CommandInterface
                 //"description" => "",
                 'fields' => [],
                 'footer' => array(
-                    'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
                     'text'  => 'Stargate',
                 ),
             ];
@@ -55,20 +55,20 @@ class Colony extends CommandHandler implements CommandInterface
 
             $table->integer('active_building_id')->unsigned()->nullable();
             */
-            $resourcesValue = '';
+            $resourcesValue = "Energie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
             $productionValue = '';
             foreach (config('stargate.resources') as $resource)
             {
-                if(!empty($resourcesValue)){
+                if(!empty($resourcesValue))
                     $resourcesValue .= "\n";
+                if(!empty($productionValue))
                     $productionValue .= "\n";
-                }
+
                 $resourcesValue .= ucfirst($resource).' '.round($this->player->colonies[0]->$resource).' / '.$this->player->colonies[0]['storage_'.$resource];
                 $productionValue .= ucfirst($resource).' '.$this->player->colonies[0]['production_'.$resource].' / Heure';
             }
             if(!empty($resourcesValue))
             {
-                $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
 
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(
@@ -105,11 +105,24 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
-            $embed['fields'][] = array(
-                'name' => 'Bâtiments scientifiques',
-                'value' => '/',
-                'inline' => true
-            );
+            $scienceBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                return $value->type == "Science";
+            });
+            $scienceBuildingsValue = "";
+            foreach($scienceBuildings as $scienceBuilding)
+            {
+                if(!empty($scienceBuildingsValue))
+                    $scienceBuildingsValue .= "\n";
+                $scienceBuildingsValue .= $scienceBuilding->name.' - LVL '.$scienceBuilding->pivot->level;
+            }
+            if(!empty($scienceBuildingsValue))
+            {
+                $embed['fields'][] = array(
+                                        'name' => 'Bâtiments scientifiques',
+                                        'value' => $scienceBuildingsValue,
+                                        'inline' => true
+                                    );
+            }
 
             $embed['fields'][] = array(
                 'name' => 'Bâtiments militaires',
@@ -120,6 +133,12 @@ class Colony extends CommandHandler implements CommandInterface
             $embed['fields'][] = array(
                 'name' => 'Bâtiments de stockage',
                 'value' => '/',
+                'inline' => true
+            );
+
+            $embed['fields'][] = array(
+                'name' => 'Bonus spécifiques',
+                'value' => 'ex: +20% Naq -20% Fer ',
                 'inline' => true
             );
 

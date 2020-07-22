@@ -35,12 +35,9 @@ class Build extends CommandHandler implements CommandInterface
                 $buildings = Building::all();
                 foreach($buildings as $building)
                 {
-                    $coeficient = 1;
                     $currentLevel = $this->player->colonies[0]->hasBuilding($building);
-                    if($currentLevel)
-                        $coeficient += $currentLevel;
-                    else
-                        $currentLevel = 1;
+                    if(!$currentLevel)
+                        $currentLevel = 0;
 
                     $buildingPrice = "";
                     foreach (config('stargate.resources') as $resource)
@@ -49,14 +46,38 @@ class Build extends CommandHandler implements CommandInterface
                         {
                             if(!empty($buildingPrice))
                                 $buildingPrice .= " ";
-                            $buildingPrice .= round($building->$resource * pow($building->upgrade_coefficient, $coeficient)).' '.ucfirst($resource);
+
+                            $ressPrice = $building->$resource;
+                            if($currentLevel > 0)
+                                $ressPrice = $building->$resource * pow($building->upgrade_coefficient, $currentLevel).' '.ucfirst($resource);
+
+                            $buildingPrice .= round($ressPrice).' '.ucfirst($resource);
                         }
                     }
                     if($building->energy_base > 0)
-                        $buildingPrice .= " ".round($building->energy_base * pow($building->energy_coefficient, $coeficient) - $building->energy_base * pow($building->energy_coefficient, $currentLevel))." Energie";
-                    
-                    $buildingTime = gmdate("H:i:s", $building->time_base * pow($building->time_coefficient, $coeficient));
-    
+                    {
+                        $energyRequired = $building->energy_base;
+                        if($currentLevel > 0)
+                        {
+                            $energyRequired = $building->energy_base * pow($building->energy_coefficient, $currentLevel);
+                            if($currentLevel > 1)
+                                $energyRequired -= $building->energy_base * pow($building->energy_coefficient, ($currentLevel-1));
+                            else
+                                $energyRequired -= $building->energy_base;
+                        }
+                        $buildingPrice .= " ".round($building->energy_base)." Energie";
+                    }
+
+                    $buildingTime = $building->time_base;
+                    if($currentLevel > 0)    
+                        $buildingTime = $building->time_base * pow($building->time_coefficient, $currentLevel);
+
+                    $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
+                    if($currentRobotic)
+                        $buildingTime *= pow(0.9, $currentRobotic);
+
+                    $buildingTime = gmdate("H:i:s", $buildingTime);
+
                     $embed['fields'][] = array(
                         'name' => $building->id.' - '.$building->name,
                         'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime."\nCondition: /\nPrix: ".$buildingPrice
@@ -72,7 +93,7 @@ class Build extends CommandHandler implements CommandInterface
                 if(!is_null($building))
                 {
                     //if construction en cours, return
-                    if(!is_null($this->player->colonies[0]->active_building_ends))
+                    if(!is_null($this->player->colonies[0]->active_building_end))
                         return 'Un bâtiment est déjà en construction sur cette colonie';
 
                     $coeficient = 1;
