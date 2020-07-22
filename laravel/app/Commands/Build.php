@@ -35,42 +35,31 @@ class Build extends CommandHandler implements CommandInterface
                 $buildings = Building::all();
                 foreach($buildings as $building)
                 {
-                    $currentLevel = $this->player->colonies[0]->hasBuilding($building);
-                    if(!$currentLevel)
-                        $currentLevel = 0;
+                    $wantedLevel = 1;
+                    $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+                    if($currentLvl)
+                        $wantedLevel += $currentLvl;
 
                     $buildingPrice = "";
+                    $buildingPrices = $building->getPrice($wantedLevel);
                     foreach (config('stargate.resources') as $resource)
                     {
                         if($building->$resource > 0)
                         {
                             if(!empty($buildingPrice))
                                 $buildingPrice .= " ";
-
-                            $ressPrice = $building->$resource;
-                            if($currentLevel > 0)
-                                $ressPrice = $building->$resource * pow($building->upgrade_coefficient, $currentLevel).' '.ucfirst($resource);
-
-                            $buildingPrice .= round($ressPrice).' '.ucfirst($resource);
+                            $buildingPrice .= round($buildingPrices[$resource]).' '.ucfirst($resource);
                         }
                     }
                     if($building->energy_base > 0)
                     {
-                        $energyRequired = $building->energy_base;
-                        if($currentLevel > 0)
-                        {
-                            $energyRequired = $building->energy_base * pow($building->energy_coefficient, $currentLevel);
-                            if($currentLevel > 1)
-                                $energyRequired -= $building->energy_base * pow($building->energy_coefficient, ($currentLevel-1));
-                            else
-                                $energyRequired -= $building->energy_base;
-                        }
-                        $buildingPrice .= " ".round($building->energy_base)." Energie";
+                        $energyRequired = $building->getEnergy($wantedLevel);
+                        if($wantedLevel > 1)
+                            $energyRequired -= $building->getEnergy($wantedLevel - 1);
+                        $buildingPrice .= " ".round($energyRequired)." Energie";
                     }
 
-                    $buildingTime = $building->time_base;
-                    if($currentLevel > 0)    
-                        $buildingTime = $building->time_base * pow($building->time_coefficient, $currentLevel);
+                    $buildingTime = $building->getTime($wantedLevel);
 
                     $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
                     if($currentRobotic)

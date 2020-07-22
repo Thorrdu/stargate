@@ -73,14 +73,15 @@ class Colony extends Model
     public function startBuilding(Building $building)
     {
         $current = Carbon::now();
+        $levelWanted = 1;
         $currentLevel = $this->hasBuilding($building);
-        if(!$currentLevel)
-            $currentLevel = 0;
+        if($currentLevel)
+            $levelWanted += $currentLevel;
 
-        $buildingTime = $building->time_base;
-        if($currentLevel > 0)    
-            $buildingTime = $building->time_base * pow($building->time_coefficient, $currentLevel);
+        //Temps de base
+        $buildingTime = $building->getTime($levelWanted);
 
+        /** Bonus Usine robotisée */
         $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
         if($currentRobotic)
             $buildingTime *= pow(0.9, $currentRobotic);
@@ -116,18 +117,11 @@ class Colony extends Model
             $minuteToClaim = $current->diffInMinutes($lastClaim);
             if($minuteToClaim >= 5)
             {
-                $ironProduced = round(($this->production_iron / 60) * $minuteToClaim);
-                $this->iron += $ironProduced;
-
-                $goldProduced = round(($this->production_gold / 60) * $minuteToClaim);
-                $this->gold += $goldProduced;
-
-                $quartzProduced = round(($this->production_quartz / 60) * $minuteToClaim);
-                $this->quartz += $quartzProduced;
-
-                $naqahdahProduced = round(($this->production_naqahdah / 60) * $minuteToClaim);
-                $this->naqahdah += $naqahdahProduced;
-
+                foreach (config('stargate.resources') as $resource)
+                {
+                    $varName = 'production_'.$resource;
+                    $this->$resource += round(($this->$varName / 60) * $minuteToClaim);
+                }
                 $this->last_claim = date("Y-m-d H:i:s");
 
                 $this->save();
@@ -141,42 +135,28 @@ class Colony extends Model
         if(!is_null($this->last_claim))
         {
             $energyBuildings = $this->buildings->filter(function ($value){
-                //echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
-                return $value->type == 'Energy';// || $value->type == 'Energy'
+                return $value->type == 'Energy';
             });
-            $newEnergy = 0;
+            $this->energy_max = 0;
             foreach($energyBuildings as $energyBuilding)
-            {
-                $newEnergy += $energyBuilding->production_base * pow($energyBuilding->production_coefficient, $energyBuilding->pivot->level);
-            }
-            $this->energy_max = $newEnergy;
+                $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
             
-            $energyUsed = 0;
+            $this->energy_used = 0;
             foreach($this->buildings as $building)
-            {
-                $energyUsed += $building->energy_base * pow($building->energy_coefficient, $building->pivot->level);
-            }
-            $this->energy_used = $energyUsed;
+                $this->energy_used += round($building->getEnergy($energyBuilding->pivot->level));
 
             foreach (config('stargate.resources') as $resource)
             {
                 $productionBuildings = $this->buildings->filter(function ($value) use($resource){
-                    //echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
-                    return $value->production_type == $resource;// || $value->type == 'Energy'
+                    return $value->production_type == $resource && $value->type == 'Production';
                 });
                 $varName = 'production_'.$resource;
-
                 $this->$varName = config('stargate.base_prod.'.$resource);
                 foreach($productionBuildings as $productionBuilding)
-                {
-                    $this->$varName += round($productionBuilding->production_base * pow($productionBuilding->production_coefficient, $productionBuilding->pivot->level));
-                }
-                //+Bonus éventuels
+                    $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
+                    //+Bonus éventuels
             }
-
-
             
-
             //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
             /*$ironProdBuildings = $this->buildings->filter(function ($value) {
                 echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
