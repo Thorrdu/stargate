@@ -39,7 +39,7 @@ class CreateColoniesTable extends Migration
             $table->integer('production_gold')->length(10)->unsigned()->default(10);
             $table->integer('production_quartz')->length(10)->unsigned()->default(5);
             $table->integer('production_naqahdah')->length(10)->unsigned()->default(2);
-            $table->integer('energy_used')->length(10)->unsigned()->default(0);
+            $table->integer('energy_used')->length(10)->default(0);
             $table->integer('energy_max')->length(10)->unsigned()->default(0);
 
             $table->decimal('E2PZ', 10, 4)->length(18)->default(0);
