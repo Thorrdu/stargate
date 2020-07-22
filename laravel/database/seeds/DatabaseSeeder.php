@@ -118,6 +118,47 @@ class DatabaseSeeder extends Seeder
             'time_base' => 840
         ]);
 
+        DB::table('buildings')->insert([
+            'id' => 6,
+            'name' => 'Usine robotisée',
+            'description' => "Permet à vos colons de travailler avec le support de robots.\nRéduit le temps de construction des bâtiments, vaissaux, défenses et objets de 10% par niveau",
+            'type' => 'Science',
+            'iron' => 100,
+            'gold' => 200,
+            'quartz' => 100,
+            'naqahdah' => 0,
+            'production_type' => 'special',
+            'production_base' => null,
+            'production_coefficient' => null,
+            'energy_base' => null,
+            'energy_coefficient' => null,
+            'display_order' => 1,
+            'upgrade_coefficient' => 1.9,
+            'time_base' => 840,
+            'time_coefficient' => 1.7
+        ]);
+
+        DB::table('buildings')->insert([
+            'id' => 7,
+            'name' => 'Centre de recherche',
+            'description' => "Donne un lieu à vos colons pour effectuer des recherches, réduit le temps des recherches de 10% par niveau.\nPermet également de comprendre le fonctionnement de la porte des étoiles",
+            'type' => 'Science',
+            'iron' => 200,
+            'gold' => 400,
+            'quartz' => 200,
+            'naqahdah' => 0,
+            'production_type' => 'special',
+            'production_base' => null,
+            'production_coefficient' => null,
+            'energy_base' => null,
+            'energy_coefficient' => null,
+            'display_order' => 2,
+            'upgrade_coefficient' => 1.75,
+            'time_base' => 648,
+            'time_coefficient' => 1.7
+        ]);
+        
+        /*
         DB::table('players')->insert([
             'id' => 1,
             'user_id' => 125641223544373248,
@@ -142,6 +183,6 @@ class DatabaseSeeder extends Seeder
             'colony_id' => 1,
             'building_id' => 2,
             'level' => 1
-        ]);
+        ]);*/
     }
 }
