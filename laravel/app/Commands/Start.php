@@ -2,9 +2,6 @@
 
 namespace App\Commands;
 
-use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
-use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 
 class Start extends CommandHandler implements CommandInterface
@@ -21,9 +18,9 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->votes = 0;
             $newPlayer->save();   
             $newPlayer->addColony();
-            return "[Blabla Synopsis]\n\nPour afficher votre profile utilisez `!p`";
+            return "[Blabla Synopsis]\n\nPour afficher votre colonie utilisez `!colony` (ou !c)";
         }
         else
-            return "Joueur déjà créé\n\nPour afficher votre profile utilisez `!p`";
+            return "Joueur déjà créé\n\nPour afficher votre profile utilisez `!colony` (ou !c)";
     }
 }
