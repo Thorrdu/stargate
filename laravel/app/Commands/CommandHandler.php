@@ -37,6 +37,8 @@ class CommandHandler
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
+        if(!in_array(get_class($this),array('Start','Help')))
+            return "Pour commencer votre aventure, utilisez `!start`";
         $this->log();
     }
 
@@ -47,7 +49,7 @@ class CommandHandler
             {
                 $log = new CommandLog;
                 $log->player_id = $this->player->id;
-                $log->command_type = explode(' ',trim($this->message->content))[0];
+                $log->command_type = get_class($this);
                 $log->command_raw = $this->message->content;
                 $log->save();
             }
