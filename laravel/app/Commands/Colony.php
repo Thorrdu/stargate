@@ -35,11 +35,7 @@ class Colony extends CommandHandler implements CommandInterface
 
 
             /*
-                    '1' => array(
-                        'name' => 'Production',
-                        'value' => 'Fer lalala',
-                        'inline' => true
-                    ),
+
                     '3' => array(
                         'name' => 'Bâtiments militaires',
                         'value' => 'Mine lalala',
@@ -72,7 +68,7 @@ class Colony extends CommandHandler implements CommandInterface
             }
             if(!empty($resourcesValue))
             {
-                $resourcesValue .= "\nEnergie ".$this->player->colonies[0]->energy_used.' / '.$this->player->colonies[0]->energy_max;
+                $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
 
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(
@@ -80,18 +76,25 @@ class Colony extends CommandHandler implements CommandInterface
                                         'value' => $resourcesValue,
                                         'inline' => true
                                     );
+
+                $productionValue .= "\nE2PZ 0 / semaine";
+                $embed['fields'][] = array(
+                                        'name' => 'Production',
+                                        'value' => $productionValue,
+                                        'inline' => true
+                                    );
             }
 
+
             $prodBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
-                return $value->type == 'Production';
+                return $value->type == 'Production' || $value->type == "Energy";
             });
             $prodBuildingsValue = "";
             foreach($prodBuildings as $prodBuilding)
             {
-                echo PHP_EOL.'BOUCLE PROD BUILDING';
                 if(!empty($prodBuildingsValue))
                     $prodBuildingsValue .= "\n";
-                $prodBuildingsValue .= "\n".$prodBuilding->building->name.' | LVL '.$prodBuilding->pivot->level;
+                $prodBuildingsValue .= $prodBuilding->name.' - LVL '.$prodBuilding->pivot->level;
             }
             if(!empty($prodBuildingsValue))
             {
@@ -102,19 +105,42 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
+            $embed['fields'][] = array(
+                'name' => 'Bâtiments scientifiques',
+                'value' => '/',
+                'inline' => true
+            );
+
+            $embed['fields'][] = array(
+                'name' => 'Bâtiments militaires',
+                'value' => '/',
+                'inline' => true
+            );
+
+            $embed['fields'][] = array(
+                'name' => 'Bâtiments de stockage',
+                'value' => '/',
+                'inline' => true
+            );
+
             if(!is_null($this->player->colonies[0]->active_building_end)){
                 $buildingEnd = $this->player->colonies[0]->active_building_end;
+                $currentLevel = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
+                if(!$currentLevel)
+                    $currentLevel = 0;
                 $embed['fields'][] = array(
                     'name' => 'Construction en cours',
-                    'value' => $this->player->colonies[0]->activeBuilding->name."\n".$buildingEnd,
+                    'value' => $this->player->colonies[0]->activeBuilding->name." - LVL ".($currentLevel+1)."\n".$buildingEnd,
                     'inline' => true
                 );
             }
 
-
-            print_r($embed['fields']);
-
-
+            $embed['fields'][] = array(
+                'name' => 'Recherche en cours',
+                'value' => '/',
+                'inline' => true
+            );
+            //print_r($embed['fields']);
             //print_r($embed);
 
             $this->message->channel->sendMessage('Colony Embed', false, $embed);
