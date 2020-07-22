@@ -15,7 +15,7 @@ class Start extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute Start';
             $newPlayer = new Player;
-            $newPlayer->user_id = $this->player->id;
+            $newPlayer->user_id = $this->message->author->id;
             $newPlayer->user_name = $this->message->author->user_name;
             $newPlayer->ban = false;
             $newPlayer->votes = 0;

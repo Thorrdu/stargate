@@ -23,6 +23,10 @@ class Player extends Model
     {
         return $this->hasMany('App\CommandLogs');
     }
+    public function technologies()
+    {
+        return $this->belongsToMany('App\Technology')->withPivot('level');
+    }
 
     public function addColony()
     {

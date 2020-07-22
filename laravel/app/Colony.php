@@ -30,7 +30,6 @@ class Colony extends Model
         });
 
         static::retrieved(function($colony) {
-
             $colony->checkProd();
             $colony->checkBuilding();
 
@@ -215,14 +214,12 @@ class Colony extends Model
             else
             {
                 $this->buildings()->attach([$building->id => ['level' => 1]]);
-
             }
 
             $this->active_building_id = null;
             $this->active_building_end = null;
-            $this->calcProd();
             $this->save();
-
+            $this->calcProd();
             /*
             $buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();
             if($buildingExist)
