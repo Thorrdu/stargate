@@ -18,23 +18,50 @@ class Colony extends Model
         'last_claim' => 'datetime',
     ];
 
+    /*
     protected static function boot()
     {
         parent::boot();
         static::updating(function($colony) {
            // dd($colony);
+           
         });
+
+        static::updated(function($colony) {
+            echo PHP_EOL.' COLONY EVENT UPDATED HORS OBSERVER';    
+         });
+
+
+        static::updating(function($colony) {
+            // dd($colony);
+            echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
+            if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
+            {
+                echo PHP_EOL.'OBSRVER FORCE RECALC';
+                $colony->unsetEventDispatcher();
+                $colony->calcProd();
+            }
+         });
 
         static::creating(function($colony) {
             $colony->last_claim = Carbon::now()->format("Y-m-d H:i:s");
         });
 
         static::retrieved(function($colony) {
+            echo PHP_EOL.' Retrieved hors observer';
             $colony->checkProd();
             $colony->player->checkTechnology();
             $colony->checkBuilding();
         });
+    }*/
+
+    public function saveWithoutEvents(array $options=[])
+    {
+        return static::withoutEvents(function() use ($options) {
+            return $this->save($options);
+        });
     }
+
 
     public function player(){
         return $this->belongsTo('App\Player');
@@ -118,7 +145,7 @@ class Colony extends Model
             if($endingDate->isPast())
             {
                 $this->builingdIsDone($this->activeBuilding);
-                $this->calcProd();
+                //$this->calcProd();
             }
         }
     }
@@ -195,7 +222,7 @@ class Colony extends Model
             */
 
             
-            $this->save();
+            $this->saveWithoutEvents();
         }
     }
 

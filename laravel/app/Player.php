@@ -93,15 +93,43 @@ class Player extends Model
     public function checkTechnology()
     {
         echo PHP_EOL.'CHECK_TECHNOLOGY';
-        if(!is_null($this->active_building_end))
+        if(!is_null($this->active_technology_end))
         {
-            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->active_building_end);
+            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->active_technology_end);
             if($endingDate->isPast())
             {
-                $this->builingdIsDone($this->activeBuilding);
+                $this->technologyIsDone($this->activeTechnology);
             }
         }
     }
+
+    public function technologyIsDone(Technology $technology)
+    {
+        try{
+            $technologyExists = $this->technologies->filter(function ($value) use($technology){               
+                return $value->id == $technology->id;
+            });
+            if($technologyExists->count() > 0)
+            {
+                $technologyToUpgrade = $technologyExists->first();
+                $technologyToUpgrade->pivot->level++;
+                $technologyToUpgrade->pivot->save();
+            }
+            else
+            {
+                $this->technologies()->attach([$technology->id => ['level' => 1]]);
+            }
+
+            $this->active_technology_id = null;
+            $this->active_technology_end = null;
+            $this->save();
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+
 
     public function getResearchBonus()
     {

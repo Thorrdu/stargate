@@ -108,6 +108,53 @@ $discord->on('ready', function ($discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
 	});
 
+    
+    $discord->registerCommand('await', function ($message, $args) use ($discord){
+        echo 'PRE';
+        global $count;
+        $count = 0;
+        $countMax = 2;
+        $timeMax = time();
+        $message->channel->sendMessage("LISTEN ON");
+
+        try{
+            $discord->on('message', function ($messageListen,$response) use ($message,$countMax,$timeMax){
+                global $count;
+                if($message->channel->id == $messageListen->channel->id && $message->author->id == $messageListen->author->id)
+                {
+                    $messageListen->channel->sendMessage("LISTEN: {$count}/{$countMax} {$messageListen->author->username}: {$messageListen->content}");
+                    $count++;
+                }
+                
+                try{
+                    if($countMax <= $count)
+                    {
+
+                        
+                        throw 'aaa';
+                    }
+                }
+                catch(\Exception $e)
+                {
+                    $message->channel->sendMessage($e->getMessage());
+                }  
+            });
+        }
+        catch(\Exception $e)
+        {
+            $message->channel->sendMessage($e->getMessage());
+        }       
+        finally
+        {
+            $message->channel->sendMessage("LISTEN OFF");
+
+        }
+    },[
+        'description' => 'test',
+        'usage' => 'test',
+        //'aliases' => array('t'),
+    ]);
+
     $discord->registerCommand('start', function ($message, $args) {
         $command = new Start($message,$args);
         return $command->execute();

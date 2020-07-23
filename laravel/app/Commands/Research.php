@@ -26,7 +26,7 @@ class Research extends CommandHandler implements CommandInterface
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
                     "title" => 'Liste des technologies',
-                    "description" => 'Pour commencer la recherche d\'une technologie utilisez `!build [Numéro]`',
+                    "description" => 'Pour commencer la recherche d\'une technologie utilisez `!research [Numéro]`',
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',

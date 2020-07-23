@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Colony;
+use App\Observers\ColonyObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         date_default_timezone_set('Europe/Brussels');
+        Colony::observe(ColonyObserver::class);
     }
 }
