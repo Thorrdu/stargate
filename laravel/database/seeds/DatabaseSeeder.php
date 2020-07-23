@@ -179,6 +179,12 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1200,
             'time_coefficient' => 1.7
         ]);
+        //Extracteur naqadah 5
+        DB::table('building_buildings')->insert([
+            'building_id' => 8,
+            'required_building_id' => 6,
+            'level' => 1
+        ]);
 
         DB::table('buildings')->insert([
             'id' => 9,
