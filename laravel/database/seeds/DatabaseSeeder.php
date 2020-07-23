@@ -339,13 +339,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Energie',
             'description' => "Permet de maîtriser d'avantage l'énergie, vous octroyant un bonus de 5% du rendement des bâtiments d'énergie",
             'type' => 'Labo',
-            'iron' => 200,
-            'gold' => 2000,
+            'iron' => 0,
+            'gold' => 800,
             'quartz' => 400,
             'naqahdah' => 0,
-            'display_order' => 3,
+            'display_order' => 4,
             'upgrade_coefficient' => 2,
-            'time_base' => 1500,
+            'time_base' => 990,
             'time_coefficient' => 2
         ]);
         /*
