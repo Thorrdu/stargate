@@ -64,8 +64,8 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!empty($productionValue))
                     $productionValue .= "\n";
 
-                $resourcesValue .= ucfirst($resource).' '.round($this->player->colonies[0]->$resource).' / '.$this->player->colonies[0]['storage_'.$resource];
-                $productionValue .= ucfirst($resource).' '.$this->player->colonies[0]['production_'.$resource].' / Heure';
+                $resourcesValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]->$resource).' / '.number_format($this->player->colonies[0]['storage_'.$resource]);
+                $productionValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]['production_'.$resource]).' / Heure';
             }
             if(!empty($resourcesValue))
             {
@@ -124,23 +124,59 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
-            $embed['fields'][] = array(
-                'name' => 'Bâtiments militaires',
-                'value' => '/',
-                'inline' => true
-            );
+            $militaryBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                return $value->type == "Military";
+            });
+            $militaryBuildingsValue = "";
+            foreach($militaryBuildings as $militaryBuilding)
+            {
+                if(!empty($militaryBuildingsValue))
+                    $militaryBuildingsValue .= "\n";
+                $militaryBuildingsValue .= $militaryBuilding->name.' - LVL '.$militaryBuilding->pivot->level;
+            }
+            if(!empty($militaryBuildingsValue))
+            {
+                $embed['fields'][] = array(
+                                        'name' => 'Bâtiments militaires',
+                                        'value' => $militaryBuildingsValue,
+                                        'inline' => true
+                                    );
+            }
 
-            $embed['fields'][] = array(
-                'name' => 'Bâtiments de stockage',
-                'value' => '/',
-                'inline' => true
-            );
+            $storageBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                return $value->type == "Military";
+            });
+            $storageBuildingsValue = "";
+            foreach($storageBuildings as $storageBuilding)
+            {
+                if(!empty($storageBuildingsValue))
+                    $storageBuildingsValue .= "\n";
+                $storageBuildingsValue .= $storageBuilding->name.' - LVL '.$storageBuilding->pivot->level;
+            }
+            if(!empty($storageBuildingsValue))
+            {
+                $embed['fields'][] = array(
+                                        'name' => 'Entrepôts',
+                                        'value' => $storageBuildingsValue,
+                                        'inline' => true
+                                    );
+            }
 
-            $embed['fields'][] = array(
-                'name' => 'Bonus spécifiques',
-                'value' => 'ex: +20% Naq -20% Fer ',
-                'inline' => true
-            );
+            $technologyValue = "";
+            foreach($this->player->technologies as $technology)
+            {
+                if(!empty($technologyValue))
+                    $technologyValue .= "\n";
+                $technologyValue .= $technology->name.' - LVL '.$technology->pivot->level;
+            }
+            if(!empty($technologyValue))
+            {
+                $embed['fields'][] = array(
+                                        'name' => 'Technologies',
+                                        'value' => $technologyValue,
+                                        'inline' => true
+                                    );
+            }
 
             if(!is_null($this->player->colonies[0]->active_building_end)){
                 $buildingEnd = $this->player->colonies[0]->active_building_end;
@@ -154,11 +190,24 @@ class Colony extends CommandHandler implements CommandInterface
                 );
             }
 
+            if(!is_null($this->player->active_technology_end)){
+                $buildingEnd = $this->player->active_technology_end;
+                $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
+                if(!$currentLevel)
+                    $currentLevel = 0;
+                $embed['fields'][] = array(
+                    'name' => 'Recherche en cours',
+                    'value' => $this->player->activeTechnology->name." - LVL ".($currentLevel+1)."\n".$buildingEnd,
+                    'inline' => true
+                );
+            }
+
             $embed['fields'][] = array(
-                'name' => 'Recherche en cours',
-                'value' => '/',
+                'name' => 'Bonus spécifiques',
+                'value' => "ex: +20% Naq -20% Fer\n(Faire Type de colonie et image)",
                 'inline' => true
             );
+
             //print_r($embed['fields']);
             //print_r($embed);
 

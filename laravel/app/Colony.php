@@ -31,6 +31,7 @@ class Colony extends Model
 
         static::retrieved(function($colony) {
             $colony->checkProd();
+            $colony->player->checkTechnology();
             $colony->checkBuilding();
 
         });
@@ -39,10 +40,12 @@ class Colony extends Model
     public function player(){
         return $this->belongsTo('App\Player');
     }
+
     public function buildings()
     {
         return $this->belongsToMany('App\Building')->withPivot('level');
     }
+
     public function activeBuilding()
     {
         return $this->hasOne('App\Building','id','active_building_id');
@@ -61,13 +64,28 @@ class Colony extends Model
             }
             else
                 return false;
-            //$buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();
-            //return $buildingExist->level;
         }
         catch(\Exception $e)
         {
             return false;
         }
+    }
+
+    public function getBuildingBonus()
+    {
+        $bonus = 1;
+
+        /** Bonus Informatique et Communication -5% */
+        $informationTechnology = $this->hasTechnology(Technology::find(1));
+        if($informationTechnology)
+            $bonus *= pow(0.95, $informationTechnology);
+
+        /** Bonus Centre de recherche -10% */
+        $researchCenterLevel = $this->player->colonies[0]->hasBuilding(Building::find(6));
+        if($researchCenterLevel)
+            $bonus *= pow(0.90, $researchCenterLevel);
+
+        return $bonus;
     }
 
     public function startBuilding(Building $building)
@@ -81,10 +99,8 @@ class Colony extends Model
         //Temps de base
         $buildingTime = $building->getTime($levelWanted);
 
-        /** Bonus Usine robotisée */
-        $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
-        if($currentRobotic)
-            $buildingTime *= pow(0.9, $currentRobotic);
+        /** Application des bonus */
+        $buildingTime *= $this->getBuildingBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
 

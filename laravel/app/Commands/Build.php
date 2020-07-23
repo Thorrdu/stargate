@@ -7,6 +7,7 @@ use Discord\DiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Building;
+use App\Technology;
 use Carbon\Carbon;
 
 class Build extends CommandHandler implements CommandInterface
@@ -31,7 +32,7 @@ class Build extends CommandHandler implements CommandInterface
                         'text'  => 'Stargate',
                     ),
                 ];
-    
+
                 $buildings = Building::all();
                 foreach($buildings as $building)
                 {
@@ -48,7 +49,7 @@ class Build extends CommandHandler implements CommandInterface
                         {
                             if(!empty($buildingPrice))
                                 $buildingPrice .= " ";
-                            $buildingPrice .= round($buildingPrices[$resource]).' '.ucfirst($resource);
+                            $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource);
                         }
                     }
                     if($building->energy_base > 0)
@@ -56,19 +57,22 @@ class Build extends CommandHandler implements CommandInterface
                         $energyRequired = $building->getEnergy($wantedLevel);
                         if($wantedLevel > 1)
                             $energyRequired -= $building->getEnergy($wantedLevel - 1);
-                        $buildingPrice .= " ".round($energyRequired)." Energie";
+                        $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
                     }
 
                     $buildingTime = $building->getTime($wantedLevel);
 
-                    $currentRobotic = $this->player->colonies[0]->hasBuilding(Building::find(6));
-                    if($currentRobotic)
-                        $buildingTime *= pow(0.9, $currentRobotic);
+                    /** Application des bonus */
+                    $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
 
                     $buildingTime = gmdate("H:i:s", $buildingTime);
 
+                    $displayedLvl = 0;
+                    if($currentLvl)
+                        $displayedLvl = $currentLvl;
+
                     $embed['fields'][] = array(
-                        'name' => $building->id.' - '.$building->name,
+                        'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
                         'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime."\nCondition: /\nPrix: ".$buildingPrice
                     );
                 }
@@ -85,33 +89,30 @@ class Build extends CommandHandler implements CommandInterface
                     if(!is_null($this->player->colonies[0]->active_building_end))
                         return 'Un bâtiment est déjà en construction sur cette colonie';
 
-                    $coeficient = 1;
+                    $wantedLvl = 0;
                     $currentLevel = $this->player->colonies[0]->hasBuilding($building);
                     if($currentLevel)
-                        $coeficient += $currentLevel;
+                        $wantedLvl += $currentLevel;
 
-                    $buildingPrice = "";
                     $hasEnough = true;
+                    $buildingPrices = $building->getPrice($wantedLvl);
                     foreach (config('stargate.resources') as $resource)
                     {
-                        if($building->$resource*$coeficient > $this->player->colonies[0]->$resource)
+                        if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
                             $hasEnough = false;
                     }
 
                     if($hasEnough)
                     {
                         $endingDate = $this->player->colonies[0]->startBuilding($building);
-                        return 'Construction commencée, **'.$building->name.' LVL '.$coeficient.'** sera terminé le: '.$endingDate;
+                        return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé le: '.$endingDate;
                     }
                     else
                     {
                         return 'Vous ne possédez pas assez de ressource pour construire ce bâtiment.';
                     }
-
                 }
             }
-
-            
         }
         return false;
     }
