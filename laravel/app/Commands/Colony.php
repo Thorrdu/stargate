@@ -34,9 +34,7 @@ class Colony extends CommandHandler implements CommandInterface
                 ),
             ];
 
-
             /*
-
                     '3' => array(
                         'name' => 'Bâtiments militaires',
                         'value' => 'Mine lalala',
@@ -72,6 +70,8 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($resourcesValue))
             {
                 $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
+                
+                $resourcesValue .= "\nColons/Soldats ".round($this->player->colonies[0]->soldiers);
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(
                                         'name' => 'Ressources',
@@ -80,6 +80,7 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
 
                 $productionValue .= "\nE2PZ 0 / semaine";
+                $productionValue .= "\nColons/Soldats ".$this->player->colonies[0]->production_military." / Heure";
                 $embed['fields'][] = array(
                                         'name' => 'Production',
                                         'value' => $productionValue,

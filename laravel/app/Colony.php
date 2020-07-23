@@ -198,6 +198,8 @@ class Colony extends Model
                     $varName = 'production_'.$resource;
                     $this->$resource += round(($this->$varName / 60) * $minuteToClaim);
                 }
+                $this->soldiers += round(($this->production_military / 60) * $minuteToClaim);
+
                 $this->last_claim = date("Y-m-d H:i:s");
 
                 $this->save();
@@ -241,6 +243,15 @@ class Colony extends Model
                     $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
                     //+Bonus éventuels
             }
+
+            $militaryBuildings = $this->buildings->filter(function ($value) use($resource){
+                return $value->production_type == 'military' && $value->type == 'Military';
+            });
+            $this->production_military = 0;
+            foreach($militaryBuildings as $militaryBuilding)
+                $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
+            //+Bonus éventuels
+
             
             //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
             /*$ironProdBuildings = $this->buildings->filter(function ($value) {

@@ -20,7 +20,7 @@ class ColonyObserver
     /**
      * Handle the colony "updated" event.
      *
-     * @param  \App\Colony  $colony
+     * @param  \App\Colony  $colony 
      * @return void
      */
     public function updated(Colony $colony)
