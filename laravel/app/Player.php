@@ -81,6 +81,7 @@ class Player extends Model
 
         /** Application des bonus */
         $buildingTime *= $this->getResearchBonus();
+        $buildingTime *= $this->colonies[0]->getResearchBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
 
@@ -133,18 +134,40 @@ class Player extends Model
 
     public function getResearchBonus()
     {
-        $researchBonus = 1;
+        $bonus = 1;
 
-        /** Bonus Informatique et Communication -5% */
-        $informationTechnology = $this->hasTechnology(Technology::find(1));
-        if($informationTechnology)
-            $researchBonus *= pow(0.95, $informationTechnology);
+        $buildings = $this->colonies[0]->buildings->filter(function ($value){
+            return !is_null($value->technology_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= round(pow($building->technology_bonus, $building->pivot->level));
 
-        /** Bonus Centre de recherche -10% */
-        $researchCenterLevel = $this->colonies[0]->hasBuilding(Building::find(7));
-        if($researchCenterLevel)
-            $researchBonus *= pow(0.90, $researchCenterLevel);
+        $technologies = $this->technologies->filter(function ($value){
+            return !is_null($value->technology_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= round(pow($technology->technology_bonus, $technology->pivot->level));
 
-        return $researchBonus;
+        return $bonus;
     }
+    public function getBuildingBonus()
+    {
+        $bonus = 1;
+
+        $buildings = $this->colonies[0]->filter(function ($value){
+            return !is_null($value->building_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= round(pow($building->building_bonus, $building->pivot->level));
+
+        $technologies = $this->technologies->filter(function ($value){
+            return !is_null($value->building_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= round(pow($technology->building_bonus, $technology->pivot->level));
+
+        return $bonus;
+    }
+
+    
 }

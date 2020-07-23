@@ -64,9 +64,23 @@ class Research extends CommandHandler implements CommandInterface
                     if($currentLvl)
                         $displayedLvl = $currentLvl;
                         
+                    $conditionsValue = "";
+                    foreach($technology->requiredTechnologies as $technology)
+                    {
+                        if(!empty($conditionsValue))
+                            $conditionsValue .= " / ";
+                        $conditionsValue .= $technology->name.' - LVL '.$technology->pivot->level;
+                    }
+                    foreach($technology->requiredBuildings as $building)
+                    {
+                        if(!empty($conditionsValue))
+                            $conditionsValue .= " / ";
+                        $conditionsValue .= $building->name.' - LVL '.$building->pivot->level;
+                    }
+
                     $embed['fields'][] = array(
                         'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
-                        'value' => 'Description: '.$technology->description."\nTemps: ".$buildingTime."\nCondition: /\nPrix: ".$buildingPrice
+                        'value' => 'Description: '.$technology->description."\nTemps: ".$buildingTime."\nCondition: ".$conditionsValue."/\nPrix: ".$buildingPrice
                     );
                 }
     

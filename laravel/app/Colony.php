@@ -72,6 +72,16 @@ class Colony extends Model
         return $this->belongsToMany('App\Building')->withPivot('level');
     }
 
+    public function requiredBuildings()
+    {
+        return $this->belongsToMany('App\Building')->withPivot('level');
+    }
+
+    public function requiredTechnologies()
+    {
+        return $this->belongsToMany('App\Technology')->withPivot('level');
+    }
+
     public function activeBuilding()
     {
         return $this->hasOne('App\Building','id','active_building_id');
@@ -97,22 +107,44 @@ class Colony extends Model
         }
     }
 
+    
+    public function getResearchBonus()
+    {
+        $bonus = 1;
+
+        $buildings = $this->buildings->filter(function ($value){
+            return !is_null($value->technology_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= round(pow($building->technology_bonus, $building->pivot->level));
+
+        $technologies = $this->player->technologies->filter(function ($value){
+            return !is_null($value->technology_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= round(pow($technology->technology_bonus, $technology->pivot->level));
+
+        return $bonus;
+    }
     public function getBuildingBonus()
     {
         $bonus = 1;
 
-        /** Bonus Informatique et Communication -5% */
-        $informationTechnology = $this->player->hasTechnology(Technology::find(1));
-        if($informationTechnology)
-            $bonus *= pow(0.95, $informationTechnology);
+        $buildings = $this->buildings->filter(function ($value){
+            return !is_null($value->building_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= round(pow($building->building_bonus, $building->pivot->level));
 
-        /** Bonus Centre de recherche -10% */
-        $researchCenterLevel = $this->hasBuilding(Building::find(6));
-        if($researchCenterLevel)
-            $bonus *= pow(0.90, $researchCenterLevel);
+        $technologies = $this->player->technologies->filter(function ($value){
+            return !is_null($value->building_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= round(pow($technology->building_bonus, $technology->pivot->level));
 
         return $bonus;
     }
+
 
     public function startBuilding(Building $building)
     {
@@ -127,6 +159,7 @@ class Colony extends Model
 
         /** Application des bonus */
         $buildingTime *= $this->getBuildingBonus();
+        $buildingTime *= $this->player->getBuildingBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
 
@@ -184,10 +217,14 @@ class Colony extends Model
             foreach($energyBuildings as $energyBuilding)
                 $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
             
-            /** Bonus Energy +5% */
-            $energyTechnology = $this->player->hasTechnology(Technology::find(4));
-            if($energyTechnology)
-                $this->energy_max *= pow(1.05, $energyTechnology);
+            $technologiesEnergyBonus = $this->technologies->filter(function ($value){
+                return !is_null($value->energy_bonus);
+            });
+            /**Application bonus de production énergétique */
+            $energyProductionBonus = 1;
+            foreach($technologiesEnergyBonus as $technologyEnergyBonus)
+                $energyProductionBonus *= pow($technologyEnergyBonus->energy_bonus, $technologyEnergyBonus->pivot->level);
+            $this->energy_max *= $energyProductionBonus;
 
             $this->energy_used = 0;
             foreach($this->buildings as $building)

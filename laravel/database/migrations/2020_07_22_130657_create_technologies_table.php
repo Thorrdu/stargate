@@ -30,6 +30,9 @@ class CreateTechnologiesTable extends Migration
             $table->bigInteger('time_base')->length(18)->default(1000);
             $table->decimal('time_coefficient', 5, 2)->default(1.4);
 
+            $table->decimal('building_bonus', 5, 2)->nullable();
+            $table->decimal('technology_bonus', 5, 2)->nullable();
+
             $table->integer('display_order')->length(3)->default(0);
             $table->timestamps();
         });

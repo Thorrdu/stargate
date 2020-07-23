@@ -135,7 +135,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 1,
             'upgrade_coefficient' => 1.9,
             'time_base' => 840,
-            'time_coefficient' => 1.7
+            'time_coefficient' => 1.7,
+            'building_bonus' => 0.90
         ]);
 
         DB::table('buildings')->insert([
@@ -155,7 +156,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 2,
             'upgrade_coefficient' => 1.75,
             'time_base' => 648,
-            'time_coefficient' => 1.7
+            'time_coefficient' => 1.7,
+            'technology_bonus' => 0.90
         ]);
 
         DB::table('buildings')->insert([
@@ -187,12 +189,19 @@ class DatabaseSeeder extends Seeder
             'gold' => 200,
             'quartz' => 100,
             'naqahdah' => 0,
-            'production_type' => 'military',
+            'production_type' => 'special',
             'display_order' => 1,
             'upgrade_coefficient' => 1.9,
             'time_base' => 1140,
             'time_coefficient' => 1.7
         ]);
+        //Usine robotisée 2
+        DB::table('building_buildings')->insert([
+            'building_id' => 9,
+            'required_building_id' => 6,
+            'level' => 2
+        ]);
+
 
         DB::table('buildings')->insert([
             'id' => 10,
@@ -216,7 +225,7 @@ class DatabaseSeeder extends Seeder
         DB::table('buildings')->insert([
             'id' => 11,
             'name' => 'Entrepôt de fer',
-            'description' => "Permet d'augmenter la capacité de stockage en Fer de 1.8 / LVL",
+            'description' => "Permet de multiplier la capacité de stockage en Fer par 1.8 / LVL",
             'type' => 'Storage',
             'iron' => 2000,
             'gold' => 0,
@@ -231,11 +240,17 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1800,
             'time_coefficient' => 1.5
         ]);
+        //Mine de fer
+        DB::table('building_buildings')->insert([
+            'building_id' => 11,
+            'required_building_id' => 2,
+            'level' => 5
+        ]);
 
         DB::table('buildings')->insert([
             'id' => 12,
             'name' => 'Entrepôt d\'Or',
-            'description' => "Permet d'augmenter la capacité de stockage en Or de 1.8 / LVL",
+            'description' => "Permet de multiplier la capacité de stockage en Or par 1.8 / LVL",
             'type' => 'Storage',
             'iron' => 2000,
             'gold' => 1000,
@@ -250,11 +265,17 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1800,
             'time_coefficient' => 1.5
         ]);
+        //Mine d'or
+        DB::table('building_buildings')->insert([
+            'building_id' => 12,
+            'required_building_id' => 3,
+            'level' => 5
+        ]);
 
         DB::table('buildings')->insert([
             'id' => 13,
             'name' => 'Entrepôt de quartz',
-            'description' => "Permet d'augmenter la capacité de stockage en Quartz de 1.8 / LVL",
+            'description' => "Permet de multiplier la capacité de stockage en Quartz par 1.8 / LVL",
             'type' => 'Storage',
             'iron' => 2000,
             'gold' => 2000,
@@ -269,11 +290,17 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1800,
             'time_coefficient' => 1.5
         ]);
+        //Mine de quartz
+        DB::table('building_buildings')->insert([
+            'building_id' => 13,
+            'required_building_id' => 4,
+            'level' => 5
+        ]);
 
         DB::table('buildings')->insert([
             'id' => 14,
             'name' => 'Entrepôt de naqahdah',
-            'description' => "Permet d'augmenter la capacité de stockage en Naqahdah de 1.8 / LVL",
+            'description' => "Permet de multiplier la capacité de stockage en Naqahdah par 1.8 / LVL",
             'type' => 'Storage',
             'iron' => 2000,
             'gold' => 1000,
@@ -287,7 +314,36 @@ class DatabaseSeeder extends Seeder
             'upgrade_coefficient' => 2,
             'time_base' => 1800,
             'time_coefficient' => 1.5
+        ]);       
+        //Mine de naqahdah
+        DB::table('building_buildings')->insert([
+            'building_id' => 14,
+            'required_building_id' => 5,
+            'level' => 5
         ]);
+
+        DB::table('buildings')->insert([
+            'id' => 15,
+            'name' => 'Centre de défense',
+            'description' => "Permet à votre colonie de se défendre en cas d'attaques.",
+            'type' => 'Military',
+            'iron' => 75,
+            'gold' => 150,
+            'quartz' => 75,
+            'naqahdah' => 0,
+            'production_type' => 'special',
+            'display_order' => 3,
+            'upgrade_coefficient' => 1.9,
+            'time_base' => 878,
+            'time_coefficient' => 1.7
+        ]);
+        //Usine robotisée 3
+        DB::table('building_buildings')->insert([
+            'building_id' => 15,
+            'required_building_id' => 6,
+            'level' => 3
+        ]);
+
         
         DB::table('technologies')->insert([
             'id' => 1,
@@ -301,7 +357,15 @@ class DatabaseSeeder extends Seeder
             'display_order' => 1,
             'upgrade_coefficient' => 2,
             'time_base' => 1602,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'building_bonus' => 0.95,
+            'technology_bonus' => 0.95
+        ]);
+        //Centre de recherche 1
+        DB::table('technology_building')->insert([
+            'technology_id' => 1,
+            'required_building_id' => 7,
+            'level' => 1
         ]);
 
         DB::table('technologies')->insert([
@@ -318,6 +382,12 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1500,
             'time_coefficient' => 2
         ]);
+        //Centre de recherche 1
+        DB::table('technology_building')->insert([
+            'technology_id' => 2,
+            'required_building_id' => 7,
+            'level' => 3
+        ]);
 
         DB::table('technologies')->insert([
             'id' => 3,
@@ -333,10 +403,23 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1500,
             'time_coefficient' => 2
         ]);
+        //Centre de recherche 1
+        DB::table('technology_building')->insert([
+            'technology_id' => 3,
+            'required_building_id' => 7,
+            'level' => 4
+        ]);
+        //Espionnage
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 3,
+            'required_technology_id' => 2,
+            'level' => 2
+        ]);
+
         DB::table('technologies')->insert([
             'id' => 4,
             'name' => 'Energie',
-            'description' => "Permet de maîtriser d'avantage l'énergie, vous octroyant un bonus de 5% du rendement des bâtiments d'énergie",
+            'description' => "Permet de maîtriser d'avantage l'énergie, vous octroyant un bonus de 5% du rendement des bâtiments d'énergie par niveau",
             'type' => 'Labo',
             'iron' => 0,
             'gold' => 800,
@@ -345,9 +428,166 @@ class DatabaseSeeder extends Seeder
             'display_order' => 4,
             'upgrade_coefficient' => 2,
             'time_base' => 990,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'energy_bonus' => 1.05
         ]);
+        //Chantier spacial 1
+        DB::table('technology_building')->insert([
+            'technology_id' => 4,
+            'required_building_id' => 9,
+            'level' => 1
+        ]);
+        //Centre de recherche 1
+        DB::table('technology_building')->insert([
+            'technology_id' => 4,
+            'required_building_id' => 7,
+            'level' => 1
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 5, // -2% building -2% techno
+            'name' => 'Intelligence artificielle', //nanotechnologie
+            'description' => "Permet de développer une intelligence artificielle capable de vous aider au quotidien sur votre colonie\nBonus: -2% Temps de construction / recherche",
+            'type' => 'Labo',
+            'iron' => 4000,
+            'gold' => 0,
+            'quartz' => 4000,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1602,
+            'time_coefficient' => 2,
+            'building_bonus' => 0.98,
+            'technology_bonus' => 0.98
+        ]);
+        //Centre de recherche 8
+        DB::table('technology_building')->insert([
+            'technology_id' => 5,
+            'required_building_id' => 7,
+            'level' => 8
+        ]);
+        //Salle contrôle / information et communication
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 5,
+            'required_technology_id' => 1,
+            'level' => 5
+        ]);
+
+        DB::table('buildings')->insert([
+            'id' => 16,
+            'name' => 'Centre de commandement', //département de nanorobotique
+            'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.".
+                             "Bonus: -50% Temps de construction / recherche", //et moins 30% les vaisseaux
+            'type' => 'Military',
+            'iron' => 900000,
+            'gold' => 900000,
+            'quartz' => 500000,
+            'naqahdah' => 10000,
+            'production_type' => 'special',
+            'display_order' => 4,
+            'upgrade_coefficient' => 1.9,
+            'time_base' => 86400,
+            'time_coefficient' => 1.7,
+            'building_bonus' => 0.5,
+            'technology_bonus' => 0.5
+        ]);
+        //Centre de recherche 1
+        DB::table('building_buildings')->insert([
+            'building_id' => 16,
+            'required_building_id' => 7,
+            'level' => 8
+        ]);
+        //Salle contrôle / information et communication
+        DB::table('building_technologies')->insert([
+            'building_id' => 16,
+            'required_technology_id' => 1,
+            'level' => 10
+        ]);
+        //Nanotechnologie / Intelligence Articifielle
+        DB::table('building_technologies')->insert([
+            'building_id' => 16,
+            'required_technology_id' => 5,
+            'level' => 5
+        ]);
+
+
+        DB::table('buildings')->insert([
+            'id' => 17,
+            'name' => 'Mine de fer avancée',
+            'description' => "Désormais habitués à miner du fer sur cette colonie, vos volons ont dévellopés une manière bien plus éfficace d'extraire le fer de la planete",
+            'type' => 'Production',
+            'iron' => 30000,
+            'gold' => 20000,
+            'quartz' => 1000,
+            'naqahdah' => 0,
+            'production_type' => 'iron',
+            'production_base' => 800,
+            'production_coefficient' => 1.25,
+            'display_order' => 6,
+            'upgrade_coefficient' => 1.2,
+            'time_base' => 17000,
+            'time_coefficient' => 1.7
+        ]);
+        //Centre de recherche 1
+        DB::table('building_buildings')->insert([
+            'building_id' => 17,
+            'required_building_id' => 2,
+            'level' => 20
+        ]);
+
+        DB::table('buildings')->insert([
+            'id' => 18,
+            'name' => 'Mine d\'or avancée',
+            'description' => "Désormais habitués à miner de l\'or sur cette colonie, vos volons ont dévellopés une manière bien plus éfficace d'extraire l\'or de la planete",
+            'type' => 'Production',
+            'iron' => 32000,
+            'gold' => 20000,
+            'quartz' => 1500,
+            'naqahdah' => 0,
+            'production_type' => 'gold',
+            'production_base' => 600,
+            'production_coefficient' => 1.25,
+            'display_order' => 7,
+            'upgrade_coefficient' => 1.3,
+            'time_base' => 20000,
+            'time_coefficient' => 1.7
+        ]);
+        //Centre de recherche 1
+        DB::table('building_buildings')->insert([
+            'building_id' => 17,
+            'required_building_id' => 3,
+            'level' => 20
+        ]);
+
+
+
         /*
+        Reacteur au naqadah
+        */
+        //Extracteur naqadah 5
+        DB::table('building_buildings')->insert([
+            'building_id' => 10,
+            'required_building_id' => 5,
+            'level' => 5
+        ]);
+        //Energie 4
+        DB::table('building_technologies')->insert([
+            'building_id' => 10,
+            'required_technology_id' => 4,
+            'level' => 4
+        ]);
+
+
+
+
+
+
+
+
+
+
+
+
         DB::table('players')->insert([
             'id' => 1,
             'user_id' => 125641223544373248,
@@ -372,6 +612,6 @@ class DatabaseSeeder extends Seeder
             'colony_id' => 1,
             'building_id' => 2,
             'level' => 1
-        ]);*/
+        ]);
     }
 }

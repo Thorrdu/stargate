@@ -62,6 +62,7 @@ class Build extends CommandHandler implements CommandInterface
 
                     /** Application des bonus */
                     $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+                    $buildingTime *= $this->player->getBuildingBonus();
 
                     $buildingTime = gmdate("H:i:s", $buildingTime);
 
@@ -69,9 +70,23 @@ class Build extends CommandHandler implements CommandInterface
                     if($currentLvl)
                         $displayedLvl = $currentLvl;
 
+                    $conditionsValue = "";
+                    foreach($building->requiredTechnologies as $technology)
+                    {
+                        if(!empty($conditionsValue))
+                            $conditionsValue .= " / ";
+                        $conditionsValue .= $technology->name.' - LVL '.$technology->pivot->level;
+                    }
+                    foreach($building->requiredBuildings as $building)
+                    {
+                        if(!empty($conditionsValue))
+                            $conditionsValue .= " / ";
+                        $conditionsValue .= $building->name.' - LVL '.$building->pivot->level;
+                    }
+
                     $embed['fields'][] = array(
                         'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
-                        'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime."\nCondition: /\nPrix: ".$buildingPrice
+                        'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime."\nCondition: ".$conditionsValue."/\nPrix: ".$buildingPrice
                     );
                 }
     

@@ -11,6 +11,16 @@ class Building extends Model
         return $this->belongsToMany('App\Colony')->withPivot('level');
     }
 
+    public function requiredBuildings()
+    {
+        return $this->belongsToMany('App\Building')->withPivot('level');
+    }
+
+    public function requiredTechnologies()
+    {
+        return $this->belongsToMany('App\Technology')->withPivot('level');
+    }
+
     public function getPrice(int $level)
     {
         $level--; //Du au coeficient
