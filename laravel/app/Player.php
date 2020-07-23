@@ -154,7 +154,7 @@ class Player extends Model
     {
         $bonus = 1;
 
-        $buildings = $this->colonies[0]->filter(function ($value){
+        $buildings = $this->colonies[0]->buildings->filter(function ($value){
             return !is_null($value->building_bonus);
         });
         foreach($buildings as $building)

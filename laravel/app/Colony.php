@@ -217,7 +217,7 @@ class Colony extends Model
             foreach($energyBuildings as $energyBuilding)
                 $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
             
-            $technologiesEnergyBonus = $this->technologies->filter(function ($value){
+            $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
                 return !is_null($value->energy_bonus);
             });
             /**Application bonus de production énergétique */
