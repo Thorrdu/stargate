@@ -150,7 +150,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Force Prod Refresh',
 		'usage' => "`!refresh`",
-		'aliases' => array('r')
+		//'aliases' => array('r')
     ]);	
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);

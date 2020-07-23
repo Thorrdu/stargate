@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TechnologyPlayer extends Migration
+class PlayerTechnology extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class TechnologyPlayer extends Migration
      */
     public function up()
     {
-        Schema::create('technology_player', function (Blueprint $table) {
+        Schema::create('player_technology', function (Blueprint $table) {
             $table->increments('id');     
             $table->integer('player_id')->unsigned();
             $table->foreign('player_id')->references('id')->on('players');

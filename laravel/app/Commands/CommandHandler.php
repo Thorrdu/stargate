@@ -33,11 +33,11 @@ class CommandHandler
     }*/
 
     //BASIC CALL
-    public function __construct2(Message $message,array $args) {
+    public function __construct2(Message $message,array $args){
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
-        if(is_null($this->player) && !in_array(get_class($this),array('Start','Help')))
+        if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
         $this->log();
     }
@@ -49,7 +49,7 @@ class CommandHandler
             {
                 $log = new CommandLog;
                 $log->player_id = $this->player->id;
-                $log->command_type = get_class($this);
+                $log->command_type = str_replace("App\Commands\\",'',get_class($this));
                 $log->command_raw = $this->message->content;
                 $log->save();
             }

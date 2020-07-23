@@ -55,8 +55,6 @@ class Build extends CommandHandler implements CommandInterface
                     if($building->energy_base > 0)
                     {
                         $energyRequired = $building->getEnergy($wantedLevel);
-                        if($wantedLevel > 1)
-                            $energyRequired -= $building->getEnergy($wantedLevel - 1);
                         $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
                     }
 
@@ -77,7 +75,7 @@ class Build extends CommandHandler implements CommandInterface
                     );
                 }
     
-                $this->message->channel->sendMessage('Build Embed', false, $embed);
+                $this->message->channel->sendMessage('', false, $embed);
             }
             else
             {
@@ -89,7 +87,7 @@ class Build extends CommandHandler implements CommandInterface
                     if(!is_null($this->player->colonies[0]->active_building_end))
                         return 'Un bâtiment est déjà en construction sur cette colonie';
 
-                    $wantedLvl = 0;
+                    $wantedLvl = 1;
                     $currentLevel = $this->player->colonies[0]->hasBuilding($building);
                     if($currentLevel)
                         $wantedLvl += $currentLevel;
@@ -101,19 +99,26 @@ class Build extends CommandHandler implements CommandInterface
                         if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
                             $hasEnough = false;
                     }
-
-                    if($hasEnough)
-                    {
-                        $endingDate = $this->player->colonies[0]->startBuilding($building);
-                        return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé le: '.$endingDate;
-                    }
-                    else
-                    {
+                    if(!$hasEnough)
                         return 'Vous ne possédez pas assez de ressource pour construire ce bâtiment.';
+
+                    if($building->energy_base > 0)
+                    {
+                        $energyPrice = $building->getEnergy($wantedLvl);
+                        if($this->player->colonies[0]->energy_max < $energyPrice)
+                            return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
                     }
+                    $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
+                    $buildingTime = gmdate("H:i:s", $endingDate - time());
+
+                    return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
                 }
+                else
+                    return 'Bâtiment inconnu';
             }
         }
+        else
+            return "Pour commencer votre aventure, utilisez `!start`";
         return false;
     }
 }

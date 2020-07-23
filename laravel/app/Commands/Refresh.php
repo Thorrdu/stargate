@@ -8,7 +8,12 @@ class Refresh extends CommandHandler implements CommandInterface
 {
     public function execute()
     {
-        $this->player->colonies[0]->calcProd();
-        return "Prod recalculée";
+        if(!is_null($this->player))
+        {
+            $this->player->colonies[0]->calcProd();
+            return "Prod recalculée";
+        }
+        else
+            return "Pour commencer votre aventure, utilisez `!start`";
     }
 }

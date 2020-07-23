@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Discord\DiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
+use Carbon\Carbon;
 
 class Colony extends CommandHandler implements CommandInterface
 {
@@ -55,21 +56,22 @@ class Colony extends CommandHandler implements CommandInterface
 
             $table->integer('active_building_id')->unsigned()->nullable();
             */
-            $resourcesValue = "Energie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
+            $resourcesValue = "";
             $productionValue = '';
             foreach (config('stargate.resources') as $resource)
             {
                 if(!empty($resourcesValue))
+                {
                     $resourcesValue .= "\n";
-                if(!empty($productionValue))
                     $productionValue .= "\n";
-
+                }
                 $resourcesValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]->$resource).' / '.number_format($this->player->colonies[0]['storage_'.$resource]);
                 $productionValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]['production_'.$resource]).' / Heure';
             }
+
             if(!empty($resourcesValue))
             {
-
+                $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(
                                         'name' => 'Ressources',
@@ -179,25 +181,29 @@ class Colony extends CommandHandler implements CommandInterface
             }
 
             if(!is_null($this->player->colonies[0]->active_building_end)){
-                $buildingEnd = $this->player->colonies[0]->active_building_end;
+                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end)->timestamp;
+                $buildingTime = gmdate("H:i:s", $buildingEnd - time());
+
                 $currentLevel = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
                 if(!$currentLevel)
                     $currentLevel = 0;
                 $embed['fields'][] = array(
                     'name' => 'Construction en cours',
-                    'value' => $this->player->colonies[0]->activeBuilding->name." - LVL ".($currentLevel+1)."\n".$buildingEnd,
+                    'value' => $this->player->colonies[0]->activeBuilding->name." - LVL ".($currentLevel+1)."\n".$buildingTime,
                     'inline' => true
                 );
             }
 
             if(!is_null($this->player->active_technology_end)){
-                $buildingEnd = $this->player->active_technology_end;
+                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end)->timestamp;
+                $buildingTime = gmdate("H:i:s", $buildingEnd - time());
+
                 $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
                 if(!$currentLevel)
                     $currentLevel = 0;
                 $embed['fields'][] = array(
                     'name' => 'Recherche en cours',
-                    'value' => $this->player->activeTechnology->name." - LVL ".($currentLevel+1)."\n".$buildingEnd,
+                    'value' => $this->player->activeTechnology->name." - LVL ".($currentLevel+1)."\n".$buildingTime,
                     'inline' => true
                 );
             }
@@ -211,8 +217,10 @@ class Colony extends CommandHandler implements CommandInterface
             //print_r($embed['fields']);
             //print_r($embed);
 
-            $this->message->channel->sendMessage('Colony Embed', false, $embed);
-        }
+            $this->message->channel->sendMessage('', false, $embed);
+        }       
+        else
+            return "Pour commencer votre aventure, utilisez `!start`";
         return false;
     }
 }

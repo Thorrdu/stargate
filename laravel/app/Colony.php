@@ -33,7 +33,6 @@ class Colony extends Model
             $colony->checkProd();
             $colony->player->checkTechnology();
             $colony->checkBuilding();
-
         });
     }
 
@@ -76,12 +75,12 @@ class Colony extends Model
         $bonus = 1;
 
         /** Bonus Informatique et Communication -5% */
-        $informationTechnology = $this->hasTechnology(Technology::find(1));
+        $informationTechnology = $this->player->hasTechnology(Technology::find(1));
         if($informationTechnology)
             $bonus *= pow(0.95, $informationTechnology);
 
         /** Bonus Centre de recherche -10% */
-        $researchCenterLevel = $this->player->colonies[0]->hasBuilding(Building::find(6));
+        $researchCenterLevel = $this->hasBuilding(Building::find(6));
         if($researchCenterLevel)
             $bonus *= pow(0.90, $researchCenterLevel);
 
@@ -119,6 +118,7 @@ class Colony extends Model
             if($endingDate->isPast())
             {
                 $this->builingdIsDone($this->activeBuilding);
+                $this->calcProd();
             }
         }
     }
@@ -157,9 +157,14 @@ class Colony extends Model
             foreach($energyBuildings as $energyBuilding)
                 $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
             
+            /** Bonus Energy +5% */
+            $energyTechnology = $this->player->hasTechnology(Technology::find(4));
+            if($energyTechnology)
+                $this->energy_max *= pow(1.05, $energyTechnology);
+
             $this->energy_used = 0;
             foreach($this->buildings as $building)
-                $this->energy_used += round($building->getEnergy($energyBuilding->pivot->level));
+                $this->energy_used += round($building->getEnergy($building->pivot->level));
 
             foreach (config('stargate.resources') as $resource)
             {
@@ -215,7 +220,6 @@ class Colony extends Model
             $this->active_building_id = null;
             $this->active_building_end = null;
             $this->save();
-            $this->calcProd();
             /*
             $buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();
             if($buildingExist)

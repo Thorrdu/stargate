@@ -68,7 +68,7 @@ class Player extends Model
         }
     }
 
-    public function startTechnology(Technology $technology)
+    public function startResearch(Technology $technology)
     {
         $current = Carbon::now();
         $levelWanted = 1;
@@ -113,7 +113,7 @@ class Player extends Model
             $researchBonus *= pow(0.95, $informationTechnology);
 
         /** Bonus Centre de recherche -10% */
-        $researchCenterLevel = $this->player->colonies[0]->hasBuilding(Building::find(7));
+        $researchCenterLevel = $this->colonies[0]->hasBuilding(Building::find(7));
         if($researchCenterLevel)
             $researchBonus *= pow(0.90, $researchCenterLevel);
 

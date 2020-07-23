@@ -16,11 +16,10 @@ class Research extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
-            echo PHP_EOL.'Execute Refresh';
+            echo PHP_EOL.'Execute Research';
 
             if(empty($this->args) || $this->args[0] == 'list')
             {
-                echo PHP_EOL.'Execute Search';
                 $embed = [
                     'author' => [
                         'name' => $this->player->user_name,
@@ -71,12 +70,12 @@ class Research extends CommandHandler implements CommandInterface
                     );
                 }
     
-                $this->message->channel->sendMessage('Technology Embed', false, $embed);
+                $this->message->channel->sendMessage('', false, $embed);
             }
             else
             {
                 $technologyId = (int)$this->args[0];
-                $technology = Building::find($technologyId);
+                $technology = Technology::find($technologyId);
                 if(!is_null($technology))
                 {
                     //if recherche en cours, return
@@ -84,7 +83,7 @@ class Research extends CommandHandler implements CommandInterface
                         return 'Une technologie est déjà en cours de recherche';
 
                     $wantedLvl = 1;
-                    $currentLevel = $this->player->hadTechnology($technology);
+                    $currentLevel = $this->player->hasTechnology($technology);
                     if($currentLevel)
                         $wantedLvl += $currentLevel;
 
@@ -96,18 +95,19 @@ class Research extends CommandHandler implements CommandInterface
                             $hasEnough = false;
                     }
 
-                    if($hasEnough)
-                    {
-                        $endingDate = $this->player->colonies[0]->startBuilding($technology);
-                        return 'Recherche commencée, **'.$technology->name.' LVL '.$wantedLvl.'** sera terminé le: '.$endingDate;
-                    }
-                    else
-                    {
+                    if(!$hasEnough)
                         return 'Vous ne possédez pas assez de ressource pour rechercher cette technologie.';
-                    }
+
+                    $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology))->timestamp;
+                    $buildingTime = gmdate("H:i:s", $endingDate - time());
+
+                    return 'Recherche commencée, **'.$technology->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
+
                 }
             }
         }
+        else
+            return "Pour commencer votre aventure, utilisez `!start`";
         return false;
     }
 }
