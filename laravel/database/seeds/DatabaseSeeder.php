@@ -333,9 +333,8 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1500,
             'time_coefficient' => 2
         ]);
-
         DB::table('technologies')->insert([
-            'id' => 3,
+            'id' => 4,
             'name' => 'Energie',
             'description' => "Permet de maîtriser d'avantage l'énergie, vous octroyant un bonus de 5% du rendement des bâtiments d'énergie",
             'type' => 'Labo',
