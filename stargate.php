@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -109,8 +109,8 @@ $discord->on('ready', function ($discord) {
 	});
 
     $discord->registerCommand('start', function ($message, $args) {
-        $startCommand = new Start($message,$args);
-        return $startCommand->execute();
+        $command = new Start($message,$args);
+        return $command->execute();
     },[
         'description' => config('stargate.commands.start.description'),
 		'usage' => config('stargate.commands.start.usage'),
@@ -118,8 +118,8 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) use ($discord) {
-        $colonyCommand = new ColonyCommand($message,$args);
-        return $colonyCommand->execute();
+        $command = new ColonyCommand($message,$args);
+        return $command->execute();
     },[
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
@@ -127,12 +127,30 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use ($discord) {
-        $colonyCommand = new Build($message,$args);
-        return $colonyCommand->execute();
+        $command = new Build($message,$args);
+        return $command->execute();
     },[
         'description' => 'Liste ou construit un bâtiment',
 		'usage' => "`!build list`\n`!build [Numéro]`",
 		'aliases' => array('b','bu')
+    ]);	
+
+    $discord->registerCommand('research', function ($message, $args) use ($discord) {
+        $command = new Research($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Liste ou recherche une technologie',
+		'usage' => "`!research list`\n`!research [Numéro]`",
+		'aliases' => array('r','search')
+    ]);
+
+    $discord->registerCommand('refresh', function ($message, $args) use ($discord) {
+        $command = new Refresh($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Force Prod Refresh',
+		'usage' => "`!refresh`",
+		'aliases' => array('r')
     ]);	
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
