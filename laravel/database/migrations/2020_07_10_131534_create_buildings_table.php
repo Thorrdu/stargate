@@ -26,7 +26,7 @@ class CreateBuildingsTable extends Migration
             $table->bigInteger('naqahdah')->length(18)->unsigned()->default(0);
 
             $table->enum('production_type', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'space', 'special']);
-            $table->integer('production_base')->length(5)->nullable();
+            $table->decimal('production_base', 7, 2)->nullable();
             $table->decimal('production_coefficient', 5, 2)->nullable();
 
             $table->integer('energy_base')->length(5)->nullable();
