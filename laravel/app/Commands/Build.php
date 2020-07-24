@@ -72,14 +72,23 @@ class Build extends CommandHandler implements CommandInterface
                             $displayedLvl = $currentLvl;
 
                         $conditionsValue = "";
+                        $hasRequirements = true;
                         foreach($building->requiredTechnologies as $requiredTechnology)
                         {
+                            $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
+                            if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                                $hasRequirements = false;
+
                             if(!empty($conditionsValue))
                                 $conditionsValue .= " / ";
                             $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;
                         }
                         foreach($building->requiredBuildings as $requiredBuilding)
                         {
+                            $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                            if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                                $hasRequirements = false;
+
                             if(!empty($conditionsValue))
                                 $conditionsValue .= " / ";
                             $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;
@@ -87,10 +96,13 @@ class Build extends CommandHandler implements CommandInterface
                         if(!empty($conditionsValue))
                             $conditionsValue = "\nCondition: ".$conditionsValue;
 
-                        $embed['fields'][] = array(
-                            'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
-                            'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
-                        );
+                        if($hasRequirements == true)
+                        {
+                            $embed['fields'][] = array(
+                                'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
+                                'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                            );
+                        }
                     }
         
                     $this->message->channel->sendMessage('', false, $embed);
@@ -141,10 +153,8 @@ class Build extends CommandHandler implements CommandInterface
                             if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
                                 $hasRequirements = false;
                         }
-
                         if(!$hasRequirements)
                             return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
-
 
                         $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
                         $buildingTime = gmdate("H:i:s", $endingDate - time());

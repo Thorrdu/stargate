@@ -71,13 +71,13 @@ class Player extends Model
     public function startResearch(Technology $technology)
     {
         $current = Carbon::now();
-        $levelWanted = 1;
+        $wantedLvl = 1;
         $currentLevel = $this->hasTechnology($technology);
         if($currentLevel)
-            $levelWanted += $currentLevel;
+            $wantedLvl += $currentLevel;
 
         //Temps de base
-        $buildingTime = $technology->getTime($levelWanted);
+        $buildingTime = $technology->getTime($wantedLvl);
 
         /** Application des bonus */
         $buildingTime *= $this->getResearchBonus();
@@ -87,6 +87,14 @@ class Player extends Model
 
         $this->active_technology_id = $technology->id;
         $this->active_technology_end = $buildingEnd;
+
+        $buildingPrices = $technology->getPrice($wantedLvl);
+        foreach (config('stargate.resources') as $resource)
+        {
+            if($technology->$resource > 0)
+                $this->colonies[0]->$resource -= round($buildingPrices[$resource]);
+        }
+        //$this->colonies[0]->save();
         $this->save();
         return $this->active_technology_end;
     }

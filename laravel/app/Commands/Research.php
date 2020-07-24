@@ -66,24 +66,38 @@ class Research extends CommandHandler implements CommandInterface
                             $displayedLvl = $currentLvl;
                             
                         $conditionsValue = "";
+                        $hasRequirements = true;
                         foreach($technology->requiredTechnologies as $requiredTechnology)
                         {
+                            $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
+                            if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                                $hasRequirements = false;
+
                             if(!empty($conditionsValue))
                                 $conditionsValue .= " / ";
                             $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;
                         }
                         foreach($technology->requiredBuildings as $requiredBuilding)
                         {
+                            $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                            if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                                $hasRequirements = false;
+
                             if(!empty($conditionsValue))
                                 $conditionsValue .= " / ";
                             $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;
                         }
                         if(!empty($conditionsValue))
                             $conditionsValue = "\nCondition: ".$conditionsValue;
-                        $embed['fields'][] = array(
-                            'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
-                            'value' => 'Description: '.$technology->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
-                        );
+
+                        if($hasRequirements == true)
+                        {
+                            $embed['fields'][] = array(
+                                'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
+                                'value' => 'Description: '.$technology->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                            );
+                        }
+
                     }
         
                     $this->message->channel->sendMessage('', false, $embed);

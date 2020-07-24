@@ -139,13 +139,13 @@ class Colony extends Model
     public function startBuilding(Building $building)
     {
         $current = Carbon::now();
-        $levelWanted = 1;
+        $wantedLvl = 1;
         $currentLevel = $this->hasBuilding($building);
         if($currentLevel)
-            $levelWanted += $currentLevel;
+            $wantedLvl += $currentLevel;
 
         //Temps de base
-        $buildingTime = $building->getTime($levelWanted);
+        $buildingTime = $building->getTime($wantedLvl);
 
         /** Application des bonus */
         $buildingTime *= $this->getBuildingBonus();
@@ -155,6 +155,14 @@ class Colony extends Model
 
         $this->active_building_id = $building->id;
         $this->active_building_end = $buildingEnd;
+
+        $buildingPrices = $building->getPrice($wantedLvl);
+        foreach (config('stargate.resources') as $resource)
+        {
+            if($building->$resource > 0)
+                $this->$resource -= round($buildingPrices[$resource]);
+        }
+
         $this->save();
         return $this->active_building_end;
     }
