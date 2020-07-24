@@ -100,6 +100,9 @@ class Research extends CommandHandler implements CommandInterface
 
                     }
         
+                    if(empty($embed['fields']))
+                        return 'Vous n\'avez débloqué aucune technologie actuellement...';
+
                     $this->message->channel->sendMessage('', false, $embed);
                 }
                 else
