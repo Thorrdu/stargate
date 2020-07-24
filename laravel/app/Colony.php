@@ -72,16 +72,6 @@ class Colony extends Model
         return $this->belongsToMany('App\Building')->withPivot('level');
     }
 
-    public function requiredBuildings()
-    {
-        return $this->belongsToMany('App\Building')->withPivot('level');
-    }
-
-    public function requiredTechnologies()
-    {
-        return $this->belongsToMany('App\Technology')->withPivot('level');
-    }
-
     public function activeBuilding()
     {
         return $this->hasOne('App\Building','id','active_building_id');
@@ -244,12 +234,17 @@ class Colony extends Model
                     //+Bonus éventuels
             }
 
-            $militaryBuildings = $this->buildings->filter(function ($value) use($resource){
+            $militaryBuildings = $this->buildings->filter(function ($value){
                 return $value->production_type == 'military' && $value->type == 'Military';
             });
             $this->production_military = 0;
             foreach($militaryBuildings as $militaryBuilding)
+            {
+                echo PHP_EOL.$militaryBuilding->getProduction($militaryBuilding->pivot->level);
+                echo PHP_EOL.$militaryBuilding->name.' - '.$militaryBuilding->pivot->level;
+
                 $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
+            }
             //+Bonus éventuels
 
             

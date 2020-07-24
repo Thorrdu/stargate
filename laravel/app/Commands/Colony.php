@@ -79,7 +79,7 @@ class Colony extends CommandHandler implements CommandInterface
                                         'inline' => true
                                     );
 
-                $productionValue .= "\nE2PZ 0 / semaine";
+                $productionValue .= "\nE2PZ ".$this->player->colonies[0]->production_e2pz." / Semaine";
                 $productionValue .= "\nColons/Soldats ".$this->player->colonies[0]->production_military." / Heure";
                 $embed['fields'][] = array(
                                         'name' => 'Production',

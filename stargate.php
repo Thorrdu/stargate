@@ -202,11 +202,13 @@ $discord->on('ready', function ($discord) {
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
     $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
-    $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
+    
+    
+    /*$channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
         echo PHP_EOL.'Bot is ready';
     }, function ($e) {
        echo $e->getMessage();
-    });
+    });*/
 
 });
 

@@ -13,12 +13,12 @@ class Building extends Model
 
     public function requiredBuildings()
     {
-        return $this->belongsToMany('App\Building')->withPivot('level');
+        return $this->belongsToMany('App\Building','building_buildings','building_id','required_building_id')->withPivot('level');
     }
 
     public function requiredTechnologies()
     {
-        return $this->belongsToMany('App\Technology')->withPivot('level');
+        return $this->belongsToMany('App\Technology','building_technologies','building_id','required_technology_id')->withPivot('level');
     }
 
     public function getPrice(int $level)

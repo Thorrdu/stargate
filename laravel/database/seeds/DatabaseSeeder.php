@@ -516,7 +516,6 @@ class DatabaseSeeder extends Seeder
             'level' => 5
         ]);
 
-
         DB::table('buildings')->insert([
             'id' => 17,
             'name' => 'Mine de fer avancée',
@@ -560,7 +559,7 @@ class DatabaseSeeder extends Seeder
         ]);
         //Centre de recherche 1
         DB::table('building_buildings')->insert([
-            'building_id' => 17,
+            'building_id' => 18,
             'required_building_id' => 3,
             'level' => 20
         ]);
@@ -582,13 +581,6 @@ class DatabaseSeeder extends Seeder
             'required_technology_id' => 4,
             'level' => 4
         ]);
-
-
-
-
-
-
-
 
 
 

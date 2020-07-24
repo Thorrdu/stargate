@@ -11,6 +11,16 @@ class Technology extends Model
         return $this->belongsToMany('App\Player')->withPivot('level');
     }
 
+    public function requiredBuildings()
+    {
+        return $this->belongsToMany('App\Building','technology_buildings','technology_id','required_building_id')->withPivot('level');
+    }
+
+    public function requiredTechnologies()
+    {
+        return $this->belongsToMany('App\Technology','technology_technologies','technology_id','required_technology_id')->withPivot('level');
+    }
+
     public function getPrice(int $level)
     {
         $level--; //Du au coeficient

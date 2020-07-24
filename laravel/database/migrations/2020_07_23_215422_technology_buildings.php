@@ -13,7 +13,7 @@ class TechnologyBuilding extends Migration
      */
     public function up()
     {
-        Schema::create('technology_building', function (Blueprint $table) {
+        Schema::create('technology_buildings', function (Blueprint $table) {
             $table->increments('id');     
             $table->integer('technology_id')->unsigned();
             $table->foreign('technology_id')->references('id')->on('technologies');
