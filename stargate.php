@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -90,23 +90,21 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) {
 	echo "Bot is starting up!", PHP_EOL;
 	echo 'UPDATING PRESENCE'.PHP_EOL;
-    try
-    {
-        $game = $discord->factory(Game::class, [
-            'name' => "!help | {$discord->users->count()} users",
-            'type' => 3
-        ]);
-        $discord->updatePresence($game);
-    }
-    catch(\Exception $e)
-    {
-        echo $e->getMessage();
-    }   
+    $game = $discord->factory(Game::class, [
+        'name' => "!help | {$discord->users->count()} users",
+        'type' => 3
+    ]);
+    $discord->updatePresence($game);
 
 	// Listen for messages.
 	$discord->on('message', function ($message) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
-	});
+    });
+    
+    
+    $discord->loop->addPeriodicTimer(900, function () use ($discord) {
+        
+    });
 
   /*  
     $discord->registerCommand('await', function ($message, $args) use ($discord){
@@ -227,6 +225,15 @@ $discord->on('ready', function ($discord) {
 		'usage' => "`!refresh`",
 		//'aliases' => array('r'),
         'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('top', function ($message, $args) {
+        $command = new Top($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Affiche les divers Tops',
+		'usage' => "`!top`",
+		//'aliases' => array('t')
     ]);	
 
     $discord->registerCommand('invite', function ($message, $args) {

@@ -20,7 +20,8 @@ class Profile extends CommandHandler implements CommandInterface
                 'fields' => [
                     [
                         'name' => 'Points',
-                        'value' => "Total: x points\nBâtiments: x Points\nRecherches: x Points\nMilitaire: x Points"
+                        'value' => "Total: x points\nBâtiments: x Points\nRecherches: x Points\nMilitaire: x Points",
+                        'inline' => true
                     ]
                 ],
                 'footer' => array(
@@ -35,7 +36,8 @@ class Profile extends CommandHandler implements CommandInterface
             }
             $embed['fields'][] = [
                 'name' => 'Colonies',
-                'value' => $coloniesString
+                'value' => $coloniesString,
+                'inline' => true
             ];
 
             $this->message->channel->sendMessage('', false, $embed);
