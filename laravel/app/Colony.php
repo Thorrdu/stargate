@@ -193,8 +193,13 @@ class Colony extends Model
             {
                 foreach (config('stargate.resources') as $resource)
                 {
-                    $varName = 'production_'.$resource;
-                    $this->$resource += round(($this->$varName / 60) * $minuteToClaim);
+                    $varNameProd = 'production_'.$resource;
+                    $varNameStorage = 'production_'.$resource;
+
+                    $this->$resource += round(($this->$varNameProd / 60) * $minuteToClaim);
+
+                    if($this->$varNameStorage > $this->$resource)
+                        $this->$resource = $this->$varNameStorage;
                 }
                 $this->soldiers += round(($this->production_military / 60) * $minuteToClaim);
 
