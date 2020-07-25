@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -168,7 +168,6 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
 
     ]);	
-
     
     $discord->registerCommand('start', function ($message, $args) {
         $command = new Start($message,$args);
@@ -216,6 +215,16 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Force Prod Refresh',
 		'usage' => "`!refresh`",
+		//'aliases' => array('r'),
+        'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('invite', function ($message, $args) use ($discord) {
+        $command = new Invite($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Get invite link',
+		'usage' => "`!invite`",
 		//'aliases' => array('r'),
         'cooldown' => 5
     ]);	
