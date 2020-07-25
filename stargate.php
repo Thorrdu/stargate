@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -179,7 +179,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('colony', function ($message, $args) use ($discord) {
+    $discord->registerCommand('colony', function ($message, $args) {
         $command = new ColonyCommand($message,$args);
         return $command->execute();
     },[
@@ -189,7 +189,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('build', function ($message, $args) use ($discord) {
+    $discord->registerCommand('build', function ($message, $args) {
         $command = new Build($message,$args);
         return $command->execute();
     },[
@@ -199,7 +199,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('research', function ($message, $args) use ($discord) {
+    $discord->registerCommand('research', function ($message, $args) {
         $command = new Research($message,$args);
         return $command->execute();
     },[
@@ -209,7 +209,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);
 
-    $discord->registerCommand('refresh', function ($message, $args) use ($discord) {
+    $discord->registerCommand('refresh', function ($message, $args) {
         $command = new Refresh($message,$args);
         return $command->execute();
     },[
@@ -219,12 +219,22 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('invite', function ($message, $args) use ($discord) {
+    $discord->registerCommand('invite', function ($message, $args) {
         $command = new Invite($message,$args);
         return $command->execute();
     },[
         'description' => 'Get invite link',
 		'usage' => "`!invite`",
+		//'aliases' => array('r'),
+        'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('vote', function ($message, $args) {
+        $command = new Vote($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Get vote link',
+		'usage' => "`!vote`",
 		//'aliases' => array('r'),
         'cooldown' => 5
     ]);	
