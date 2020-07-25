@@ -153,9 +153,23 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'test',
         'usage' => 'test',
+        'aliases' => array('ttt'),
+
         //'aliases' => array('t'),
     ]);
 
+
+    $discord->registerCommand('test', function ($message, $args) {
+        return 'test received';
+    },[
+        'description' => 'test',
+		'usage' => 'test',
+        'aliases' => array('t'),
+        'cooldown' => 5
+
+    ]);	
+
+    
     $discord->registerCommand('start', function ($message, $args) {
         $command = new Start($message,$args);
         return $command->execute();
@@ -209,8 +223,8 @@ $discord->on('ready', function ($discord) {
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
     $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
     
-    
-    /*$channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
+    /*
+    $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
         echo PHP_EOL.'Bot is ready';
     }, function ($e) {
        echo $e->getMessage();
