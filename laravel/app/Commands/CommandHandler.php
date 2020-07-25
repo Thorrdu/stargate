@@ -39,6 +39,8 @@ class CommandHandler
         $this->player = Player::where('user_id', $message->author->id)->first();
         if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
+        if(!is_null($this->player) && $this->player->ban)
+            return "Vous êtes banni...";
         $this->log();
     }
 
