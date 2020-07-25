@@ -110,6 +110,7 @@ $discord->on('ready', function ($discord) {
 
     
     $discord->registerCommand('await', function ($message, $args) use ($discord){
+        /*
         echo 'PRE';
         global $count;
         $count = 0;
@@ -148,7 +149,7 @@ $discord->on('ready', function ($discord) {
         {
             $message->channel->sendMessage("LISTEN OFF");
 
-        }
+        }*/
     },[
         'description' => 'test',
         'usage' => 'test',
@@ -161,7 +162,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => config('stargate.commands.start.description'),
 		'usage' => config('stargate.commands.start.usage'),
-		'aliases' => array('s','start')
+        'aliases' => array('s','start'),
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) use ($discord) {
@@ -170,7 +172,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
-		'aliases' => array('c','co','col')
+		'aliases' => array('c','co','col'),
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use ($discord) {
@@ -179,7 +182,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Liste ou construit un bâtiment',
 		'usage' => "`!build list`\n`!build [Numéro]`",
-		'aliases' => array('b','bu')
+		'aliases' => array('b','bu'),
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('research', function ($message, $args) use ($discord) {
@@ -188,7 +192,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Liste ou recherche une technologie',
 		'usage' => "`!research list`\n`!research [Numéro]`",
-		'aliases' => array('r','search')
+		'aliases' => array('r','search'),
+        'cooldown' => 5
     ]);
 
     $discord->registerCommand('refresh', function ($message, $args) use ($discord) {
@@ -197,7 +202,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Force Prod Refresh',
 		'usage' => "`!refresh`",
-		//'aliases' => array('r')
+		//'aliases' => array('r'),
+        'cooldown' => 5
     ]);	
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
