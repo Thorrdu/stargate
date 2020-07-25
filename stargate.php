@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile};
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
@@ -108,9 +108,9 @@ $discord->on('ready', function ($discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
 	});
 
-    
+  /*  
     $discord->registerCommand('await', function ($message, $args) use ($discord){
-        /*
+        
         echo 'PRE';
         global $count;
         $count = 0;
@@ -149,14 +149,14 @@ $discord->on('ready', function ($discord) {
         {
             $message->channel->sendMessage("LISTEN OFF");
 
-        }*/
+        }
     },[
         'description' => 'test',
         'usage' => 'test',
         'aliases' => array('ttt'),
 
         //'aliases' => array('t'),
-    ]);
+    ]);*/
 
 
     $discord->registerCommand('test', function ($message, $args) {
@@ -176,6 +176,16 @@ $discord->on('ready', function ($discord) {
         'description' => config('stargate.commands.start.description'),
 		'usage' => config('stargate.commands.start.usage'),
         'aliases' => array('s','start'),
+        'cooldown' => 5
+    ]);
+
+    $discord->registerCommand('profile', function ($message, $args) {
+        $command = new Profile($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Affiche le profile',
+		'usage' => "`!profile`",
+		'aliases' => array('p'),
         'cooldown' => 5
     ]);	
 
@@ -237,6 +247,15 @@ $discord->on('ready', function ($discord) {
 		'usage' => "`!vote`",
 		//'aliases' => array('r'),
         'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('ban', function ($message, $args) {
+        $command = new Ban($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Banni un joueur du bot.',
+		'usage' => "`!ban @mention`",
+		'aliases' => array('b')
     ]);	
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
