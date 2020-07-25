@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Player;
 
-class Profile extends CommandHandler implements CommandInterface
+class Top extends CommandHandler implements CommandInterface
 {
     public function execute()
     {

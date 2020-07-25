@@ -75,11 +75,13 @@ use App\Colony;
 use Illuminate\Support\Str;
 
 use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top};
+use App\Utility\TopUpdater;
 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
+use Carbon\Carbon;
 
 
 $discord = new DiscordCommandClient([
@@ -88,7 +90,17 @@ $discord = new DiscordCommandClient([
 ]);
 
 $discord->on('ready', function ($discord) {
-	echo "Bot is starting up!", PHP_EOL;
+    echo "Bot is starting up!", PHP_EOL;
+    try{
+    $tenMinutes = Carbon::now()->add('minute', 15);
+    $players = Player::where('last_top_update', '>', $tenMinutes->format("Y-m-d H:i:s"));
+    foreach($players as $player)
+        TopUpdater::update($player);
+    }
+    catch(\Exception $e)
+    {
+        echo $e->getMessage();
+    }
 	echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->users->count()} users",
@@ -103,7 +115,10 @@ $discord->on('ready', function ($discord) {
     
     
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
-        
+        $tenMinutes = Carbon::now()->add('minute', 15);
+        $players = Player::where('last_top_update', '>', $tenMinutes->format("Y-m-d H:i:s"));
+        foreach($players as $player)
+            TopUpdater::update($player);
     });
 
   /*  

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Colony;
+use App\Utility\TopUpdater;
 
 class ColonyObserver
 {
@@ -31,6 +32,7 @@ class ColonyObserver
             echo PHP_EOL.'OBSRVER FORCE RECALC';
             //$colony->unsetEventDispatcher();
             $colony->calcProd();
+            TopUpdater::update($colony->player->id);
         }
     }
 
@@ -42,10 +44,7 @@ class ColonyObserver
         $colony->checkBuilding();
     }
 
-
-
-
-        /**
+    /**
      * Handle the colony "updated" event.
      *
      * @param  \App\Colony  $colony
