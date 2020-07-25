@@ -240,6 +240,20 @@ class Colony extends Model
                 foreach($productionBuildings as $productionBuilding)
                     $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
                     //+Bonus éventuels
+                
+                $storageBuildings = $this->buildings->filter(function ($value) use($resource){
+                    return $value->production_type == $resource && $value->type == 'Storage';
+                });
+                
+            }
+
+            $storageBuildings = $this->buildings->filter(function ($value) use($resource){
+                return $value->type == 'Storage';
+            });
+            foreach($storageBuildings as $storageBuilding)
+            {
+                $varName = 'storage_'.$storageBuilding->production_type;
+                $this->$varName = 100000 * pow($storageBuilding->production_coefficient, $storageBuilding->pivot->level);
             }
 
             $militaryBuildings = $this->buildings->filter(function ($value){
