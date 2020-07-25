@@ -368,7 +368,7 @@ class DatabaseSeeder extends Seeder
             'technology_bonus' => 0.95
         ]);
         //Centre de recherche 1
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 1,
             'required_building_id' => 7,
             'level' => 1
@@ -389,7 +389,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2
         ]);
         //Centre de recherche 1
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 2,
             'required_building_id' => 7,
             'level' => 3
@@ -410,7 +410,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2
         ]);
         //Centre de recherche 1
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 3,
             'required_building_id' => 7,
             'level' => 4
@@ -438,13 +438,13 @@ class DatabaseSeeder extends Seeder
             'energy_bonus' => 1.05
         ]);
         //Chantier spacial 1
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 4,
             'required_building_id' => 9,
             'level' => 1
         ]);
         //Centre de recherche 1
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 4,
             'required_building_id' => 7,
             'level' => 1
@@ -467,7 +467,7 @@ class DatabaseSeeder extends Seeder
             'technology_bonus' => 0.98
         ]);
         //Centre de recherche 8
-        DB::table('technology_building')->insert([
+        DB::table('technology_buildings')->insert([
             'technology_id' => 5,
             'required_building_id' => 7,
             'level' => 8
