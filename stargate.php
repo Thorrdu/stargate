@@ -245,7 +245,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Get vote link',
 		'usage' => "`!vote`",
-		//'aliases' => array('r'),
+		'aliases' => array('v','vo'),
         'cooldown' => 5
     ]);	
 

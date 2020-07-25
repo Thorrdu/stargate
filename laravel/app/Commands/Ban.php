@@ -18,13 +18,13 @@ class Ban extends CommandHandler implements CommandInterface
                 {
                     $playerToBan->ban = false;
                     $playerToBan->save();
-                    return "le ban de ".$this->message->mentions[0]->id.' est désormais levé';
+                    return "le ban de ".$this->message->mentions[0]->username.' est désormais levé';
                 }
                 else
                 {
                     $playerToBan->ban = true;
                     $playerToBan->save();
-                    return $this->message->mentions[0]->id.' est désormais bani';
+                    return $this->message->mentions[0]->username.' est désormais bani';
                 }
             }
             else

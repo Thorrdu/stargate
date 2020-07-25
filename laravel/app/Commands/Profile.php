@@ -13,20 +13,19 @@ class Profile extends CommandHandler implements CommandInterface
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
-                    'icon_url' => $this->client->avatar
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
                 "title" => 'Profile de '.$this->player->user_name,
                 "description" => 'Votes: '.$this->player->votes,
-                'fields' => [],
+                'fields' => [
+                    [
+                        'name' => 'Points',
+                        'value' => "Total: x points\nBâtiments: x Points\nRecherches: x Points\nMilitaire: x Points"
+                    ]
+                ],
                 'footer' => array(
-                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
                     'text'  => 'Stargate',
                 ),
-            ];
-
-            $embed['fields'][] = [
-                'name' => 'Points',
-                'value' => "Total: x points\nBâtiments: x Points\nRecherches: x Points\nMilitaire: x Points"
             ];
 
             $coloniesString = "";

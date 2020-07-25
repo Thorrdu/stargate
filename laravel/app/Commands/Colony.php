@@ -16,44 +16,18 @@ class Colony extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute Colony';
 
-            //$table->enum('type', ['Energy', 'Production', 'Storage', 'Science', 'Military']);
-            //$table->enum('production_type', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'space', 'special']);
-
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
                 "title" => 'Colonie '.$this->player->colonies[0]->name,
-                //"description" => 'Colonie '.$this->player->colonies[0]->name,
-                //"description" => "",
                 'fields' => [],
                 'footer' => array(
-                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
                     'text'  => 'Stargate',
                 ),
             ];
 
-            /*
-                    '3' => array(
-                        'name' => 'Bâtiments militaires',
-                        'value' => 'Mine lalala',
-                        'inline' => true
-                    ),
-                    '4' => array(
-                        'name' => 'Bâtiments scientifiques',
-                        'value' => 'Mine lalala',
-                        'inline' => true
-                    ),
-                    '5' => array(
-                        'name' => 'Bâtiments de stockage',
-                        'value' => 'Mine lalala',
-                        'inline' => true
-                    ),
-
-
-            $table->integer('active_building_id')->unsigned()->nullable();
-            */
             $resourcesValue = "";
             $productionValue = '';
             foreach (config('stargate.resources') as $resource)
@@ -147,7 +121,7 @@ class Colony extends CommandHandler implements CommandInterface
             }
 
             $storageBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
-                return $value->type == "Military";
+                return $value->type == "Storage";
             });
             $storageBuildingsValue = "";
             foreach($storageBuildings as $storageBuilding)
