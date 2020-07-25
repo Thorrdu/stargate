@@ -10,6 +10,7 @@ class Profile extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
+            echo PHP_EOL.'Execute profile';
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -20,7 +21,7 @@ class Profile extends CommandHandler implements CommandInterface
                 'fields' => [
                     [
                         'name' => 'Points',
-                        'value' => "Total: x points\nBâtiments: x Points\nRecherches: x Points\nMilitaire: x Points",
+                        'value' => "Total: ".number_format($this->player->points_total)." points\nBâtiments: ".number_format($this->player->points_building)." Points\nRecherches: ".number_format($this->player->points_research)." Points\nMilitaire: ".number_format($this->player->points_military)." Points",
                         'inline' => true
                     ]
                 ],
