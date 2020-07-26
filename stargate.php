@@ -91,16 +91,6 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) {
     echo "Bot is starting up!", PHP_EOL;
-    try{
-    $tenMinutes = Carbon::now()->add('minute', 15);
-    $players = Player::where('last_top_update', '>', $tenMinutes->format("Y-m-d H:i:s"));
-    foreach($players as $player)
-        TopUpdater::update($player);
-    }
-    catch(\Exception $e)
-    {
-        echo $e->getMessage();
-    }
 	echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->users->count()} users",
@@ -116,7 +106,7 @@ $discord->on('ready', function ($discord) {
     
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
         $tenMinutes = Carbon::now()->add('minute', 15);
-        $players = Player::where('last_top_update', '>', $tenMinutes->format("Y-m-d H:i:s"));
+        $players = Player::where('last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s"))->get();
         foreach($players as $player)
             TopUpdater::update($player);
     });
@@ -277,7 +267,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Banni un joueur du bot.',
 		'usage' => "`!ban @mention`",
-		'aliases' => array('b')
+		//'aliases' => array('b')
     ]);	
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);

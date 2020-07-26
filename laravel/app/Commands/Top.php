@@ -24,7 +24,7 @@ class Top extends CommandHandler implements CommandInterface
             ];
 
             $generalString = "";
-            $topGeneral = Player::all()->orderBy('points_total', 'desc')->take(10)->get();
+            $topGeneral = Player::all()->sortBy('points_total')->slice(0,9);
             foreach($topGeneral as $player)
                 $generalString .= $player->user_name." - ".number_format($player->points_total)."\n";
             $generalString = "";
@@ -37,7 +37,7 @@ class Top extends CommandHandler implements CommandInterface
                 ];
 
             $buildingString = "";
-            $topBuilding = Player::all()->orderBy('points_building', 'desc')->take(10)->get();
+            $topBuilding = Player::all()->sortBy('points_building')->slice(0,9);
             foreach($topBuilding as $player)
                 $buildingString .= $player->user_name." - ".number_format($player->points_building)."\n";
             if(empty($buildingString))
@@ -49,7 +49,7 @@ class Top extends CommandHandler implements CommandInterface
                 ];      
 
             $researchString = "";
-            $topResearch = Player::all()->orderBy('points_research', 'desc')->take(10)->get();
+            $topResearch = Player::all()->sortBy('points_research')->slice(0,9);
             foreach($topResearch as $player)
                 $researchString .= $player->user_name." - ".number_format($player->points_research)."\n";
             if(empty($researchString))
@@ -61,7 +61,7 @@ class Top extends CommandHandler implements CommandInterface
                 ]; 
 
             $militaryString = "";
-            $topMilitary = Player::all()->orderBy('points_military', 'desc')->take(10)->get();
+            $topMilitary = Player::all()->sortBy('points_military')->slice(0,9);
             foreach($topMilitary as $player)
                 $militaryString .= $player->user_name." - ".number_format($player->points_military)."\n";
             $militaryString = "";
@@ -74,7 +74,7 @@ class Top extends CommandHandler implements CommandInterface
                 ]; 
 
             $this->message->channel->sendMessage('', false, $embed);
-            return ;
+            return;
         }
         else
             return "Pour commencer votre aventure, utilisez `!start`";
