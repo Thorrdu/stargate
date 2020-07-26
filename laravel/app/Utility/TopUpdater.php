@@ -14,7 +14,7 @@ class TopUpdater
             {
                 foreach($colony->buildings as $building)
                 {
-                    $buildingPoints += $this->priceMerging($building->getPrice($building->pivot->level));
+                    $buildingPoints += TopUpdater::priceMerging($building->getPrice($building->pivot->level));
                 }
             }
             $player->points_building = round($buildingPoints/1000);
@@ -23,7 +23,7 @@ class TopUpdater
             $researchPoints = 0;
             foreach($player->technologies as $technology)
             {
-                $researchPoints += $this->priceMerging($technology->getPrice($technology->pivot->level));
+                $researchPoints += TopUpdater::priceMerging($technology->getPrice($technology->pivot->level));
 
             }
             $player->points_research = round($researchPoints/1000);
