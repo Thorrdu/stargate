@@ -29,7 +29,8 @@ class TopUpdater
             $player->points_research = round($researchPoints/1000);
             $player->points_total += $player->points_research;
 
-
+            $player->points_military = 0;
+            
             $player->points_total += $player->points_military;
             $player->last_top_update = date("Y-m-d H:i:s");
 
