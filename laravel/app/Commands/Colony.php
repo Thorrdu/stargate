@@ -46,7 +46,8 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($resourcesValue))
             {
                 $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
-                
+                $resourcesValue .= "\nEspace ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max;
+
                 $resourcesValue .= "\nClônes ".round($this->player->colonies[0]->clones);
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(

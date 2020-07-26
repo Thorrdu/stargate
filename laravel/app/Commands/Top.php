@@ -26,7 +26,7 @@ class Top extends CommandHandler implements CommandInterface
             ];
 
             $generalString = "";
-            $topGeneral = Player::all()->sortBy('points_total')->slice(0,9);
+            $topGeneral = Player::all()->sortByDesc('points_total')->slice(0,9);
             foreach($topGeneral as $player)
                 $generalString .= $player->user_name." - ".number_format($player->points_total)."\n";
             if(empty($generalString))
@@ -38,7 +38,7 @@ class Top extends CommandHandler implements CommandInterface
                 ];
 
             $buildingString = "";
-            $topBuilding = Player::all()->sortBy('points_building')->slice(0,9);
+            $topBuilding = Player::all()->sortByDesc('points_building')->slice(0,9);
             foreach($topBuilding as $player)
                 $buildingString .= $player->user_name." - ".number_format($player->points_building)."\n";
             if(empty($buildingString))
@@ -50,7 +50,7 @@ class Top extends CommandHandler implements CommandInterface
                 ];      
 
             $researchString = "";
-            $topResearch = Player::all()->sortBy('points_research')->slice(0,9);
+            $topResearch = Player::all()->sortByDesc('points_research')->slice(0,9);
             foreach($topResearch as $player)
                 $researchString .= $player->user_name." - ".number_format($player->points_research)."\n";
             if(empty($researchString))
@@ -62,7 +62,7 @@ class Top extends CommandHandler implements CommandInterface
                 ]; 
 
             $militaryString = "";
-            $topMilitary = Player::all()->sortBy('points_military')->slice(0,9);
+            $topMilitary = Player::all()->sortByDesc('points_military')->slice(0,9);
             foreach($topMilitary as $player)
                 $militaryString .= $player->user_name." - ".number_format($player->points_military)."\n";
             $militaryString = "";

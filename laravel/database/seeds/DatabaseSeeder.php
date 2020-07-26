@@ -479,6 +479,138 @@ class DatabaseSeeder extends Seeder
             'level' => 5
         ]);
 
+
+        DB::table('technologies')->insert([
+            'id' => 6, 
+            'name' => 'Plans de vaisseaux',
+            'description' => "Permet la conception de vaisseaux spaciaux.",
+            'type' => 'Center',
+            'iron' => 550,
+            'gold' => 250,
+            'quartz' => 100,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1020,
+            'time_coefficient' => 2
+        ]);
+        //- Centre de Recherche : Niveau 1
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 6,
+            'required_building_id' => 7,
+            'level' => 1
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 7, 
+            'name' => 'Armement',
+            'description' => "Permet la conception d'armes.",
+            'type' => 'Center',
+            'iron' => 400,
+            'gold' => 200,
+            'quartz' => 0,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 450,
+            'time_coefficient' => 2
+        ]);
+        //- Centre de Recherche : Niveau 4
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 7,
+            'required_building_id' => 7,
+            'level' => 4
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 8, 
+            'name' => 'Coque',
+            'description' => "Permet la conception de coques de vaisseaux.",
+            'type' => 'Center',
+            'iron' => 800,
+            'gold' => 0,
+            'quartz' => 0,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1500,
+            'time_coefficient' => 2
+        ]);
+        //- Centre de Recherche : Niveau 1
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 8,
+            'required_building_id' => 7,
+            'level' => 1
+        ]);
+        //- Chantier Spatial : Niveau 1
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 8,
+            'required_building_id' => 9,
+            'level' => 1
+        ]);
+
+
+
+        DB::table('technologies')->insert([
+            'id' => 9, 
+            'name' => 'Bouclier',
+            'description' => "Permet la conception de boucliers.",
+            'type' => 'Center',
+            'iron' => 400,
+            'gold' => 300,
+            'quartz' => 70,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 450,
+            'time_coefficient' => 2
+        ]);
+        //- Centre de Recherche : Niveau 5
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 9,
+            'required_building_id' => 7,
+            'level' => 5
+        ]);
+        //- Energie : Niveau 5
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 6,
+            'required_technology_id' => 4,
+            'level' => 5
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 10, 
+            'name' => 'Combustion',
+            'description' => "Permet la conception de moteurs conventionels.",
+            'type' => 'Center',
+            'iron' => 2400,
+            'gold' => 0,
+            'quartz' => 3600,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 450,
+            'time_coefficient' => 2
+        ]);
+        //- Centre de Recherche : Niveau 1
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 10,
+            'required_building_id' => 7,
+            'level' => 1
+        ]);
+        //- Chantier Spatial : Niveau 1
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 10,
+            'required_building_id' => 9,
+            'level' => 1
+        ]);
+        //- Energie : Niveau 1 
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 10,
+            'required_technology_id' => 4,
+            'level' => 1
+        ]);
+
         DB::table('buildings')->insert([
             'id' => 16,
             'name' => 'Centre de commandement', //département de nanorobotique
@@ -732,6 +864,8 @@ class DatabaseSeeder extends Seeder
             'id' => 1,
             'player_id' => 1,
             'colony_type' => 1,
+            'space_used' => 22,
+            'space_max' => 24,
             'name' => 'P'.rand(1, 9).Str::random(1).'-'.rand(1, 9).rand(1, 9).rand(1, 9),
             'last_claim' => '2020-07-14 00:00:00'
         ]);

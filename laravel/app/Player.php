@@ -37,12 +37,16 @@ class Player extends Model
         return $this->hasOne('App\Technology','id','active_technology_id');
     }
 
-    public function addColony()
+    public function addColony($first = true)
     {
         $newColony = new Colony;
         $newColony->colony_type = 1;
         $newColony->player_id = $this->id;
         $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
+        if($first)
+            $newColony->space_max = 180;
+        else
+            $newColony->space_max = rand(100,250);
         $newColony->last_claim = date("Y-m-d H:i:s");
         $newColony->save();
 

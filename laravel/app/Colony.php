@@ -201,12 +201,12 @@ class Colony extends Model
                     $varNameProd = 'production_'.$resource;
                     $varNameStorage = 'storage_'.$resource;
 
-                    $this->$resource += round(($this->$varNameProd / 60) * $minuteToClaim);
+                    $this->$resource += ($this->$varNameProd / 60) * $minuteToClaim;
 
                     if($this->$varNameStorage < $this->$resource)
                         $this->$resource = $this->$varNameStorage;
                 }
-                $this->clones += round(($this->production_military / 60) * $minuteToClaim);
+                $this->clones += ($this->production_military / 60) * $minuteToClaim;
 
                 $this->last_claim = date("Y-m-d H:i:s");
 
@@ -327,6 +327,7 @@ class Colony extends Model
 
             $this->active_building_id = null;
             $this->active_building_end = null;
+            $this->space_used++;
             $this->calcProd();
             $this->saveWithoutEvents();
             
