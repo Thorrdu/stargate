@@ -119,7 +119,7 @@ class Build extends CommandHandler implements CommandInterface
                         if(!is_null($this->player->colonies[0]->active_building_end))
                             return 'Un bâtiment est déjà en construction sur cette colonie';
 
-                        if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) > 0)
+                        if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
                             return 'Espace insufisant pour construire un nouveau bâtiment.';
                         
                         $wantedLvl = 1;
