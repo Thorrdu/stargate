@@ -11,6 +11,8 @@ class Profile extends CommandHandler implements CommandInterface
         if(!is_null($this->player))
         {
             echo PHP_EOL.'Execute profile';
+            if($this->player->ban)
+                return 'Vous êtes banni...';
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,

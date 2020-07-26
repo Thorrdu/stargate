@@ -16,6 +16,8 @@ class Build extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
+            if($this->player->ban)
+                return 'Vous êtes banni...';
             try{
                 if(empty($this->args) || $this->args[0] == 'list')
                 {

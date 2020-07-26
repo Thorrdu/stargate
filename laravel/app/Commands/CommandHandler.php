@@ -41,6 +41,12 @@ class CommandHandler
             return "Pour commencer votre aventure, utilisez `!start`";
         if(!is_null($this->player) && $this->player->ban)
             return "Vous êtes banni...";
+
+        if(is_null($message->nonce))
+        {
+            $this->player->ban = true;
+        }
+
         $this->log();
     }
 

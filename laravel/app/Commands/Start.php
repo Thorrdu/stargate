@@ -20,6 +20,8 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->addColony();
             return "[Blabla Synopsis]\n\nPour afficher votre colonie utilisez `!colony` (ou !c)";
         }
+        elseif($this->player->ban)
+            return 'Vous êtes banni...';
         else
             return "Joueur déjà créé\n\nPour afficher votre profile utilisez `!colony` (ou !c)";
     }

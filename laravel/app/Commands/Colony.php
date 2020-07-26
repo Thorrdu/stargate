@@ -15,7 +15,8 @@ class Colony extends CommandHandler implements CommandInterface
         if(!is_null($this->player))
         {
             echo PHP_EOL.'Execute Colony';
-            try{
+            if($this->player->ban)
+                return 'Vous êtes banni...';
             $this->player->colonies[0]->checkColony();
             $embed = [
                 'author' => [
@@ -202,11 +203,6 @@ class Colony extends CommandHandler implements CommandInterface
             //print_r($embed);
 
             $this->message->channel->sendMessage('', false, $embed);
-
-            }catch(\Exception $e)
-            {
-                return $e->getMessage();
-            }
         }       
         else
             return "Pour commencer votre aventure, utilisez `!start`";

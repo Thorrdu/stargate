@@ -10,6 +10,8 @@ class Top extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
+            if($this->player->ban)
+                return 'Vous êtes banni...';
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
