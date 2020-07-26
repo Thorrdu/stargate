@@ -27,7 +27,6 @@ class Top extends CommandHandler implements CommandInterface
             $topGeneral = Player::all()->sortBy('points_total')->slice(0,9);
             foreach($topGeneral as $player)
                 $generalString .= $player->user_name." - ".number_format($player->points_total)."\n";
-            $generalString = "";
             if(empty($generalString))
                 $generalString = "/";
             $embed['fields'][] = [

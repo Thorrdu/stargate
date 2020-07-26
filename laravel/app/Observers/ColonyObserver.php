@@ -24,7 +24,7 @@ class ColonyObserver
      * @param  \App\Colony  $colony 
      * @return void
      */
-    public function updating(Colony $colony)
+    public function updated(Colony $colony)
     {
         echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
         if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
@@ -32,19 +32,10 @@ class ColonyObserver
             echo PHP_EOL.'OBSRVER FORCE RECALC';
             //$colony->unsetEventDispatcher();
             $colony->calcProd();
-            TopUpdater::update($colony->player->id);
+            TopUpdater::update($colony->player); 
         }
     }
 
-    public function retriving(Colony $colony)
-    {
-        echo PHP_EOL.' Retriving OBSERVER';
-        $colony->checkProd();
-        $colony->player->checkTechnology();
-        $colony->checkBuilding();
-    }
-
-    /*
     public function retrieved(Colony $colony)
     {
         echo PHP_EOL.' Retrieved OBSERVER';
@@ -52,7 +43,6 @@ class ColonyObserver
         $colony->player->checkTechnology();
         $colony->checkBuilding();
     }
-    */
 
     /**
      * Handle the colony "updated" event.

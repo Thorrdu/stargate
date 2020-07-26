@@ -10,6 +10,7 @@ class TopUpdater
         if(!is_null($player))
         {
             $buildingPoints = 0;
+            $player->points_total = 0;
             foreach($player->colonies as $colony)
             {
                 foreach($colony->buildings as $building)

@@ -316,7 +316,8 @@ class Colony extends Model
 
             $this->active_building_id = null;
             $this->active_building_end = null;
-            $this->save();
+            $this->calcProd();
+            //$this->save();
             /*
             $buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();
             if($buildingExist)
