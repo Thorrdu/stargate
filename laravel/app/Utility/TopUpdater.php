@@ -39,8 +39,8 @@ class TopUpdater
 
     public static function priceMerging($prices){
         $merging = 0;
-        foreach (config('stargate.resources') as $resource)
-            $merging += $prices[$resource];
+        foreach ($prices as $resource => $price)
+            $merging += $price;
         return $merging;
     }
 }
