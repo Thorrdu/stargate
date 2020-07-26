@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Utility\TopUpdater;
 
 class Player extends Model
 {
@@ -131,6 +132,8 @@ class Player extends Model
 
             $this->active_technology_id = null;
             $this->active_technology_end = null;
+            $this->colonies[0]->calcProd();
+            $this->colonies[0]->saveWithoutEvents();
             $this->save();
         }
         catch(\Exception $e)

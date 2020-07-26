@@ -24,24 +24,22 @@ class ColonyObserver
      * @param  \App\Colony  $colony 
      * @return void
      */
-    public function updated(Colony $colony)
+    public function updating(Colony $colony)
     {
         echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
         if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
         {
-            echo PHP_EOL.'OBSRVER FORCE RECALC';
+            echo PHP_EOL.'OBSRVER top recalc';
             //$colony->unsetEventDispatcher();
-            $colony->calcProd();
+            //$colony->calcProd();
             TopUpdater::update($colony->player); 
         }
     }
 
     public function retrieved(Colony $colony)
     {
-        echo PHP_EOL.' Retrieved OBSERVER';
-        $colony->checkProd();
-        $colony->player->checkTechnology();
-        $colony->checkBuilding();
+        //echo PHP_EOL.' Retrieved OBSERVER';
+
     }
 
     /**

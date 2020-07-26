@@ -16,6 +16,8 @@ class Colony extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute Colony';
 
+
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -45,7 +47,7 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
                 
-                $resourcesValue .= "\nColons/Soldats ".round($this->player->colonies[0]->soldiers);
+                $resourcesValue .= "\nClônes ".round($this->player->colonies[0]->clones);
                 $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
                 $embed['fields'][] = array(
                                         'name' => 'Ressources',
@@ -54,7 +56,7 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
 
                 $productionValue .= "\nE2PZ ".$this->player->colonies[0]->production_e2pz." / Semaine";
-                $productionValue .= "\nColons/Soldats ".$this->player->colonies[0]->production_military." / Heure";
+                $productionValue .= "\nClônes ".$this->player->colonies[0]->production_military." / Heure";
                 $embed['fields'][] = array(
                                         'name' => 'Production',
                                         'value' => $productionValue,
@@ -155,6 +157,20 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
+            if(count($this->units) > 0)
+            {
+                $unitsString = '';
+                foreach($this->units as $unit)
+                {
+                    $unitsString .= $unit->name." - ".number_format($unit->pivot->number)."\n";
+                }
+                $embed['fields'][] = array(
+                                        'name' => 'Unités',
+                                        'value' => $unitsString,
+                                        'inline' => true
+                                    );
+            }
+
             if(!is_null($this->player->colonies[0]->active_building_end)){
                 $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end)->timestamp;
                 $buildingTime = gmdate("H:i:s", $buildingEnd - time());
@@ -182,12 +198,6 @@ class Colony extends CommandHandler implements CommandInterface
                     'inline' => true
                 );
             }
-
-            $embed['fields'][] = array(
-                'name' => 'Bonus spécifiques',
-                'value' => "ex: +20% Naq -20% Fer\n(Faire Type de colonie et image)",
-                'inline' => true
-            );
 
             //print_r($embed['fields']);
             //print_r($embed);

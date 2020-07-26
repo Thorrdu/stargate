@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Events\Event;
 use SebastianBergmann\CodeCoverage\Report\PHP;
+use App\Utility\TopUpdater;
 
 class Colony extends Model
 {
@@ -75,6 +76,11 @@ class Colony extends Model
     public function activeBuilding()
     {
         return $this->hasOne('App\Building','id','active_building_id');
+    }
+
+    public function units()
+    {
+        return $this->belongsToMany('App\Unit')->withPivot('number');
     }
 
     public function hasBuilding(Building $building)
@@ -175,8 +181,7 @@ class Colony extends Model
             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->active_building_end);
             if($endingDate->isPast())
             {
-                $this->builingdIsDone($this->activeBuilding);
-                //$this->calcProd();
+                $this->buildingIsDone($this->activeBuilding);
             }
         }
     }
@@ -194,14 +199,14 @@ class Colony extends Model
                 foreach (config('stargate.resources') as $resource)
                 {
                     $varNameProd = 'production_'.$resource;
-                    $varNameStorage = 'production_'.$resource;
+                    $varNameStorage = 'storage_'.$resource;
 
                     $this->$resource += round(($this->$varNameProd / 60) * $minuteToClaim);
 
                     if($this->$varNameStorage > $this->$resource)
                         $this->$resource = $this->$varNameStorage;
                 }
-                $this->soldiers += round(($this->production_military / 60) * $minuteToClaim);
+                $this->clones += round(($this->production_military / 60) * $minuteToClaim);
 
                 $this->last_claim = date("Y-m-d H:i:s");
 
@@ -292,11 +297,17 @@ class Colony extends Model
             */
 
             
-            $this->saveWithoutEvents();
+            //$this->saveWithoutEvents();
         }
     }
 
-    public function builingdIsDone(Building $building)
+    public function checkColony(){
+        $this->checkProd();
+        $this->player->checkTechnology();
+        $this->checkBuilding();
+    }
+
+    public function buildingIsDone(Building $building)
     {
         try{
 
@@ -317,6 +328,8 @@ class Colony extends Model
             $this->active_building_id = null;
             $this->active_building_end = null;
             $this->calcProd();
+            $this->saveWithoutEvents();
+            
             //$this->save();
             /*
             $buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();

@@ -25,7 +25,6 @@ class TopUpdater
             foreach($player->technologies as $technology)
             {
                 $researchPoints += TopUpdater::priceMerging($technology->getPrice($technology->pivot->level));
-
             }
             $player->points_research = round($researchPoints/1000);
             $player->points_total += $player->points_research;

@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
         DB::table('buildings')->insert([
             'id' => 8,
             'name' => 'Station de clônage',
-            'description' => "Permet de recruter de nouvelles troupes et ingérnieurs",
+            'description' => "Obtenue de part l'alliance avec les Asgards, la station de clônage permet de recruter de nouvelles unités",
             'type' => 'Military',
             'iron' => 500,
             'gold' => 500,
@@ -385,7 +385,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 0,
             'display_order' => 2,
             'upgrade_coefficient' => 2,
-            'time_base' => 1500,
+            'time_base' => 1800,
             'time_coefficient' => 2
         ]);
         //Centre de recherche 1
@@ -406,7 +406,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 0,
             'display_order' => 3,
             'upgrade_coefficient' => 2,
-            'time_base' => 1500,
+            'time_base' => 2200,
             'time_coefficient' => 2
         ]);
         //Centre de recherche 1
@@ -583,6 +583,142 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
+        DB::table('units')->insert([
+            'id' => 1,
+            'type' => 'Military',
+            'name' => "Soldat",
+            'slug' => 'soldier',
+            'description' => "Staff essentiel pour la survie de votre colonie.\nVous permet de vous défendre face aux attaques ennemie ainsi que de raid d'autres colonies",
+            'health' => 100,
+            'armor' => 100,
+            'shield' => 0,
+            'capacity' => 0,
+            'utility_power' => 100,
+            'convertible' => true,
+            'buyable' => false,
+            'iron' => 20,
+            'gold' => 5,
+            'quartz' => 0,
+            'naqahdah' => 0
+        ]);
+        DB::table('units')->insert([
+            'id' => 2,
+            'type' => 'Settler',
+            'name' => "Colon",
+            'slug' => 'settler',
+            'description' => "Les colons sont formés pour entreprendre des missions de colonisation.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 10,
+            'utility_power' => 0,
+            'convertible' => true,
+            'buyable' => false,
+            'iron' => 5,
+            'gold' => 15,
+            'quartz' => 5,
+            'naqahdah' => 0
+        ]);
+        DB::table('units')->insert([
+            'id' => 3,
+            'type' => 'Spy',
+            'name' => "Espion",
+            'slug' => 'spy',
+            'description' => "Peut être envoyé sur une colonie adverse afin d'y mener divers missions d'espionnage.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 0,
+            'utility_power' => 100,
+            'convertible' => true,
+            'buyable' => false,
+            'iron' => 100,
+            'gold' => 250,
+            'quartz' => 0,
+            'naqahdah' => 150
+        ]);
+        DB::table('units')->insert([
+            'id' => 4,
+            'type' => 'Probe',
+            'name' => "Sonde M.A.L.P.",
+            'slug' => 'malp',
+            'description' => "Sonde terrestre vous permetant d'explorer une planète et relever des informations sur une colonie.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 0,
+            'utility_power' => 0,
+            'convertible' => false,
+            'buyable' => true,
+            'iron' => 500,
+            'gold' => 300,
+            'quartz' => 1200,
+            'naqahdah' => 150,
+            'base_time' => 240
+        ]);
+        DB::table('units')->insert([
+            'id' => 5,
+            'type' => 'Probe',
+            'name' => "Sonde U.A.V.",
+            'slug' => 'uav',
+            'description' => "Sonde Volante vous permetant d'explorer une planète et relever des informations sur une colonie.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 10,
+            'utility_power' => 0,
+            'convertible' => false,
+            'buyable' => true,
+            'iron' => 1000,
+            'gold' => 600,
+            'quartz' => 2400,
+            'naqahdah' => 480
+        ]);
+        DB::table('units')->insert([
+            'id' => 6,
+            'type' => 'Transport',
+            'name' => "Petit transporteur",
+            'slug' => 'transport',
+            'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 1000,
+            'utility_power' => 0,
+            'convertible' => false,
+            'buyable' => true,
+            'iron' => 400,
+            'gold' => 150,
+            'quartz' => 50,
+            'naqahdah' => 200
+        ]);
+        DB::table('units')->insert([
+            'id' => 7,
+            'type' => 'Transport',
+            'name' => "Grand transporteur",
+            'slug' => 'transport2',
+            'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
+            'health' => 100,
+            'armor' => 0,
+            'shield' => 0,
+            'capacity' => 10000,
+            'utility_power' => 0,
+            'convertible' => false,
+            'buyable' => true,
+            'iron' => 1500,
+            'gold' => 600,
+            'quartz' => 250,
+            'naqahdah' => 300
+        ]);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -610,6 +746,18 @@ class DatabaseSeeder extends Seeder
             'colony_id' => 1,
             'building_id' => 2,
             'level' => 1
+        ]);
+
+        DB::table('building_colony')->insert([
+            'colony_id' => 1,
+            'building_id' => 6,
+            'level' => 10
+        ]);
+
+        DB::table('building_colony')->insert([
+            'colony_id' => 1,
+            'building_id' => 7,
+            'level' => 10
         ]);
     }
 }
