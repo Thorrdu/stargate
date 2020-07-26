@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ColonyUnit extends Migration
+class CreateColonyUnitTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class ColonyUnit extends Migration
      */
     public function up()
     {
-        Schema::create('colony_units', function (Blueprint $table) {
+        Schema::create('colony_unit', function (Blueprint $table) {
             $table->increments('id');     
             $table->integer('colony_id')->unsigned();
             $table->foreign('colony_id')->references('id')->on('colonies');

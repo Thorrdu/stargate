@@ -203,7 +203,7 @@ class Colony extends Model
 
                     $this->$resource += round(($this->$varNameProd / 60) * $minuteToClaim);
 
-                    if($this->$varNameStorage > $this->$resource)
+                    if($this->$varNameStorage < $this->$resource)
                         $this->$resource = $this->$varNameStorage;
                 }
                 $this->clones += round(($this->production_military / 60) * $minuteToClaim);

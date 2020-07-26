@@ -23,7 +23,7 @@ class CreateUnitsTable extends Migration
             $table->integer('armor')->length(18)->unsigned()->default(0);
             $table->integer('shield')->length(18)->unsigned()->default(0);
             $table->integer('capacity')->length(18)->unsigned()->default(0);
-            $table->decimal('utility_power', 6, 4)->unsigned()->default(0);
+            $table->decimal('utility_power', 10, 4)->unsigned()->default(0);
             $table->boolean('convertible')->default(false);
             $table->boolean('buyable')->default(false);
             $table->bigInteger('iron')->length(18)->unsigned()->nullable();

@@ -11,6 +11,7 @@ class Refresh extends CommandHandler implements CommandInterface
         if(!is_null($this->player))
         {
             $this->player->colonies[0]->calcProd();
+            $this->player->colonies[0]->save();
             return "Prod recalculée";
         }
         else

@@ -15,9 +15,8 @@ class Colony extends CommandHandler implements CommandInterface
         if(!is_null($this->player))
         {
             echo PHP_EOL.'Execute Colony';
-
-
-
+            try{
+            $this->player->colonies[0]->checkColony();
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -157,10 +156,10 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
-            if(count($this->units) > 0)
+            if(count($this->player->colonies[0]->units) > 0)
             {
                 $unitsString = '';
-                foreach($this->units as $unit)
+                foreach($this->player->colonies[0]->units as $unit)
                 {
                     $unitsString .= $unit->name." - ".number_format($unit->pivot->number)."\n";
                 }
@@ -203,6 +202,11 @@ class Colony extends CommandHandler implements CommandInterface
             //print_r($embed);
 
             $this->message->channel->sendMessage('', false, $embed);
+
+            }catch(\Exception $e)
+            {
+                return $e->getMessage();
+            }
         }       
         else
             return "Pour commencer votre aventure, utilisez `!start`";
