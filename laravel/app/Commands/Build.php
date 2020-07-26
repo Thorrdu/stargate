@@ -139,6 +139,9 @@ class Build extends CommandHandler implements CommandInterface
                                 return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
                         }
 
+                        if( !is_null($this->player->active_technology_id) && $building->id == 7)
+                            return 'Votre centre de recherche est occupé...';
+
                         //Requirement
                         $hasRequirements = true;
                         foreach($building->requiredTechnologies as $requiredTechnology)
