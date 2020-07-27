@@ -27,7 +27,7 @@ class Paginator extends CommandHandler implements CommandInterface
                     try{
                     $number++;
                     $messageSent->channel->sendMessage($number);
-                    $messageSent->edit($number);
+                    $messageSent->channel->editMessage($messageSent->id);
                     //editMessage
 
                     //messageSent->edit();
