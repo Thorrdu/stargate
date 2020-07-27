@@ -629,7 +629,7 @@ class DatabaseSeeder extends Seeder
             'building_bonus' => 0.5,
             'technology_bonus' => 0.5
         ]);
-        //Centre de recherche 1
+        //Centre de recherche 8
         DB::table('building_buildings')->insert([
             'building_id' => 16,
             'required_building_id' => 7,

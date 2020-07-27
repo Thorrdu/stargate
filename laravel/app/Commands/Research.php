@@ -21,6 +21,7 @@ class Research extends CommandHandler implements CommandInterface
                 if($this->player->ban)
                     return 'Vous êtes banni...';
                 $this->player->checkTechnology();
+                $this->player->refresh();
                 
                 if(empty($this->args) || $this->args[0] == 'list')
                 {
