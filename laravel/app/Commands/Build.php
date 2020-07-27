@@ -18,6 +18,8 @@ class Build extends CommandHandler implements CommandInterface
         {
             if($this->player->ban)
                 return 'Vous êtes banni...';
+            $this->player->colonies[0]->checkBuilding();
+
             try{
                 if(empty($this->args) || $this->args[0] == 'list')
                 {

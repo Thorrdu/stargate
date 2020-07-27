@@ -20,6 +20,8 @@ class Research extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Research';
                 if($this->player->ban)
                     return 'Vous êtes banni...';
+                $this->player->checkTechnology();
+                
                 if(empty($this->args) || $this->args[0] == 'list')
                 {
                     $embed = [
