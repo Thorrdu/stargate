@@ -317,8 +317,8 @@ class Colony extends Model
             else
             {
                 $this->buildings()->attach([$building->id => ['level' => 1]]);
-                $this->load('buildings'); // solution avec query
-                //$this->refresh(); solution complète
+                //$this->load('buildings'); // solution avec query
+                $this->refresh(); //solution complète
                 //$this->buildings->push($comment); // Will manually add the new comment to the existing collection
             }
 
