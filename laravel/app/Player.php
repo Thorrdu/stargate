@@ -138,7 +138,7 @@ class Player extends Model
             $this->active_technology_id = null;
             $this->active_technology_end = null;
             $this->colonies[0]->calcProd();
-            $this->colonies[0]->saveWithoutEvents();
+            //$this->colonies[0]->saveWithoutEvents();
             $this->save();
         }
         catch(\Exception $e)

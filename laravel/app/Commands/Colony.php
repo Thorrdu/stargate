@@ -18,6 +18,8 @@ class Colony extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return 'Vous êtes banni...';
             $this->player->colonies[0]->checkColony();
+            $this->player->refresh();
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
