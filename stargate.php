@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Paginator};
 use App\Utility\TopUpdater;
 
 //use Discord\Discord;
@@ -162,8 +162,11 @@ $discord->on('ready', function ($discord) {
     ]);*/
 
 
-    $discord->registerCommand('test', function ($message, $args) {
-        return 'test received';
+    $discord->registerCommand('test', function ($message, $args) use($discord) {
+        
+        //return 'test received';
+        $command = new Paginator($message,$args,$discord);
+        return $command->execute();
     },[
         'description' => 'test',
 		'usage' => 'test',

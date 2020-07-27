@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
 use App\Player;
+use Discord\DiscordCommandClient as Discord; 
 
 class CommandHandler
 {
@@ -33,10 +34,11 @@ class CommandHandler
     }*/
 
     //BASIC CALL
-    public function __construct2(Message $message,array $args){
+    public function __construct2(Message $message,array $args, $discord){
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
+        
         if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
         if(!is_null($this->player) && $this->player->ban)
@@ -49,6 +51,22 @@ class CommandHandler
 
         $this->log();
     }
+
+    //BASIC CALL
+    public function __construct3(Message $message, array $args, Discord $discord){
+        $this->message = $message;
+        $this->args = $args;
+        $this->player = Player::where('user_id', $message->author->id)->first();
+        $this->discord = $discord;
+
+        if(is_null($message->nonce))
+        {
+            $this->player->ban = true;
+        }
+
+        $this->log();
+    }
+
 
     public function log()
     {
