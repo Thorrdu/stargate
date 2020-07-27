@@ -218,87 +218,81 @@ class Colony extends Model
     public function calcProd()
     {
         echo PHP_EOL.'CALC_PROD'.PHP_EOL;
-        if(!is_null($this->last_claim))
+
+        $energyBuildings = $this->buildings->filter(function ($value){
+            return $value->type == 'Energy';
+        });
+        $this->energy_max = 0;
+        foreach($energyBuildings as $energyBuilding)
+            $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
+        
+        $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
+            return !is_null($value->energy_bonus);
+        });
+        /**Application bonus de production énergétique */
+        $energyProductionBonus = 1;
+        foreach($technologiesEnergyBonus as $technologyEnergyBonus)
+            $energyProductionBonus *= pow($technologyEnergyBonus->energy_bonus, $technologyEnergyBonus->pivot->level);
+        $this->energy_max *= $energyProductionBonus;
+
+        $this->energy_used = 0;
+        foreach($this->buildings as $building)
+            $this->energy_used += round($building->getEnergy($building->pivot->level));
+
+        foreach (config('stargate.resources') as $resource)
         {
-            $energyBuildings = $this->buildings->filter(function ($value){
-                return $value->type == 'Energy';
+            $productionBuildings = $this->buildings->filter(function ($value) use($resource){
+                return $value->production_type == $resource && $value->type == 'Production';
             });
-            $this->energy_max = 0;
-            foreach($energyBuildings as $energyBuilding)
-                $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
-            
-            $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
-                return !is_null($value->energy_bonus);
-            });
-            /**Application bonus de production énergétique */
-            $energyProductionBonus = 1;
-            foreach($technologiesEnergyBonus as $technologyEnergyBonus)
-                $energyProductionBonus *= pow($technologyEnergyBonus->energy_bonus, $technologyEnergyBonus->pivot->level);
-            $this->energy_max *= $energyProductionBonus;
-
-            $this->energy_used = 0;
-            foreach($this->buildings as $building)
-                $this->energy_used += round($building->getEnergy($building->pivot->level));
-
-            foreach (config('stargate.resources') as $resource)
-            {
-                $productionBuildings = $this->buildings->filter(function ($value) use($resource){
-                    return $value->production_type == $resource && $value->type == 'Production';
-                });
-                $varName = 'production_'.$resource;
-                $this->$varName = config('stargate.base_prod.'.$resource);
-                foreach($productionBuildings as $productionBuilding)
-                    $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
-                    //+Bonus éventuels
-                
-                $storageBuildings = $this->buildings->filter(function ($value) use($resource){
-                    return $value->production_type == $resource && $value->type == 'Storage';
-                });
-                
-            }
-
-            $storageBuildings = $this->buildings->filter(function ($value) use($resource){
-                return $value->type == 'Storage';
-            });
-            foreach($storageBuildings as $storageBuilding)
-            {
-                $varName = 'storage_'.$storageBuilding->production_type;
-                $this->$varName = 100000 * pow($storageBuilding->production_coefficient, $storageBuilding->pivot->level);
-            }
-
-            $militaryBuildings = $this->buildings->filter(function ($value){
-                return $value->production_type == 'military' && $value->type == 'Military';
-            });
-            $this->production_military = 0;
-            foreach($militaryBuildings as $militaryBuilding)
-            {
-                echo PHP_EOL.$militaryBuilding->getProduction($militaryBuilding->pivot->level);
-                echo PHP_EOL.$militaryBuilding->name.' - '.$militaryBuilding->pivot->level;
-
-                $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
-            }
-            //+Bonus éventuels
-
-            
-            //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
-            /*$ironProdBuildings = $this->buildings->filter(function ($value) {
-                echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
-                return $value->production_type == 'iron';// || $value->type == 'Energy'
-            });*/
-            /*
-            $ironProdBuildings = Building::orderBy('building.production_type', 'asc')
-                                            ->with('colony')
-                                            //->buildings()
-                                            //->join("buildings","buildings.id","=","building_id")
-                                            ->where(['colony_id' => $this->id, 'building.type' => 'Production'])
-                                            ->where(['building.production_type' => 'Iron'])
-                                            ->dump()
-                                            ->get();
-            */
-
-            
-            //$this->saveWithoutEvents();
+            $varName = 'production_'.$resource;
+            $this->$varName = config('stargate.base_prod.'.$resource);
+            foreach($productionBuildings as $productionBuilding)
+                $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
+                //+Bonus éventuels
         }
+
+        $storageBuildings = $this->buildings->filter(function ($value) use($resource){
+            return $value->type == 'Storage';
+        });
+        foreach($storageBuildings as $storageBuilding)
+        {
+            $varName = 'storage_'.$storageBuilding->production_type;
+            $this->$varName = 100000 * pow($storageBuilding->production_coefficient, $storageBuilding->pivot->level);
+        }
+
+        $militaryBuildings = $this->buildings->filter(function ($value){
+            return $value->production_type == 'military' && $value->type == 'Military';
+        });
+        $this->production_military = 0;
+        foreach($militaryBuildings as $militaryBuilding)
+        {
+            echo PHP_EOL.$militaryBuilding->getProduction($militaryBuilding->pivot->level);
+            echo PHP_EOL.$militaryBuilding->name.' - '.$militaryBuilding->pivot->level;
+
+            $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
+        }
+        //+Bonus éventuels
+
+        
+        //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
+        /*$ironProdBuildings = $this->buildings->filter(function ($value) {
+            echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
+            return $value->production_type == 'iron';// || $value->type == 'Energy'
+        });*/
+        /*
+        $ironProdBuildings = Building::orderBy('building.production_type', 'asc')
+                                        ->with('colony')
+                                        //->buildings()
+                                        //->join("buildings","buildings.id","=","building_id")
+                                        ->where(['colony_id' => $this->id, 'building.type' => 'Production'])
+                                        ->where(['building.production_type' => 'Iron'])
+                                        ->dump()
+                                        ->get();
+        */
+
+        
+        //$this->saveWithoutEvents();
+        
     }
 
     public function checkColony(){
@@ -323,6 +317,9 @@ class Colony extends Model
             else
             {
                 $this->buildings()->attach([$building->id => ['level' => 1]]);
+                $this->load('buildings'); // solution avec query
+                //$this->refresh(); solution complète
+                //$this->buildings->push($comment); // Will manually add the new comment to the existing collection
             }
 
             $this->active_building_id = null;
