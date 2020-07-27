@@ -11,7 +11,7 @@ use App\Technology;
 use Carbon\Carbon;
 
 
-class Build extends CommandHandler implements CommandInterface
+class Paginator extends CommandHandler implements CommandInterface
 {
     public function execute()
     {
@@ -27,11 +27,11 @@ class Build extends CommandHandler implements CommandInterface
                     try{
 
                     $messageSent->channel->sendMessage($number);
-                    $messageSent->edit('test');
+                    $messageSent->edit($number);
                     //editMessage
 
                     //messageSent->edit();
-                    $this->close();
+                    //$this->close();
                     }
                     catch(\Exception $e)
                     {
