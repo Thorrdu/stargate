@@ -132,6 +132,7 @@ class Player extends Model
             else
             {
                 $this->technologies()->attach([$technology->id => ['level' => 1]]);
+                $this->load('technologies'); // solution avec query
             }
 
             $this->active_technology_id = null;
