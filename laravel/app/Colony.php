@@ -326,7 +326,7 @@ class Colony extends Model
             $this->active_building_end = null;
             $this->space_used++;
             $this->calcProd();
-            $this->saveWithoutEvents();
+            $this->save();
             
             //$this->save();
             /*

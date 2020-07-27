@@ -205,8 +205,8 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('build', function ($message, $args) {
-        $command = new Build($message,$args);
+    $discord->registerCommand('build', function ($message, $args) use($discord) {
+        $command = new Build($message,$args,$discord);
         return $command->execute();
     },[
         'description' => 'Liste ou construit un bâtiment',
@@ -215,8 +215,8 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('research', function ($message, $args) {
-        $command = new Research($message,$args);
+    $discord->registerCommand('research', function ($message, $args) use($discord) {
+        $command = new Research($message,$args,$discord);
         return $command->execute();
     },[
         'description' => 'Liste ou recherche une technologie',

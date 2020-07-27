@@ -34,7 +34,7 @@ class CommandHandler
     }*/
 
     //BASIC CALL
-    public function __construct2(Message $message,array $args, $discord){
+    public function __construct2(Message $message,array $args){
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();

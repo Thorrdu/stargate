@@ -13,6 +13,11 @@ use Carbon\Carbon;
 
 class Paginator extends CommandHandler implements CommandInterface
 {
+    public $page;
+    public $maxTime;
+    public $paginatorMessage;
+    public $listner;
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -20,50 +25,51 @@ class Paginator extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return 'Vous êtes banni...';
 
-
             try{
-                $number = 1;
-                $this->message->channel->sendMessage($this->getTop($number))->then(function ($messageSent) use($number){
-                    try{
-                    $number++;
-                    $messageSent->channel->sendMessage($number);
-                    $messageSent->channel->editMessage($messageSent->id);
-                    //editMessage
+                $this->page = 1;
+                $this->maxTime = time()+180;
+                $this->message->channel->sendMessage($this->getTop())->then(function ($messageSent){
+                    $this->paginatorMessage = $messageSent;
+                    $this->paginatorMessage->react('◀️')->then(function(){ 
+                        $this->paginatorMessage->react('▶️');
+                    });
 
-                    //messageSent->edit();
-                    //$this->close();
-                    }
-                    catch(\Exception $e)
-                    {
-                        echo $e->getMessage();
-                        return $e->getMessage();
-                    }
+                    $this->listner = function ($messageReaction) {
+                        if($this->maxTime < time())
+                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                }, function ($e) {
-                   echo $e->getMessage();
-                   return $e->getMessage();
+                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                        {
+                            if($messageReaction->emoji->name == '◀️')
+                            {
+                                $this->page--;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,$this->getTop());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                            elseif($messageReaction->emoji->name == '▶️')
+                            {
+                                $this->page++;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,$this->getTop());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                        }
+                    };
+                    $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
                 });
-
-                //$this->discord->updatePresence($game);
-
-
             }
             catch(\Exception $e)
             {
                 echo $e->getMessage();
                 return $e->getMessage();
             }
-
-
-   
         }
         else
             return "Pour commencer votre aventure, utilisez `!start`";
         return false;
     }
 
-    public function getTop($number)
+    public function getTop()
     {
-        return 'Page '.$number;
+        return 'Page Test '.$this->page;
     }
 }
