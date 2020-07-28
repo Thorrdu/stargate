@@ -228,7 +228,7 @@ class Build extends CommandHandler implements CommandInterface
             else
             {
                 $embed['fields'][] = array(
-                    'name' => '-- Bâtiment Cachée --',
+                    'name' => '-- Bâtiment Caché --',
                     'value' => 'Vous n\'avez pas encore découvert ce bâtiment.'
                 );
             }

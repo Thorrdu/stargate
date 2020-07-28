@@ -18,7 +18,7 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->votes = 0;
             $newPlayer->save();   
             $newPlayer->addColony();
-            return "[Blabla Synopsis]\n\nPour afficher votre colonie utilisez `!colony` (ou !c)";
+            return "[Blabla Synopsis]\n\nWarning: Cet bot est en early alpha. Les noms, textes, affichages, commandes,... ne sont pas définitifs et sont sujet à changement.\nDe nombreux Reset sont également à prévoir\n\nPour afficher votre colonie utilisez `!colony` (ou !c)";
         }
         elseif($this->player->ban)
             return 'Vous êtes banni...';
