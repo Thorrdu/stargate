@@ -161,20 +161,6 @@ $discord->on('ready', function ($discord) {
         //'aliases' => array('t'),
     ]);*/
 
-
-    $discord->registerCommand('test', function ($message, $args) use($discord) {
-        
-        //return 'test received';
-        $command = new Paginator($message,$args,$discord);
-        return $command->execute();
-    },[
-        'description' => 'test',
-		'usage' => 'test',
-        'aliases' => array('t'),
-        'cooldown' => 5
-
-    ]);	
-    
     $discord->registerCommand('start', function ($message, $args) {
         $command = new Start($message,$args);
         return $command->execute();
@@ -272,6 +258,18 @@ $discord->on('ready', function ($discord) {
 		'usage' => "`!ban @mention`",
 		//'aliases' => array('b')
     ]);	
+
+    $discord->registerCommand('test', function ($message, $args) use($discord) {
+        return 'test received';
+        $command = new Paginator($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => 'Commande test à tout faire',
+		'usage' => 'test',
+        'aliases' => array('t'),
+        'cooldown' => 5
+    ]);	
+    
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
     $channelLogs = $mainGuild->channels->get('id', 735391076432478238);

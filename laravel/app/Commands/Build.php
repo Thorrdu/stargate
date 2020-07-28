@@ -71,6 +71,23 @@ class Build extends CommandHandler implements CommandInterface
                     $building = Building::find($buildingId);
                     if(!is_null($building))
                     {
+                        //Requirement
+                        $hasRequirements = true;
+                        foreach($building->requiredTechnologies as $requiredTechnology)
+                        {
+                            $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                            if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                                $hasRequirements = false;
+                        }
+                        foreach($building->requiredBuildings as $requiredBuilding)
+                        {
+                            $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                            if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                                $hasRequirements = false;
+                        }
+                        if(!$hasRequirements)
+                            return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
+
                         //if construction en cours, return
                         if(!is_null($this->player->colonies[0]->active_building_end))
                             return 'Un bâtiment est déjà en construction sur cette colonie';
@@ -102,23 +119,6 @@ class Build extends CommandHandler implements CommandInterface
 
                         if( !is_null($this->player->active_technology_id) && $building->id == 7)
                             return 'Votre centre de recherche est occupé...';
-
-                        //Requirement
-                        $hasRequirements = true;
-                        foreach($building->requiredTechnologies as $requiredTechnology)
-                        {
-                            $currentLvl = $this->player->hasTechnology($requiredTechnology);
-                            if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
-                                $hasRequirements = false;
-                        }
-                        foreach($building->requiredBuildings as $requiredBuilding)
-                        {
-                            $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
-                            if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
-                                $hasRequirements = false;
-                        }
-                        if(!$hasRequirements)
-                            return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
 
                         $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
                         $buildingTime = gmdate("H:i:s", $endingDate - time());

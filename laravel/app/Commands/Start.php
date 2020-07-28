@@ -24,6 +24,6 @@ class Start extends CommandHandler implements CommandInterface
         elseif($this->player->ban)
             return 'Vous êtes banni...';
         else
-            return "Joueur déjà créé\n\nPour afficher votre profile utilisez `!colony` (ou !c)";
+            return "Compté déjà existant\n\nPour afficher votre profile utilisez `!colony` (ou !c)";
     }
 }
