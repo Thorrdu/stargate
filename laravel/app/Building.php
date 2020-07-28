@@ -47,7 +47,7 @@ class Building extends Model
 
     public function getProduction(int $level)
     {
-        //$level--; //Du au coeficient
+        $level--; //Du au coeficient
         return $this->production_base * pow($this->production_coefficient, $level);
     }
 }
