@@ -172,9 +172,9 @@ class Research extends CommandHandler implements CommandInterface
             }
 
             $buildingTime = $technology->getTime($wantedLevel);
-
+            
             /** Application des bonus */
-            $buildingTime *= $this->player->getResearchBonus();
+            $buildingTime *= $this->player->colonies[0]->getResearchBonus();
 
             $buildingTime = gmdate("H:i:s", $buildingTime);
 

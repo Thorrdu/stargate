@@ -183,10 +183,12 @@ class Build extends CommandHandler implements CommandInterface
             }
 
             $buildingTime = $building->getTime($wantedLevel);
+            echo PHP_EOL.' Base: '.$buildingTime;
+
 
             /** Application des bonus */
             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-            $buildingTime *= $this->player->getBuildingBonus();
+            echo PHP_EOL.' After bonus: '.$buildingTime;
 
             $buildingTime = gmdate("H:i:s", $buildingTime);
 

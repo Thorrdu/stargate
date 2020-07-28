@@ -112,13 +112,13 @@ class Colony extends Model
             return !is_null($value->technology_bonus);
         });
         foreach($buildings as $building)
-            $bonus *= round(pow($building->technology_bonus, $building->pivot->level));
+            $bonus *= pow($building->technology_bonus, $building->pivot->level);
 
         $technologies = $this->player->technologies->filter(function ($value){
             return !is_null($value->technology_bonus);
         });
         foreach($technologies as $technology)
-            $bonus *= round(pow($technology->technology_bonus, $technology->pivot->level));
+            $bonus *= pow($technology->technology_bonus, $technology->pivot->level);
 
         return $bonus;
     }
@@ -130,13 +130,13 @@ class Colony extends Model
             return !is_null($value->building_bonus);
         });
         foreach($buildings as $building)
-            $bonus *= round(pow($building->building_bonus, $building->pivot->level));
+            $bonus *= pow($building->building_bonus, $building->pivot->level);
 
         $technologies = $this->player->technologies->filter(function ($value){
             return !is_null($value->building_bonus);
         });
         foreach($technologies as $technology)
-            $bonus *= round(pow($technology->building_bonus, $technology->pivot->level));
+            $bonus *= pow($technology->building_bonus, $technology->pivot->level);
 
         return $bonus;
     }

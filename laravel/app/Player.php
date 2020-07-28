@@ -145,45 +145,5 @@ class Player extends Model
         {
             echo $e->getMessage();
         }
-    }
-
-
-    public function getResearchBonus()
-    {
-        $bonus = 1;
-
-        $buildings = $this->colonies[0]->buildings->filter(function ($value){
-            return !is_null($value->technology_bonus);
-        });
-        foreach($buildings as $building)
-            $bonus *= round(pow($building->technology_bonus, $building->pivot->level));
-
-        $technologies = $this->technologies->filter(function ($value){
-            return !is_null($value->technology_bonus);
-        });
-        foreach($technologies as $technology)
-            $bonus *= round(pow($technology->technology_bonus, $technology->pivot->level));
-
-        return $bonus;
-    }
-    public function getBuildingBonus()
-    {
-        $bonus = 1;
-
-        $buildings = $this->colonies[0]->buildings->filter(function ($value){
-            return !is_null($value->building_bonus);
-        });
-        foreach($buildings as $building)
-            $bonus *= round(pow($building->building_bonus, $building->pivot->level));
-
-        $technologies = $this->technologies->filter(function ($value){
-            return !is_null($value->building_bonus);
-        });
-        foreach($technologies as $technology)
-            $bonus *= round(pow($technology->building_bonus, $technology->pivot->level));
-
-        return $bonus;
-    }
-
-    
+    }    
 }
