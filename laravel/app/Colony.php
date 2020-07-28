@@ -155,7 +155,6 @@ class Colony extends Model
 
         /** Application des bonus */
         $buildingTime *= $this->getBuildingBonus();
-        $buildingTime *= $this->player->getBuildingBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
 

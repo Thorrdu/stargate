@@ -85,7 +85,6 @@ class Player extends Model
         $buildingTime = $technology->getTime($wantedLvl);
 
         /** Application des bonus */
-        $buildingTime *= $this->getResearchBonus();
         $buildingTime *= $this->colonies[0]->getResearchBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
