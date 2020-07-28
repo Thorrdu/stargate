@@ -183,12 +183,9 @@ class Build extends CommandHandler implements CommandInterface
             }
 
             $buildingTime = $building->getTime($wantedLevel);
-            echo PHP_EOL.' Base: '.$buildingTime;
-
 
             /** Application des bonus */
             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-            echo PHP_EOL.' After bonus: '.$buildingTime;
 
             $buildingTime = gmdate("H:i:s", $buildingTime);
 
@@ -225,7 +222,7 @@ class Build extends CommandHandler implements CommandInterface
             {
                 $embed['fields'][] = array(
                     'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
-                    'value' => 'Description: '.$building->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                    'value' => 'Description: '.$building->description."\nSlug: ".$building->slug."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
                 );
             }
             else

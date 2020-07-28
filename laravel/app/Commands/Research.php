@@ -211,7 +211,7 @@ class Research extends CommandHandler implements CommandInterface
             {
                 $embed['fields'][] = array(
                     'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
-                    'value' => 'Description: '.$technology->description."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                    'value' => 'Description: '.$technology->description."\nSlug: ".$technology->slug."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
                 );
             }
             else
