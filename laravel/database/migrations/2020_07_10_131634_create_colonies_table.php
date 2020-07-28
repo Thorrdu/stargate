@@ -20,7 +20,6 @@ class CreateColoniesTable extends Migration
             $table->foreign('player_id','c_player_id')->references('id')->on('players');
 
             $table->string('name', 50);
-            $table->string('slug', 50);
             $table->string('coordinates', 25)->nullable();
 
             $table->decimal('iron', 20, 5)->unsigned()->default(600);
