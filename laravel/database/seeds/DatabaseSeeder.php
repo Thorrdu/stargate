@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
             'id' => 6,
             'name' => 'Usine robotisée',
             'slug' => Str::slug('robotfactory'),
-            'description' => "Permet à vos colons de travailler avec le support de robots.\nRéduit le temps de construction des bâtiments, vaissaux, défenses et objets de 10% par niveau",
+            'description' => "Permet à vos colons de travailler avec le support de robots.",
             'type' => 'Science',
             'iron' => 100,
             'gold' => 200,
@@ -149,7 +149,7 @@ class DatabaseSeeder extends Seeder
             'id' => 7,
             'name' => 'Centre de recherche',
             'slug' => Str::slug('research'),
-            'description' => "Donne un lieu à vos colons pour effectuer des recherches, réduit le temps des recherches de 10% par niveau.\nPermet également de comprendre le fonctionnement de la porte des étoiles",
+            'description' => "Donne un lieu à vos colons pour effectuer des recherches\nPermet également de comprendre le fonctionnement de la porte des étoiles",
             'type' => 'Science',
             'iron' => 200,
             'gold' => 400,
@@ -370,7 +370,7 @@ class DatabaseSeeder extends Seeder
             'id' => 1,
             'name' => 'Informatique et Communication',
             'slug' => Str::slug('communication'),
-            'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.\n__Bonus__\n-5% Temps de construction\n-5% Temps de recherche",
+            'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.",
             'type' => 'Labo',
             'iron' => 0,
             'gold' => 400,
@@ -473,7 +473,7 @@ class DatabaseSeeder extends Seeder
             'id' => 5, // -2% building -2% techno
             'name' => 'Intelligence artificielle', //nanotechnologie
             'slug' => Str::slug('ia'),
-            'description' => "Permet de développer une intelligence artificielle capable de vous aider au quotidien sur votre colonie\nBonus: -2% Temps de construction / recherche",
+            'description' => "Permet de développer une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
             'type' => 'Labo',
             'iron' => 4000,
             'gold' => 0,
@@ -640,8 +640,8 @@ class DatabaseSeeder extends Seeder
             'id' => 16,
             'name' => 'Centre de commandement', //département de nanorobotique
             'slug' => Str::slug('commandcenter'),
-            'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.".
-                             "Bonus: -50% Temps de construction / recherche", //et moins 30% les vaisseaux
+            'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.", 
+            //et moins 30% les vaisseaux
             'type' => 'Military',
             'iron' => 900000,
             'gold' => 900000,
