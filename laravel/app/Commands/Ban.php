@@ -34,6 +34,6 @@ class Ban extends CommandHandler implements CommandInterface
 
         }
         else
-            return "Vous n'avez pas la permission pour banir un joueur...";
+            return "Vous n'avez pas la permission pour bannir un joueur...";
     }
 }
