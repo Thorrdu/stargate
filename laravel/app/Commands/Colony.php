@@ -34,6 +34,7 @@ class Colony extends CommandHandler implements CommandInterface
 
             $resourcesValue = "";
             $productionValue = '';
+            $storageValue = "";
             foreach (config('stargate.resources') as $resource)
             {
                 if(!empty($resourcesValue))
@@ -41,30 +42,38 @@ class Colony extends CommandHandler implements CommandInterface
                     $resourcesValue .= "\n";
                     $productionValue .= "\n";
                 }
-                $resourcesValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]->$resource).' / '.number_format($this->player->colonies[0]['storage_'.$resource]);
-                $productionValue .= ucfirst($resource).' '.number_format($this->player->colonies[0]['production_'.$resource]).' / Heure';
+                $icon = "";
+                switch($resource)
+                {
+                    case 'iron': $icon = '<:iron:737769180190998680> '; break;
+                    case 'gold': $icon = '<:gold:737769237011234917> '; break;
+                    case 'quartz': $icon = '<:pquartzp:737769265104551987> '; break;
+                    case 'naqahdah': $icon = '<:naqahdah:737769280573276160> '; break;
+                    default: break;
+                }
+                $resourcesValue .= $icon.' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/H)";
+                //$productionValue .= number_format($this->player->colonies[0]['production_'.$resource]).' '.ucfirst($resource).' / Heure';
+                $storageValue .= number_format($this->player->colonies[0]['storage_'.$resource]).' '.ucfirst($resource)."\n";
             }
 
             if(!empty($resourcesValue))
             {
-                $resourcesValue .= "\nEnergie ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
-                $resourcesValue .= "\nEspace ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max;
-
-                $resourcesValue .= "\nClônes ".round($this->player->colonies[0]->clones);
-                $resourcesValue .= "\nE2PZ ".round($this->player->colonies[0]->E2PZ);
+                $resourcesValue .= "\n<:energy:737769505790492782> Energie: ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
+                $resourcesValue .= "\n<:clone:737772878723940455> Clônes: ".round($this->player->colonies[0]->clones)." (".$this->player->colonies[0]->production_military."/H)";
+                $resourcesValue .= "\n<:e2pz:737772133559697478> E2PZ: ".round($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/Sem)";
                 $embed['fields'][] = array(
-                                        'name' => 'Ressources',
+                                        'name' => '<:production:737769455915892757> Ressources',
                                         'value' => $resourcesValue,
                                         'inline' => true
                                     );
 
-                $productionValue .= "\nE2PZ ".$this->player->colonies[0]->production_e2pz." / Semaine";
-                $productionValue .= "\nClônes ".$this->player->colonies[0]->production_military." / Heure";
-                $embed['fields'][] = array(
+                //$productionValue .= "\n".$this->player->colonies[0]->production_e2pz." E2PZ / Semaine";
+                //$productionValue .= "\n".$this->player->colonies[0]->production_military." Clônes / Heure";
+                /*$embed['fields'][] = array(
                                         'name' => 'Production',
                                         'value' => $productionValue,
                                         'inline' => true
-                                    );
+                                    );*/
             }
 
 
@@ -76,12 +85,12 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 if(!empty($prodBuildingsValue))
                     $prodBuildingsValue .= "\n";
-                $prodBuildingsValue .= $prodBuilding->name.' - LVL '.$prodBuilding->pivot->level;
+                $prodBuildingsValue .= 'Lvl '.$prodBuilding->pivot->level.' - '.$prodBuilding->name;
             }
             if(!empty($prodBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => 'Bâtiments de production',
+                                        'name' => '⚙️ Bâtiments de production',
                                         'value' => $prodBuildingsValue,
                                         'inline' => true
                                     );
@@ -95,12 +104,12 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 if(!empty($scienceBuildingsValue))
                     $scienceBuildingsValue .= "\n";
-                $scienceBuildingsValue .= $scienceBuilding->name.' - LVL '.$scienceBuilding->pivot->level;
+                $scienceBuildingsValue .= 'Lvl '.$scienceBuilding->pivot->level.' - '.$scienceBuilding->name;
             }
             if(!empty($scienceBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => 'Bâtiments scientifiques',
+                                        'name' => '<:research:737769578045898775> Bâtiments scientifiques',
                                         'value' => $scienceBuildingsValue,
                                         'inline' => true
                                     );
@@ -114,17 +123,17 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 if(!empty($militaryBuildingsValue))
                     $militaryBuildingsValue .= "\n";
-                $militaryBuildingsValue .= $militaryBuilding->name.' - LVL '.$militaryBuilding->pivot->level;
+                $militaryBuildingsValue .= 'Lvl '.$militaryBuilding->pivot->level.' - '.$militaryBuilding->name;
             }
             if(!empty($militaryBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => 'Bâtiments militaires',
+                                        'name' => '<:military:737769413629182094> Bâtiments militaires',
                                         'value' => $militaryBuildingsValue,
                                         'inline' => true
                                     );
             }
-
+            /*
             $storageBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
                 return $value->type == "Storage";
             });
@@ -133,13 +142,16 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 if(!empty($storageBuildingsValue))
                     $storageBuildingsValue .= "\n";
-                $storageBuildingsValue .= $storageBuilding->name.' - LVL '.$storageBuilding->pivot->level;
-            }
-            if(!empty($storageBuildingsValue))
+                $storageBuildingsValue .= 'Lvl '.$storageBuilding->pivot->level.' '.$storageBuilding->pivot->level;
+            }*/
+
+            if(!empty($storageValue))
             {
+                $storageValue = "\nEspace: ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max."\n".$storageValue;
+
                 $embed['fields'][] = array(
-                                        'name' => 'Entrepôts',
-                                        'value' => $storageBuildingsValue,
+                                        'name' => '<:storage:737773247336022077> Capacité des Entrepôts',
+                                        'value' => $storageValue,
                                         'inline' => true
                                     );
             }
@@ -149,12 +161,12 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 if(!empty($technologyValue))
                     $technologyValue .= "\n";
-                $technologyValue .= $technology->name.' - LVL '.$technology->pivot->level;
+                $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.$technology->name;
             }
             if(!empty($technologyValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => 'Technologies',
+                                        'name' => '<:research:737769578045898775> Technologies',
                                         'value' => $technologyValue,
                                         'inline' => true
                                     );
@@ -165,7 +177,7 @@ class Colony extends CommandHandler implements CommandInterface
                 $unitsString = '';
                 foreach($this->player->colonies[0]->units as $unit)
                 {
-                    $unitsString .= $unit->name." - ".number_format($unit->pivot->number)."\n";
+                    $unitsString .= number_format($unit->pivot->number).' '.$unit->name."\n";
                 }
                 $embed['fields'][] = array(
                                         'name' => 'Unités',
@@ -183,7 +195,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $currentLevel = 0;
                 $embed['fields'][] = array(
                     'name' => 'Construction en cours',
-                    'value' => $this->player->colonies[0]->activeBuilding->name." - LVL ".($currentLevel+1)."\n".$buildingTime,
+                    'value' => "Lvl ".($currentLevel+1)." - ".$this->player->colonies[0]->activeBuilding->name."\n".$buildingTime,
                     'inline' => true
                 );
             }
@@ -197,7 +209,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $currentLevel = 0;
                 $embed['fields'][] = array(
                     'name' => 'Recherche en cours',
-                    'value' => $this->player->activeTechnology->name." - LVL ".($currentLevel+1)."\n".$buildingTime,
+                    'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activeTechnology->name."\n".$buildingTime,
                     'inline' => true
                 );
             }

@@ -38,8 +38,12 @@ class Build extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('◀️')->then(function(){ 
-                            $this->paginatorMessage->react('▶️');
+                        $this->paginatorMessage->react('⏪')->then(function(){ 
+                            $this->paginatorMessage->react('◀️')->then(function(){ 
+                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                                    $this->paginatorMessage->react('⏩');
+                                });
+                            });
                         });
     
                         $this->listner = function ($messageReaction) {
@@ -48,7 +52,13 @@ class Build extends CommandHandler implements CommandInterface
     
                             if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                             {
-                                if($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                if($messageReaction->emoji->name == '⏪')
+                                {
+                                    $this->page = 1;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                 {
                                     $this->page--;
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
@@ -60,6 +70,12 @@ class Build extends CommandHandler implements CommandInterface
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                     $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                 }
+                                elseif($messageReaction->emoji->name == '⏩')
+                                {
+                                    $this->page = $this->maxPage;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
                             }
                         };
                         $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
@@ -67,63 +83,167 @@ class Build extends CommandHandler implements CommandInterface
                 }
                 else
                 {
-                    $buildingId = (int)$this->args[0];
-                    $building = Building::find($buildingId);
+                    $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))
                     {
-                        //Requirement
-                        $hasRequirements = true;
-                        foreach($building->requiredTechnologies as $requiredTechnology)
+                        if(count($this->args) == 2 && in_array($this->args[1],array('conf','confirm')))
                         {
-                            $currentLvl = $this->player->hasTechnology($requiredTechnology);
-                            if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
-                                $hasRequirements = false;
+                            //Requirement
+                            $hasRequirements = true;
+                            foreach($building->requiredTechnologies as $requiredTechnology)
+                            {
+                                $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                                if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                                    $hasRequirements = false;
+                            }
+                            foreach($building->requiredBuildings as $requiredBuilding)
+                            {
+                                $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                                    $hasRequirements = false;
+                            }
+                            if(!$hasRequirements)
+                                return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
+
+                            //if construction en cours, return
+                            if(!is_null($this->player->colonies[0]->active_building_end))
+                                return 'Un bâtiment est déjà en construction sur cette colonie';
+
+                            if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
+                                return 'Espace insufisant pour construire un nouveau bâtiment.';
+                            
+                            $wantedLvl = 1;
+                            $currentLevel = $this->player->colonies[0]->hasBuilding($building);
+                            if($currentLevel)
+                                $wantedLvl += $currentLevel;
+
+                            $hasEnough = true;
+                            $buildingPrices = $building->getPrice($wantedLvl);
+                            foreach (config('stargate.resources') as $resource)
+                            {
+                                if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
+                                    $hasEnough = false;
+                            }
+                            if(!$hasEnough)
+                                return 'Vous ne possédez pas assez de ressource pour construire ce bâtiment.';
+
+                            if($building->energy_base > 0)
+                            {
+                                $energyPrice = $building->getEnergy($wantedLvl);
+                                if($this->player->colonies[0]->energy_max < $energyPrice)
+                                    return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
+                            }
+
+                            if( !is_null($this->player->active_technology_id) && $building->id == 7)
+                                return 'Votre centre de recherche est occupé...';
+
+                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
+                            $buildingTime = gmdate("H:i:s", $endingDate - time());
+
+                            return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
                         }
-                        foreach($building->requiredBuildings as $requiredBuilding)
+                        else
                         {
-                            $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
-                            if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
-                                $hasRequirements = false;
+                            $hasRequirements = true;
+                            foreach($building->requiredTechnologies as $requiredTechnology)
+                            {
+                                $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
+                                if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                                    $hasRequirements = false;
+                            }
+                            foreach($building->requiredBuildings as $requiredBuilding)
+                            {
+                                $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                                    $hasRequirements = false;
+                            }
+
+                            if(!$hasRequirements)
+                            {
+                                return "Vous n'avez pas encore découvert ce bâtiment.";
+                            }
+
+                            $wantedLevel = 1;
+                            $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+                            if($currentLvl)
+                                $wantedLevel += $currentLvl;
+                
+                            $buildingPrice = "";
+                            $buildingPrices = $building->getPrice($wantedLevel);
+                            foreach (config('stargate.resources') as $resource)
+                            {
+                                if($building->$resource > 0)
+                                {
+                                    $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource)."\n";
+                                }
+                            }
+                
+                            $buildingTime = $building->getTime($wantedLevel);
+                            
+                            /** Application des bonus */
+                            $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+                
+                            $buildingTime = gmdate("H:i:s", $buildingTime);
+                
+                            $displayedLvl = 0;
+                            if($currentLvl)
+                                $displayedLvl = $currentLvl;
+
+                            $bonusString = "";
+                            if(!is_null($building->energy_bonus))
+                            {
+                                $bonus = $building->energy_bonus*100-100;
+                                $bonusString .= "+{$bonus}% Energie produite\n";
+                            }
+                            if(!is_null($building->building_bonus))
+                            {
+                                $bonus = 100-$building->technology_bonus*100;
+                                $bonusString .= "-{$bonus}% Temps de construction\n";
+                            }
+                            if(!is_null($building->technology_bonus))
+                            {
+                                $bonus = 100-$building->technology_bonus*100;
+                                $bonusString .= "-{$bonus}% Temps de recherche\n";
+                            }
+                            if(empty($bonusString))
+                                $bonusString = "/";
+
+                            $embed = [
+                                'author' => [
+                                    'name' => $this->player->user_name,
+                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                ],
+                                "title" => $building->name.' - LVL '.$displayedLvl,
+                                "description" => "Construire avec `!build {$building->id} confirm` ou `!build {$building->slug} confirm`\n\n".$building->description,
+                                'fields' => [
+                                    [
+                                        'name' => "Info",
+                                        'value' => "ID: ".$building->id."\n"."Slug: `".$building->slug."`",
+                                        'inline' => true
+                                    ],
+                                    [
+                                        'name' => "Bonus par Lvl",
+                                        'value' => $bonusString,
+                                        'inline' => true
+                                    ],
+                                    [
+                                        'name' => "Prix",
+                                        'value' => $buildingPrice,
+                                        'inline' => true
+                                    ],
+                                    [
+                                        'name' => "Durée de recherche",
+                                        'value' => $buildingTime,
+                                        'inline' => true
+                                    ]
+                                ],
+                                'footer' => array(
+                                    'text'  => 'Stargate',
+                                ),
+                            ];
+
+                            $this->message->channel->sendMessage('', false, $embed);
                         }
-                        if(!$hasRequirements)
-                            return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
-
-                        //if construction en cours, return
-                        if(!is_null($this->player->colonies[0]->active_building_end))
-                            return 'Un bâtiment est déjà en construction sur cette colonie';
-
-                        if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
-                            return 'Espace insufisant pour construire un nouveau bâtiment.';
-                        
-                        $wantedLvl = 1;
-                        $currentLevel = $this->player->colonies[0]->hasBuilding($building);
-                        if($currentLevel)
-                            $wantedLvl += $currentLevel;
-
-                        $hasEnough = true;
-                        $buildingPrices = $building->getPrice($wantedLvl);
-                        foreach (config('stargate.resources') as $resource)
-                        {
-                            if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
-                                $hasEnough = false;
-                        }
-                        if(!$hasEnough)
-                            return 'Vous ne possédez pas assez de ressource pour construire ce bâtiment.';
-
-                        if($building->energy_base > 0)
-                        {
-                            $energyPrice = $building->getEnergy($wantedLvl);
-                            if($this->player->colonies[0]->energy_max < $energyPrice)
-                                return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
-                        }
-
-                        if( !is_null($this->player->active_technology_id) && $building->id == 7)
-                            return 'Votre centre de recherche est occupé...';
-
-                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
-                        $buildingTime = gmdate("H:i:s", $endingDate - time());
-
-                        return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
                     }
                     else
                         return 'Bâtiment inconnu';
@@ -150,7 +270,7 @@ class Build extends CommandHandler implements CommandInterface
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
             ],
             "title" => 'Liste des bâtiments',
-            "description" => 'Pour commencer la construction d\'un bâtiment utilisez `!build [Numéro]`',
+            "description" => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
             'fields' => [],
             'footer' => array(
                 //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
@@ -193,7 +313,7 @@ class Build extends CommandHandler implements CommandInterface
             if($currentLvl)
                 $displayedLvl = $currentLvl;
 
-            $conditionsValue = "";
+            //$conditionsValue = "";
             $hasRequirements = true;
             foreach($building->requiredTechnologies as $requiredTechnology)
             {
@@ -201,9 +321,9 @@ class Build extends CommandHandler implements CommandInterface
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                     $hasRequirements = false;
 
-                if(!empty($conditionsValue))
+                /*if(!empty($conditionsValue))
                     $conditionsValue .= " / ";
-                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;
+                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;*/
             }
             foreach($building->requiredBuildings as $requiredBuilding)
             {
@@ -211,25 +331,27 @@ class Build extends CommandHandler implements CommandInterface
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
 
-                if(!empty($conditionsValue))
+                /*if(!empty($conditionsValue))
                     $conditionsValue .= " / ";
-                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;
+                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;*/
             }
-            if(!empty($conditionsValue))
-                $conditionsValue = "\nCondition: ".$conditionsValue;
+            /*if(!empty($conditionsValue))
+                $conditionsValue = "\nCondition: ".$conditionsValue;*/
 
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
                     'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
-                    'value' => 'Description: '.$building->description."\nSlug: ".$building->slug."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                    'value' => "\nSlug: `".$building->slug."`\n - Temps: ".$buildingTime."\nPrix: ".$buildingPrice,
+                    'inline' => true
                 );
             }
             else
             {
                 $embed['fields'][] = array(
                     'name' => '-- Bâtiment Caché --',
-                    'value' => 'Vous n\'avez pas encore découvert ce bâtiment.'
+                    'value' => 'Non découvert.',
+                    'inline' => true
                 );
             }
         }

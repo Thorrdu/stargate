@@ -39,8 +39,12 @@ class Research extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('◀️')->then(function(){ 
-                            $this->paginatorMessage->react('▶️');
+                        $this->paginatorMessage->react('⏪')->then(function(){ 
+                            $this->paginatorMessage->react('◀️')->then(function(){ 
+                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                                    $this->paginatorMessage->react('⏩');
+                                });
+                            });
                         });
     
                         $this->listner = function ($messageReaction) {
@@ -49,7 +53,13 @@ class Research extends CommandHandler implements CommandInterface
     
                             if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                             {
-                                if($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                if($messageReaction->emoji->name == '⏪')
+                                {
+                                    $this->page = 1;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                 {
                                     $this->page--;
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
@@ -58,6 +68,12 @@ class Research extends CommandHandler implements CommandInterface
                                 elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                                 {
                                     $this->page++;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '⏩')
+                                {
+                                    $this->page = $this->maxPage;
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                     $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                 }
@@ -168,11 +184,22 @@ class Research extends CommandHandler implements CommandInterface
 
                             $bonusString = "";
                             if(!is_null($technology->energy_bonus))
-                                $bonusString += "Energie produite: +{($technology->energy_bonus*100)}%\n";
+                            {
+                                $bonus = $technology->energy_bonus*100-100;
+                                $bonusString .= "+{$bonus}% Energie produite\n";
+                            }
                             if(!is_null($technology->building_bonus))
-                                $bonusString += "Temps de construction des bâtiments: -{($technology->building_bonus*100)}%\n";
+                            {
+                                $bonus = 100-$technology->technology_bonus*100;
+                                $bonusString .= "-{$bonus}% Temps de construction\n";
+                            }
                             if(!is_null($technology->technology_bonus))
-                                $bonusString += "Temps de recherche: -{($technology->technology_bonus*100)}%\n";
+                            {
+                                $bonus = 100-$technology->technology_bonus*100;
+                                $bonusString .= "-{$bonus}% Temps de recherche\n";
+                            }
+                            if(empty($bonusString))
+                                $bonusString = "/";
 
                             $embed = [
                                 'author' => [
@@ -180,15 +207,15 @@ class Research extends CommandHandler implements CommandInterface
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
                                 "title" => $technology->name.' - LVL '.$displayedLvl,
-                                "description" => $technology->description,
+                                "description" => "Rechercher avec `!research {$technology->id} confirm` ou `!research {$technology->slug} confirm`\n\n".$technology->description,
                                 'fields' => [
                                     [
                                         'name' => "Info",
-                                        'value' => "ID: ".$technology->id."\n"."Slug: ".$technology->slug,
+                                        'value' => "ID: ".$technology->id."\n"."Slug: `".$technology->slug."`",
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Bonus",
+                                        'name' => "Bonus par Lvl",
                                         'value' => $bonusString,
                                         'inline' => true
                                     ],
@@ -207,6 +234,8 @@ class Research extends CommandHandler implements CommandInterface
                                     'text'  => 'Stargate',
                                 ),
                             ];
+
+                            $this->message->channel->sendMessage('', false, $embed);
                         }
                     }
                     else
@@ -235,7 +264,7 @@ class Research extends CommandHandler implements CommandInterface
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
             ],
             "title" => 'Liste des technologies',
-            "description" => 'Pour commencer la recherche d\'une technologie utilisez `!research [Numéro]`',
+            "description" => "Pour voir le détail d'une technologie: `!research [ID/Slug]`\nPour commencer la recherche d'une technologie: `!research [ID/Slug] confirm`\n",
             'fields' => [],
             'footer' => array(
                 'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,
@@ -272,27 +301,27 @@ class Research extends CommandHandler implements CommandInterface
             if($currentLvl)
                 $displayedLvl = $currentLvl;
                 
-            $conditionsValue = "";
+            //$conditionsValue = "";
             $hasRequirements = true;
             foreach($technology->requiredTechnologies as $requiredTechnology)
             {
                 $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                     $hasRequirements = false;
-
+/*
                 if(!empty($conditionsValue))
                     $conditionsValue .= " / ";
-                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;
+                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;*/
             }
             foreach($technology->requiredBuildings as $requiredBuilding)
             {
                 $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
-
+                /*
                 if(!empty($conditionsValue))
                     $conditionsValue .= " / ";
-                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;
+                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;*/
             }
             /*if(!empty($conditionsValue))
                 $conditionsValue = "\nCondition: ".$conditionsValue;*/
@@ -301,14 +330,16 @@ class Research extends CommandHandler implements CommandInterface
             {
                 $embed['fields'][] = array(
                     'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
-                    'value' => 'Description: '.$technology->description."\nSlug: ".$technology->slug."\nTemps: ".$buildingTime.$conditionsValue."\nPrix: ".$buildingPrice
+                    'value' => "\nSlug: `".$technology->slug."`\n - Temps: ".$buildingTime."\nPrix: ".$buildingPrice,
+                    'inline' => true
                 );
             }
             else
             {
                 $embed['fields'][] = array(
                     'name' => '-- Technologie Cachée --',
-                    'value' => 'Vous n\'avez pas encore découvert cette technologie.'
+                    'value' => 'non découverte.',
+                    'inline' => true
                 );
             }
         }
