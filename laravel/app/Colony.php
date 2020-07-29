@@ -223,7 +223,7 @@ class Colony extends Model
         });
         $this->energy_max = 0;
         foreach($energyBuildings as $energyBuilding)
-            $this->energy_max += round($energyBuilding->getProduction($energyBuilding->pivot->level));
+            $this->energy_max += floor($energyBuilding->getProduction($energyBuilding->pivot->level));
         
         $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
             return !is_null($value->energy_bonus);
@@ -236,7 +236,7 @@ class Colony extends Model
 
         $this->energy_used = 0;
         foreach($this->buildings as $building)
-            $this->energy_used += round($building->getEnergy($building->pivot->level));
+            $this->energy_used += floor($building->getEnergy($building->pivot->level));
 
         foreach (config('stargate.resources') as $resource)
         {
