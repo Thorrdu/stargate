@@ -49,11 +49,11 @@ class Colony extends CommandHandler implements CommandInterface
 
             if(!empty($resourcesValue))
             {
-                $resourcesValue .= "\n<:energy:737769505790492782> Energie: ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
-                $resourcesValue .= "\n<:clone:737772878723940455> Clônes: ".round($this->player->colonies[0]->clones)." (".$this->player->colonies[0]->production_military."/H)";
-                $resourcesValue .= "\n<:e2pz:737772133559697478> E2PZ: ".round($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/Sem)";
+                $resourcesValue .= "\n".config('stargate.emotes.energy')." Energie: ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
+                $resourcesValue .= "\n".config('stargate.emotes.clone')." Clônes: ".round($this->player->colonies[0]->clones)." (".$this->player->colonies[0]->production_military."/H)";
+                $resourcesValue .= "\n".config('stargate.emotes.e2pz')." E2PZ: ".round($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/Sem)";
                 $embed['fields'][] = array(
-                                        'name' => '<:production:737769455915892757> Ressources',
+                                        'name' => config('stargate.emotes.production')." Ressources",
                                         'value' => $resourcesValue,
                                         'inline' => true
                                     );
@@ -81,7 +81,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($prodBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => '⚙️ Bâtiments de production',
+                                        'name' => config('stargate.emotes.productionBuilding')." Bâtiments de production",
                                         'value' => $prodBuildingsValue,
                                         'inline' => true
                                     );
@@ -100,7 +100,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($scienceBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => '<:research:737769578045898775> Bâtiments scientifiques',
+                                        'name' => config('stargate.emotes.research').' Bâtiments scientifiques',
                                         'value' => $scienceBuildingsValue,
                                         'inline' => true
                                     );
@@ -119,7 +119,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($militaryBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => '<:military:737769413629182094> Bâtiments militaires',
+                                        'name' => config('stargate.emotes.military').' Bâtiments militaires',
                                         'value' => $militaryBuildingsValue,
                                         'inline' => true
                                     );
@@ -141,7 +141,7 @@ class Colony extends CommandHandler implements CommandInterface
                 $storageValue = "\nEspace: ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max."\n".$storageValue;
 
                 $embed['fields'][] = array(
-                                        'name' => '<:storage:737773247336022077> Capacité des Entrepôts',
+                                        'name' => config('stargate.emotes.storage').' Capacité des Entrepôts',
                                         'value' => $storageValue,
                                         'inline' => true
                                     );
@@ -157,7 +157,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($technologyValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => '<:research:737769578045898775> Technologies',
+                                        'name' => config('stargate.emotes.research').' Technologies',
                                         'value' => $technologyValue,
                                         'inline' => true
                                     );

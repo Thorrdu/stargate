@@ -10,14 +10,32 @@ class Start extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $buildingList;
+    public $newPlayerId;
 
     public function execute()
     {
         echo PHP_EOL.'Execute Start';
+
         if(is_null($this->player))
         {
+
+            try{
+            $this->newPlayerId = $this->message->author->id;
             $this->maxTime = time()+180;
-            $this->message->channel->sendMessage('', false, trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'))->then(function ($messageSent){
+            $embed = [
+                'author' => [
+                    'name' => "Stargate",
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                ],
+                "title" => $this->message->author->user_name,
+                "description" => trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'),
+                'fields' => [],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                )
+            ];
+
+            $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
                 $this->paginatorMessage = $messageSent;
                 $this->paginatorMessage->react('🇬🇧')->then(function(){ 
                     $this->paginatorMessage->react('🇫🇷');
@@ -27,35 +45,61 @@ class Start extends CommandHandler implements CommandInterface
                     if($this->maxTime < time())
                         $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                    if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                    if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->newPlayerId)
                     {
                         if($messageReaction->emoji->name == '🇫🇷')
-                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->start('fr'));
-                        elseif($messageReaction->emoji->name == '🇬🇧' )
-                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->start('en'));
+                            $this->start('fr');
+                        elseif($messageReaction->emoji->name == '🇬🇧')
+                            $this->start('en');
                     }
                 };
                 $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+
             });
+            }
+            catch(\Exception $e)
+            {
+                return $e->getMessage();
+            }
         }
         elseif($this->player->ban)
             return trans('generic.banned',[],$this->player->lang);
         else
-            return trans('start.alreadyExists',[],$this->player->lang);
+            return trans('start.accountExists',[],$this->player->lang);
     }
 
     public function start($lang)
     {
-        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-        $newPlayer = new Player;
-        $newPlayer->user_id = $this->message->author->id;
-        $newPlayer->user_name = $this->message->author->user_name;
-        $newPlayer->ban = false;
-        $newPlayer->lang = $lang;
-        $newPlayer->votes = 0;
-        $newPlayer->save();   
-        $newPlayer->addColony();
-        return trans('start.startMessage',[],'fr');
+        try{
+            echo PHP_EOL.'lala';
+            $newPlayer = new Player;
+            $newPlayer->user_id = $this->newPlayerId;
+            $newPlayer->user_name = $this->message->author->user_name;
+            $newPlayer->ban = false;
+            $newPlayer->lang = $lang;
+            $newPlayer->votes = 0;
+            $newPlayer->save();   
+            $newPlayer->addColony();
 
+            $embed = [
+                'author' => [
+                    'name' => $newPlayer->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                ],
+                "title" => "Welcome to Stargate",
+                "description" => trans('start.startMessage',[],$newPlayer->lang),
+                'fields' => [],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                )
+            ];
+
+            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, '',$embed);
+            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+        }
+        catch(\Exception $e)
+        {
+            return $e->getMessage();
+        }
     }
 }
