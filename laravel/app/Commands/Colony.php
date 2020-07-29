@@ -42,16 +42,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $resourcesValue .= "\n";
                     $productionValue .= "\n";
                 }
-                $icon = "";
-                switch($resource)
-                {
-                    case 'iron': $icon = '<:iron:737769180190998680> '; break;
-                    case 'gold': $icon = '<:gold:737769237011234917> '; break;
-                    case 'quartz': $icon = '<:pquartzp:737769265104551987> '; break;
-                    case 'naqahdah': $icon = '<:naqahdah:737769280573276160> '; break;
-                    default: break;
-                }
-                $resourcesValue .= $icon.' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/H)";
+                $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/H)";
                 //$productionValue .= number_format($this->player->colonies[0]['production_'.$resource]).' '.ucfirst($resource).' / Heure';
                 $storageValue .= number_format($this->player->colonies[0]['storage_'.$resource]).' '.ucfirst($resource)."\n";
             }
