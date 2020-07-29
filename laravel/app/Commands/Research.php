@@ -190,7 +190,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             if(!is_null($technology->building_bonus))
                             {
-                                $bonus = 100-$technology->technology_bonus*100;
+                                $bonus = 100-$technology->building_bonus*100;
                                 $bonusString .= "-{$bonus}% Temps de construction\n";
                             }
                             if(!is_null($technology->technology_bonus))

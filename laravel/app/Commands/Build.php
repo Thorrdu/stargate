@@ -113,9 +113,9 @@ class Build extends CommandHandler implements CommandInterface
                                 return 'Espace insufisant pour construire un nouveau bâtiment.';
                             
                             $wantedLvl = 1;
-                            $currentLevel = $this->player->colonies[0]->hasBuilding($building);
-                            if($currentLevel)
-                                $wantedLvl += $currentLevel;
+                            $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+                            if($currentLvl)
+                                $wantedLvl += $currentLvl;
 
                             $hasEnough = true;
                             $buildingPrices = $building->getPrice($wantedLvl);
@@ -130,7 +130,7 @@ class Build extends CommandHandler implements CommandInterface
                             if($building->energy_base > 0)
                             {
                                 $energyPrice = $building->getEnergy($wantedLvl);
-                                if($this->player->colonies[0]->energy_max < $energyPrice)
+                                if(($this->player->colonies[0]->energy_max - $this->player->colonies[0]->energy_used) < $energyPrice)
                                     return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
                             }
 
@@ -157,19 +157,18 @@ class Build extends CommandHandler implements CommandInterface
                                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                                     $hasRequirements = false;
                             }
-
                             if(!$hasRequirements)
                             {
                                 return "Vous n'avez pas encore découvert ce bâtiment.";
                             }
 
-                            $wantedLevel = 1;
+                            $wantedLvl = 1;
                             $currentLvl = $this->player->colonies[0]->hasBuilding($building);
                             if($currentLvl)
-                                $wantedLevel += $currentLvl;
+                                $wantedLvl += $currentLvl;
                 
                             $buildingPrice = "";
-                            $buildingPrices = $building->getPrice($wantedLevel);
+                            $buildingPrices = $building->getPrice($wantedLvl);
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($building->$resource > 0)
@@ -177,12 +176,15 @@ class Build extends CommandHandler implements CommandInterface
                                     $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource)."\n";
                                 }
                             }
+                            if($building->energy_base > 0)
+                            {
+                                $energyRequired = $building->getEnergy($wantedLvl);
+                                $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
+                            }
                 
-                            $buildingTime = $building->getTime($wantedLevel);
-                            
+                            $buildingTime = $building->getTime($wantedLvl);
                             /** Application des bonus */
                             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-                
                             $buildingTime = gmdate("H:i:s", $buildingTime);
                 
                             $displayedLvl = 0;
@@ -192,22 +194,38 @@ class Build extends CommandHandler implements CommandInterface
                             $bonusString = "";
                             if(!is_null($building->energy_bonus))
                             {
-                                $bonus = $building->energy_bonus*100-100;
+                                $bonus = ($building->energy_bonus*100)-100;
                                 $bonusString .= "+{$bonus}% Energie produite\n";
                             }
                             if(!is_null($building->building_bonus))
                             {
-                                $bonus = 100-$building->technology_bonus*100;
+                                $bonus = 100-($building->building_bonus*100);
                                 $bonusString .= "-{$bonus}% Temps de construction\n";
                             }
                             if(!is_null($building->technology_bonus))
                             {
-                                $bonus = 100-$building->technology_bonus*100;
+                                $bonus = 100-($building->technology_bonus*100);
                                 $bonusString .= "-{$bonus}% Temps de recherche\n";
                             }
+                            $productionString = $consoString = "";
+                            if(!is_null($building->production_base))
+                            {
+                                if($currentLvl)
+                                    $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
+                                $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                            }
+                            if(!is_null($building->energy_base))
+                            {
+                                if($currentLvl)
+                                    $consoString .= "Lvl ".$currentLvl." - ".$building->getEnergy($currentLvl)."\n";
+                                $consoString .= "Lvl ".($currentLvl+1)." - ".$building->getEnergy($currentLvl+1);
+                            }
+                            if(empty($productionString))
+                                $productionString = "/";
                             if(empty($bonusString))
                                 $bonusString = "/";
-
+                            if(empty($consoString))
+                                $consoString = "/";
                             $embed = [
                                 'author' => [
                                     'name' => $this->player->user_name,
@@ -224,6 +242,16 @@ class Build extends CommandHandler implements CommandInterface
                                     [
                                         'name' => "Bonus par Lvl",
                                         'value' => $bonusString,
+                                        'inline' => true
+                                    ],
+                                    [
+                                        'name' => "Production",
+                                        'value' => $productionString,
+                                        'inline' => true
+                                    ],
+                                    [
+                                        'name' => "Consommation",
+                                        'value' => $consoString,
                                         'inline' => true
                                     ],
                                     [
@@ -280,13 +308,13 @@ class Build extends CommandHandler implements CommandInterface
 
         foreach($displayList as $building)
         {
-            $wantedLevel = 1;
+            $wantedLvl = 1;
             $currentLvl = $this->player->colonies[0]->hasBuilding($building);
             if($currentLvl)
-                $wantedLevel += $currentLvl;
+                $wantedLvl += $currentLvl;
 
             $buildingPrice = "";
-            $buildingPrices = $building->getPrice($wantedLevel);
+            $buildingPrices = $building->getPrice($wantedLvl);
             foreach (config('stargate.resources') as $resource)
             {
                 if($building->$resource > 0)
@@ -298,11 +326,11 @@ class Build extends CommandHandler implements CommandInterface
             }
             if($building->energy_base > 0)
             {
-                $energyRequired = $building->getEnergy($wantedLevel);
+                $energyRequired = $building->getEnergy($wantedLvl);
                 $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
             }
 
-            $buildingTime = $building->getTime($wantedLevel);
+            $buildingTime = $building->getTime($wantedLvl);
 
             /** Application des bonus */
             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();

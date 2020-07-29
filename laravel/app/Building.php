@@ -36,7 +36,7 @@ class Building extends Model
     public function getEnergy(int $level)
     {
         $level--; //Du au coeficient
-        return $this->energy_base * pow($this->energy_coefficient, $level);
+        return floor($this->energy_base * pow($this->energy_coefficient, $level));
     }
 
     public function getTime(int $level)
