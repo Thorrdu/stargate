@@ -18,6 +18,8 @@ class CreatePlayersTable extends Migration
             $table->bigInteger('user_id')->length(18)->unsigned();
             $table->unique('user_id');
             $table->string('user_name', 50);
+            $table->integer('lang')->Enum(0);
+            $table->enum('lang', ['fr', 'en']);
             $table->boolean('ban')->default(false);
             $table->integer('votes')->default(0);
             $table->timestamps();

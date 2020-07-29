@@ -6,24 +6,56 @@ use App\Player;
 
 class Start extends CommandHandler implements CommandInterface
 {
+    public $maxTime;
+    public $paginatorMessage;
+    public $listner;
+    public $buildingList;
+
     public function execute()
     {
+        echo PHP_EOL.'Execute Start';
         if(is_null($this->player))
         {
-            echo PHP_EOL.'Execute Start';
-            $newPlayer = new Player;
-            $newPlayer->user_id = $this->message->author->id;
-            $newPlayer->user_name = $this->message->author->user_name;
-            $newPlayer->ban = false;
-            $newPlayer->votes = 0;
-            $newPlayer->save();   
-            $newPlayer->addColony();
-            return "[Blabla Synopsis]\n\nWarning: Ce bot est en early alpha. Les noms, textes, affichages, commandes,... ne sont pas définitifs et sont sujet à changement.\nDe nombreux Reset sont également à prévoir\n\nPour afficher votre colonie utilisez `!colony` (ou !c)
-            \nDe plus, la majorité des mécaniques de jeu ne sont pas encore présentes";
+            $this->maxTime = time()+180;
+            $this->message->channel->sendMessage('', false, trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'))->then(function ($messageSent){
+                $this->paginatorMessage = $messageSent;
+                $this->paginatorMessage->react('🇬🇧')->then(function(){ 
+                    $this->paginatorMessage->react('🇫🇷');
+                });
+
+                $this->listner = function ($messageReaction) {
+                    if($this->maxTime < time())
+                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+                    if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                    {
+                        if($messageReaction->emoji->name == '🇫🇷')
+                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->start('fr'));
+                        elseif($messageReaction->emoji->name == '🇬🇧' )
+                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->start('en'));
+                    }
+                };
+                $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+            });
         }
         elseif($this->player->ban)
-            return 'Vous êtes banni...';
+            return trans('generic.banned',[],$this->player->lang);
         else
-            return "Compté déjà existant\n\nPour afficher votre profile utilisez `!colony` (ou !c)";
+            return trans('start.alreadyExists',[],$this->player->lang);
+    }
+
+    public function start($lang)
+    {
+        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+        $newPlayer = new Player;
+        $newPlayer->user_id = $this->message->author->id;
+        $newPlayer->user_name = $this->message->author->user_name;
+        $newPlayer->ban = false;
+        $newPlayer->lang = $lang;
+        $newPlayer->votes = 0;
+        $newPlayer->save();   
+        $newPlayer->addColony();
+        return trans('start.startMessage',[],'fr');
+
     }
 }

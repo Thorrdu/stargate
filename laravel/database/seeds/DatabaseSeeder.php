@@ -724,8 +724,6 @@ class DatabaseSeeder extends Seeder
             'level' => 20
         ]);
 
-
-
         /*
         Reacteur au naqadah
         */
@@ -741,6 +739,39 @@ class DatabaseSeeder extends Seeder
             'required_technology_id' => 4,
             'level' => 4
         ]);
+
+        DB::table('technologies')->insert([
+            'id' => 11, 
+            'name' => 'Laser',
+            'slug' => Str::slug('laser'),
+            'description' => "Rayon laser à concentration élevée lors de l'accumulation de grandes quantités d'énergie.",
+            'type' => 'Labo',
+            'iron' => 400,
+            'gold' => 100,
+            'quartz' => 0,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 600,
+            'time_coefficient' => 2
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 11, 
+            'name' => 'Vitesse subluminique', // Impulsion
+            'slug' => Str::slug('subluminal'),
+            'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
+            'type' => 'Center',
+            'iron' => 1000,
+            'gold' => 2000,
+            'quartz' => 300,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 3600,
+            'time_coefficient' => 2
+        ]);
+
 
 
         DB::table('units')->insert([
@@ -832,7 +863,8 @@ class DatabaseSeeder extends Seeder
             'iron' => 1000,
             'gold' => 600,
             'quartz' => 2400,
-            'naqahdah' => 480
+            'naqahdah' => 480,
+            'base_time' => 450
         ]);
         DB::table('units')->insert([
             'id' => 6,
@@ -840,17 +872,18 @@ class DatabaseSeeder extends Seeder
             'name' => "Petit transporteur",
             'slug' => 'transport',
             'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
-            'capacity' => 1000,
+            'health' => 2000,
+            'armor' => 1500,
+            'shield' => 1000,
+            'capacity' => 2500,
             'utility_power' => 0,
             'convertible' => false,
             'buyable' => true,
             'iron' => 400,
             'gold' => 150,
             'quartz' => 50,
-            'naqahdah' => 200
+            'naqahdah' => 200,
+            'base_time' => 600
         ]);
         DB::table('units')->insert([
             'id' => 7,

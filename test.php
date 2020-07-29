@@ -14,7 +14,7 @@ use App\Building;
 use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
-
+trans('lang.msg');
 /*
 $players = Player::all();
 foreach ($players as $player) {
