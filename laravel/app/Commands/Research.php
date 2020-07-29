@@ -127,7 +127,7 @@ class Research extends CommandHandler implements CommandInterface
                             if(!$hasEnough)
                                 return 'Vous ne possédez pas assez de ressource pour rechercher cette technologie.';
 
-                            if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7)
+                            if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7 )
                                 return 'Votre centre de recherche est occupé...';
 
                             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology))->timestamp;

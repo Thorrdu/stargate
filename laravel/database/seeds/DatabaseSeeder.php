@@ -893,7 +893,7 @@ class DatabaseSeeder extends Seeder
             'player_id' => 1,
             'colony_type' => 1,
             'space_used' => 22,
-            'space_max' => 24,
+            'space_max' => 180,
             'name' => 'P'.rand(1, 9).Str::random(1).'-'.rand(1, 9).rand(1, 9).rand(1, 9),
             'last_claim' => '2020-07-14 00:00:00'
         ]);
