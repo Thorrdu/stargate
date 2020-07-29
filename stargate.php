@@ -161,8 +161,8 @@ $discord->on('ready', function ($discord) {
         //'aliases' => array('t'),
     ]);*/
 
-    $discord->registerCommand('start', function ($message, $args) {
-        $command = new Start($message,$args);
+    $discord->registerCommand('start', function ($message, $args) use($discord){
+        $command = new Start($message,$args,$discord);
         return $command->execute();
     },[
         'description' => config('stargate.commands.start.description'),
