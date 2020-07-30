@@ -15,6 +15,7 @@ class Profile extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned', [], $this->player->lang);
 
+                $totalPlayers = DB::table('users')->count();
                 $generalPosition = DB::table('users')->where('points_total', '>' , $this->player->points_total)->count() + 1;
                 $buildingPosition = DB::table('users')->where('points_building', '>' , $this->player->points_building)->count() + 1;
                 $researchPosition = DB::table('users')->where('points_research', '>' , $this->player->points_research)->count() + 1;
@@ -31,10 +32,10 @@ class Profile extends CommandHandler implements CommandInterface
                 'fields' => [
                     [
                         'name' => 'Points',
-                        'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." (Position: ".number_format($generalPosition).")\n"
-                                  .config('stargate.emotes.productionBuilding').trans('generic.building',[],$this->player->lang).": ".number_format($this->player->points_building)." (Position: ".number_format($buildingPosition).")\n"
-                                  .config('stargate.emotes.research').trans('generic.research',[],$this->player->lang).": ".number_format($this->player->points_research)." (Position: ".number_format($researchPosition).")\n"
-                                  .config('stargate.emotes.military').trans('generic.military',[],$this->player->lang).": ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition).")\n",
+                        'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." Points (Position: ".number_format($generalPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.productionBuilding').trans('generic.building',[],$this->player->lang).": Points ".number_format($this->player->points_building)." (".number_format($buildingPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.research').trans('generic.research',[],$this->player->lang).": Points ".number_format($this->player->points_research)." (Position: ".number_format($researchPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.military').trans('generic.military',[],$this->player->lang).": Points ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition)."/{$totalPlayers})\n",
                         'inline' => true
                     ]
                 ],
