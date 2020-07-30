@@ -4,10 +4,6 @@ namespace App\Commands;
 
 class Ping extends CommandHandler implements CommandInterface
 {
-    public $maxTime;
-    public $paginatorMessage;
-    public $listner;
-
     public function execute()
     {
         echo PHP_EOL.'Execute Ping';

@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos};
 use App\Utility\TopUpdater;
 
 //use Discord\Discord;
@@ -118,7 +118,7 @@ $discord->on('ready', function ($discord) {
         'description' => config('stargate.commands.start.description'),
 		'usage' => config('stargate.commands.start.usage'),
         'aliases' => array('s','start'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);
 
     $discord->registerCommand('profile', function ($message, $args) {
@@ -128,7 +128,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Affiche le profile',
 		'usage' => "`!profile`",
 		'aliases' => array('p'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) {
@@ -138,7 +138,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Affiche les infos de votre colonie',
 		'usage' => '`!colony`',
 		'aliases' => array('c','co','col'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {
@@ -148,7 +148,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Liste ou construit un bâtiment',
 		'usage' => "`!build list`\n`!build [Numéro]`",
 		'aliases' => array('b','bu'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('research', function ($message, $args) use($discord) {
@@ -158,7 +158,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Liste ou recherche une technologie',
 		'usage' => "`!research list`\n`!research [Numéro]`",
 		'aliases' => array('r','search'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);
 
     $discord->registerCommand('refresh', function ($message, $args) {
@@ -168,7 +168,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Force Prod Refresh',
 		'usage' => "`!refresh`",
 		//'aliases' => array('r'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('top', function ($message, $args) use($discord){
@@ -177,7 +177,9 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Affiche les divers Tops',
 		'usage' => "`!top`",
-		//'aliases' => array('t')
+        //'aliases' => array('t')
+        'cooldown' => 4
+
     ]);	
 
     $discord->registerCommand('invite', function ($message, $args) {
@@ -187,7 +189,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Get invite link',
 		'usage' => "`!invite`",
 		//'aliases' => array('r'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('vote', function ($message, $args) {
@@ -197,7 +199,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Get vote link',
 		'usage' => "`!vote`",
 		'aliases' => array('v','vo'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('lang', function ($message, $args){
@@ -206,7 +208,9 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Permet de changer de langue',
 		'usage' => "`!lang [en/fr]`",
-		//'aliases' => array('b')
+        //'aliases' => array('b')
+        'cooldown' => 4
+
     ]);
 
     $discord->registerCommand('ban', function ($message, $args) {
@@ -215,15 +219,28 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => 'Banni un joueur du bot.',
 		'usage' => "`!ban @mention`",
-		//'aliases' => array('b')
+        //'aliases' => array('b')
+        'cooldown' => 2
+
+    ]);	
+
+    $discord->registerCommand('info', function ($message, $args) use($discord){
+        $command = new Ping($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => 'Affiche des informations complémentaires sur le bot',
+        'usage' => "`!infos`",
+        'aliases' => array('info'),
+        'cooldown' => 4
     ]);	
 
     $discord->registerCommand('ping', function ($message, $args) {
         $command = new Ping($message,$args);
         return $command->execute();
     },[
-        'description' => 'Affiche la latence',
-		'usage' => "`!ping`",
+        'description' => 'Affiche la latence du bot',
+        'usage' => "`!ping`",
+        'cooldown' => 4
     ]);	
     /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
@@ -234,7 +251,7 @@ $discord->on('ready', function ($discord) {
         'description' => 'Commande test à tout faire',
 		'usage' => 'test',
         'aliases' => array('t'),
-        'cooldown' => 5
+        'cooldown' => 4
     ]);	*/
     
 
