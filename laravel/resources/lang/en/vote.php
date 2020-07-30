@@ -1,5 +1,5 @@
 <?php
 //VOTE EN
 return [
-    'voteMessage' => 'afin de voter pour Stargate, utilisez ce lien: :link',
+    'voteMessage' => 'to vote for Stargate, use this link: :link',
 ];

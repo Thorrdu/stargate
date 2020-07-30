@@ -1,5 +1,5 @@
 <?php
 //INVITE EN
 return [
-    'inviteMessage' => 'to invite Stargate on your server, usr this link: :link',
+    'inviteMessage' => 'to invite Stargate on your server, use this link: :link',
 ];
