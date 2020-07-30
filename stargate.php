@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping};
 use App\Utility\TopUpdater;
 
 //use Discord\Discord;
@@ -218,6 +218,13 @@ $discord->on('ready', function ($discord) {
 		//'aliases' => array('b')
     ]);	
 
+    $discord->registerCommand('ping', function ($message, $args) {
+        $command = new Ping($message,$args);
+        return $command->execute();
+    },[
+        'description' => 'Affiche la latence',
+		'usage' => "`!ping`",
+    ]);	
     /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
         return 'test received';
