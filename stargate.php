@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Paginator};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand};
 use App\Utility\TopUpdater;
 
 //use Discord\Discord;
@@ -110,56 +110,6 @@ $discord->on('ready', function ($discord) {
         foreach($players as $player)
             TopUpdater::update($player);
     });
-
-  /*  
-    $discord->registerCommand('await', function ($message, $args) use ($discord){
-        
-        echo 'PRE';
-        global $count;
-        $count = 0;
-        $countMax = 2;
-        $timeMax = time();
-        $message->channel->sendMessage("LISTEN ON");
-
-        try{
-            $discord->on('message', function ($messageListen,$response) use ($message,$countMax,$timeMax){
-                global $count;
-                if($message->channel->id == $messageListen->channel->id && $message->author->id == $messageListen->author->id)
-                {
-                    $messageListen->channel->sendMessage("LISTEN: {$count}/{$countMax} {$messageListen->author->username}: {$messageListen->content}");
-                    $count++;
-                }
-                
-                try{
-                    if($countMax <= $count)
-                    {
-
-                        
-                        throw 'aaa';
-                    }
-                }
-                catch(\Exception $e)
-                {
-                    $message->channel->sendMessage($e->getMessage());
-                }  
-            });
-        }
-        catch(\Exception $e)
-        {
-            $message->channel->sendMessage($e->getMessage());
-        }       
-        finally
-        {
-            $message->channel->sendMessage("LISTEN OFF");
-
-        }
-    },[
-        'description' => 'test',
-        'usage' => 'test',
-        'aliases' => array('ttt'),
-
-        //'aliases' => array('t'),
-    ]);*/
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
         $command = new Start($message,$args,$discord);
@@ -250,6 +200,15 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
+    $discord->registerCommand('lang', function ($message, $args) use($discord) {
+        $command = new LangCommand($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => 'Banni un joueur du bot.',
+		'usage' => "`!ban @mention`",
+		//'aliases' => array('b')
+    ]);
+
     $discord->registerCommand('ban', function ($message, $args) {
         $command = new Ban($message,$args);
         return $command->execute();
@@ -259,6 +218,7 @@ $discord->on('ready', function ($discord) {
 		//'aliases' => array('b')
     ]);	
 
+    /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
         return 'test received';
         $command = new Paginator($message,$args,$discord);
@@ -268,7 +228,7 @@ $discord->on('ready', function ($discord) {
 		'usage' => 'test',
         'aliases' => array('t'),
         'cooldown' => 5
-    ]);	
+    ]);	*/
     
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
