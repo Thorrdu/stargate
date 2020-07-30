@@ -225,7 +225,7 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('infos', function ($message, $args) use($discord){
-        $command = new Ping($message,$args,$discord);
+        $command = new Infos($message,$args,$discord);
         return $command->execute();
     },[
         'description' => 'Affiche des informations complémentaires sur le bot',
