@@ -3,81 +3,144 @@
 namespace App\Commands;
 
 use App\Player;
+use Illuminate\Support\Str;
 
 class Top extends CommandHandler implements CommandInterface
 {
+    public $page;
+    public $maxPage;
+    public $perPage;
+    public $maxTime;
+    public $paginatorMessage;
+    public $listner;
+    public $playerList;
+    public $topType;
+
     public function execute()
     {
         if(!is_null($this->player))
         {
+            echo PHP_EOL.'Execute Top';
+
             if($this->player->ban)
-                return 'Vous êtes banni...';
-            $embed = [
-                'author' => [
-                    'name' => $this->player->user_name,
-                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
-                ],
-                "title" => 'Tops',
-                "description" => 'Les meilleurs joueurs par catégories',
-                'fields' => [],
-                'footer' => array(
-                    'text'  => 'Stargate',
-                ),
-            ];
+                return trans('generic.banned',[],$this->player->lang);
 
-            $generalString = "";
-            $topGeneral = Player::all()->sortByDesc('points_total')->slice(0,9);
-            foreach($topGeneral as $player)
-                $generalString .= $player->user_name." - ".number_format($player->points_total)."\n";
-            if(empty($generalString))
-                $generalString = "/";
-            $embed['fields'][] = [
-                'name' => 'Général',
-                'value' => $generalString,
-                'inline' => true
-                ];
+            try{
+                if(empty($this->args))
+                    return trans('top.choice', [], $this->player->lang);
 
-            $buildingString = "";
-            $topBuilding = Player::all()->sortByDesc('points_building')->slice(0,9);
-            foreach($topBuilding as $player)
-                $buildingString .= $player->user_name." - ".number_format($player->points_building)."\n";
-            if(empty($buildingString))
-                $buildingString = "/";
-            $embed['fields'][] = [
-                'name' => 'Bâtiments',
-                'value' => $buildingString,
-                'inline' => true
-                ];      
+                if(Str::startsWith('general', $this->args[0])){
+                    $this->topType = 'general';
+                    $this->playerList = Player::all()->sortByDesc('points_total'); 
+                }     
+                elseif(Str::startsWith('building', $this->args[0])){
+                    $this->topType = 'building';
+                    $this->playerList = Player::all()->sortByDesc('points_building');
+                }      
+                elseif(Str::startsWith('research', $this->args[0])){
+                    $this->topType = 'research';
+                    $this->playerList = Player::all()->sortByDesc('points_research');   
+                }  
+                elseif(Str::startsWith('military', $this->args[0])){
+                    $this->topType = 'military';
+                    $this->playerList = Player::all()->sortByDesc('points_military');   
+                }   
+                else
+                    return trans('top.choice', [], $this->player->lang);
+                  
+                $this->page = 1;
+                $this->perPage = 10;
+                $this->maxPage = ceil($this->playerList->count()/$this->perPage);
+                $this->maxTime = time()+180;
+                $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
+                    $this->paginatorMessage = $messageSent;
+                    $this->paginatorMessage->react('⏪')->then(function(){ 
+                        $this->paginatorMessage->react('◀️')->then(function(){ 
+                            $this->paginatorMessage->react('▶️')->then(function(){ 
+                                $this->paginatorMessage->react('⏩');
+                            });
+                        });
+                    });
 
-            $researchString = "";
-            $topResearch = Player::all()->sortByDesc('points_research')->slice(0,9);
-            foreach($topResearch as $player)
-                $researchString .= $player->user_name." - ".number_format($player->points_research)."\n";
-            if(empty($researchString))
-                $researchString = "/"; 
-            $embed['fields'][] = [
-                'name' => 'Recherche',
-                'value' => $researchString,
-                'inline' => true
-                ]; 
+                    $this->listner = function ($messageReaction) {
+                        if($this->maxTime < time())
+                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-            $militaryString = "";
-            $topMilitary = Player::all()->sortByDesc('points_military')->slice(0,9);
-            foreach($topMilitary as $player)
-                $militaryString .= $player->user_name." - ".number_format($player->points_military)."\n";
-            $militaryString = "";
-            if(empty($militaryString))
-                $militaryString = "/";
-            $embed['fields'][] = [
-                'name' => 'Militaire',
-                'value' => $militaryString,
-                'inline' => true
-                ]; 
+                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                        {
+                            if($messageReaction->emoji->name == '⏪')
+                            {
+                                $this->page = 1;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                            elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                            {
+                                $this->page--;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                            elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                            {
+                                $this->page++;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                            elseif($messageReaction->emoji->name == '⏩')
+                            {
+                                $this->page = $this->maxPage;
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                        }
+                    };
+                    $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                });
 
-            $this->message->channel->sendMessage('', false, $embed);
-            return;
+            }
+            catch(\Exception $e)
+            {
+                echo $e->getMessage();
+                return $e->getMessage();
+            }
         }
         else
-            return "Pour commencer votre aventure, utilisez `!start`";
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
+        return false;
+    }
+
+    public function getPage()
+    {
+        $displayList = $this->playerList->skip($this->perPage*($this->page -1))->take($this->perPage);
+        if($this->topType == 'general')
+            $varName = 'points_total';
+        else
+            $varName = 'points_'.$this->topType;
+        
+        $counter = (($this->perPage-1)*10);
+        $playerList = "";
+        foreach($displayList as $player)
+        {
+            $counter++;
+            $playerList .= $counter.". ".$player->user_name.' - '.number_format($player->$varName)." Points\n";
+
+        }
+        if(empty($playerList))
+            $playerList = "/";
+
+        $embed = [
+            'author' => [
+                'name' => $this->player->user_name,
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+            ],
+            "title" => 'Top '.trans('generic.'.$this->topType),
+            "description" => $playerList,
+            'fields' => [],
+            'footer' => array(
+                'text'  => 'Stargate',
+            ),
+        ];
+
+        return $embed;
     }
 }

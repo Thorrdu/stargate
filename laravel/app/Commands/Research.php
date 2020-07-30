@@ -250,7 +250,7 @@ class Research extends CommandHandler implements CommandInterface
             }
         }
         else
-            return "Pour commencer votre aventure, utilisez `!start`";
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;
     }
 

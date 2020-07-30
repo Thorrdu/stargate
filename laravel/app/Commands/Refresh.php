@@ -17,6 +17,6 @@ class Refresh extends CommandHandler implements CommandInterface
             return "Prod recalculée";
         }
         else
-            return "Pour commencer votre aventure, utilisez `!start`";
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
     }
 }

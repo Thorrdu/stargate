@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Player;
+use Illuminate\Support\Facades\DB;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -12,18 +13,28 @@ class Profile extends CommandHandler implements CommandInterface
         {
             echo PHP_EOL.'Execute profile';
             if($this->player->ban)
-                return 'Vous êtes banni...';
+                return trans('generic.banned', [], $this->player->lang);
+
+                $generalPosition = DB::table('users')->where('points_total', '>' , $this->player->points_total)->count() + 1;
+                $buildingPosition = DB::table('users')->where('points_building', '>' , $this->player->points_building)->count() + 1;
+                $researchPosition = DB::table('users')->where('points_research', '>' , $this->player->points_research)->count() + 1;
+                $militaryPosition = DB::table('users')->where('points_military', '>' , $this->player->points_military)->count() + 1;
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
-                "title" => 'Profile de '.$this->player->user_name,
-                "description" => 'Votes: '.$this->player->votes,
+                "title" => $this->player->user_name,
+                "description" => "Lang: ".config('stargate.emotes.'.$this->player->lang)."\n"
+                                ."Votes: ".$this->player->votes."\n",
                 'fields' => [
                     [
                         'name' => 'Points',
-                        'value' => "Total: ".number_format($this->player->points_total)." points\nBâtiments: ".number_format($this->player->points_building)." Points\nRecherches: ".number_format($this->player->points_research)." Points\nMilitaire: ".number_format($this->player->points_military)." Points",
+                        'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." (Position: ".number_format($generalPosition).")\n"
+                                  .config('stargate.emotes.productionBuilding').trans('generic.building',[],$this->player->lang).": ".number_format($this->player->points_building)." (Position: ".number_format($buildingPosition).")\n"
+                                  .config('stargate.emotes.research').trans('generic.research',[],$this->player->lang).": ".number_format($this->player->points_research)." (Position: ".number_format($researchPosition).")\n"
+                                  .config('stargate.emotes.military').trans('generic.military',[],$this->player->lang).": ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition).")\n",
                         'inline' => true
                     ]
                 ],
@@ -38,7 +49,7 @@ class Profile extends CommandHandler implements CommandInterface
                 $coloniesString .= $colony->name."\n";
             }
             $embed['fields'][] = [
-                'name' => 'Colonies',
+                'name' => trans('generic.colonies',[],$this->player->lang),
                 'value' => $coloniesString,
                 'inline' => true
             ];
@@ -47,6 +58,6 @@ class Profile extends CommandHandler implements CommandInterface
             return ;
         }
         else
-            return "Pour commencer votre aventure, utilisez `!start`";
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
     }
 }

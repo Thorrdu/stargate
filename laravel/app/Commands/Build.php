@@ -24,7 +24,7 @@ class Build extends CommandHandler implements CommandInterface
         if(!is_null($this->player))
         {
             if($this->player->ban)
-                return 'Vous êtes banni...';
+                return trans('generic.banned',[],$this->player->lang);
             $this->player->colonies[0]->checkBuilding();
 
             try{
@@ -284,7 +284,7 @@ class Build extends CommandHandler implements CommandInterface
             }
         }
         else
-            return "Pour commencer votre aventure, utilisez `!start`";
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;
     }
 
