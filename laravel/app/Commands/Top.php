@@ -140,7 +140,6 @@ class Top extends CommandHandler implements CommandInterface
                 'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,
             ),
         ];
-
         return $embed;
     }
 }
