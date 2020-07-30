@@ -200,12 +200,12 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('lang', function ($message, $args) use($discord) {
-        $command = new LangCommand($message,$args,$discord);
+    $discord->registerCommand('lang', function ($message, $args){
+        $command = new LangCommand($message,$args);
         return $command->execute();
     },[
-        'description' => 'Banni un joueur du bot.',
-		'usage' => "`!ban @mention`",
+        'description' => 'Permet de changer de langue',
+		'usage' => "`!lang [en/fr]`",
 		//'aliases' => array('b')
     ]);
 
