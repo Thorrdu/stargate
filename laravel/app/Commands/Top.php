@@ -117,13 +117,13 @@ class Top extends CommandHandler implements CommandInterface
         else
             $varName = 'points_'.$this->topType;
         
-        $counter = (($this->perPage-1)*10);
+        $counter = (($this->page-1)*$this->perPage)+1;
+
         $playerList = "";
         foreach($displayList as $player)
         {
-            $counter++;
             $playerList .= $counter.". ".$player->user_name.' - '.number_format($player->$varName)." Points\n";
-
+            $counter++;
         }
         if(empty($playerList))
             $playerList = "/";
@@ -133,11 +133,11 @@ class Top extends CommandHandler implements CommandInterface
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
             ],
-            "title" => 'Top '.trans('generic.'.$this->topType),
+            "title" => 'Top '.trans('generic.'.$this->topType, [], $this->player->lang),
             "description" => $playerList,
             'fields' => [],
             'footer' => array(
-                'text'  => 'Stargate',
+                'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,
             ),
         ];
 
