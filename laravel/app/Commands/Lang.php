@@ -15,10 +15,16 @@ class Lang extends CommandHandler implements CommandInterface
         echo PHP_EOL.'Execute Lang';
 
         if(is_null($this->player))
-        {
+            return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
 
-            try{
-            $this->newPlayerId = $this->message->author->id;
+        if($this->player->ban)
+            return trans('generic.banned',[],$this->player->lang);
+
+        if(empty($this->args))
+            return trans('lang.choice', [], $this->player->lang);
+
+
+        try{
             $this->maxTime = time()+180;
             $embed = [
                 'author' => [
@@ -54,16 +60,11 @@ class Lang extends CommandHandler implements CommandInterface
                 $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
 
             });
-            }
-            catch(\Exception $e)
-            {
-                return $e->getMessage();
-            }
         }
-        elseif($this->player->ban)
-            return trans('generic.banned',[],$this->player->lang);
-        else
-            return trans('start.accountExists',[],$this->player->lang);
+        catch(\Exception $e)
+        {
+            return $e->getMessage();
+        }
     }
 
     public function lang($lang)
