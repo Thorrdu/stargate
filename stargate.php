@@ -224,7 +224,7 @@ $discord->on('ready', function ($discord) {
 
     ]);	
 
-    $discord->registerCommand('info', function ($message, $args) use($discord){
+    $discord->registerCommand('infos', function ($message, $args) use($discord){
         $command = new Ping($message,$args,$discord);
         return $command->execute();
     },[

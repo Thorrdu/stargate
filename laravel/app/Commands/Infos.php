@@ -10,7 +10,9 @@ class Infos extends CommandHandler implements CommandInterface
     public function execute()
     {
         echo PHP_EOL.'Execute Infos';
+        try{
 
+ 
 
         $totalPlayers = DB::table('players')->count();
         $embed = [
@@ -67,8 +69,12 @@ class Infos extends CommandHandler implements CommandInterface
             )
         ];
 
-
+        var_dump($embed);
         $this->message->channel->sendMessage('', false, $embed);
-        
+        }
+        catch(\Exception $e)
+        {
+            return $e->getMessage();
+        }
     }
 }
