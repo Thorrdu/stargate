@@ -171,8 +171,8 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 5
     ]);	
 
-    $discord->registerCommand('top', function ($message, $args) {
-        $command = new Top($message,$args);
+    $discord->registerCommand('top', function ($message, $args) use($discord){
+        $command = new Top($message,$args,$discord);
         return $command->execute();
     },[
         'description' => 'Affiche les divers Tops',
