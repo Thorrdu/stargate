@@ -15,11 +15,11 @@ class Profile extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned', [], $this->player->lang);
 
-                $totalPlayers = DB::table('users')->count();
-                $generalPosition = DB::table('users')->where('points_total', '>' , $this->player->points_total)->count() + 1;
-                $buildingPosition = DB::table('users')->where('points_building', '>' , $this->player->points_building)->count() + 1;
-                $researchPosition = DB::table('users')->where('points_research', '>' , $this->player->points_research)->count() + 1;
-                $militaryPosition = DB::table('users')->where('points_military', '>' , $this->player->points_military)->count() + 1;
+                $totalPlayers = DB::table('players')->count();
+                $generalPosition = DB::table('players')->where('points_total', '>' , $this->player->points_total)->count() + 1;
+                $buildingPosition = DB::table('players')->where('points_building', '>' , $this->player->points_building)->count() + 1;
+                $researchPosition = DB::table('players')->where('points_research', '>' , $this->player->points_research)->count() + 1;
+                $militaryPosition = DB::table('players')->where('points_military', '>' , $this->player->points_military)->count() + 1;
 
             $embed = [
                 'author' => [
