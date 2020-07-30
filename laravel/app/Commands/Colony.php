@@ -42,29 +42,21 @@ class Colony extends CommandHandler implements CommandInterface
                     $resourcesValue .= "\n";
                     $productionValue .= "\n";
                 }
-                $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/H)";
+                $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/h)";
                 //$productionValue .= number_format($this->player->colonies[0]['production_'.$resource]).' '.ucfirst($resource).' / Heure';
                 $storageValue .= number_format($this->player->colonies[0]['storage_'.$resource]).' '.ucfirst($resource)."\n";
             }
 
             if(!empty($resourcesValue))
             {
-                $resourcesValue .= "\n".config('stargate.emotes.energy')." Energie: ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
-                $resourcesValue .= "\n".config('stargate.emotes.clone')." Clônes: ".round($this->player->colonies[0]->clones)." (".$this->player->colonies[0]->production_military."/H)";
-                $resourcesValue .= "\n".config('stargate.emotes.e2pz')." E2PZ: ".round($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/Sem)";
+                $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
+                $resourcesValue .= "\n".config('stargate.emotes.clone')." ".trans('generic.clones', [], $this->player->lang).": ".round($this->player->colonies[0]->clones)." (".$this->player->colonies[0]->production_military."/h)";
+                $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".round($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/w)";
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.production')." Ressources",
+                                        'name' => config('stargate.emotes.production')." ".trans('generic.resources', [], $this->player->lang),
                                         'value' => $resourcesValue,
                                         'inline' => true
                                     );
-
-                //$productionValue .= "\n".$this->player->colonies[0]->production_e2pz." E2PZ / Semaine";
-                //$productionValue .= "\n".$this->player->colonies[0]->production_military." Clônes / Heure";
-                /*$embed['fields'][] = array(
-                                        'name' => 'Production',
-                                        'value' => $productionValue,
-                                        'inline' => true
-                                    );*/
             }
 
 
@@ -81,7 +73,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($prodBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.productionBuilding')." Bâtiments de production",
+                                        'name' => config('stargate.emotes.productionBuilding')." ".trans('generic.productionBuildings', [], $this->player->lang),
                                         'value' => $prodBuildingsValue,
                                         'inline' => true
                                     );
@@ -100,7 +92,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($scienceBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.research').' Bâtiments scientifiques',
+                                        'name' => config('stargate.emotes.research')." ".trans('generic.scienceBuildings', [], $this->player->lang),
                                         'value' => $scienceBuildingsValue,
                                         'inline' => true
                                     );
@@ -119,7 +111,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($militaryBuildingsValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.military').' Bâtiments militaires',
+                                        'name' => config('stargate.emotes.military')." ".trans('generic.militaryBuildings', [], $this->player->lang),
                                         'value' => $militaryBuildingsValue,
                                         'inline' => true
                                     );
@@ -141,7 +133,7 @@ class Colony extends CommandHandler implements CommandInterface
                 $storageValue = "\nEspace: ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max."\n".$storageValue;
 
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.storage').' Capacité des Entrepôts',
+                                        'name' => config('stargate.emotes.storage')." ".trans('generic.storageCapacity', [], $this->player->lang),
                                         'value' => $storageValue,
                                         'inline' => true
                                     );
@@ -157,7 +149,7 @@ class Colony extends CommandHandler implements CommandInterface
             if(!empty($technologyValue))
             {
                 $embed['fields'][] = array(
-                                        'name' => config('stargate.emotes.research').' Technologies',
+                                        'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang),
                                         'value' => $technologyValue,
                                         'inline' => true
                                     );
@@ -171,7 +163,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $unitsString .= number_format($unit->pivot->number).' '.$unit->name."\n";
                 }
                 $embed['fields'][] = array(
-                                        'name' => 'Unités',
+                                        'name' => trans('generic.units', [], $this->player->lang),
                                         'value' => $unitsString,
                                         'inline' => true
                                     );
@@ -185,7 +177,7 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!$currentLevel)
                     $currentLevel = 0;
                 $embed['fields'][] = array(
-                    'name' => 'Construction en cours',
+                    'name' => trans('colony.buildingUnderConstruction', [], $this->player->lang),
                     'value' => "Lvl ".($currentLevel+1)." - ".$this->player->colonies[0]->activeBuilding->name."\n".$buildingTime,
                     'inline' => true
                 );
@@ -199,7 +191,7 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!$currentLevel)
                     $currentLevel = 0;
                 $embed['fields'][] = array(
-                    'name' => 'Recherche en cours',
+                    'name' => trans('colony.technologyUnderResearch', [], $this->player->lang),
                     'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activeTechnology->name."\n".$buildingTime,
                     'inline' => true
                 );

@@ -1,0 +1,15 @@
+<?php
+//BUILDING FR
+return [
+    'hiddenBuilding' => '-- Bâtiment caché --',
+    'unDiscovered' => 'Non découvert',
+    'unknownBuilding' => 'Bâtiment inconnu...',
+    'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
+    'buildingList' => 'Liste des bâtiments',
+    'genericHowTo' => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
+    'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
+    'notEnoughEnergy' => "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.",
+    'alreadyBuilding' => 'Un bâtiment est déjà en construction.',
+    'missingSpace' => 'Espace insufisant pour construire un nouveau bâtiment.',
+    'buildingStarted' => 'Construction commencée, **:name LVL :level** sera terminé dans :time',
+];

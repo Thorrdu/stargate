@@ -1,5 +1,6 @@
 <?php
-
+//COLONY FR
 return [
-    'welcome' => 'Welcome to our application'
+    'buildingUnderConstruction' => 'Bâtiment en construction',
+    'technologyUnderResearch' => 'Technologie recherchée',
 ];

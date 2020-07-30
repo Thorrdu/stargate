@@ -26,7 +26,8 @@ class Research extends CommandHandler implements CommandInterface
             try{
                 echo PHP_EOL.'Execute Research';
                 if($this->player->ban)
-                    return 'Vous êtes banni...';
+                    return trans('generic.banned',[],$this->player->lang);
+                    
                 $this->player->checkTechnology();
                 $this->player->refresh();
                 
@@ -105,11 +106,11 @@ class Research extends CommandHandler implements CommandInterface
                             }
 
                             if(!$hasRequirements)
-                                return 'Vous ne possédez pas assez les pré-requis pour cette recherche.';
+                                return trans('generic.missingRequirements', [], $this->player->lang);
 
                             //if recherche en cours, return
                             if(!is_null($this->player->active_technology_end))
-                                return 'Une technologie est déjà en cours de recherche';
+                                return trans('research.alreadyResearching', [], $this->player->lang);
 
                             $wantedLvl = 1;
                             $currentLevel = $this->player->hasTechnology($technology);
@@ -125,15 +126,14 @@ class Research extends CommandHandler implements CommandInterface
                             }
 
                             if(!$hasEnough)
-                                return 'Vous ne possédez pas assez de ressource pour rechercher cette technologie.';
+                                return trans('generic.notEnoughResources', [], $this->player->lang);
 
                             if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7 )
-                                return 'Votre centre de recherche est occupé...';
+                                return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology))->timestamp;
                             $buildingTime = gmdate("H:i:s", $endingDate - time());
-
-                            return 'Recherche commencée, **'.$technology->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
+                            return trans('research.researchStarted', ['name' => $technology->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -152,9 +152,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
 
                             if(!$hasRequirements)
-                            {
-                                return "Vous n'avez pas encore découvert cette technologie.";
-                            }
+                                return trans('research.notYetDiscovered', [], $this->player->lang);
 
                             $wantedLevel = 1;
                             $currentLvl = $this->player->hasTechnology($technology);
@@ -167,7 +165,7 @@ class Research extends CommandHandler implements CommandInterface
                             {
                                 if($technology->$resource > 0)
                                 {
-                                    $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource)."\n";
+                                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
                                 }
                             }
                 
@@ -186,17 +184,17 @@ class Research extends CommandHandler implements CommandInterface
                             if(!is_null($technology->energy_bonus))
                             {
                                 $bonus = $technology->energy_bonus*100-100;
-                                $bonusString .= "+{$bonus}% Energie produite\n";
+                                $bonusString .= "+{$bonus}% ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".trans('generic.produced', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->building_bonus))
                             {
                                 $bonus = 100-$technology->building_bonus*100;
-                                $bonusString .= "-{$bonus}% Temps de construction\n";
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.productionBuilding')." ".trans('generic.buildingTime', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->technology_bonus))
                             {
                                 $bonus = 100-$technology->technology_bonus*100;
-                                $bonusString .= "-{$bonus}% Temps de recherche\n";
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.research')." ".trans('generic.researchTime', [], $this->player->lang)."\n";
                             }
                             if(empty($bonusString))
                                 $bonusString = "/";
@@ -206,26 +204,26 @@ class Research extends CommandHandler implements CommandInterface
                                     'name' => $this->player->user_name,
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
-                                "title" => $technology->name.' - LVL '.$displayedLvl,
-                                "description" => "Rechercher avec `!research {$technology->id} confirm` ou `!research {$technology->slug} confirm`\n\n".$technology->description,
+                                "title" => 'Lvl '.$displayedLvl.' - '.$technology->name,
+                                "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => $technology->description], $this->player->lang),
                                 'fields' => [
                                     [
-                                        'name' => "Info",
+                                        'name' => trans('generic.info', [], $this->player->lang),
                                         'value' => "ID: ".$technology->id."\n"."Slug: `".$technology->slug."`",
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Bonus par Lvl",
+                                        'name' => trans('generic.bonusPerLvl', [], $this->player->lang),
                                         'value' => $bonusString,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Prix",
+                                        'name' => trans('generic.price', [], $this->player->lang),
                                         'value' => $buildingPrice,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Durée de recherche",
+                                        'name' => trans('generic.duration', [], $this->player->lang),
                                         'value' => $buildingTime,
                                         'inline' => true
                                     ]
@@ -239,7 +237,7 @@ class Research extends CommandHandler implements CommandInterface
                         }
                     }
                     else
-                        return 'Technologie inconnue...';
+                        return trans('research.unknownTechnology', [], $this->player->lang);
                 }
 
             }
@@ -263,11 +261,11 @@ class Research extends CommandHandler implements CommandInterface
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
             ],
-            "title" => 'Liste des technologies',
-            "description" => "Pour voir le détail d'une technologie: `!research [ID/Slug]`\nPour commencer la recherche d'une technologie: `!research [ID/Slug] confirm`\n",
+            "title" => trans('research.technologyList', [], $this->player->lang),
+            "description" => trans('research.genericHowTo', [], $this->player->lang),
             'fields' => [],
             'footer' => array(
-                'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,
+                'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
             ),
         ];
 
@@ -286,7 +284,7 @@ class Research extends CommandHandler implements CommandInterface
                 {
                     if(!empty($buildingPrice))
                         $buildingPrice .= " ";
-                    $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource);
+                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
                 }
             }
 
@@ -301,44 +299,33 @@ class Research extends CommandHandler implements CommandInterface
             if($currentLvl)
                 $displayedLvl = $currentLvl;
                 
-            //$conditionsValue = "";
             $hasRequirements = true;
             foreach($technology->requiredTechnologies as $requiredTechnology)
             {
                 $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                     $hasRequirements = false;
-/*
-                if(!empty($conditionsValue))
-                    $conditionsValue .= " / ";
-                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;*/
             }
             foreach($technology->requiredBuildings as $requiredBuilding)
             {
                 $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
-                /*
-                if(!empty($conditionsValue))
-                    $conditionsValue .= " / ";
-                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;*/
             }
-            /*if(!empty($conditionsValue))
-                $conditionsValue = "\nCondition: ".$conditionsValue;*/
 
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
                     'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
-                    'value' => "\nSlug: `".$technology->slug."`\n - Temps: ".$buildingTime."\nPrix: ".$buildingPrice,
+                    'value' => "\nSlug: `".$technology->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
                     'inline' => true
                 );
             }
             else
             {
                 $embed['fields'][] = array(
-                    'name' => '-- Technologie Cachée --',
-                    'value' => 'non découverte.',
+                    'name' => trans('research.hiddenTechnology', [], $this->player->lang),
+                    'value' => trans('research.unDiscovered', [], $this->player->lang),
                     'inline' => true
                 );
             }

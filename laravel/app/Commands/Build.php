@@ -25,6 +25,7 @@ class Build extends CommandHandler implements CommandInterface
         {
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
+
             $this->player->colonies[0]->checkBuilding();
 
             try{
@@ -103,14 +104,14 @@ class Build extends CommandHandler implements CommandInterface
                                     $hasRequirements = false;
                             }
                             if(!$hasRequirements)
-                                return 'Vous ne possédez pas assez les pré-requis du bâtiment.';
+                                return trans('generic.missingRequirements', [], $this->player->lang);
 
                             //if construction en cours, return
                             if(!is_null($this->player->colonies[0]->active_building_end))
-                                return 'Un bâtiment est déjà en construction sur cette colonie';
+                                return trans('building.alreadyBuilding', [], $this->player->lang);
 
                             if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
-                                return 'Espace insufisant pour construire un nouveau bâtiment.';
+                                return trans('building.missingSpace', [], $this->player->lang);
                             
                             $wantedLvl = 1;
                             $currentLvl = $this->player->colonies[0]->hasBuilding($building);
@@ -125,22 +126,21 @@ class Build extends CommandHandler implements CommandInterface
                                     $hasEnough = false;
                             }
                             if(!$hasEnough)
-                                return 'Vous ne possédez pas assez de ressource pour construire ce bâtiment.';
+                                return trans('generic.notEnoughResources', [], $this->player->lang);
 
                             if($building->energy_base > 0)
                             {
                                 $energyPrice = $building->getEnergy($wantedLvl);
                                 if(($this->player->colonies[0]->energy_max - $this->player->colonies[0]->energy_used) < $energyPrice)
-                                    return "Vous ne possédez pas assez d'énergie pour allimenter ce bâtiment.";
+                                    return trans('building.notEnoughEnergy', [], $this->player->lang);
                             }
 
                             if( !is_null($this->player->active_technology_id) && $building->id == 7)
-                                return 'Votre centre de recherche est occupé...';
+                                return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
                             $buildingTime = gmdate("H:i:s", $endingDate - time());
-
-                            return 'Construction commencée, **'.$building->name.' LVL '.$wantedLvl.'** sera terminé dans '.$buildingTime;
+                            return trans('building.buildingStarted', ['name' => $building->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -159,7 +159,7 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             if(!$hasRequirements)
                             {
-                                return "Vous n'avez pas encore découvert ce bâtiment.";
+                                return trans('building.notYetDiscovered', [], $this->player->lang);
                             }
 
                             $wantedLvl = 1;
@@ -173,13 +173,14 @@ class Build extends CommandHandler implements CommandInterface
                             {
                                 if($building->$resource > 0)
                                 {
-                                    $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource)."\n";
+                                    
+                                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
                                 }
                             }
                             if($building->energy_base > 0)
                             {
                                 $energyRequired = $building->getEnergy($wantedLvl);
-                                $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
+                                $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
                             }
                 
                             $buildingTime = $building->getTime($wantedLvl);
@@ -195,17 +196,17 @@ class Build extends CommandHandler implements CommandInterface
                             if(!is_null($building->energy_bonus))
                             {
                                 $bonus = ($building->energy_bonus*100)-100;
-                                $bonusString .= "+{$bonus}% Energie produite\n";
+                                $bonusString .= "+{$bonus}% ".config('stargate.emotes.energy')." ".trans('generic.produced', [], $this->player->lang)." ".trans('generic.produced', [], $this->player->lang)."\n";
                             }
                             if(!is_null($building->building_bonus))
                             {
                                 $bonus = 100-($building->building_bonus*100);
-                                $bonusString .= "-{$bonus}% Temps de construction\n";
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.productionBuilding')." ".trans('generic.buildingTime', [], $this->player->lang)."\n";
                             }
                             if(!is_null($building->technology_bonus))
                             {
                                 $bonus = 100-($building->technology_bonus*100);
-                                $bonusString .= "-{$bonus}% Temps de recherche\n";
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.research')." ".trans('generic.researchTime', [], $this->player->lang)."\n";
                             }
                             $productionString = $consoString = "";
                             if(!is_null($building->production_base))
@@ -231,36 +232,36 @@ class Build extends CommandHandler implements CommandInterface
                                     'name' => $this->player->user_name,
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
-                                "title" => $building->name.' - LVL '.$displayedLvl,
-                                "description" => "Construire avec `!build {$building->id} confirm` ou `!build {$building->slug} confirm`\n\n".$building->description,
+                                "title" => 'Lvl '.$displayedLvl.' - '.$building->name,
+                                "description" => trans('building.howTo', ['id' => $building->id, 'slug' => $building->slug, 'description' => $building->description], $this->player->lang),
                                 'fields' => [
                                     [
-                                        'name' => "Info",
+                                        'name' => trans('generic.info', [], $this->player->lang),
                                         'value' => "ID: ".$building->id."\n"."Slug: `".$building->slug."`",
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Bonus par Lvl",
+                                        'name' => trans('generic.bonusPerLvl', [], $this->player->lang),
                                         'value' => $bonusString,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Production",
+                                        'name' => trans('generic.production', [], $this->player->lang),
                                         'value' => $productionString,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Consommation",
+                                        'name' => trans('generic.consumption', [], $this->player->lang),
                                         'value' => $consoString,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Prix",
+                                        'name' => trans('generic.price', [], $this->player->lang),
                                         'value' => $buildingPrice,
                                         'inline' => true
                                     ],
                                     [
-                                        'name' => "Durée de recherche",
+                                        'name' => trans('generic.duration', [], $this->player->lang),
                                         'value' => $buildingTime,
                                         'inline' => true
                                     ]
@@ -274,7 +275,7 @@ class Build extends CommandHandler implements CommandInterface
                         }
                     }
                     else
-                        return 'Bâtiment inconnu';
+                        return trans('building.unknownBuilding', [], $this->player->lang);
                 }
             }
             catch(\Exception $e)
@@ -297,12 +298,12 @@ class Build extends CommandHandler implements CommandInterface
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
             ],
-            "title" => 'Liste des bâtiments',
-            "description" => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
+            "title" => trans('building.buildingList', [], $this->player->lang),
+            "description" => trans('building.genericHowTo', [], $this->player->lang),
             'fields' => [],
             'footer' => array(
                 //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
-                'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,
+                'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
             ),
         ];
 
@@ -321,13 +322,13 @@ class Build extends CommandHandler implements CommandInterface
                 {
                     if(!empty($buildingPrice))
                         $buildingPrice .= " ";
-                    $buildingPrice .= number_format(round($buildingPrices[$resource])).' '.ucfirst($resource);
+                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
                 }
             }
             if($building->energy_base > 0)
             {
                 $energyRequired = $building->getEnergy($wantedLvl);
-                $buildingPrice .= " ".number_format(round($energyRequired))." Energie";
+                $buildingPrice .= " ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
             }
 
             $buildingTime = $building->getTime($wantedLvl);
@@ -341,44 +342,33 @@ class Build extends CommandHandler implements CommandInterface
             if($currentLvl)
                 $displayedLvl = $currentLvl;
 
-            //$conditionsValue = "";
             $hasRequirements = true;
             foreach($building->requiredTechnologies as $requiredTechnology)
             {
                 $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                     $hasRequirements = false;
-
-                /*if(!empty($conditionsValue))
-                    $conditionsValue .= " / ";
-                $conditionsValue .= $requiredTechnology->name.' - LVL '.$requiredTechnology->pivot->level;*/
             }
             foreach($building->requiredBuildings as $requiredBuilding)
             {
                 $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
-
-                /*if(!empty($conditionsValue))
-                    $conditionsValue .= " / ";
-                $conditionsValue .= $requiredBuilding->name.' - LVL '.$requiredBuilding->pivot->level;*/
             }
-            /*if(!empty($conditionsValue))
-                $conditionsValue = "\nCondition: ".$conditionsValue;*/
 
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
-                    'name' => $building->id.' - '.$building->name.' - LVL '.$displayedLvl,
-                    'value' => "\nSlug: `".$building->slug."`\n - Temps: ".$buildingTime."\nPrix: ".$buildingPrice,
+                    'name' => $building->id.' - '.$building->name.' - Lvl '.$displayedLvl,
+                    'value' => "\nSlug: `".$building->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
                     'inline' => true
                 );
             }
             else
             {
                 $embed['fields'][] = array(
-                    'name' => '-- Bâtiment Caché --',
-                    'value' => 'Non découvert.',
+                    'name' => trans('building.hiddenBuilding', [], $this->player->lang),
+                    'value' => trans('building.unDiscovered', [], $this->player->lang),
                     'inline' => true
                 );
             }
