@@ -11,6 +11,7 @@ return [
     'colonies' => 'Colonies',
     'energy' => 'Energie',
     'clone' => 'Clône',
+    'clones' => 'Clônes',
     'e2pz' => 'E2PZ',
     'resource' => 'Ressource',
     'resources' => 'Ressources',
