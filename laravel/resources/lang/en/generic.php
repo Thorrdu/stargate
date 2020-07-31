@@ -21,7 +21,7 @@ return [
     'storageCapacity' => 'Storage capcity',
     'technologies' => 'Technologies',
     'units' => 'Units',
-    'produite' => 'produced',
+    'produced' => 'produced',
     'buildingTime' => 'Building time',
     'researchTime' => 'Research time',
     'info' => 'Info',

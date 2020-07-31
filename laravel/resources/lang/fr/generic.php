@@ -21,7 +21,7 @@ return [
     'storageCapacity' => 'Capacité des Entrepôts',
     'technologies' => 'Technologies',
     'units' => 'Unités',
-    'produite' => 'produite',
+    'produced' => 'produite',
     'buildingTime' => 'Temps de construction',
     'researchTime' => 'Temps de recherche',
     'info' => 'Info',
