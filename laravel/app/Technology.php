@@ -28,8 +28,8 @@ class Technology extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($this->$resource > 0)
-                //$buildingPrice[$resource] = $this->coefCalc($this->$resource,$this->upgrade_coefficient,$level);
                 $buildingPrice[$resource] = $this->$resource * pow($this->upgrade_coefficient, $level);
+                //$buildingPrice[$resource] = $this->coefCalc($this->$resource,$this->upgrade_coefficient,$level);
 
 
         }
