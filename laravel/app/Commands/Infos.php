@@ -31,11 +31,6 @@ class Infos extends CommandHandler implements CommandInterface
                     'inline' => true
                 ],
                 [
-                    'name' => 'Uptime',
-                    'value' => '?',
-                    'inline' => true
-                ],
-                [
                     'name' => 'Library',
                     'value' => 'rocketmates/discord-php',
                     'inline' => true
@@ -58,7 +53,7 @@ class Infos extends CommandHandler implements CommandInterface
                 [
                     'name' => 'Links',
                     'value' => "[Support Server](http://discord.gg/9hG6zaw)\n"
-                              ."[Invitation](https://discordapp.com/oauth2/authorize?&client_id=730815388400615455&scope=bot&permissions=1047623",
+                              ."[Invitation](https://discordapp.com/oauth2/authorize?&client_id=730815388400615455&scope=bot&permissions=1047623)",
                     'inline' => false
                 ]
             ],
