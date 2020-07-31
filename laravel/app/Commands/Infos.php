@@ -60,8 +60,9 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Links',
-                    'value' => "[Support Server](http://discord.gg/9hG6zaw)\n[Invite Stargate]https://discord.com/oauth2/authorize?client_id=730815388400615455&scope=bot&permissions=1047623",
-                    'inline' => true
+                    'value' => "[Support Server](http://discord.gg/9hG6zaw)\n"
+                              ."[Invitation](https://discordapp.com/oauth2/authorize?&client_id=730815388400615455&scope=bot&permissions=1047623",
+                    'inline' => false
                 ]
             ],
             'footer' => array(
