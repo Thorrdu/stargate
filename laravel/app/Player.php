@@ -91,6 +91,7 @@ class Player extends Model
 
         $this->active_technology_id = $technology->id;
         $this->active_technology_end = $buildingEnd;
+        $this->save();
 
         $buildingPrices = $technology->getPrice($wantedLvl);
         foreach (config('stargate.resources') as $resource)
@@ -99,8 +100,6 @@ class Player extends Model
                 $this->colonies[0]->$resource -= round($buildingPrices[$resource]);
         }
         $this->colonies[0]->save();
-        $this->save();
-
         //$this->save();
         return $this->active_technology_end;
     }
