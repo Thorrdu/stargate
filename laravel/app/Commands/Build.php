@@ -107,17 +107,29 @@ class Build extends CommandHandler implements CommandInterface
                             if(!$hasRequirements)
                                 return trans('generic.missingRequirements', [], $this->player->lang);
 
-                            //if construction en cours, return
-                            if(!is_null($this->player->colonies[0]->active_building_end))
-                                return trans('building.alreadyBuilding', [], $this->player->lang);
-
-                            if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
-                                return trans('building.missingSpace', [], $this->player->lang);
-                            
                             $wantedLvl = 1;
                             $currentLvl = $this->player->colonies[0]->hasBuilding($building);
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
+
+                            //if construction en cours, return
+                            if(!is_null($this->player->colonies[0]->active_building_end))
+                            {
+                                $now = Carbon::now();
+                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end);
+                                $buildingTime = $now->diffForHumans($buildingEnd,[
+                                    'parts' => 3,
+                                    'short' => true, // short syntax as per current locale
+                                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                ]);
+                                //:level :name will be done in :time
+                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => $this->player->colonies[0]->activeBuilding->name, 'time' => $buildingTime], $this->player->lang);
+                            }
+
+                            if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
+                                return trans('building.missingSpace', [], $this->player->lang);
+                            
+
 
                             $hasEnough = true;
                             $buildingPrices = $building->getPrice($wantedLvl);

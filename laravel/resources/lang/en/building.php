@@ -9,7 +9,7 @@ return [
     'genericHowTo' => "To display some building detail: `!build [ID/Slug]`\nTo start a building: `!build [ID/Slug] confirm`\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
     'notEnoughEnergy' => "You miss energy to power this building.",
-    'alreadyBuilding' => 'A building is already under construction.',
+    'alreadyBuilding' => 'A building is already under construction. Lvl :level :name will be done in :time',
     'missingSpace' => 'Insufficient space to start this building.',
     'buildingStarted' => 'Building started, **:name LVL :level**. It will be done in :time',
 ];
