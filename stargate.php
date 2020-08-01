@@ -236,9 +236,17 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('uptime', function ($message, $args){
+        try{
+
+        
         global $upTimeStart;
         $now = Carbon::now();
         return $upTimeStart->diffInSeconds($now);
+        }
+        catch(\Exception $e)
+        {
+            return $e->getMessage();
+        }   
         
     },[
         'description' => "Affiche l'uptime du bot",
