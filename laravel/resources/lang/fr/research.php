@@ -8,6 +8,6 @@ return [
     'technologyList' => 'Liste des technologies',
     'genericHowTo' => "Pour voir le détail d'une technologie: `!research [ID/Slug]`\nPour commencer la recherche d'une technologie: `!research [ID/Slug] confirm`\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert cette technologie.",
-    'alreadyResearching' => 'Une technologie est déjà en cours de recherche',
-    'researchStarted' => 'Recherche commencée, **:name LVL :level** sera terminée dans :time',
+    'alreadyResearching' => 'Une technologie est déjà en cours de recherche. **Lvl :level :name** sera terminée dans **:time**',
+    'researchStarted' => 'Recherche commencée, **Lvl :level :name ** sera terminée dans :time',
 ];

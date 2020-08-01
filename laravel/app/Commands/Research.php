@@ -118,6 +118,20 @@ class Research extends CommandHandler implements CommandInterface
                             if($currentLevel)
                                 $wantedLvl += $currentLevel;
 
+                             //if research en cours, return
+                            if(!is_null($this->player->active_technology_end))
+                            {
+                                $now = Carbon::now();
+                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
+                                $buildingTime = $now->diffForHumans($buildingEnd,[
+                                    'parts' => 3,
+                                    'short' => true, // short syntax as per current locale
+                                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                ]);
+                                //:level :name will be done in :time
+                                return trans('research.alreadyResearching', ['level' => $wantedLvl, 'name' => $this->player->activeTechnology->name, 'time' => $buildingTime], $this->player->lang);
+                            }
+
                             $hasEnough = true;
                             $technologyPrices = $technology->getPrice($wantedLvl);
                             foreach (config('stargate.resources') as $resource)
