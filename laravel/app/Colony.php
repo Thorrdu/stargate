@@ -246,7 +246,7 @@ class Colony extends Model
             $varName = 'production_'.$resource;
             $this->$varName = config('stargate.base_prod.'.$resource);
             foreach($productionBuildings as $productionBuilding)
-                $this->$varName += $productionBuilding->getProductionRegular($productionBuilding->pivot->level);
+                $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
                 //+Bonus éventuels
         }
 
@@ -265,7 +265,7 @@ class Colony extends Model
         $this->production_military = 0;
         foreach($militaryBuildings as $militaryBuilding)
         {
-            $this->production_military += $militaryBuilding->getProductionRegular($militaryBuilding->pivot->level);
+            $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
         }
         //+Bonus éventuels
 

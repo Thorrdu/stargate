@@ -239,9 +239,9 @@ $discord->on('ready', function ($discord) {
         try{
 
         
-        global $upTimeStart;
-        $now = Carbon::now();
-        return $upTimeStart->diffInSeconds($now);
+            global $upTimeStart;
+            $now = Carbon::now();
+            return $upTimeStart->diffInSeconds($now);
         }
         catch(\Exception $e)
         {
