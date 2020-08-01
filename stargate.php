@@ -83,6 +83,8 @@ use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
 
+global $upTimeStart;
+$upTimeStart = Carbon::now();
 
 $discord = new DiscordCommandClient([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
@@ -221,7 +223,6 @@ $discord->on('ready', function ($discord) {
 		'usage' => "`!ban @mention`",
         //'aliases' => array('b')
         'cooldown' => 2
-
     ]);	
 
     $discord->registerCommand('infos', function ($message, $args) use($discord){
@@ -231,6 +232,18 @@ $discord->on('ready', function ($discord) {
         'description' => 'Affiche des informations complémentaires sur le bot',
         'usage' => "`!infos`",
         'aliases' => array('info'),
+        'cooldown' => 4
+    ]);	
+
+    $discord->registerCommand('uptime', function ($message, $args){
+        global $upTimeStart;
+        $now = Carbon::now();
+        return $upTimeStart->diffInSeconds($now);
+        
+    },[
+        'description' => "Affiche l'uptime du bot",
+        'usage' => "`!uptime`",
+        'aliases' => array('up'),
         'cooldown' => 4
     ]);	
 
