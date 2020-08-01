@@ -9,6 +9,7 @@ use App\Player;
 use App\Building;
 use App\Technology;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class Research extends CommandHandler implements CommandInterface
 {
@@ -132,7 +133,12 @@ class Research extends CommandHandler implements CommandInterface
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology))->timestamp;
-                            $buildingTime = gmdate("H:i:s", $endingDate - time());
+                            $now = Carbon::now();
+                            $buildingTime = $now->diffForHumans($endingDate,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);      
                             return trans('research.researchStarted', ['name' => $technology->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
@@ -174,8 +180,13 @@ class Research extends CommandHandler implements CommandInterface
                             /** Application des bonus */
                             $buildingTime *= $this->player->colonies[0]->getResearchBonus();
                 
-                            $buildingTime = gmdate("H:i:s", $buildingTime);
-                
+                            $now = Carbon::now();
+                            $buildingEnd = $now->copy()->addSeconds($buildingTime);
+                            $buildingTime = $now->diffForHumans($buildingEnd,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);                      
                             $displayedLvl = 0;
                             if($currentLvl)
                                 $displayedLvl = $currentLvl;
@@ -293,7 +304,13 @@ class Research extends CommandHandler implements CommandInterface
             /** Application des bonus */
             $buildingTime *= $this->player->colonies[0]->getResearchBonus();
 
-            $buildingTime = gmdate("H:i:s", $buildingTime);
+            $now = Carbon::now();
+            $buildingEnd = $now->copy()->addSeconds($buildingTime);
+            $buildingTime = $now->diffForHumans($buildingEnd,[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);   
 
             $displayedLvl = 0;
             if($currentLvl)

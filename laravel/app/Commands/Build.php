@@ -9,6 +9,7 @@ use App\Player;
 use App\Building;
 use App\Technology;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class Build extends CommandHandler implements CommandInterface
 {
@@ -138,8 +139,13 @@ class Build extends CommandHandler implements CommandInterface
                             if( !is_null($this->player->active_technology_id) && $building->id == 7)
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
-                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building))->timestamp;
-                            $buildingTime = gmdate("H:i:s", $endingDate - time());
+                            $now = Carbon::now();
+                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building));
+                            $buildingTime = $now->diffForHumans($endingDate,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
                             return trans('building.buildingStarted', ['name' => $building->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
@@ -186,7 +192,13 @@ class Build extends CommandHandler implements CommandInterface
                             $buildingTime = $building->getTime($wantedLvl);
                             /** Application des bonus */
                             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-                            $buildingTime = gmdate("H:i:s", $buildingTime);
+                            $now = Carbon::now();
+                            $buildingEnd = $now->copy()->addSeconds($buildingTime);
+                            $buildingTime = $now->diffForHumans($buildingEnd,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);        
                 
                             $displayedLvl = 0;
                             if($currentLvl)
@@ -336,7 +348,13 @@ class Build extends CommandHandler implements CommandInterface
             /** Application des bonus */
             $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
 
-            $buildingTime = gmdate("H:i:s", $buildingTime);
+            $now = Carbon::now();
+            $buildingEnd = $now->copy()->addSeconds($buildingTime);
+            $buildingTime = $now->diffForHumans($buildingEnd,[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);      
 
             $displayedLvl = 0;
             if($currentLvl)

@@ -7,6 +7,7 @@ use Discord\DiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class Colony extends CommandHandler implements CommandInterface
 {
@@ -169,9 +170,14 @@ class Colony extends CommandHandler implements CommandInterface
                                     );
             }
 
+            $now = Carbon::now();
             if(!is_null($this->player->colonies[0]->active_building_end)){
-                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end)->timestamp;
-                $buildingTime = gmdate("H:i:s", $buildingEnd - time());
+                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end);
+                $buildingTime = $now->diffForHumans($buildingEnd,[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);
 
                 $currentLevel = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
                 if(!$currentLevel)
@@ -184,8 +190,12 @@ class Colony extends CommandHandler implements CommandInterface
             }
 
             if(!is_null($this->player->active_technology_end)){
-                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end)->timestamp;
-                $buildingTime = gmdate("H:i:s", $buildingEnd - time());
+                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
+                $buildingTime = $now->diffForHumans($buildingEnd,[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);
 
                 $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
                 if(!$currentLevel)
