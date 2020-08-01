@@ -37,9 +37,8 @@ class Building extends Model
 
     public function getEnergy(int $level)
     {
-        $level--; //Du au coeficient
-        return floor($this->energy_base * pow($this->energy_coefficient, $level));
-
+        //$level--; //Du au coeficient
+        //return floor($this->energy_base * pow($this->energy_coefficient, $level));
         return $this->coefCalc($this->energy_base,$this->energy_coefficient,$level);
 
     }
@@ -53,12 +52,15 @@ class Building extends Model
 
     }
 
-    public function getProduction(int $level)
+    public function getProductionEnergy(int $level)
+    {
+        return $this->coefCalc($this->production_base,$this->production_coefficient,$level);
+    }
+
+    public function getProductionRegular(int $level)
     {
         $level--; //Du au coeficient
         return $this->production_base * pow($this->production_coefficient, $level);
-        
-        return $this->coefCalc($this->production_base,$this->production_coefficient,$level);
     }
 
     public function coefCalc($base,$coef,$level)

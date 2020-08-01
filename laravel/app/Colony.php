@@ -223,7 +223,7 @@ class Colony extends Model
         });
         $this->energy_max = 0;
         foreach($energyBuildings as $energyBuilding)
-            $this->energy_max += floor($energyBuilding->getProduction($energyBuilding->pivot->level));
+            $this->energy_max += floor($energyBuilding->getProductionEnergy($energyBuilding->pivot->level));
         
         $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
             return !is_null($value->energy_bonus);
@@ -246,7 +246,7 @@ class Colony extends Model
             $varName = 'production_'.$resource;
             $this->$varName = config('stargate.base_prod.'.$resource);
             foreach($productionBuildings as $productionBuilding)
-                $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
+                $this->$varName += $productionBuilding->getProductionRegular($productionBuilding->pivot->level);
                 //+Bonus éventuels
         }
 
@@ -265,10 +265,7 @@ class Colony extends Model
         $this->production_military = 0;
         foreach($militaryBuildings as $militaryBuilding)
         {
-            echo PHP_EOL.$militaryBuilding->getProduction($militaryBuilding->pivot->level);
-            echo PHP_EOL.$militaryBuilding->name.' - '.$militaryBuilding->pivot->level;
-
-            $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
+            $this->production_military += $militaryBuilding->getProductionRegular($militaryBuilding->pivot->level);
         }
         //+Bonus éventuels
 
