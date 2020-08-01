@@ -31,7 +31,7 @@ return [
     'consumption' => 'Consumption',
     'production' => 'Production',
     'page' => 'Page',
-    'notEnoughResources' => 'Resources missing :missingResources',
+    'notEnoughResources' => 'Missing resources: :missingResources',
     'busyBuilding' => 'Busy building...',
     'missingRequirements' => "You're missing some requirement.",
     'unknownPlayer' => 'Unknown player',
