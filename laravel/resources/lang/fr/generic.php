@@ -31,7 +31,7 @@ return [
     'consumption' => 'Consommation',
     'production' => 'Production',
     'page' => 'Page',
-    'notEnoughResources' => 'Vous ne possédez pas assez de ressources...',
+    'notEnoughResources' => 'Ressources manquantes: :missingResources',
     'busyBuilding' => 'Bâtiment occupé...',
     'missingRequirements' => 'Vous ne possédez pas assez les pré-requis.',
     'unknownPlayer' => 'Joueur inconnu',

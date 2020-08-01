@@ -133,19 +133,25 @@ class Build extends CommandHandler implements CommandInterface
 
                             $hasEnough = true;
                             $buildingPrices = $building->getPrice($wantedLvl);
+                            $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
+                                {
                                     $hasEnough = false;
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($buildingPrices[$resource]-$this->player->colonies[0]->$resource);
+                                }
                             }
                             if(!$hasEnough)
-                                return trans('generic.notEnoughResources', [], $this->player->lang);
+                                return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
                             if($building->energy_base > 0)
                             {
                                 $energyPrice = $building->getEnergy($wantedLvl);
-                                if(($this->player->colonies[0]->energy_max - $this->player->colonies[0]->energy_used) < $energyPrice)
-                                    return trans('building.notEnoughEnergy', [], $this->player->lang);
+                                $energyLeft = ($this->player->colonies[0]->energy_max - $this->player->colonies[0]->energy_used);
+                                $missingEnergy = $energyPrice - $energyLeft;
+                                if($missingEnergy > 0)
+                                    return trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
                             }
 
                             if( !is_null($this->player->active_technology_id) && $building->id == 7)

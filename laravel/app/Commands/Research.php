@@ -134,14 +134,18 @@ class Research extends CommandHandler implements CommandInterface
 
                             $hasEnough = true;
                             $technologyPrices = $technology->getPrice($wantedLvl);
+                            $missingResString = 0;
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($technology->$resource > 0 && $technologyPrices[$resource] > $this->player->colonies[0]->$resource)
+                                {
                                     $hasEnough = false;
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($technologyPrices[$resource]-$this->player->colonies[0]->$resource);
+                                }
                             }
 
                             if(!$hasEnough)
-                                return trans('generic.notEnoughResources', [], $this->player->lang);
+                                return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
                             if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
