@@ -39,7 +39,7 @@ class Building extends Model
     {
         //$level--; //Du au coeficient
         //return floor($this->energy_base * pow($this->energy_coefficient, $level));
-        return $this->coefCalc($this->energy_base,$this->energy_coefficient,$level);
+        return floor($this->coefCalc($this->energy_base,$this->energy_coefficient,$level));
 
     }
 
