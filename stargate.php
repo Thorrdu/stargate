@@ -82,6 +82,7 @@ use Discord\DiscordCommandClient;
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 global $upTimeStart;
 $upTimeStart = Carbon::now();
@@ -236,18 +237,22 @@ $discord->on('ready', function ($discord) {
     ]);	
 
     $discord->registerCommand('uptime', function ($message, $args){
+        global $upTimeStart;
         try{
-
-        
-            global $upTimeStart;
             $now = Carbon::now();
-            return $upTimeStart->diffInSeconds($now);
+            $upTime = $upTimeStart->diffForHumans($now,[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);
+            //($upTimeStart);
+            //$upTime = gmdate("H:i:s", $result);
+            return 'Uptime : '.$upTime;
         }
         catch(\Exception $e)
         {
             return $e->getMessage();
         }   
-        
     },[
         'description' => "Affiche l'uptime du bot",
         'usage' => "`!uptime`",
