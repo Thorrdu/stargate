@@ -10,4 +10,5 @@ return [
     'notYetDiscovered' => "You haven't discovered this technology yet.",
     'alreadyResearching' => 'A technology is already under research. **Lvl :level :name** will be done in **:time**',
     'researchStarted' => 'Research started, **Lvl :level :name **. It will be done in **:time**',
+    'dmTechnologyIsOver' => 'A research has just been completed...',
 ];

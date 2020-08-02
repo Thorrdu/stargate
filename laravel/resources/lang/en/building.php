@@ -12,4 +12,6 @@ return [
     'alreadyBuilding' => 'A building is already under construction. **Lvl :level :name** will be done in **:time**',
     'missingSpace' => 'Insufficient space to start this building.',
     'buildingStarted' => 'Building started, **Lvl :level :name**. It will be done in **:time**',
+    'dmBuildIsOver' => 'A building has just been completed...',
+
 ];

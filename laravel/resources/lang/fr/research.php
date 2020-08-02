@@ -10,4 +10,5 @@ return [
     'notYetDiscovered' => "Vous n'avez pas encore découvert cette technologie.",
     'alreadyResearching' => 'Une technologie est déjà en cours de recherche. **Lvl :level :name** sera terminée dans **:time**',
     'researchStarted' => 'Recherche commencée, **Lvl :level :name ** sera terminée dans :time',
+    'dmTechnologyIsOver' => 'Une recherche vient de se terminer...',
 ];
