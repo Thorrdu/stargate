@@ -10,6 +10,7 @@ use App\Building;
 use App\Technology;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Str;
 
 class Research extends CommandHandler implements CommandInterface
 {
@@ -89,7 +90,7 @@ class Research extends CommandHandler implements CommandInterface
                     $technology = Technology::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($technology))
                     {
-                        if(count($this->args) == 2 && in_array($this->args[1],array('conf','confirm')))
+                        if(count($this->args) == 2 && Str::startsWith('confirm', $this->args[1]))
                         {
                             //Requirement
                             $hasRequirements = true;

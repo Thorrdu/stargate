@@ -10,6 +10,7 @@ use App\Building;
 use App\Technology;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Str;
 
 class Build extends CommandHandler implements CommandInterface
 {
@@ -88,7 +89,7 @@ class Build extends CommandHandler implements CommandInterface
                     $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))
                     {
-                        if(count($this->args) == 2 && in_array($this->args[1],array('conf','confirm')))
+                        if(count($this->args) == 2 && Str::startsWith('confirm', $this->args[1]))
                         {
                             //Requirement
                             $hasRequirements = true;
