@@ -118,18 +118,19 @@ $discord->on('ready', function ($discord) {
         $command = new Start($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => config('stargate.commands.start.description'),
-		'usage' => config('stargate.commands.start.usage'),
-        'aliases' => array('s','start'),
+        'description' => trans('help.start.description', [], 'fr'),
+		'usage' => trans('help.start.usage', [], 'fr'),
+        //'aliases' => array('start'),
         'cooldown' => 4
     ]);
+    //trans('generic.missingRequirements', [], $this->player->lang)
 
     $discord->registerCommand('profile', function ($message, $args) {
         $command = new Profile($message,$args);
         return $command->execute();
     },[
-        'description' => 'Affiche le profile',
-		'usage' => "`!profile`",
+        'description' => trans('help.profile.description', [], 'fr'),
+		'usage' => trans('help.profile.usage', [], 'fr'),
 		'aliases' => array('p'),
         'cooldown' => 4
     ]);	
@@ -138,8 +139,8 @@ $discord->on('ready', function ($discord) {
         $command = new ColonyCommand($message,$args);
         return $command->execute();
     },[
-        'description' => 'Affiche les infos de votre colonie',
-		'usage' => '`!colony`',
+        'description' => trans('help.colony.description', [], 'fr'),
+		'usage' => trans('help.colony.usage', [], 'fr'),
 		'aliases' => array('c','co','col'),
         'cooldown' => 4
     ]);	
@@ -148,8 +149,8 @@ $discord->on('ready', function ($discord) {
         $command = new Build($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => 'Liste ou construit un bâtiment',
-		'usage' => "`!build list`\n`!build [Numéro]`",
+        'description' => trans('help.build.description', [], 'fr'),
+		'usage' => trans('help.build.usage', [], 'fr'),
 		'aliases' => array('b','bu'),
         'cooldown' => 4
     ]);	
@@ -158,8 +159,8 @@ $discord->on('ready', function ($discord) {
         $command = new Research($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => 'Liste ou recherche une technologie',
-		'usage' => "`!research list`\n`!research [Numéro]`",
+        'description' => trans('help.reserarch.description', [], 'fr'),
+		'usage' => trans('help.reserarch.usage', [], 'fr'),
 		'aliases' => array('r','search'),
         'cooldown' => 4
     ]);
@@ -168,8 +169,8 @@ $discord->on('ready', function ($discord) {
         $command = new Refresh($message,$args);
         return $command->execute();
     },[
-        'description' => 'Force Prod Refresh',
-		'usage' => "`!refresh`",
+        'description' => trans('help.refresh.description', [], 'fr'),
+		'usage' => trans('help.refresh.usage', [], 'fr'),
 		//'aliases' => array('r'),
         'cooldown' => 4
     ]);	
@@ -178,8 +179,8 @@ $discord->on('ready', function ($discord) {
         $command = new Top($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => 'Affiche les divers Tops',
-		'usage' => "`!top`",
+        'description' => trans('help.top.description', [], 'fr'),
+		'usage' => trans('help.top.usage', [], 'fr'),
         //'aliases' => array('t')
         'cooldown' => 4
 
@@ -189,8 +190,8 @@ $discord->on('ready', function ($discord) {
         $command = new Invite($message,$args);
         return $command->execute();
     },[
-        'description' => 'Get invite link',
-		'usage' => "`!invite`",
+        'description' => trans('help.invite.description', [], 'fr'),
+		'usage' => trans('help.invite.usage', [], 'fr'),
 		//'aliases' => array('r'),
         'cooldown' => 4
     ]);	
@@ -199,8 +200,8 @@ $discord->on('ready', function ($discord) {
         $command = new Vote($message,$args);
         return $command->execute();
     },[
-        'description' => 'Get vote link',
-		'usage' => "`!vote`",
+        'description' => trans('help.vote.description', [], 'fr'),
+		'usage' => trans('help.vote.usage', [], 'fr'),
 		'aliases' => array('v','vo'),
         'cooldown' => 4
     ]);	
@@ -209,8 +210,8 @@ $discord->on('ready', function ($discord) {
         $command = new LangCommand($message,$args);
         return $command->execute();
     },[
-        'description' => 'Permet de changer de langue',
-		'usage' => "`!lang [en/fr]`",
+        'description' => trans('help.lang.description', [], 'fr'),
+		'usage' => trans('help.lang.usage', [], 'fr'),
         //'aliases' => array('b')
         'cooldown' => 4
 
@@ -220,8 +221,8 @@ $discord->on('ready', function ($discord) {
         $command = new Ban($message,$args);
         return $command->execute();
     },[
-        'description' => 'Banni un joueur du bot.',
-		'usage' => "`!ban @mention`",
+        'description' => trans('help.ban.description', [], 'fr'),
+		'usage' => trans('help.ban.usage', [], 'fr'),
         //'aliases' => array('b')
         'cooldown' => 2
     ]);	
@@ -230,8 +231,8 @@ $discord->on('ready', function ($discord) {
         $command = new Infos($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => 'Affiche des informations complémentaires sur le bot',
-        'usage' => "`!infos`",
+        'description' => trans('help.infos.description', [], 'fr'),
+		'usage' => trans('help.infos.usage', [], 'fr'),
         'aliases' => array('info'),
         'cooldown' => 4
     ]);	
@@ -254,8 +255,8 @@ $discord->on('ready', function ($discord) {
             return $e->getMessage();
         }   
     },[
-        'description' => "Affiche l'uptime du bot",
-        'usage' => "`!uptime`",
+        'description' => trans('help.uptime.description', [], 'fr'),
+		'usage' => trans('help.uptime.usage', [], 'fr'),
         'aliases' => array('up'),
         'cooldown' => 4
     ]);	
@@ -264,8 +265,8 @@ $discord->on('ready', function ($discord) {
         $command = new Ping($message,$args);
         return $command->execute();
     },[
-        'description' => 'Affiche la latence du bot',
-        'usage' => "`!ping`",
+        'description' => trans('help.ping.description', [], 'fr'),
+		'usage' => trans('help.ping.usage', [], 'fr'),
         'cooldown' => 4
     ]);	
     /*
