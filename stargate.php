@@ -104,8 +104,9 @@ $discord->on('ready', function ($discord) {
 
     try{
         $userExist = $discord->users->filter(function ($value) {
-            return $value->user_id == 125641223544373248;
+            return $value->user_id == '125641223544373248';
         });
+        var_dump($userExist);
         if($userExist->count() > 0)
         {
             $foundUser = $userExist->first();
