@@ -109,16 +109,12 @@ class Research extends CommandHandler implements CommandInterface
                             if(!$hasRequirements)
                                 return trans('generic.missingRequirements', [], $this->player->lang);
 
-                            //if recherche en cours, return
-                            if(!is_null($this->player->active_technology_end))
-                                return trans('research.alreadyResearching', [], $this->player->lang);
-
                             $wantedLvl = 1;
                             $currentLevel = $this->player->hasTechnology($technology);
                             if($currentLevel)
                                 $wantedLvl += $currentLevel;
 
-                             //if research en cours, return
+                            //if research en cours, return
                             if(!is_null($this->player->active_technology_end))
                             {
                                 $now = Carbon::now();
