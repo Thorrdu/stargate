@@ -146,7 +146,7 @@ class Research extends CommandHandler implements CommandInterface
                             if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
-                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology))->timestamp;
+                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology));
                             $now = Carbon::now();
                             $buildingTime = $now->diffForHumans($endingDate,[
                                 'parts' => 3,
