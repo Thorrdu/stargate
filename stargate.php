@@ -101,6 +101,23 @@ $discord->on('ready', function ($discord) {
     ]);
     $discord->updatePresence($game);
 
+
+    try{
+        $userExist = $discord->users->filter(function ($value) {
+            return $value->user_id == 125641223544373248;
+        });
+        if($userExist->count() > 0)
+        {
+            $foundUser = $userExist->first();
+            $foundUser->sendMessage("CHECK");
+        }
+    }
+    catch(\Exception $e)
+    {
+        return false;
+    }
+
+
 	// Listen for messages.
 	$discord->on('message', function ($message) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
@@ -108,10 +125,25 @@ $discord->on('ready', function ($discord) {
     
     
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
-        $tenMinutes = Carbon::now()->add('minute', 15);
+        $tenMinutes = Carbon::now()->sub('minute', 15);
         $players = Player::where('last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s"))->get();
         foreach($players as $player)
             TopUpdater::update($player);
+    });
+
+    $discord->loop->addPeriodicTimer(60, function () use ($discord) {
+        /*
+        $dateNow = Carbon::now();
+        $colonies = Colony::where('active_building_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
+        foreach($colonies as $colony)
+        {
+            $colony->buildingIsDone($colony->activeBuilding);
+        }
+        $players = Player::where('active_technology_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
+        foreach($players as $player)
+        {
+            $player->technologyIsDone($colony->activeTechnology);
+        }*/
     });
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
