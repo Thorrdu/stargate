@@ -127,7 +127,7 @@ $discord->on('ready', function ($discord) {
             if($userExist->count() > 0)
             {
                 $foundUser = $userExist->first();
-                $foundUser->sendMessage(trans('research.dmBuildIsOver', [], $player->lang));
+                $foundUser->sendMessage(trans('building.dmBuildIsOver', [], $player->lang));
             }
         }
         $players = Player::where('active_technology_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
