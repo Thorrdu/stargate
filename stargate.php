@@ -101,29 +101,10 @@ $discord->on('ready', function ($discord) {
     ]);
     $discord->updatePresence($game);
 
-
-    try{
-        $userExist = $discord->users->filter(function ($value) {
-            return $value->user_id == '125641223544373248';
-        });
-        var_dump($userExist);
-        if($userExist->count() > 0)
-        {
-            $foundUser = $userExist->first();
-            $foundUser->sendMessage("CHECK");
-        }
-    }
-    catch(\Exception $e)
-    {
-        return false;
-    }
-
-
 	// Listen for messages.
 	$discord->on('message', function ($message) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
-    
     
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
         $tenMinutes = Carbon::now()->sub('minute', 15);
@@ -133,18 +114,35 @@ $discord->on('ready', function ($discord) {
     });
 
     $discord->loop->addPeriodicTimer(60, function () use ($discord) {
-        /*
+        
         $dateNow = Carbon::now();
         $colonies = Colony::where('active_building_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
         foreach($colonies as $colony)
         {
             $colony->buildingIsDone($colony->activeBuilding);
+            $player = $colony->player;
+            $userExist = $discord->users->filter(function ($value) use($player){
+                return $value->id == $player->user_id;
+            });
+            if($userExist->count() > 0)
+            {
+                $foundUser = $userExist->first();
+                $foundUser->sendMessage(trans('research.dmBuildIsOver', [], $player->lang));
+            }
         }
         $players = Player::where('active_technology_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
         foreach($players as $player)
         {
-            $player->technologyIsDone($colony->activeTechnology);
-        }*/
+            $player->technologyIsDone($player->activeTechnology);
+            $userExist = $discord->users->filter(function ($value) use($player){
+                return $value->id == $player->user_id;
+            });
+            if($userExist->count() > 0)
+            {
+                $foundUser = $userExist->first();
+                $foundUser->sendMessage(trans('research.dmTechnologyIsOver', [], $player->lang));
+            }
+        }
     });
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
