@@ -80,7 +80,7 @@ class Colony extends Model
 
     public function coordinate()
     {
-        return $this->belongsTo('App\Coordinate');
+        return $this->hasOne('App\Coordinate');
     }
 
     public function craftQueues()

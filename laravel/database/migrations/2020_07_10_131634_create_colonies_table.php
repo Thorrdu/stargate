@@ -18,6 +18,9 @@ class CreateColoniesTable extends Migration
             $table->tinyInteger('colony_type')->length(2);
             $table->integer('player_id')->unsigned();
             $table->foreign('player_id','c_player_id')->references('id')->on('players');
+            $table->integer('coordinate_id')->unsigned();
+            $table->foreign('coordinate_id')->references('id')->on('coordinates');
+
 
             $table->string('name', 50);
 

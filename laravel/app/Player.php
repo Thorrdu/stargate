@@ -48,12 +48,10 @@ class Player extends Model
             $newColony->space_max = 180;
         else
             $newColony->space_max = rand(100,250);
-        $newColony->last_claim = date("Y-m-d H:i:s");        
-        $newColony->save();
-
+        $newColony->last_claim = date("Y-m-d H:i:s");  
         $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->get();
-        $coordinate->colony = $newColony;
-        $coordinate->save();
+        $newColony->coordinate_id = $coordinate->id;
+        $newColony->save();
 
         $this->colonies->push($newColony);
     }

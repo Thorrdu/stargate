@@ -8,6 +8,6 @@ class Coordinate extends Model
 {
     public function colony()
     {
-        return $this->hasOne('App\Colony');
+        return $this->belongsTo('App\Colony');
     }
 }
