@@ -52,6 +52,8 @@ class Player extends Model
         $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->get();
         $newColony->coordinate_id = $coordinate->id;
         $newColony->save();
+        $coordinate->colony_id = $newColony->id;
+        $coordinate->save();
 
         $this->colonies->push($newColony);
     }

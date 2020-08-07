@@ -15,6 +15,8 @@ class CreateCoordinatesTable extends Migration
     {
         Schema::create('coordinates', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('colony_id')->unsigned();
+            $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('galaxy')->length(2)->unsigned();
             $table->integer('system')->length(3)->unsigned();
             $table->integer('planet')->length(2)->unsigned();
