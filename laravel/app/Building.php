@@ -57,6 +57,11 @@ class Building extends Model
         return $this->coefCalc($this->production_base,$this->production_coefficient,$level);
     }
 
+    public function getProductionE2PZ(int $level)
+    {
+        return $this->coefCalc($this->production_base,$this->production_coefficient,$level);
+    }
+
     public function getProduction(int $level)
     {
         $level--; //Du au coeficient

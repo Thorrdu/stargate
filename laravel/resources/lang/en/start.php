@@ -10,7 +10,7 @@ return [
                       ."With you there is only a douzen men and women, a few supply crates and in sight just a shattered Stargate without any DHD. \n"
                       ."Yopu were quickly named as the new leader of this unlucky group and you decided to explore this planet to finally found a new place to settle.\n"
                       ."As a leader on this new colony, your role is to develop and defend your place, explore the galaxy and find a way to go back on Earth.\n"
-                      ."\nTo check your colony's information, use `!colony` (or `!c`) \n"
+                      ."\nTo check your colony's information, use `!colony` (or `!c`) \nThen build your first buildings like an energy source with `!build` (or `!b`)\n"
                       ."\n\n/!\ Warning /!\ This Bot is in Early Alpha, the majority of the game mechanics have not yet been implemented and many changes are likely to occur, including possible resets!" 
                       ."\nThanks to report any problems on the support server" 
 ];

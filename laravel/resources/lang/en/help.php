@@ -17,6 +17,18 @@ return [
         'description' => 'Affiche les informations sur votre colonie (Ressources, Bâtiments, Production, ... ).',
         'usage' => '!colony'
     ],
+    'craft' => [
+        'description' => 'Construit des appareils tel que des sondes ou des transporteurs',
+        'usage' => "!craft list\n!craft queue\n!craft [id/slug] [?quantité]"
+    ],
+    'galaxy' => [
+        'description' => 'Affiche une vue de la galaxie',
+        'usage' => '!galaxy'
+    ],
+    'stargate' => [
+        'description' => "Accès à la porte des étoiles de votre colonie",
+        'usage' => '!stargate'
+    ],
     'infos' => [
         'description' => 'Affiche les informations sur Stargate Bot.',
         'usage' => '!infos'
@@ -34,8 +46,9 @@ return [
         'usage' => '!ping'
     ],
     'profile' => [
-        'description' => 'Affiche les informations de votre profile tel que vote langue, nombre de vote, colonies,... ',
-        'usage' => '!profile'
+        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote, colonies,..."
+                        ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
+        'usage' => "!profile\n!profile notification [on/off]"
     ],
     'refresh' => [
         'description' => '[Commande temporaire] Permet de forcer le recalcul de votre production.',

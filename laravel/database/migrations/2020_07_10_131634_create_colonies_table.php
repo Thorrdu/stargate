@@ -20,7 +20,6 @@ class CreateColoniesTable extends Migration
             $table->foreign('player_id','c_player_id')->references('id')->on('players');
 
             $table->string('name', 50);
-            $table->string('coordinates', 25)->nullable();
 
             $table->decimal('iron', 20, 5)->unsigned()->default(600);
             $table->decimal('gold', 20, 5)->length(18)->unsigned()->default(400);
@@ -44,7 +43,7 @@ class CreateColoniesTable extends Migration
             $table->integer('energy_used')->length(10)->default(0);
             $table->integer('energy_max')->length(10)->unsigned()->default(0);
 
-            $table->decimal('clones', 20, 5)->length(18)->unsigned()->default(0);
+            $table->decimal('military', 20, 5)->length(18)->unsigned()->default(0);
             $table->decimal('E2PZ', 20, 5)->length(18)->default(0);
 
             $table->integer('active_building_id')->unsigned()->nullable();

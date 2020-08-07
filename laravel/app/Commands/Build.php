@@ -127,11 +127,14 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => $this->player->colonies[0]->activeBuilding->name, 'time' => $buildingTime], $this->player->lang);
                             }
 
+                            if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
+                            {
+                                return trans('building.buildingMaxed', [], $this->player->lang);
+                            }
+
                             if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
                                 return trans('building.missingSpace', [], $this->player->lang);
                             
-
-
                             $hasEnough = true;
                             $buildingPrices = $building->getPrice($wantedLvl);
                             $missingResString = "";
@@ -192,32 +195,43 @@ class Build extends CommandHandler implements CommandInterface
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
                 
-                            $buildingPrice = "";
-                            $buildingPrices = $building->getPrice($wantedLvl);
-                            foreach (config('stargate.resources') as $resource)
+
+                            if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
                             {
-                                if($building->$resource > 0)
+                                $buildingPrice = "Maxed";
+                                $buildingTime = "Maxed";
+                            }
+                            else
+                            {
+
+                                $buildingPrice = "";
+                                $buildingPrices = $building->getPrice($wantedLvl);
+                                foreach (config('stargate.resources') as $resource)
                                 {
-                                    
-                                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
+                                    if($building->$resource > 0)
+                                    {
+                                        
+                                        $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
+                                    }
                                 }
+                                if($building->energy_base > 0)
+                                {
+                                    $energyRequired = $building->getEnergy($wantedLvl);
+                                    $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
+                                }
+                    
+                                $buildingTime = $building->getTime($wantedLvl);
+                                /** Application des bonus */
+                                $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+                                $now = Carbon::now();
+                                $buildingEnd = $now->copy()->addSeconds($buildingTime);
+                                $buildingTime = $now->diffForHumans($buildingEnd,[
+                                    'parts' => 3,
+                                    'short' => true, // short syntax as per current locale
+                                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                ]);     
                             }
-                            if($building->energy_base > 0)
-                            {
-                                $energyRequired = $building->getEnergy($wantedLvl);
-                                $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
-                            }
-                
-                            $buildingTime = $building->getTime($wantedLvl);
-                            /** Application des bonus */
-                            $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-                            $now = Carbon::now();
-                            $buildingEnd = $now->copy()->addSeconds($buildingTime);
-                            $buildingTime = $now->diffForHumans($buildingEnd,[
-                                'parts' => 3,
-                                'short' => true, // short syntax as per current locale
-                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);        
+   
                 
                             $displayedLvl = 0;
                             if($currentLvl)
@@ -242,9 +256,19 @@ class Build extends CommandHandler implements CommandInterface
                             $productionString = $consoString = "";
                             if(!is_null($building->production_base))
                             {
-                                if($currentLvl)
-                                    $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
-                                $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                                if($building->type == "Energy")
+                                {
+                                    if($currentLvl)
+                                        $productionString .= "Lvl ".$currentLvl." - ".round($building->getProductionEnergy($currentLvl))."\n";
+                                    $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProductionEnergy($currentLvl+1));
+                                }
+                                else
+                                {
+                                    if($currentLvl)
+                                        $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
+                                    $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                                }
+
                             }
                             if(!is_null($building->energy_base))
                             {
@@ -345,35 +369,45 @@ class Build extends CommandHandler implements CommandInterface
             if($currentLvl)
                 $wantedLvl += $currentLvl;
 
-            $buildingPrice = "";
-            $buildingPrices = $building->getPrice($wantedLvl);
-            foreach (config('stargate.resources') as $resource)
+
+            if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
             {
-                if($building->$resource > 0)
+                $buildingPrice = "/";
+                $buildingTime = 'Maxed';
+            }
+            else
+            {
+                $buildingPrice = "";
+                $buildingPrices = $building->getPrice($wantedLvl);
+                foreach (config('stargate.resources') as $resource)
                 {
-                    if(!empty($buildingPrice))
-                        $buildingPrice .= " ";
-                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
+                    if($building->$resource > 0)
+                    {
+                        if(!empty($buildingPrice))
+                            $buildingPrice .= " ";
+                        $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
+                    }
                 }
+                if($building->energy_base > 0)
+                {
+                    $energyRequired = $building->getEnergy($wantedLvl);
+                    $buildingPrice .= " ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
+                }
+                
+                $buildingTime = $building->getTime($wantedLvl);
+
+                /** Application des bonus */
+                $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+
+                $now = Carbon::now();
+                $buildingEnd = $now->copy()->addSeconds($buildingTime);
+                $buildingTime = $now->diffForHumans($buildingEnd,[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);      
             }
-            if($building->energy_base > 0)
-            {
-                $energyRequired = $building->getEnergy($wantedLvl);
-                $buildingPrice .= " ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
-            }
 
-            $buildingTime = $building->getTime($wantedLvl);
-
-            /** Application des bonus */
-            $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
-
-            $now = Carbon::now();
-            $buildingEnd = $now->copy()->addSeconds($buildingTime);
-            $buildingTime = $now->diffForHumans($buildingEnd,[
-                'parts' => 3,
-                'short' => true, // short syntax as per current locale
-                'syntax' => CarbonInterface::DIFF_ABSOLUTE
-            ]);      
 
             $displayedLvl = 0;
             if($currentLvl)

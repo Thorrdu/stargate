@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Player;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -15,11 +16,32 @@ class Profile extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned', [], $this->player->lang);
 
-                $totalPlayers = DB::table('players')->count();
-                $generalPosition = DB::table('players')->where('points_total', '>' , $this->player->points_total)->count() + 1;
-                $buildingPosition = DB::table('players')->where('points_building', '>' , $this->player->points_building)->count() + 1;
-                $researchPosition = DB::table('players')->where('points_research', '>' , $this->player->points_research)->count() + 1;
-                $militaryPosition = DB::table('players')->where('points_military', '>' , $this->player->points_military)->count() + 1;
+            if(!empty($this->args) && Str::startsWith('notification', $this->args[0]))
+            {
+                if(count($this->args) < 2)
+                    return trans('profile.notification.missingParameter',[],$this->player->lang);
+                if(Str::startsWith('on', $this->args[1]))
+                {
+                    $this->player->notification = true;
+                    $this->player->save();
+                    return trans('profile.notification.disabled',[],$this->player->lang);
+                }
+                elseif(Str::startsWith('off', $this->args[1]))
+                {
+                    $this->player->notification = false;
+                    $this->player->save();
+                    return trans('profile.notification.enabled',[],$this->player->lang);
+                }
+                else
+                    return trans('profile.notification.missingParameter',[],$this->player->lang);
+            }
+
+
+            $totalPlayers = DB::table('players')->count();
+            $generalPosition = DB::table('players')->where('points_total', '>' , $this->player->points_total)->count() + 1;
+            $buildingPosition = DB::table('players')->where('points_building', '>' , $this->player->points_building)->count() + 1;
+            $researchPosition = DB::table('players')->where('points_research', '>' , $this->player->points_research)->count() + 1;
+            $militaryPosition = DB::table('players')->where('points_military', '>' , $this->player->points_military)->count() + 1;
 
             $embed = [
                 'author' => [

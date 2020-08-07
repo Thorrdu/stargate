@@ -27,7 +27,7 @@ class CreateBuildingsTable extends Migration
             $table->bigInteger('quartz')->length(18)->unsigned()->default(0);
             $table->bigInteger('naqahdah')->length(18)->unsigned()->default(0);
 
-            $table->enum('production_type', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'space', 'special']);
+            $table->enum('production_type', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'space', 'e2pz',  'special']);
             $table->decimal('production_base', 7, 2)->nullable();
             $table->decimal('production_coefficient', 5, 2)->nullable();
 
@@ -42,6 +42,7 @@ class CreateBuildingsTable extends Migration
 
             $table->decimal('building_bonus', 5, 2)->nullable();
             $table->decimal('technology_bonus', 5, 2)->nullable();
+            $table->decimal('crafting_bonus', 5, 2)->nullable();
 
             $table->integer('display_order')->length(3)->default(0);
             $table->timestamps();

@@ -2,7 +2,7 @@
 //Generic FR
 return [
     'banned' => 'Vous êtes banni...',
-    'start' => 'To start your journey, use `!start` !',
+    'start' => 'Pour commencer votre aventure utilisez `!start` !',
     'general' => 'Général',
     'building' => 'Bâtiment',
     'research' => 'Recherche',
@@ -10,8 +10,8 @@ return [
     'colony' => 'Colonie',
     'colonies' => 'Colonies',
     'energy' => 'Energie',
-    'clone' => 'Clône',
-    'clones' => 'Clônes',
+    'military' => 'Militaire',
+    'militaries' => 'Militaires',
     'e2pz' => 'E2PZ',
     'resource' => 'Ressource',
     'resources' => 'Ressources',
@@ -35,6 +35,7 @@ return [
     'busyBuilding' => 'Bâtiment occupé...',
     'missingRequirements' => 'Vous ne possédez pas assez les pré-requis.',
     'unknownPlayer' => 'Joueur inconnu',
-    'missingPerm' => "Permission manquantes..."
-
+    'missingPerm' => "Permission manquantes...",
+    'coordinates' => "Coordonées",
+    "buildingSpace" => "Espace de construction",
 ];

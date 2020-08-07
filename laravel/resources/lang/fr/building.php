@@ -11,6 +11,8 @@ return [
     'notEnoughEnergy' => "Il vous manque :missingEnergy énergie pour allimenter ce bâtiment.",
     'alreadyBuilding' => 'Un bâtiment est déjà en construction. **Lvl :level :name** sera terminé dans **:time**',
     'missingSpace' => 'Espace insufisant pour construire un nouveau bâtiment.',
-    'buildingStarted' => 'Construction commencée, **Lvl :level :name ** sera terminé dans :time',
+    'buildingStarted' => 'Construction commencée, **Lvl :level :name ** sera terminé dans **:time**',
     'dmBuildIsOver' => 'Un bâtiment vient de se terminer...',
+    'buildingMaxed' => 'Ce bâtiment est déjà au niveau maximum...',
+
 ];

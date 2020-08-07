@@ -35,6 +35,7 @@ class CreateTechnologiesTable extends Migration
             $table->decimal('energy_bonus', 5, 2)->nullable();
             $table->decimal('building_bonus', 5, 2)->nullable();
             $table->decimal('technology_bonus', 5, 2)->nullable();
+            $table->decimal('crafting_bonus', 5, 2)->nullable();
 
             $table->integer('display_order')->length(3)->default(0);
             $table->timestamps();

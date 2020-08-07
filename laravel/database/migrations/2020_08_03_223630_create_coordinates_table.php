@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateColonyUnitTable extends Migration
+class CreateCoordinatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateColonyUnitTable extends Migration
      */
     public function up()
     {
-        Schema::create('colony_unit', function (Blueprint $table) {
-            $table->increments('id');     
-            $table->integer('colony_id')->unsigned();
+        Schema::create('coordinates', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('colony_id')->unsigned()->nullable();
             $table->foreign('colony_id')->references('id')->on('colonies');
-            $table->integer('unit_id')->unsigned();
-            $table->foreign('unit_id')->references('id')->on('units');
-            $table->bigInteger('number')->length(18)->default(0);
+            $table->integer('galaxy')->length(2)->unsigned();
+            $table->integer('system')->length(3)->unsigned();
+            $table->integer('planet')->length(2)->unsigned();
+
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ class CreateColonyUnitTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('coordinates');
     }
 }

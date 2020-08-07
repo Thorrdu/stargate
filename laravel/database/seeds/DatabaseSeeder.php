@@ -1,5 +1,6 @@
 <?php
 
+use App\Coordinate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -142,7 +143,9 @@ class DatabaseSeeder extends Seeder
             'upgrade_coefficient' => 1.9,
             'time_base' => 840,
             'time_coefficient' => 1.7,
-            'building_bonus' => 0.90
+            'building_bonus' => 0.9,
+            'crafting_bonus' => 0.9,
+
         ]);
 
         DB::table('buildings')->insert([
@@ -169,16 +172,16 @@ class DatabaseSeeder extends Seeder
 
         DB::table('buildings')->insert([
             'id' => 8,
-            'name' => 'Station de clônage',
-            'slug' => Str::slug('clone'),
-            'description' => "Obtenue de part l'alliance avec les Asgards, la station de clônage permet de recruter de nouvelles unités",
+            'name' => 'Centre de recrutement',
+            'slug' => Str::slug('military'),
+            'description' => "Vous permet de recruter les autoctone et en faire des militaires capables de vous aider au combat ou en exploration.",
             'type' => 'Military',
             'iron' => 500,
             'gold' => 500,
             'quartz' => 0,
             'naqahdah' => 0,
             'production_type' => 'military',
-            'production_base' => 2.5,
+            'production_base' => 5,
             'production_coefficient' => 2,
             'energy_base' => null,
             'energy_coefficient' => null,
@@ -208,7 +211,9 @@ class DatabaseSeeder extends Seeder
             'display_order' => 1,
             'upgrade_coefficient' => 1.9,
             'time_base' => 1140,
-            'time_coefficient' => 1.7
+            'time_coefficient' => 1.7,
+            'crafting_bonus' => 0.9,
+
         ]);
         //Usine robotisée 2
         DB::table('building_buildings')->insert([
@@ -484,7 +489,8 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1602,
             'time_coefficient' => 2,
             'building_bonus' => 0.98,
-            'technology_bonus' => 0.98
+            'technology_bonus' => 0.98,
+            'crafting_bonus' => 0.98,
         ]);
         //Centre de recherche 8
         DB::table('technology_buildings')->insert([
@@ -694,7 +700,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 17000,
             'time_coefficient' => 1.7
         ]);
-        //Centre de recherche 1
+        //Mine de fer 20
         DB::table('building_buildings')->insert([
             'building_id' => 17,
             'required_building_id' => 2,
@@ -721,12 +727,46 @@ class DatabaseSeeder extends Seeder
             'time_base' => 20000,
             'time_coefficient' => 1.7
         ]);
-        //Centre de recherche 1
+        //Mine d'or 20
         DB::table('building_buildings')->insert([
             'building_id' => 18,
             'required_building_id' => 3,
             'level' => 20
         ]);
+
+        DB::table('buildings')->insert([
+            'id' => 19,
+            'name' => 'Usine Asuran',
+            'slug' => Str::slug('asuranfactory'),
+            'description' => "Après de longues analyses, vos chercheurs réussissent à réactiver cette vieille usine Asuran de production d'E2PZ. vous ouvrant la voie vers le voyage interplanétaire",
+            'type' => 'Production',
+            'iron' => 200,
+            'gold' => 0,
+            'quartz' => 500,
+            'naqahdah' => 500,
+            'production_type' => 'e2pz',
+            'production_base' => 5,
+            'production_coefficient' => 1,
+            'energy_base' => null,
+            'energy_coefficient' => null,
+            'display_order' => 1,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1200,
+            'time_coefficient' => 1.7
+        ]);
+        //Energie 4
+        DB::table('building_technologies')->insert([
+            'building_id' => 19,
+            'required_technology_id' => 4,
+            'level' => 5
+        ]);
+        //Centre de recherche 4
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 1,
+            'required_building_id' => 19,
+            'level' => 4
+        ]);
+        
 
         /*
         Reacteur au naqadah
@@ -759,9 +799,119 @@ class DatabaseSeeder extends Seeder
             'time_base' => 600,
             'time_coefficient' => 2
         ]);
+        //Centre de Recherche Niveau 2 
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 11,
+            'required_building_id' => 7,
+            'level' => 2
+        ]);
+        //Energie 2
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 11,
+            'required_technology_id' => 4,
+            'level' => 2
+        ]);
 
         DB::table('technologies')->insert([
-            'id' => 11, 
+            'id' => 12, 
+            'name' => 'Ions',
+            'slug' => Str::slug('ions'),
+            'description' => "Ion Desc",
+            'type' => 'Labo',
+            'iron' => 3000,
+            'gold' => 900,
+            'quartz' => 300,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1200,
+            'time_coefficient' => 2
+        ]);
+        //Centre de Recherche Niveau 4
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 12,
+            'required_building_id' => 7,
+            'level' => 4
+        ]);
+        //Energie 4
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 12,
+            'required_technology_id' => 4,
+            'level' => 4
+        ]);
+        //Laser 4
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 12,
+            'required_technology_id' => 11,
+            'level' => 7
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 13, 
+            'name' => 'Plasma',
+            'slug' => Str::slug('plasma'),
+            'description' => "Plasma Desc",
+            'type' => 'Labo',
+            'iron' => 2000,
+            'gold' => 4000,
+            'quartz' => 1000,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 1900,
+            'time_coefficient' => 2
+        ]);
+        //Centre de Recherche 6
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 13,
+            'required_building_id' => 7,
+            'level' => 6
+        ]);
+        //Energie 6
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 13,
+            'required_technology_id' => 4,
+            'level' => 6
+        ]);
+        //Laser 4
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 13,
+            'required_technology_id' => 11,
+            'level' => 10
+        ]);
+        //Ion 8
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 13,
+            'required_technology_id' => 12,
+            'level' => 8
+        ]);
+
+        
+        DB::table('technologies')->insert([
+            'id' => 14, 
+            'name' => 'Naqahdah', // Impulsion
+            'slug' => Str::slug('naqahdah'),
+            'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant.",
+            'type' => 'Labo',
+            'iron' => 4000,
+            'gold' => 0,
+            'quartz' => 0,
+            'naqahdah' => 2500,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 4000,
+            'time_coefficient' => 2
+        ]);
+        //Centre de Recherche 10
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 14,
+            'required_building_id' => 7,
+            'level' => 10
+        ]);
+        
+
+        DB::table('technologies')->insert([
+            'id' => 15, 
             'name' => 'Vitesse subluminique', // Impulsion
             'slug' => Str::slug('subluminal'),
             'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
@@ -772,78 +922,105 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 0,
             'display_order' => 5,
             'upgrade_coefficient' => 2,
-            'time_base' => 3600,
+            'time_base' => 2000,
             'time_coefficient' => 2
         ]);
+        //Centre de Recherche 3
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 15,
+            'required_building_id' => 7,
+            'level' => 3
+        ]);
+        //- Chantier Spatial 3
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 15,
+            'required_building_id' => 9,
+            'level' => 3
+        ]);
+        //Energie 3
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 15,
+            'required_technology_id' => 4,
+            'level' => 3
+        ]);
 
+
+        DB::table('technologies')->insert([
+            'id' => 16, 
+            'name' => 'Antimatière', // Antimatière
+            'slug' => Str::slug('antimatter'),
+            'description' => "Capaciuté à maîtriser l'antimatière.",
+            'type' => 'Center',
+            'iron' => 0,
+            'gold' => 40000,
+            'quartz' => 20000,
+            'naqahdah' => 0,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 4000,
+            'time_coefficient' => 2
+        ]);
+        //Centre de Recherche 7
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 16,
+            'required_building_id' => 7,
+            'level' => 7
+        ]);
+        //- Chantier Spatial 7
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 16,
+            'required_building_id' => 9,
+            'level' => 7
+        ]);
+        //Energie 7
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 16,
+            'required_technology_id' => 4,
+            'level' => 7
+        ]);
+        //Boucliers 5
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 16,
+            'required_technology_id' => 9,
+            'level' => 5
+        ]);
+
+        DB::table('technologies')->insert([
+            'id' => 17, 
+            'name' => 'Hyper Espace', // Antimatière
+            'slug' => Str::slug('hyperspace'),
+            'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage.",
+            'type' => 'Center',
+            'iron' => 100000,
+            'gold' => 50000,
+            'quartz' => 50000,
+            'naqahdah' => 40000,
+            'display_order' => 5,
+            'upgrade_coefficient' => 2,
+            'time_base' => 8000,
+            'time_coefficient' => 2
+        ]);
+        //Centre de Recherche 12
+        DB::table('technology_buildings')->insert([
+            'technology_id' => 17,
+            'required_building_id' => 7,
+            'level' => 12
+        ]);
+        //Energie 10
+        DB::table('technology_technologies')->insert([
+            'technology_id' => 17,
+            'required_technology_id' => 4,
+            'level' => 10
+        ]);
 
 
         DB::table('units')->insert([
             'id' => 1,
-            'type' => 'Military',
-            'name' => "Soldat",
-            'slug' => 'soldier',
-            'description' => "Staff essentiel pour la survie de votre colonie.\nVous permet de vous défendre face aux attaques ennemie ainsi que de raid d'autres colonies",
-            'health' => 100,
-            'armor' => 100,
-            'shield' => 0,
-            'capacity' => 0,
-            'utility_power' => 100,
-            'convertible' => true,
-            'buyable' => false,
-            'iron' => 20,
-            'gold' => 5,
-            'quartz' => 0,
-            'naqahdah' => 0
-        ]);
-        DB::table('units')->insert([
-            'id' => 2,
-            'type' => 'Settler',
-            'name' => "Colon",
-            'slug' => 'settler',
-            'description' => "Les colons sont formés pour entreprendre des missions de colonisation.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
-            'capacity' => 10,
-            'utility_power' => 0,
-            'convertible' => true,
-            'buyable' => false,
-            'iron' => 5,
-            'gold' => 15,
-            'quartz' => 5,
-            'naqahdah' => 0
-        ]);
-        DB::table('units')->insert([
-            'id' => 3,
-            'type' => 'Spy',
-            'name' => "Espion",
-            'slug' => 'spy',
-            'description' => "Peut être envoyé sur une colonie adverse afin d'y mener divers missions d'espionnage.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
-            'capacity' => 0,
-            'utility_power' => 100,
-            'convertible' => true,
-            'buyable' => false,
-            'iron' => 100,
-            'gold' => 250,
-            'quartz' => 0,
-            'naqahdah' => 150
-        ]);
-        DB::table('units')->insert([
-            'id' => 4,
             'type' => 'Probe',
             'name' => "Sonde M.A.L.P.",
             'slug' => 'malp',
             'description' => "Sonde terrestre vous permetant d'explorer une planète et relever des informations sur une colonie.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
             'capacity' => 0,
-            'utility_power' => 0,
-            'convertible' => false,
             'buyable' => true,
             'iron' => 500,
             'gold' => 300,
@@ -851,37 +1028,71 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 150,
             'base_time' => 240
         ]);
-        DB::table('units')->insert([
-            'id' => 5,
-            'type' => 'Probe',
-            'name' => "Sonde U.A.V.",
-            'slug' => 'uav',
-            'description' => "Sonde Volante vous permetant d'explorer une planète et relever des informations sur une colonie.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
-            'capacity' => 10,
-            'utility_power' => 0,
-            'convertible' => false,
-            'buyable' => true,
-            'iron' => 1000,
-            'gold' => 600,
-            'quartz' => 2400,
-            'naqahdah' => 480,
-            'base_time' => 450
+        //Centre de recherche 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 1,
+            'required_building_id' => 7,
+            'level' => 5
         ]);
+        //Chantier spacial 3
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 1,
+            'required_building_id' => 9,
+            'level' => 3
+        ]);
+        //Espionnage 4
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 1,
+            'required_technology_id' => 2,
+            'level' => 4
+        ]);
+
         DB::table('units')->insert([
-            'id' => 6,
+            'id' => 2,
+            'type' => 'Probe',
+            'name' => "Sonde wraith",
+            'slug' => 'wraithProbe',
+            'description' => "Sonde spaciale wraith permettant le scanner une planète depuis l'espace.",
+            'capacity' => 10,
+            'buyable' => true,
+            'iron' => 2000,
+            'gold' => 1000,
+            'quartz' => 1500,
+            'naqahdah' => 1200,
+            'base_time' => 600
+        ]);
+        //Centre de recherche 6
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 2,
+            'required_building_id' => 7,
+            'level' => 6
+        ]);
+        //Chantier spacial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 2,
+            'required_building_id' => 9,
+            'level' => 7
+        ]);
+        //Combusion 6
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 2,
+            'required_technology_id' => 10,
+            'level' => 6
+        ]);
+        //Antimatière 4
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 1,
+            'required_technology_id' => 16,
+            'level' => 6
+        ]);
+
+        DB::table('units')->insert([
+            'id' => 3,
             'type' => 'Transport',
             'name' => "Petit transporteur",
             'slug' => 'transport',
             'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
-            'health' => 500,
-            'armor' => 0,
-            'shield' => 0,
             'capacity' => 2500,
-            'utility_power' => 0,
-            'convertible' => false,
             'buyable' => true,
             'iron' => 2000,
             'gold' => 1500,
@@ -889,74 +1100,64 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 50,
             'base_time' => 600
         ]);
+        //Centre de recherche 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 3,
+            'required_building_id' => 7,
+            'level' => 5
+        ]);
+        //Chantier spacial 3
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 3,
+            'required_building_id' => 9,
+            'level' => 3
+        ]);
+        //Combusion 2
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 3,
+            'required_technology_id' => 10,
+            'level' => 2
+        ]);
+
+
         DB::table('units')->insert([
-            'id' => 7,
+            'id' => 4,
             'type' => 'Transport',
             'name' => "Grand transporteur",
-            'slug' => 'transport2',
+            'slug' => 'bigtransport',
             'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
-            'health' => 100,
-            'armor' => 0,
-            'shield' => 0,
-            'capacity' => 10000,
-            'utility_power' => 0,
-            'convertible' => false,
+            'capacity' => 20000,
             'buyable' => true,
-            'iron' => 1500,
-            'gold' => 600,
-            'quartz' => 250,
-            'naqahdah' => 300
+            'iron' => 10000,
+            'gold' => 7500,
+            'quartz' => 5000,
+            'naqahdah' => 2500,
+            'base_time' => 2000
+
+        ]);
+        //Centre de recherche 6
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 4,
+            'required_building_id' => 7,
+            'level' => 6
+        ]);
+        //Chantier spacial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 4,
+            'required_building_id' => 9,
+            'level' => 5
+        ]);
+        //Combusion 4
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 4,
+            'required_technology_id' => 10,
+            'level' => 4
         ]);
 
 
-
-
-
-
-
-
-
-
-
-
-        DB::table('players')->insert([
-            'id' => 1,
-            'user_id' => 125641223544373248,
-            'user_name' => "Thorrdu"
+        $this->call([
+            GalaxySeeder::class,
         ]);
 
-        DB::table('colonies')->insert([
-            'id' => 1,
-            'player_id' => 1,
-            'colony_type' => 1,
-            'space_used' => 22,
-            'space_max' => 180,
-            'name' => 'P'.rand(1, 9).Str::random(1).'-'.rand(1, 9).rand(1, 9).rand(1, 9),
-            'last_claim' => '2020-07-14 00:00:00'
-        ]);
-
-        DB::table('building_colony')->insert([
-            'colony_id' => 1,
-            'building_id' => 1,
-            'level' => 1
-        ]);
-
-        DB::table('building_colony')->insert([
-            'colony_id' => 1,
-            'building_id' => 2,
-            'level' => 1
-        ]);
-
-        DB::table('building_colony')->insert([
-            'colony_id' => 1,
-            'building_id' => 6,
-            'level' => 10
-        ]);
-
-        DB::table('building_colony')->insert([
-            'colony_id' => 1,
-            'building_id' => 7,
-            'level' => 10
-        ]);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Utility\TopUpdater;
+use App\Coordinate;
 
 class Player extends Model
 {
@@ -47,8 +48,12 @@ class Player extends Model
             $newColony->space_max = 180;
         else
             $newColony->space_max = rand(100,250);
-        $newColony->last_claim = date("Y-m-d H:i:s");
+        $newColony->last_claim = date("Y-m-d H:i:s");        
         $newColony->save();
+
+        $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->get();
+        $coordinate->colony = $newColony;
+        $coordinate->save();
 
         $this->colonies->push($newColony);
     }

@@ -2,7 +2,7 @@
 //BUILDING EN
 return [
     'hiddenBuilding' => '-- Hidden building --',
-    'unDiscovered' => 'undiscovered',
+    'unDiscovered' => 'Undiscovered',
     'unknownBuilding' => 'Unknown building...',
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
     'buildingList' => "Building's list",
@@ -13,5 +13,5 @@ return [
     'missingSpace' => 'Insufficient space to start this building.',
     'buildingStarted' => 'Building started, **Lvl :level :name**. It will be done in **:time**',
     'dmBuildIsOver' => 'A building has just been completed...',
-
+    'buildingMaxed' => 'This Building is already maxed...',
 ];

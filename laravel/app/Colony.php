@@ -78,6 +78,16 @@ class Colony extends Model
         return $this->hasOne('App\Building','id','active_building_id');
     }
 
+    public function coordinate()
+    {
+        return $this->belongsTo('App\Coordinate');
+    }
+
+    public function craftQueues()
+    {
+        return $this->belongsToMany('App\Unit','craft_queues','colony_id','unit_id')->withPivot('craft_end');
+    }
+
     public function units()
     {
         return $this->belongsToMany('App\Unit')->withPivot('number');
@@ -140,7 +150,55 @@ class Colony extends Model
 
         return $bonus;
     }
+    public function getCraftingBonus()
+    {
+        $bonus = 1;
 
+        $buildings = $this->buildings->filter(function ($value){
+            return !is_null($value->crafting_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= pow($building->crafting_bonus, $building->pivot->level);
+
+        $technologies = $this->player->technologies->filter(function ($value){
+            return !is_null($value->crafting_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= pow($technology->crafting_bonus, $technology->pivot->level);
+
+        return $bonus;
+    }
+
+
+    public function startCrafting(Unit $unit, int $qty)
+    {
+        $current = Carbon::now();
+
+        $buildingTime = $unit->base_time;
+
+        /** Application des bonus */
+        $buildingTime *= $this->getCraftingBonus();
+
+
+        $buildingPrices = $unit->getPrice($qty);
+        foreach (config('stargate.resources') as $resource)
+        {
+            if($unit->$resource > 0)
+                $this->$resource -= round($buildingPrices[$resource]);
+        }
+
+        for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )
+        {
+            $buildingEnd = $current->addSeconds($buildingTime);
+            /*
+            AJOUTER A LA QUEUE
+            */
+            $this->craftQueues()->attach([$unit->id => ['craft_end' => $buildingEnd]]);
+        }
+
+        $this->save();
+        return $buildingEnd;
+    }
 
     public function startBuilding(Building $building)
     {
@@ -205,7 +263,7 @@ class Colony extends Model
                     if($this->$varNameStorage < $this->$resource)
                         $this->$resource = $this->$varNameStorage;
                 }
-                $this->clones += ($this->production_military / 60) * $minuteToClaim;
+                $this->military += ($this->production_military / 60) * $minuteToClaim;
 
                 $this->last_claim = date("Y-m-d H:i:s");
 
@@ -269,26 +327,18 @@ class Colony extends Model
         }
         //+Bonus éventuels
 
-        
-        //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
-        /*$ironProdBuildings = $this->buildings->filter(function ($value) {
-            echo $value->name.' - Type '. $value->production_type .' - Level '. $value->pivot->level.PHP_EOL;
-            return $value->production_type == 'iron';// || $value->type == 'Energy'
-        });*/
-        /*
-        $ironProdBuildings = Building::orderBy('building.production_type', 'asc')
-                                        ->with('colony')
-                                        //->buildings()
-                                        //->join("buildings","buildings.id","=","building_id")
-                                        ->where(['colony_id' => $this->id, 'building.type' => 'Production'])
-                                        ->where(['building.production_type' => 'Iron'])
-                                        ->dump()
-                                        ->get();
-        */
 
-        
-        //$this->saveWithoutEvents();
-        
+        $e2pzBuildings = $this->buildings->filter(function ($value){
+            return $value->production_type == 'e2pz' && $value->type == 'Military';
+        });
+        $this->production_e2pz = 0;
+        foreach($e2pzBuildings as $e2pzBuilding)
+        {
+            if($this->production_e2pz == 0)
+                $this->production_e2pz = config('stargate.base_prod.e2pz');
+            $this->production_e2pz += $e2pzBuilding->getProductionE2PZ($e2pzBuilding->pivot->level);
+        }
+        //+Bonus éventuels
     }
 
     public function checkColony(){

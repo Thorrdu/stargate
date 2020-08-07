@@ -74,7 +74,7 @@ use App\Player;
 use App\Colony;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate};
 use App\Utility\TopUpdater;
 
 //use Discord\Discord;
@@ -121,26 +121,32 @@ $discord->on('ready', function ($discord) {
         {
             $colony->buildingIsDone($colony->activeBuilding);
             $player = $colony->player;
-            $userExist = $discord->users->filter(function ($value) use($player){
-                return $value->id == $player->user_id;
-            });
-            if($userExist->count() > 0)
+            if($player->notification)
             {
-                $foundUser = $userExist->first();
-                $foundUser->sendMessage(trans('building.dmBuildIsOver', [], $player->lang));
+                $userExist = $discord->users->filter(function ($value) use($player){
+                    return $value->id == $player->user_id;
+                });
+                if($userExist->count() > 0)
+                {
+                    $foundUser = $userExist->first();
+                    $foundUser->sendMessage(trans('building.dmBuildIsOver', [], $player->lang));
+                }
             }
         }
         $players = Player::where('active_technology_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
         foreach($players as $player)
         {
             $player->technologyIsDone($player->activeTechnology);
-            $userExist = $discord->users->filter(function ($value) use($player){
-                return $value->id == $player->user_id;
-            });
-            if($userExist->count() > 0)
+            if($player->notification)
             {
-                $foundUser = $userExist->first();
-                $foundUser->sendMessage(trans('research.dmTechnologyIsOver', [], $player->lang));
+                $userExist = $discord->users->filter(function ($value) use($player){
+                    return $value->id == $player->user_id;
+                });
+                if($userExist->count() > 0)
+                {
+                    $foundUser = $userExist->first();
+                    $foundUser->sendMessage(trans('research.dmTechnologyIsOver', [], $player->lang));
+                }
             }
         }
     });
@@ -176,6 +182,36 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);	
 
+    $discord->registerCommand('craft', function ($message, $args) use($discord){
+        $command = new Craft($message, $args, $discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.craft.description', [], 'fr'),
+		'usage' => trans('help.craft.usage', [], 'fr'),
+		'aliases' => array('cr','cra','craf'),
+        'cooldown' => 4
+    ]);	
+
+    $discord->registerCommand('galaxy', function ($message, $args) {
+        $command = new Galaxy($message,$args);
+        return $command->execute();
+    },[
+        'description' => trans('help.galaxy.description', [], 'fr'),
+		'usage' => trans('help.galaxy.usage', [], 'fr'),
+		'aliases' => array('g','ga','gal'),
+        'cooldown' => 120
+    ]);	
+
+    $discord->registerCommand('stargate', function ($message, $args) {
+        $command = new Stargate($message,$args);
+        return $command->execute();
+    },[
+        'description' => trans('help.stargate.description', [], 'fr'),
+		'usage' => trans('help.stargate.usage', [], 'fr'),
+		'aliases' => array('g','ga','gal'),
+        'cooldown' => 120
+    ]);	
+
     $discord->registerCommand('build', function ($message, $args) use($discord) {
         $command = new Build($message,$args,$discord);
         return $command->execute();
@@ -190,8 +226,8 @@ $discord->on('ready', function ($discord) {
         $command = new Research($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => trans('help.reserarch.description', [], 'fr'),
-		'usage' => trans('help.reserarch.usage', [], 'fr'),
+        'description' => trans('help.research.description', [], 'fr'),
+		'usage' => trans('help.research.usage', [], 'fr'),
 		'aliases' => array('r','search'),
         'cooldown' => 4
     ]);

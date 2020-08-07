@@ -15,16 +15,11 @@ class CreateUnitsTable extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type', ['Military', 'Settler', 'Spy', 'Probe', 'Transport']); //Prépare le futur
+            $table->enum('type', ['Military', 'Spy', 'Probe', 'Transport']); //Prépare le futur
             $table->string('name', 50);
             $table->string('slug', 50);
             $table->longText('description');
-            $table->integer('health')->length(18)->unsigned()->default(0);
-            $table->integer('armor')->length(18)->unsigned()->default(0);
-            $table->integer('shield')->length(18)->unsigned()->default(0);
             $table->integer('capacity')->length(18)->unsigned()->default(0);
-            $table->decimal('utility_power', 10, 4)->unsigned()->default(0);
-            $table->boolean('convertible')->default(false);
             $table->boolean('buyable')->default(false);
             $table->bigInteger('iron')->length(18)->unsigned()->nullable();
             $table->bigInteger('gold')->length(18)->unsigned()->nullable();

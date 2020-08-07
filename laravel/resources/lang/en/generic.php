@@ -10,8 +10,8 @@ return [
     'colony' => 'Colony',
     'colonies' => 'Colonies',
     'energy' => 'Energy',
-    'clone' => 'Clone',
-    'clones' => 'Clones',
+    'military' => 'Militaire',
+    'militaries' => 'Militaires',
     'e2pz' => 'ZPM',
     'resource' => 'Resource',
     'resources' => 'Resources',
@@ -35,5 +35,7 @@ return [
     'busyBuilding' => 'Busy building...',
     'missingRequirements' => "You're missing some requirement.",
     'unknownPlayer' => 'Unknown player',
-    'missingPerm' => "Missing perm..."
+    'missingPerm' => "Missing perm...",
+    'coordinates' => "Coordinates",
+    "buildingSpace" => "Building space",
 ];
