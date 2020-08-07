@@ -18,42 +18,49 @@ class Start extends CommandHandler implements CommandInterface
 
         if(is_null($this->player))
         {
-            $this->newPlayerId = $this->message->author->id;
-            $this->maxTime = time()+180;
-            $embed = [
-                'author' => [
-                    'name' => "Stargate",
-                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
-                ],
-                "title" => $this->message->author->user_name,
-                "description" => trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'),
-                'fields' => [],
-                'footer' => array(
-                    'text'  => 'Stargate',
-                )
-            ];
+            try{
 
-            $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
-                $this->paginatorMessage = $messageSent;
-                $this->paginatorMessage->react('🇬🇧')->then(function(){ 
-                    $this->paginatorMessage->react('🇫🇷');
+                $this->newPlayerId = $this->message->author->id;
+                $this->maxTime = time()+180;
+                $embed = [
+                    'author' => [
+                        'name' => "Stargate",
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    ],
+                    "title" => $this->message->author->user_name,
+                    "description" => trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'),
+                    'fields' => [],
+                    'footer' => array(
+                        'text'  => 'Stargate',
+                    )
+                ];
+
+                $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
+                    $this->paginatorMessage = $messageSent;
+                    $this->paginatorMessage->react('🇬🇧')->then(function(){ 
+                        $this->paginatorMessage->react('🇫🇷');
+                    });
+
+                    $this->listner = function ($messageReaction) {
+                        if($this->maxTime < time())
+                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->newPlayerId)
+                        {
+                            if($messageReaction->emoji->name == '🇫🇷')
+                                $this->start('fr');
+                            elseif($messageReaction->emoji->name == '🇬🇧')
+                                $this->start('en');
+                        }
+                    };
+                    $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+
                 });
-
-                $this->listner = function ($messageReaction) {
-                    if($this->maxTime < time())
-                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-
-                    if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->newPlayerId)
-                    {
-                        if($messageReaction->emoji->name == '🇫🇷')
-                            $this->start('fr');
-                        elseif($messageReaction->emoji->name == '🇬🇧')
-                            $this->start('en');
-                    }
-                };
-                $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
-
-            });
+            }
+            catch(\Exception $e)
+            {
+                return $e->getMessage();
+            }
         }
         elseif($this->player->ban)
             return trans('generic.banned',[],$this->player->lang);
