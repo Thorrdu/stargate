@@ -119,7 +119,7 @@ $discord->on('ready', function ($discord) {
 
     $discord->loop->addPeriodicTimer(60, function () use ($discord) {
         
-        echo 'UPDATING PRESENCE'.PHP_EOL;
+        echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
         $game = $discord->factory(Game::class, [
             'name' => "!help | {$discord->guilds->count()} servers | {$discord->users->count()} users",
             'type' => 3
@@ -127,8 +127,8 @@ $discord->on('ready', function ($discord) {
         $discord->updatePresence($game);
 
         $dateNow = Carbon::now();
-
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->get();
+        echo PHP_EOL."CHECK REMINDER: ".$reminders->count();
         foreach($reminders as $reminder)
         {  
             $userExist = $discord->users->filter(function ($value) use($reminder){
@@ -139,6 +139,7 @@ $discord->on('ready', function ($discord) {
                 $foundUser = $userExist->first();
                 $foundUser->sendMessage($reminder->reminder);
             }
+            $reminder->delete();
         }
     });
 

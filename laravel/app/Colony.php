@@ -240,7 +240,7 @@ class Colony extends Model
             try{
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-                $reminder->reminder = "**Lvl ".$wantedLvl." - ".$building->name."**".trans("reminder.isDone", [], $this->player->lang);
+                $reminder->reminder = "**Lvl ".$wantedLvl." - ".$building->name."** ".trans("reminder.isDone", [], $this->player->lang);
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
             }
