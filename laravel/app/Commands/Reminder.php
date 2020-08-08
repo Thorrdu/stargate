@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Reminder as ReminderModel;
 use Carbon\Carbon;
-use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 
 class Reminder extends CommandHandler implements CommandInterface
 {
@@ -28,7 +28,12 @@ class Reminder extends CommandHandler implements CommandInterface
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
                 $now = Carbon::now();
-                return trans('reminder.confirm', ['time' => $now->diffForHumans($reminder->reminder_date), 'reason' => $reason], $this->player->lang);
+                $reminderTimeString = $now->diffForHumans($reminder->reminder_date,[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);
+                return trans('reminder.confirm', ['time' => $reminderTimeString, 'reason' => $reason], $this->player->lang);
             }
             catch(\Exception $e)
             {
