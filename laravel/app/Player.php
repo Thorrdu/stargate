@@ -116,12 +116,12 @@ class Player extends Model
                 $this->colonies[0]->$resource -= round($buildingPrices[$resource]);
         }
 
-        if($this->player->notification)
+        if($this->notification)
         {
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
             $reminder->reminder = "**Lvl ".$wantedLvl." - ".$technology->name."** ".trans("reminder.isDone", [], $this->player->lang);
-            $reminder->player_id = $this->player->id;
+            $reminder->player_id = $this->id;
             $reminder->save();
             //$this->player->reminders()->attach($reminder->id);
         }

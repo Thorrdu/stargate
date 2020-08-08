@@ -276,6 +276,16 @@ $discord->on('ready', function ($discord) {
 
     ]);
 
+    $discord->registerCommand('reminder', function ($message, $args){
+        $command = new ReminderCommand($message,$args);
+        return $command->execute();
+    },[
+        'description' => trans('help.reminder.description', [], 'fr'),
+		'usage' => trans('help.reminder.usage', [], 'fr'),
+        'aliases' => array('r','re','rem','remind'),
+        'cooldown' => 4
+    ]);	
+
     $discord->registerCommand('ban', function ($message, $args) {
         $command = new Ban($message,$args);
         return $command->execute();

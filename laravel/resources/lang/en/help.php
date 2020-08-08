@@ -5,6 +5,10 @@ return [
         'description' => 'Ban/Unban un joueur du bot.',
         'usage' => '!ban @mention'
     ],
+    'reminder' => [
+        'description' => 'Allow to create reminders wich will be received in dm.',
+        'usage' => "!reminder [time] [reason]\n!reminder 2h go to sleep"
+    ],
     'build' => [
         'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment.",
         'usage' => "!build\n!build [id/slug]\n!build [id/slug] confirm"
