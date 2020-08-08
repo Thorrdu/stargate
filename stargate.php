@@ -282,7 +282,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
-        'aliases' => array('re','rem','remind'),
+        'aliases' => array('rem','remind'),
         'cooldown' => 4
     ]);	
 
