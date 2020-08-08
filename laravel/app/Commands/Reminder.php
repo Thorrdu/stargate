@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Reminder as ReminderModel;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Str;
 
 class Reminder extends CommandHandler implements CommandInterface
 {
@@ -17,14 +18,33 @@ class Reminder extends CommandHandler implements CommandInterface
 
             echo PHP_EOL.'Execute Reminder';
 
+            if(!empty($this->args) && Str::startsWith('confirm', $this->args[0]))
+            {
+                $reminderString = "";
+                if(!empty($this->player->reminders))
+                {
+                    $now = Carbon::now();
+                    foreach($this->player->reminders as $reminder)
+                    {
+                        $reminderTimeString = $now->diffForHumans($reminder->reminder_date,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $reminderString .= "`".$reminder->id."` - ".$reminder->reminder_date." (".$reminderTimeString.") - `".$reminder->reminder."`\n";
+                    }
+                }
+                return "__".trans('reminder.listTitle', [], $this->player->lang)."__:\n\n".$reminderString;
+            }
+
             if(count($this->args) < 2)
                 return trans('reminder.wrongParameter', [], $this->player->lang);
             
             try{
-                $reason = substr(implode(' ',$this->args),strlen($this->args[0]));
+                $reason = trim(substr(implode(' ',$this->args),strlen($this->args[0])));
                 $reminder = new ReminderModel;
                 $reminder->reminder_date = Carbon::now()->add($this->args[0]);
-                $reminder->reminder = substr(implode(' ',$this->args),strlen($this->args[0]));
+                $reminder->reminder = "**Reminder:** ".$reason;
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
                 $now = Carbon::now();
