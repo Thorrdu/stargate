@@ -235,6 +235,15 @@ class Colony extends Model
                 $this->$resource -= round($buildingPrices[$resource]);
         }
 
+        if($this->player->notification)
+        {
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
+            $reminder->remnider = "**Lvl ".$wantedLvl." - ".$building->name."**".trans("reminder.isDone", [], $this->player->lang);
+            $reminder->player_id = $this->player->id;
+            //$this->player->reminders()->attach($reminder->id);
+        }
+
         $this->save();
         return $this->active_building_end;
     }

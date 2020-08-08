@@ -72,11 +72,12 @@ $embed = [
 use App\Building;
 use App\Player;
 use App\Colony;
+use App\Reminder;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand};
 use App\Utility\TopUpdater;
-
+ 
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
 use Discord\Parts\User\Game;
@@ -126,37 +127,17 @@ $discord->on('ready', function ($discord) {
         $discord->updatePresence($game);
 
         $dateNow = Carbon::now();
-        $colonies = Colony::where('active_building_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
-        foreach($colonies as $colony)
-        {
-            $colony->buildingIsDone($colony->activeBuilding);
-            $player = $colony->player;
-            if($player->notification)
+
+        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->get();
+        foreach($reminders as $reminder)
+        {  
+            $userExist = $discord->users->filter(function ($value) use($reminder){
+                return $value->id == $reminder->player->user_id;
+            });
+            if($userExist->count() > 0)
             {
-                $userExist = $discord->users->filter(function ($value) use($player){
-                    return $value->id == $player->user_id;
-                });
-                if($userExist->count() > 0)
-                {
-                    $foundUser = $userExist->first();
-                    $foundUser->sendMessage(trans('building.dmBuildIsOver', [], $player->lang));
-                }
-            }
-        }
-        $players = Player::where('active_technology_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
-        foreach($players as $player)
-        {
-            $player->technologyIsDone($player->activeTechnology);
-            if($player->notification)
-            {
-                $userExist = $discord->users->filter(function ($value) use($player){
-                    return $value->id == $player->user_id;
-                });
-                if($userExist->count() > 0)
-                {
-                    $foundUser = $userExist->first();
-                    $foundUser->sendMessage(trans('research.dmTechnologyIsOver', [], $player->lang));
-                }
+                $foundUser = $userExist->first();
+                $foundUser->sendMessage($reminder->reminder);
             }
         }
     });

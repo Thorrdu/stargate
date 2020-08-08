@@ -38,6 +38,11 @@ class Player extends Model
         return $this->hasOne('App\Technology','id','active_technology_id');
     }
 
+    public function reminders()
+    {
+        return $this->hasMany('App\Reminder');
+    }
+
     public function addColony($first = true)
     {
         try{
@@ -110,6 +115,16 @@ class Player extends Model
             if($technology->$resource > 0)
                 $this->colonies[0]->$resource -= round($buildingPrices[$resource]);
         }
+
+        if($this->player->notification)
+        {
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
+            $reminder->remnider = "**Lvl ".$wantedLvl." - ".$technology->name."**".trans("reminder.isDone", [], $this->player->lang);
+            $reminder->player_id = $this->player->id;
+            //$this->player->reminders()->attach($reminder->id);
+        }
+
         $this->colonies[0]->save();
         //$this->save();
         return $this->active_technology_end;
