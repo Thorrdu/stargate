@@ -21,15 +21,18 @@ class Reminder extends CommandHandler implements CommandInterface
                 return trans('reminder.wrongParameter', [], $this->player->lang);
             
             try{
+                $reason = substr(implode(' ',$this->args),strlen($this->args[0]));
                 $reminder = new ReminderModel;
                 $reminder->reminder_date = Carbon::now()->add($this->args[0]);
                 $reminder->reminder = substr(implode(' ',$this->args),strlen($this->args[0]));
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
+                $now = Carbon::now();
+                return trans('reminder.confirm', ['time' => $now->diffForHumans($reminder->reminder_date), 'reason' => $reason], $this->player->lang);
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return trans('reminder.wrongParameter', [], $this->player->lang);
             }
         }
         else
