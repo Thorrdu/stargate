@@ -18,7 +18,7 @@ class Reminder extends CommandHandler implements CommandInterface
 
             echo PHP_EOL.'Execute Reminder';
 
-            if(!empty($this->args) && Str::startsWith('confirm', $this->args[0]))
+            if(!empty($this->args) && Str::startsWith('list', $this->args[0]))
             {
                 $reminderString = "";
                 if(!empty($this->player->reminders))
