@@ -94,9 +94,9 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) {
     echo "Bot is starting up!", PHP_EOL;
-	echo 'UPDATING PRESENCE'.PHP_EOL;
+    echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
-        'name' => "!help | {$discord->users->count()} users",
+        'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
         'type' => 3
     ]);
     $discord->updatePresence($game);
@@ -118,6 +118,13 @@ $discord->on('ready', function ($discord) {
 
     $discord->loop->addPeriodicTimer(60, function () use ($discord) {
         
+        echo 'UPDATING PRESENCE'.PHP_EOL;
+        $game = $discord->factory(Game::class, [
+            'name' => "!help | {$discord->guilds->count()} servers | {$discord->users->count()} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($game);
+
         $dateNow = Carbon::now();
         $colonies = Colony::where('active_building_end', '<', $dateNow->format("Y-m-d H:i:s"))->get();
         foreach($colonies as $colony)
