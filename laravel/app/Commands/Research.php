@@ -137,7 +137,7 @@ class Research extends CommandHandler implements CommandInterface
                                 if($technology->$resource > 0 && $technologyPrices[$resource] > $this->player->colonies[0]->$resource)
                                 {
                                     $hasEnough = false;
-                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($technologyPrices[$resource]-$this->player->colonies[0]->$resource);
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($technologyPrices[$resource]-$this->player->colonies[0]->$resource));
                                 }
                             }
 

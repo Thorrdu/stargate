@@ -121,7 +121,7 @@ class Craft extends CommandHandler implements CommandInterface
                             if($unit->$resource > 0 && $unitPrices[$resource] > $this->player->colonies[0]->$resource)
                             {
                                 $hasEnough = false;
-                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($unitPrices[$resource]-$this->player->colonies[0]->$resource);
+                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]-$this->player->colonies[0]->$resource));
                             }
                         }
                         if(!$hasEnough)

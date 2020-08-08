@@ -761,9 +761,9 @@ class DatabaseSeeder extends Seeder
             'level' => 5
         ]);
         //Centre de recherche 4
-        DB::table('technology_buildings')->insert([
-            'technology_id' => 1,
-            'required_building_id' => 19,
+        DB::table('building_buildings')->insert([
+            'building_id' => 19,
+            'required_building_id' => 7,
             'level' => 4
         ]);
         
