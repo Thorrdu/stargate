@@ -122,6 +122,7 @@ class Player extends Model
             $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
             $reminder->remnider = "**Lvl ".$wantedLvl." - ".$technology->name."**".trans("reminder.isDone", [], $this->player->lang);
             $reminder->player_id = $this->player->id;
+            $reminder->save();
             //$this->player->reminders()->attach($reminder->id);
         }
 
