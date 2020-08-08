@@ -34,6 +34,7 @@ return [
     'notEnoughResources' => 'Ressources manquantes: :missingResources',
     'busyBuilding' => 'Bâtiment occupé...',
     'missingRequirements' => 'Vous ne possédez pas assez les pré-requis.',
+    'wrongQuantity' => "Veuillez indiquer une quantité valide.",
     'unknownPlayer' => 'Joueur inconnu',
     'missingPerm' => "Permission manquantes...",
     'coordinates' => "Coordonées",

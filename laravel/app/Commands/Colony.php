@@ -23,14 +23,15 @@ class Colony extends CommandHandler implements CommandInterface
                 $this->player->colonies[0]->checkColony();
                 $this->player->refresh();
 
-                $coordinates = $this->player->colonies[0]->coordinate;
+                $coordinates = $this->player->colonies[0]->coordinates;
 
                 $embed = [
                     'author' => [
                         'name' => $this->player->user_name,
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
-                    "title" => 'Colonie '.$this->player->colonies[0]->name."\n".trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->galaxy.":".$coordinates->planet,
+                    "title" => 'Colonie '.$this->player->colonies[0]->name,
+                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->galaxy.":".$coordinates->planet,
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',
@@ -211,10 +212,34 @@ class Colony extends CommandHandler implements CommandInterface
                     );
                 }
 
-                if($this->player->colonies[0]->craftQueues()->count > 0){
+                if($this->player->colonies[0]->craftQueues->count() > 0){
+                    $queueString = "";
+                    $queuedUnits = $this->player->colonies[0]->craftQueues()->limit(5)->get();
+                    foreach($queuedUnits as $queuedUnit)
+                    {
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedUnit->pivot->craft_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= $queuedUnit->name." - ".$buildingTime."\n";    
+                    }
+                    if($this->player->colonies[0]->craftQueues->count() > 5)
+                    {
+                        $lastQueue = $this->player->colonies[0]->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= "... - ".$buildingTime."\n";
+                    }
+
                     $embed['fields'][] = array(
-                        'name' => "Craft Queue",
-                        'value' => "To Do",
+                        'name' => trans('colony.craftQueue', [], $this->player->lang),
+                        'value' => $queueString,
                         'inline' => true
                     );
                 }

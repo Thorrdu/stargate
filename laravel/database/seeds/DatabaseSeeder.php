@@ -739,7 +739,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Usine Asuran',
             'slug' => Str::slug('asuranfactory'),
             'description' => "Après de longues analyses, vos chercheurs réussissent à réactiver cette vieille usine Asuran de production d'E2PZ. vous ouvrant la voie vers le voyage interplanétaire",
-            'type' => 'Production',
+            'type' => 'Science',
             'iron' => 200,
             'gold' => 0,
             'quartz' => 500,
@@ -1081,7 +1081,7 @@ class DatabaseSeeder extends Seeder
         ]);
         //Antimatière 4
         DB::table('unit_technologies')->insert([
-            'unit_id' => 1,
+            'unit_id' => 2,
             'required_technology_id' => 16,
             'level' => 6
         ]);

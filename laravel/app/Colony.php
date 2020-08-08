@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Events\Event;
+use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use App\Utility\TopUpdater;
 
@@ -78,7 +79,7 @@ class Colony extends Model
         return $this->hasOne('App\Building','id','active_building_id');
     }
 
-    public function coordinate()
+    public function coordinates()
     {
         return $this->hasOne('App\Coordinate');
     }
@@ -187,6 +188,14 @@ class Colony extends Model
                 $this->$resource -= round($buildingPrices[$resource]);
         }
 
+        if($this->craftQueues->count() > 0)
+        {
+            $lastQueue = $this->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
+            $now = Carbon::now();
+            $lastQueueEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+            $buildingTime += $now->diffInSeconds($lastQueueEnd);
+        }
+
         for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )
         {
             $buildingEnd = $current->addSeconds($buildingTime);
@@ -243,6 +252,51 @@ class Colony extends Model
         }
     }
 
+    public function checkCraftQueues()
+    {
+        try{
+            echo PHP_EOL.'CHECK_CRAFTS_QUEUES';
+            if($this->craftQueues->count() > 0)
+            {
+                $endedCrafts = $this->craftQueues->filter(function ($value){
+                    return Carbon::createFromFormat("Y-m-d H:i:s",$value->pivot->craft_end)->isPast();
+                });
+
+                foreach($endedCrafts as $endedCraft)
+                {
+                    $unitExists = $this->units->filter(function ($value) use($endedCraft){               
+                        return $value->id == $endedCraft->id;
+                    });
+                    if($unitExists->count() > 0)
+                    {
+                        $unitToUpdate = $unitExists->first();
+                        $unitToUpdate->pivot->number++;
+                        $unitToUpdate->pivot->save();
+                    }
+                    else
+                    {
+                        $this->units()->attach([$endedCraft->id => ['number' => 1]]);
+                        $this->load('units'); 
+                    }
+                }
+                DB::table('craft_queues')->where('craft_end', '<=', Carbon::now())->delete();
+                $this->load('craftQueues'); 
+
+            }
+            else
+            {
+                echo PHP_EOL.'NO CRAFT';
+            }
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return $e->getMessage();
+        }
+    }
+
+    
+
     public function checkProd()
     {
         echo PHP_EOL.'CHECK_PROD'.PHP_EOL;
@@ -264,6 +318,7 @@ class Colony extends Model
                         $this->$resource = $this->$varNameStorage;
                 }
                 $this->military += ($this->production_military / 60) * $minuteToClaim;
+                $this->e2pz += ($this->production_e2pz / 10080) * $minuteToClaim;
 
                 $this->last_claim = date("Y-m-d H:i:s");
 
@@ -329,7 +384,7 @@ class Colony extends Model
 
 
         $e2pzBuildings = $this->buildings->filter(function ($value){
-            return $value->production_type == 'e2pz' && $value->type == 'Military';
+            return $value->production_type == 'e2pz' && $value->type == 'Science';
         });
         $this->production_e2pz = 0;
         foreach($e2pzBuildings as $e2pzBuilding)
@@ -345,6 +400,8 @@ class Colony extends Model
         $this->checkProd();
         $this->player->checkTechnology();
         $this->checkBuilding();
+        $this->checkCraftQueues();
+
     }
 
     public function buildingIsDone(Building $building)

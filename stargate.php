@@ -103,8 +103,11 @@ $discord->on('ready', function ($discord) {
 
 	// Listen for messages.
 	$discord->on('message', function ($message) {
+        if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
+            return;
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
+
     
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
         $tenMinutes = Carbon::now()->sub('minute', 15);
@@ -192,14 +195,14 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);	
 
-    $discord->registerCommand('galaxy', function ($message, $args) {
-        $command = new Galaxy($message,$args);
+    $discord->registerCommand('galaxy', function ($message, $args) use($discord){
+        $command = new Galaxy($message, $args, $discord);
         return $command->execute();
     },[
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		'aliases' => array('g','ga','gal'),
-        'cooldown' => 120
+        'cooldown' => 1
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) {
@@ -208,8 +211,8 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
-		'aliases' => array('g','ga','gal'),
-        'cooldown' => 120
+		'aliases' => array('st','sta','star'),
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {

@@ -34,6 +34,7 @@ return [
     'notEnoughResources' => 'Missing resources: :missingResources',
     'busyBuilding' => 'Busy building...',
     'missingRequirements' => "You're missing some requirement.",
+    'wrongQuantity' => "Please enter a valid quantity.",
     'unknownPlayer' => 'Unknown player',
     'missingPerm' => "Missing perm...",
     'coordinates' => "Coordinates",

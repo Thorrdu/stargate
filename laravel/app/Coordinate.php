@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Coordinate extends Model
 {
-    public function colony()
+    public function colonies()
     {
         return $this->belongsTo('App\Colony');
+    }
+    public function colony()
+    {
+        return $this->hasOne('App\Colony');
     }
 }

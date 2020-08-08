@@ -3,6 +3,11 @@
 return [
     'hidden' => '-- Craft caché --',
     'unDiscovered' => 'Non découvert',
-    'buildingStarted' => 'Craft commencé, **:qty :name**. Craft terminé dans **:time**',
+    'buildingStarted' => 'Craft commencé, **:qtyx :name**. Craft terminé dans **:time**',
+    'howTo' => "Construisez un appareil avec `!craft [id] [quantité]` or `!craft [slug] [quantité]`\n\n",
+    'notYetDiscovered' => "Vous n'avez pas encore découvert ce craft.",
+    'buildingList' => "Craft's list",
     "unknownCraft" => "Craft inconnu",
+    "craftList" => "TEXTE",
+    "genericHowTo" => "TEXTE",
 ];

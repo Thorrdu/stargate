@@ -58,7 +58,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
-                            elseif($messageReaction->emoji->name == '⏮️' && $this->maxGalaxyPage > 1)
+                            elseif($messageReaction->emoji->name == '⏮️' && $this->galaxy > 1)
                             {
                                 $this->galaxy--;
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
@@ -107,24 +107,36 @@ class Galaxy extends CommandHandler implements CommandInterface
 
     public function getPage()
     {
-        $coordinates = Coordinate::where('galaxy', $this->galaxy)->andWhere('system', $this->system);
-        
-        $coordinateList = "";
-        foreach($coordinates as $coordinate)
-            $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name."\n";
+        try{
+            $coordinates = Coordinate::where([['galaxy', $this->galaxy],['system', $this->system]])->get();
+            
+            $coordinateList = "";
+            foreach($coordinates as $coordinate)
+            {
+                if(!is_null($coordinate->colony))
+                    $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (".$coordinate->colony->player->user_name.")"."\n";
+                else
+                    $coordinateList .= $coordinate->planet."\n";
+            }
 
-        $embed = [
-            'author' => [
-                'name' => "Stargate",
-                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
-            ],
-            "title" => "Galaxy ".$this->galaxy." - System ".$this->system,
-            "description" => "Liste des planètes du système:\n\n".$coordinateList,
-            'fields' => [],
-            'footer' => array(
-                'text'  => 'Stargate',
-            ),
-        ];
-        return $embed;
+            $embed = [
+                'author' => [
+                    'name' => "Stargate",
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                ],
+                "title" => "Galaxy ".$this->galaxy." - System ".$this->system,
+                "description" => "Liste des planètes du système:\n\n".$coordinateList,
+                'fields' => [],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            return $embed;
+            }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return $e->getMessage();
+        }
     }
 }

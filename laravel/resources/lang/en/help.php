@@ -18,8 +18,8 @@ return [
         'usage' => '!colony'
     ],
     'craft' => [
-        'description' => 'Construit des appareils tel que des sondes ou des transporteurs',
-        'usage' => "!craft list\n!craft queue\n!craft [id/slug] [?quantité]"
+        'description' => "Construit des appareils tel que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
+        'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantité]"
     ],
     'galaxy' => [
         'description' => 'Affiche une vue de la galaxie',

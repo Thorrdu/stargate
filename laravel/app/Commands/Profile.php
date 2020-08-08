@@ -43,6 +43,11 @@ class Profile extends CommandHandler implements CommandInterface
             $researchPosition = DB::table('players')->where('points_research', '>' , $this->player->points_research)->count() + 1;
             $militaryPosition = DB::table('players')->where('points_military', '>' , $this->player->points_military)->count() + 1;
 
+            if($this->player->notification)
+                $notificationString = "On";
+            else
+                $notificationString = "Off";
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -50,6 +55,7 @@ class Profile extends CommandHandler implements CommandInterface
                 ],
                 "title" => $this->player->user_name,
                 "description" => "Lang: ".config('stargate.emotes.'.$this->player->lang)."\n"
+                                ."Notification: ".$notificationString."\n"
                                 ."Votes: ".$this->player->votes."\n",
                 'fields' => [
                     [

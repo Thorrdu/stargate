@@ -40,22 +40,28 @@ class Player extends Model
 
     public function addColony($first = true)
     {
-        $newColony = new Colony;
-        $newColony->colony_type = 1;
-        $newColony->player_id = $this->id;
-        $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
-        if($first)
-            $newColony->space_max = 180;
-        else
-            $newColony->space_max = rand(100,250);
-        $newColony->last_claim = date("Y-m-d H:i:s");  
-        $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->get();
-        $newColony->coordinate_id = $coordinate->id;
-        $newColony->save();
-        $coordinate->colony_id = $newColony->id;
-        $coordinate->save();
+        try{
+            $newColony = new Colony;
+            $newColony->colony_type = 1;
+            $newColony->player_id = $this->id;
+            $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
+            if($first)
+                $newColony->space_max = 180;
+            else
+                $newColony->space_max = rand(100,250);
+            $newColony->last_claim = date("Y-m-d H:i:s");  
+            $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
+            $newColony->coordinate_id = $coordinate->id;
+            $newColony->save();
+            $coordinate->colony_id = $newColony->id;
+            $coordinate->save();
 
-        $this->colonies->push($newColony);
+            $this->colonies->push($newColony);
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
     }
 
     public function hasTechnology(Technology $technology)
