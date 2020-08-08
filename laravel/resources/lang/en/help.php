@@ -7,7 +7,7 @@ return [
     ],
     'reminder' => [
         'description' => 'Allow to create reminders wich will be received in dm.',
-        'usage' => "!reminder [time] [reason]\n!reminder 2h go to sleep"
+        'usage' => "!reminder [time] [reason]\n!reminder 1h20m5s go to sleep"
     ],
     'build' => [
         'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment.",
