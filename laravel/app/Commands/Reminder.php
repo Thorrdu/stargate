@@ -23,7 +23,7 @@ class Reminder extends CommandHandler implements CommandInterface
             try{
                 $reminder = new ReminderModel;
                 $reminder->reminder_date = Carbon::now()->add($this->args[0]);
-                $reminder->reminder = substr($this->message->content,strlen($this->args[0]));
+                $reminder->reminder = substr(implode(' ',$this->args),strlen($this->args[0]));
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
             }
