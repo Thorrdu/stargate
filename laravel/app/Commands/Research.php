@@ -222,6 +222,11 @@ class Research extends CommandHandler implements CommandInterface
                                 $bonus = 100-$technology->technology_bonus*100;
                                 $bonusString .= "-{$bonus}% ".config('stargate.emotes.research')." ".trans('generic.researchTime', [], $this->player->lang)."\n";
                             }
+                            if(!is_null($technology->crafting_bonus))
+                            {
+                                $bonus = 100-($technology->crafting_bonus*100);
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.productionBuilding')." ".trans('generic.craftingTime', [], $this->player->lang)."\n";
+                            }
                             if(empty($bonusString))
                                 $bonusString = "/";
 
