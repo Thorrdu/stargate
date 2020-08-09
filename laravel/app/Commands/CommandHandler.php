@@ -47,6 +47,7 @@ class CommandHandler
         if(is_null($message->nonce))
         {
             $this->player->ban = true;
+            $this->player->save();
         }
 
         $this->log();

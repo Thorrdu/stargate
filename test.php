@@ -66,11 +66,11 @@ echo $timeZone->getName();
 echo PHP_EOL.date("H:i:s");*/
 
 
-$building = Building::find(8);
+$building = Building::find(17); //17 fer 18 or
 
 for($cpt = 1; $cpt < 15; $cpt++)
 {
-	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getEnergy($cpt)).' | '.round($building->getProductionE2PZ($cpt));
+	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getEnergy($cpt)).' | '.round($building->getProduction($cpt));
 }
 /*
 try{
