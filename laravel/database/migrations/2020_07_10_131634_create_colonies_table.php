@@ -40,6 +40,9 @@ class CreateColoniesTable extends Migration
             $table->integer('production_naqahdah')->length(10)->unsigned()->default(2);
             $table->integer('production_military')->length(10)->unsigned()->default(0);
             $table->integer('production_e2pz')->length(10)->unsigned()->default(0);
+
+            $table->integer('consumption_naqahdah')->length(10)->unsigned()->nullable();
+
             $table->integer('energy_used')->length(10)->default(0);
             $table->integer('energy_max')->length(10)->unsigned()->default(0);
 

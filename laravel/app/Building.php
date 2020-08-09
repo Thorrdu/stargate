@@ -68,6 +68,12 @@ class Building extends Model
         return floor($this->production_base * pow($this->production_coefficient, $level));
     }
 
+    public function getConsumption(int $level)
+    {
+        $level--; //Du au coeficient
+        return floor($this->energy_base * pow($this->energy_coefficient, $level) );
+    }
+
     public function coefCalc($base,$coef,$level)
     {
         $returnValue = $base;

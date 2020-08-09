@@ -323,8 +323,12 @@ class Colony extends Model
                 {
                     $varNameProd = 'production_'.$resource;
                     $varNameStorage = 'storage_'.$resource;
+                    $varNameConsumption = 'consumption_'.$resource;
 
                     $this->$resource += ($this->$varNameProd / 60) * $minuteToClaim;
+
+                    if(!is_null($this->$varNameConsumption))
+                        $this->$resource -= ($this->$varNameConsumption / 60) * $minuteToClaim;
 
                     if($this->$varNameStorage < $this->$resource)
                         $this->$resource = $this->$varNameStorage;
@@ -360,8 +364,15 @@ class Colony extends Model
         $this->energy_max *= $energyProductionBonus;
 
         $this->energy_used = 0;
+        $this->consumption_naqahdah = 0;
+
         foreach($this->buildings as $building)
-            $this->energy_used += floor($building->getEnergy($building->pivot->level));
+        {
+            if($building->slug = 'naqadahreactor')
+                $this->naqahdahConsumption += floor($building->getConsumption($building->pivot->level));
+            else
+                $this->energy_used += floor($building->getEnergy($building->pivot->level));
+        }
 
         foreach (config('stargate.resources') as $resource)
         {
