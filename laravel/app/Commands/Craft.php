@@ -25,8 +25,8 @@ class Craft extends CommandHandler implements CommandInterface
                 return trans('generic.banned',[],$this->player->lang);
 
             try{
-                
-                if(empty($this->args) || $this->args[0] == 'list')
+
+                if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Craft';
                     $this->craftList = Unit::all();      
@@ -79,10 +79,10 @@ class Craft extends CommandHandler implements CommandInterface
                         $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
                     });
                 }
-                elseif($this->args[0] == "queue")
+                elseif(Str::startsWith('queue', $this->args[0]))
                 {
-                    echo PHP_EOL.'Execute Craft';
-                    if(empty($this->player->colonies[0]->craftQueues))
+                    echo PHP_EOL.'Execute Craft Queue';
+                    if($this->player->colonies[0]->craftQueues->count() == 0)
                         return trans('craft.emptyQueue', [], $this->player->lang);
                     $this->craftQueue = $this->player->colonies[0]->craftQueues;
     
