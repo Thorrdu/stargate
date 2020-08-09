@@ -57,6 +57,10 @@ class Reminder extends CommandHandler implements CommandInterface
                             return $reminder->player_id;
                         }
                     }
+                    else
+                    {
+                        return $this->args[1].' Not integer ???';
+                    }
                     return trans("reminder.unknown", [], $this->player->lang);
                 }
                 catch(\Exception $e)
