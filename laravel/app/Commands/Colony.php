@@ -31,7 +31,7 @@ class Colony extends CommandHandler implements CommandInterface
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
                     "title" => 'Colonie '.$this->player->colonies[0]->name,
-                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->galaxy.":".$coordinates->planet,
+                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->system.":".$coordinates->planet,
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',
