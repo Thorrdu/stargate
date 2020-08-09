@@ -31,7 +31,7 @@ class Reminder extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $reminderString .= "`".$reminder->id."` - ".$reminder->reminder_date." (".$reminderTimeString.") - `".$reminder->reminder."`\n";
+                        $reminderString .= "`".$reminder->id."` - ".$reminder->reminder_date." (".$reminderTimeString.") - `".str_replace("**Reminder:** ","",$reminder->reminder)."`\n";
                     }
                 }
                 return "__".trans('reminder.listTitle', [], $this->player->lang)."__:\n\n".$reminderString;
@@ -40,6 +40,20 @@ class Reminder extends CommandHandler implements CommandInterface
             if(count($this->args) < 2)
                 return trans('reminder.wrongParameter', [], $this->player->lang);
             
+            if(Str::startsWith('remove', $this->args[0]))
+            {
+                $reminderString = "";
+                if(is_integer($this->args[1]))
+                {
+                    $reminder = ReminderModel::find($this->args[0]);
+                    if(!is_null($reminder) && $reminder->player->id == $this->player->id)
+                    {
+                        return trans('reminder.removed', [], $this->player->lang);
+                    }
+                }
+                return trans("reminder.unknown", [], $this->player->lang);
+            }
+
             try{
                 $reason = trim(substr(implode(' ',$this->args),strlen($this->args[0])));
                 $reminder = new ReminderModel;

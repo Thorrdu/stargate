@@ -6,8 +6,8 @@ return [
         'usage' => '!ban @mention'
     ],
     'reminder' => [
-        'description' => 'Permet de créer des rappels envoyés en dm.',
-        'usage' => "!reminder [temps] [motif]\n!reminder 1h20m5s va dormir"
+        'description' => "Permet de créer, lister et supprimer des rappels envoyés en dm.",
+        'usage' => "!reminder [temps] [motif]\nreminder list\n!reminder 1h20m5s va dormir\n!reminder remove [id]"
     ],
     'build' => [
         'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment.",
