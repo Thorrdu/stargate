@@ -180,7 +180,6 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getCraftingBonus();
 
-
         $buildingPrices = $unit->getPrice($qty);
         foreach (config('stargate.resources') as $resource)
         {
@@ -191,17 +190,12 @@ class Colony extends Model
         if($this->craftQueues->count() > 0)
         {
             $lastQueue = $this->craftQueues->last();
-            $now = Carbon::now();
-            $lastQueueEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
-            $buildingTime += $now->diffInSeconds($lastQueueEnd);
+            $current = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
         }
 
         for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )
         {
             $buildingEnd = $current->addSeconds($buildingTime);
-            /*
-            AJOUTER A LA QUEUE
-            */
             $this->craftQueues()->attach([$unit->id => ['craft_end' => $buildingEnd]]);
         }
 
