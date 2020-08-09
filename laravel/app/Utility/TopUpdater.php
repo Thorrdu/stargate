@@ -9,6 +9,7 @@ class TopUpdater
     public static function update($player){
         if(!is_null($player))
         {
+            echo PHP_EOL.'Top Recalc: '.$player->user_name;
             $buildingPoints = 0;
             $player->points_total = 0;
             foreach($player->colonies as $colony)
