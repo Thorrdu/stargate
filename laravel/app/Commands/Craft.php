@@ -139,6 +139,7 @@ class Craft extends CommandHandler implements CommandInterface
                     $unit = Unit::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($unit))
                     {
+                        //echo PHP_EOL."Name: ".$unit->name;
                         //Requirement
                         $hasRequirements = true;
                         foreach($unit->requiredTechnologies as $requiredTechnology)

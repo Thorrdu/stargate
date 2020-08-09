@@ -24,6 +24,7 @@ return [
     'produced' => 'produite',
     'buildingTime' => 'Temps de construction',
     'researchTime' => 'Temps de recherche',
+    'craftingTime' => 'Temps de craft',
     'info' => 'Info',
     'bonusPerLvl' => 'Bonus par Lvl',
     'price' => 'Prix',

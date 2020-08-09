@@ -659,7 +659,8 @@ class DatabaseSeeder extends Seeder
             'time_base' => 86400,
             'time_coefficient' => 1.7,
             'building_bonus' => 0.5,
-            'technology_bonus' => 0.5
+            'technology_bonus' => 0.5,
+            'crafting_bonus' => 0.5
         ]);
         //Centre de recherche 8
         DB::table('building_buildings')->insert([

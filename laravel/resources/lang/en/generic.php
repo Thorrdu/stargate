@@ -24,6 +24,7 @@ return [
     'produced' => 'produced',
     'buildingTime' => 'Building time',
     'researchTime' => 'Research time',
+    'craftingTime' => 'Crafting time',
     'info' => 'Info',
     'bonusPerLvl' => 'Bonus per Lvl',
     'price' => 'Price',

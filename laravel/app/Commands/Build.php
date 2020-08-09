@@ -253,6 +253,11 @@ class Build extends CommandHandler implements CommandInterface
                                 $bonus = 100-($building->technology_bonus*100);
                                 $bonusString .= "-{$bonus}% ".config('stargate.emotes.research')." ".trans('generic.researchTime', [], $this->player->lang)."\n";
                             }
+                            if(!is_null($building->crafting_bonus))
+                            {
+                                $bonus = 100-($building->technology_bonus*100);
+                                $bonusString .= "-{$bonus}% ".config('stargate.emotes.gear')." ".trans('generic.craftingTime', [], $this->player->lang)."\n";
+                            }
                             $productionString = $consoString = "";
                             if(!is_null($building->production_base))
                             {

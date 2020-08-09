@@ -190,7 +190,7 @@ class Colony extends Model
 
         if($this->craftQueues->count() > 0)
         {
-            $lastQueue = $this->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
+            $lastQueue = $this->craftQueues->last();
             $now = Carbon::now();
             $lastQueueEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
             $buildingTime += $now->diffInSeconds($lastQueueEnd);
