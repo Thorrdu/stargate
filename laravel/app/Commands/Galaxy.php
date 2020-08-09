@@ -59,7 +59,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                     
                     if(!$this->systemRestriction)
                     {
-                        if($this->galaxyRestriction)
+                        if(!$this->galaxyRestriction)
                         {
                             $this->paginatorMessage->react('⏮️')->then(function(){
                                 $this->paginatorMessage->react('⏭️')->then(function(){
