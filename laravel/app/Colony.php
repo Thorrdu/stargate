@@ -190,7 +190,9 @@ class Colony extends Model
         if($this->craftQueues->count() > 0)
         {
             $lastQueue = $this->craftQueues->last();
-            $current = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+            $lastQUeueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+            if(!$lastQueue->isPast())
+                $current = $lastQUeueCarbon;
         }
 
         for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )

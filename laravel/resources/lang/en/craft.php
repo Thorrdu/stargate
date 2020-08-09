@@ -12,5 +12,6 @@ return [
     "genericHowTo" => "TEXT",
     "craftQueue" => "Craft queue",
     "emptyQueue" => "Craft queue is empty",
+    "capacity" => "Capacity: :capacity",
 ];
 

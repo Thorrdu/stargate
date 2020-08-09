@@ -309,12 +309,14 @@ class Craft extends CommandHandler implements CommandInterface
                     if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                         $hasRequirements = false;
                 }
-
+                $capacityString = "";
+                if(!is_null($unit->capacity))
+                    $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang);
                 if($hasRequirements == true)
                 {
                     $embed['fields'][] = array(
                         'name' => $unit->id.' - '.$unit->name,
-                        'value' => $unit->description."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice,
+                        'value' => $unit->description."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString,
                         'inline' => true
                     );
                 }
