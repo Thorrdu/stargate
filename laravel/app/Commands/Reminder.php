@@ -65,6 +65,7 @@ class Reminder extends CommandHandler implements CommandInterface
                 }
                 catch(\Exception $e)
                 {
+                    return $e->getMessage();
                     return trans('reminder.wrongParameter', [], $this->player->lang);
                 }
             }
