@@ -368,7 +368,7 @@ class Colony extends Model
 
         foreach($this->buildings as $building)
         {
-            if($building->slug = 'naqadahreactor')
+            if($building->slug == 'naqadahreactor')
                 $this->consumption_naqahdah += floor($building->getConsumption($building->pivot->level));
             else
                 $this->energy_used += floor($building->getEnergy($building->pivot->level));

@@ -6,6 +6,7 @@ use App\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Building;
+use App\Coordinate;
 
 class Stargate extends CommandHandler implements CommandInterface
 {
@@ -58,14 +59,15 @@ class Stargate extends CommandHandler implements CommandInterface
                 $this->message->channel->sendMessage('', false, $embed);
                 return;
             }
-            if(!preg_match('/[0-9]{1,}:[0-9]{1,}:[0-9]{1,}/', $this->args[1], $coordinates))
+            if(!preg_match('/[0-9]{1,}:[0-9]{1,}:[0-9]{1,}/', $this->args[1], $coordinatesMatch))
                 return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
             //Check Consommation E2PZ
 
             //Est-ce que la destination à une porte ?
 
-            print_r($coordinates);
+            $coordinates = explode(':',$coordinatesMatch[0]);
+            $coordinate = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]]);
 
             if(Str::startsWith('explore',$this->args[0]))
                 return 'Under developement';
