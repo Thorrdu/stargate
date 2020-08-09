@@ -26,7 +26,12 @@ return [
         'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantité]"
     ],
     'galaxy' => [
-        'description' => 'Affiche une vue de la galaxie',
+        'description' => "Affiche une vue de la galaxie"
+                        ."\nVotre zone de vision dépend de la technologie Informatique et Communication."
+                        ."\nVision: 2^Lvl systèmes visibles autour de vous."
+                        ."\nExemples: \nLvl 0: vous voyez votre système solaire."
+                        ."\nLvl 3: Vous voyez 8 systèmes autour du votre"
+                        ."\nLvl 8: Accès à la vision des autres galaxies",
         'usage' => '!galaxy'
     ],
     'stargate' => [
