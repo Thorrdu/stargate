@@ -78,6 +78,8 @@ class CommandHandler
                 $log->player_id = $this->player->id;
                 $log->command_type = str_replace("App\Commands\\",'',get_class($this));
                 $log->command_raw = $this->message->content;
+                if(is_null($this->message->nonce))
+                    $log->command_flag = true;
                 $log->save();
             }
         }

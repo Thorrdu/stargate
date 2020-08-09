@@ -19,6 +19,7 @@ class CreateCommandLogsTable extends Migration
             $table->foreign('player_id','log_player_id')->references('id')->on('players');
             $table->string('command_type', 50);
             $table->string('command_raw', 255);
+            $table->boolean('command_flag')->default(false);
             $table->timestamps();
         });
     }
