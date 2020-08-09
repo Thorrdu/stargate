@@ -44,7 +44,7 @@ class Reminder extends CommandHandler implements CommandInterface
             {
                 try{
                     $reminderString = "";
-                    if(is_integer($this->args[1]))
+                    if(is_numeric($this->args[1]))
                     {
                         $reminder = ReminderModel::find($this->args[0]);
                         if(!is_null($reminder) && $reminder->player->id == $this->player->id)
