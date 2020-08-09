@@ -42,16 +42,27 @@ class Reminder extends CommandHandler implements CommandInterface
             
             if(Str::startsWith('remove', $this->args[0]))
             {
-                $reminderString = "";
-                if(is_integer($this->args[1]))
-                {
-                    $reminder = ReminderModel::find($this->args[0]);
-                    if(!is_null($reminder) && $reminder->player->id == $this->player->id)
+                try{
+                    $reminderString = "";
+                    if(is_integer($this->args[1]))
                     {
-                        return trans('reminder.removed', [], $this->player->lang);
+                        $reminder = ReminderModel::find($this->args[0]);
+                        if(!is_null($reminder) && $reminder->player->id == $this->player->id)
+                        {
+                            $reminder->delete();
+                            return trans('reminder.removed', [], $this->player->lang);
+                        }
+                        else
+                        {
+                            return $reminder->player_id;
+                        }
                     }
+                    return trans("reminder.unknown", [], $this->player->lang);
                 }
-                return trans("reminder.unknown", [], $this->player->lang);
+                catch(\Exception $e)
+                {
+                    return trans('reminder.wrongParameter', [], $this->player->lang);
+                }
             }
 
             try{
