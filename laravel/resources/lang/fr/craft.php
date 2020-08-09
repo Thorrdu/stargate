@@ -8,6 +8,8 @@ return [
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce craft.",
     'buildingList' => "Craft's list",
     "unknownCraft" => "Craft inconnu",
-    "craftList" => "TEXTE",
+    "craftList" => "Liste des craft",
     "genericHowTo" => "TEXTE",
+    "craftQueue" => "Liste des craft en cours",
+    "emptyQueue" => "Aucun craft en cours",
 ];

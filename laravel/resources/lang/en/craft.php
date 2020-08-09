@@ -8,7 +8,9 @@ return [
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
     'buildingList' => "Craft's list",
     "unknownCraft" => "Unknown craft",
-    "craftList" => "TEXTE",
-    "genericHowTo" => "TEXTE",
+    "craftList" => "Craft list",
+    "genericHowTo" => "TEXT",
+    "craftQueue" => "Craft queue",
+    "emptyQueue" => "Craft queue is empty",
 ];
 

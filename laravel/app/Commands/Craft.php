@@ -15,6 +15,7 @@ class Craft extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $craftList;
+    public $craftQueue;
     
     public function execute()
     {
@@ -29,7 +30,7 @@ class Craft extends CommandHandler implements CommandInterface
                 {
                     echo PHP_EOL.'Execute Craft';
                     $this->craftList = Unit::all();      
-                    
+
                     $this->page = 1;
                     $this->maxPage = ceil($this->craftList->count()/5);
                     $this->maxTime = time()+180;
@@ -80,7 +81,58 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 elseif($this->args[0] == "queue")
                 {
-                    return 'display queue (pagination ?)';
+                    echo PHP_EOL.'Execute Craft';
+                    if(empty($this->player->colonies[0]->craftQueues))
+                        return trans('craft.emptyQueue', [], $this->player->lang);
+                    $this->craftQueue = $this->player->colonies[0]->craftQueues;
+    
+                    $this->page = 1;
+                    $this->maxPage = ceil($this->craftQueue->count()/5);
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $this->getQueue())->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react('⏪')->then(function(){ 
+                            $this->paginatorMessage->react('◀️')->then(function(){ 
+                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                                    $this->paginatorMessage->react('⏩');
+                                });
+                            });
+                        });
+    
+                        $this->listner = function ($messageReaction) {
+                            if($this->maxTime < time())
+                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+    
+                            if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                            {
+                                if($messageReaction->emoji->name == '⏪')
+                                {
+                                    $this->page = 1;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                {
+                                    $this->page--;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                {
+                                    $this->page++;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                elseif($messageReaction->emoji->name == '⏩')
+                                {
+                                    $this->page = $this->maxPage;
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
+                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                            }
+                        };
+                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                    });
                 }
                 else
                 {
@@ -153,6 +205,48 @@ class Craft extends CommandHandler implements CommandInterface
         else
             return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;
+    }
+
+    public function getQueue()
+    {
+        try
+        {
+            $displayList = $this->craftQueue->skip(5*($this->page -1))->take(5);
+            
+            $craftQueueString = "";
+            foreach($displayList as $queuedCraft)
+            {
+                $now = Carbon::now();
+                $craftTime = $now->diffForHumans($queuedCraft->pivot->craft_end,[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);      
+
+                $craftQueueString .= "1x ".$queuedCraft->name." - ".$craftTime."\n"; 
+            }
+
+            $embed = [
+                'author' => [
+                    'name' => $this->player->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                ],
+                "title" => trans('craft.craftQueue', [], $this->player->lang),
+                "description" => $craftQueueString,
+                'fields' => [],
+                'footer' => array(
+                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                    'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
+                ),
+            ];
+
+            return $embed;
+        } 
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return $e->getMessage();
+        }
     }
 
     public function getPage()

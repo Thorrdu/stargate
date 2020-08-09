@@ -16,7 +16,7 @@ class CreateColoniesTable extends Migration
         Schema::create('colonies', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('colony_type')->length(2);
-            $table->integer('player_id')->unsigned();
+            $table->integer('player_id')->unsigned()->nullable();
             $table->foreign('player_id','c_player_id')->references('id')->on('players');
 
             $table->string('name', 50);
