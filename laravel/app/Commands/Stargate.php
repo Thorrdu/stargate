@@ -23,7 +23,7 @@ class Stargate extends CommandHandler implements CommandInterface
             {
                 $embed = [
                     'author' => [
-                        'name' => $this->player_user_name,
+                        'name' => $this->player->user_name,
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
                     'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/disabledStargate.jpg'],
@@ -43,7 +43,7 @@ class Stargate extends CommandHandler implements CommandInterface
             {
                 $embed = [
                     'author' => [
-                        'name' => $this->player_user_name,
+                        'name' => $this->player->user_name,
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
                     'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/enabledStargate.jpg'],
