@@ -200,7 +200,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
-		'aliases' => array('st','sta','star'),
+		'aliases' => array('s','st','sta','star'),
         'cooldown' => 5
     ]);	
 

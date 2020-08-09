@@ -1,7 +1,7 @@
 <?php
 //STARGATE FR
 return [
-    "askBaseParameter" => "Available Actions:\n".
+    "askBaseParameter" => "Actions possibles:\n".
                           "explore\n".
                           "trade\n".
                           "spy\n".

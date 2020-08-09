@@ -28,7 +28,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     ],
                     'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/disabledStargate.jpg'],
                     "title" => "Stargate",
-                    "description" => trans('stargate.askBaseParameter', [], $this->player->lang),
+                    "description" => trans('stargate.stargateShattered', [], $this->player->lang),
                     'fields' => [
                     ],
                     'footer' => array(
