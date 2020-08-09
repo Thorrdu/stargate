@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use Illuminate\Support\Facades\DB;
 use App\Coordinate;
+use App\Technology;
 
 class Galaxy extends CommandHandler implements CommandInterface
 {
@@ -11,6 +12,10 @@ class Galaxy extends CommandHandler implements CommandInterface
     public $system;
     public $maxGalaxyPage;
     public $maxSystemPage;
+    public $systemRestrictionMin;
+    public $systemRestrictionMax;
+    public $systemRestriction;
+    public $galaxyRestriction;
     public $maxTime;
     public $paginatorMessage;
     public $listner;
@@ -25,9 +30,26 @@ class Galaxy extends CommandHandler implements CommandInterface
                 return trans('generic.banned',[],$this->player->lang);
 
             try{
-                
                 $this->galaxy = $this->player->colonies[0]->coordinates->galaxy;
                 $this->system = $this->player->colonies[0]->coordinates->system;
+
+                $this->galaxyRestriction = false;
+                $this->systemRestriction = false;
+                $communication = Technology::find(1);
+                $comLvl = $this->player->hasTechnology($communication);
+                if($comLvl)
+                {
+                    if($comLvl < 8)
+                        $this->galaxyRestriction = true;
+                    $maxMovement = pow(2,$comLvl);
+                    $this->systemRestrictionMin = $this->system-$maxMovement;
+                    $this->systemRestrictionMax = $this->system+$maxMovement;
+                }
+                else
+                {
+                    $this->systemRestriction = true;
+                    $this->galaxyRestriction = true;
+                }
 
                 $this->maxGalaxyPage = config('stargate.galaxy.maxGalaxies');
                 $this->maxSystemPage = config('stargate.galaxy.maxSystems');
@@ -35,8 +57,24 @@ class Galaxy extends CommandHandler implements CommandInterface
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
                     
-                    $this->paginatorMessage->react('⏮️')->then(function(){
-                        $this->paginatorMessage->react('⏭️')->then(function(){
+                    if(!$this->systemRestriction)
+                    {
+                        if($this->galaxyRestriction)
+                        {
+                            $this->paginatorMessage->react('⏮️')->then(function(){
+                                $this->paginatorMessage->react('⏭️')->then(function(){
+                                    $this->paginatorMessage->react('⏪')->then(function(){ 
+                                        $this->paginatorMessage->react('◀️')->then(function(){ 
+                                            $this->paginatorMessage->react('▶️')->then(function(){ 
+                                                $this->paginatorMessage->react('⏩');
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                        else
+                        {
                             $this->paginatorMessage->react('⏪')->then(function(){ 
                                 $this->paginatorMessage->react('◀️')->then(function(){ 
                                     $this->paginatorMessage->react('▶️')->then(function(){ 
@@ -44,21 +82,22 @@ class Galaxy extends CommandHandler implements CommandInterface
                                     });
                                 });
                             });
-                        });
-                    });
+
+                        }
+                    }
                     $this->listner = function ($messageReaction) {
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
                         if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                         {
-                            if($messageReaction->emoji->name == '⏭️' && $this->maxGalaxyPage > $this->galaxy)
+                            if(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏭️' && $this->maxGalaxyPage > $this->galaxy)
                             {
                                 $this->galaxy++;
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
-                            elseif($messageReaction->emoji->name == '⏮️' && $this->galaxy > 1)
+                            elseif(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏮️' && $this->galaxy > 1)
                             {
                                 $this->galaxy--;
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
@@ -67,16 +106,19 @@ class Galaxy extends CommandHandler implements CommandInterface
                             if($messageReaction->emoji->name == '⏪')
                             {
                                 $this->system = 1;
+                                if($this->systemRestrictionMin > 1)
+                                    $this->system = $this->systemRestrictionMin;
+
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
-                            elseif($messageReaction->emoji->name == '◀️' && $this->system > 1)
+                            elseif($messageReaction->emoji->name == '◀️' && $this->system > 1 && $this->system > $this->systemRestrictionMin)
                             {
                                 $this->system--;
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
-                            elseif($messageReaction->emoji->name == '▶️' && $this->maxSystemPage > $this->system)
+                            elseif($messageReaction->emoji->name == '▶️' && $this->maxSystemPage > $this->system && $this->system < $this->systemRestrictionMax)
                             {
                                 $this->system++;
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
@@ -85,12 +127,16 @@ class Galaxy extends CommandHandler implements CommandInterface
                             elseif($messageReaction->emoji->name == '⏩')
                             {
                                 $this->system = $this->maxSystemPage;
+                                if($this->systemRestrictionMax < $this->system)
+                                    $this->system = $this->systemRestrictionMax;
+
                                 $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
                         }
                     };
-                    $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                    if(!$this->systemRestriction)
+                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
                 });
 
             }

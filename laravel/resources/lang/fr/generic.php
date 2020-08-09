@@ -39,5 +39,5 @@ return [
     'unknownPlayer' => 'Joueur inconnu',
     'missingPerm' => "Permission manquantes...",
     'coordinates' => "Coordonées",
-    "buildingSpace" => "Espace de construction",
+    "buildingSpace" => "Espace constructible",
 ];

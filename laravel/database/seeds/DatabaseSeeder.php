@@ -375,7 +375,8 @@ class DatabaseSeeder extends Seeder
             'id' => 1,
             'name' => 'Informatique et Communication',
             'slug' => Str::slug('communication'),
-            'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.",
+            'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches."
+                            ."\nPermet d'étendre votre zone de vision de la galaxie à raison de 2^Lvl systèmes visibles autour de vous.",
             'type' => 'Labo',
             'iron' => 0,
             'gold' => 400,
