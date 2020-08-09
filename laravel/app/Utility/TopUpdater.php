@@ -17,13 +17,8 @@ class TopUpdater
                 {
                     foreach($colony->buildings as $building)
                     {
-                        $debugString = " ";
-                        $debugPrice = $building->getPrice($building->pivot->level);
-                        foreach ($debugPrice as $resource => $price)
-                            $debugString .= $price.' '.$resource." ";
-                        echo PHP_EOL.'Lvl '.$building->pivot->lvl.' '.$building->name.' - '.TopUpdater::priceMerging($building->getPrice($building->pivot->number)).'Points ( '.$debugString.' )'; 
-
-                        $buildingPoints += TopUpdater::priceMerging($building->getPrice($building->pivot->level));
+                        for($cptPoint = 1;$cptPoint <= $building->pivot->level; $cptPoint++)
+                            $buildingPoints += TopUpdater::priceMerging($building->getPrice($cptPoint));
                     }
                 }
                 $player->points_building = round($buildingPoints/1000);
@@ -32,13 +27,8 @@ class TopUpdater
                 $researchPoints = 0;
                 foreach($player->technologies as $technology)
                 {
-                    $debugString = " ";
-                    $debugPrice = $technology->getPrice($technology->pivot->level);
-                    foreach ($debugPrice as $resource => $price)
-                        $debugString .= $price.' '.$resource." ";
-                    echo PHP_EOL.'Lvl '.$technology->pivot->lvl.' '.$technology->name.' - '.TopUpdater::priceMerging($technology->getPrice($technology->pivot->number)).'Points ( '.$debugString.' )';   
-
-                    $researchPoints += TopUpdater::priceMerging($technology->getPrice($technology->pivot->level));
+                    for($cptPoint = 1;$cptPoint <= $technology->pivot->level; $cptPoint++)
+                        $researchPoints += TopUpdater::priceMerging($technology->getPrice($cptPoint));
                 }
                 $player->points_research = round($researchPoints/1000);
                 $player->points_total += $player->points_research;
@@ -46,11 +36,6 @@ class TopUpdater
                 $militaryPoint = 0;
                 foreach($player->colonies[0]->units as $unit)
                 {
-                    $debugString = " ";
-                    $debugPrice = $unit->getPrice($unit->pivot->number);
-                    foreach ($debugPrice as $resource => $price)
-                        $debugString .= $price.' '.$resource." ";
-                    echo PHP_EOL.$unit->pivot->number.'x '.$unit->name.' - '.TopUpdater::priceMerging($unit->getPrice($unit->pivot->number)).'Points ( '.$debugString.' )';     
 
                     $militaryPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
                 }
