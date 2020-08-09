@@ -58,14 +58,14 @@ class Stargate extends CommandHandler implements CommandInterface
                 $this->message->channel->sendMessage('', false, $embed);
                 return;
             }
-
-            preg_match('/[0-9]{1,}:[0-9]{1,}:[0-9]{1,}/', $this->args[1], $coordinates);
-            if(is_null($coordinates) && empty($coordinates))
+            if(!preg_match('/[0-9]{1,}:[0-9]{1,}:[0-9]{1,}/', $this->args[1], $coordinates))
                 return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
             //Check Consommation E2PZ
 
             //Est-ce que la destination à une porte ?
+
+            print_r($coordinates);
 
             if(Str::startsWith('explore',$this->args[0]))
                 return 'Under developement';
