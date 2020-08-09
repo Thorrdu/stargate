@@ -20,10 +20,44 @@ class Stargate extends CommandHandler implements CommandInterface
             $researchCenter = Building::find(7);
             $centerLevel = $this->player->colonies[0]->hasBuilding($researchCenter);
             if(!$centerLevel || $centerLevel < 5)
-                return trans('stargate.stargateShattered', [], $this->player->lang);
+            {
+                $embed = [
+                    'author' => [
+                        'name' => $this->player_user_name,
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    ],
+                    'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/disabledStargate.jpg'],
+                    "title" => "Stargate",
+                    "description" => trans('stargate.askBaseParameter', [], $this->player->lang),
+                    'fields' => [
+                    ],
+                    'footer' => array(
+                        'text'  => 'Stargate',
+                    ),
+                ];
+                $this->message->channel->sendMessage('', false, $embed);
+                return;
+            }
             
             if(count($this->args) < 2)
-                return trans('stargate.askBaseParameter', [], $this->player->lang);
+            {
+                $embed = [
+                    'author' => [
+                        'name' => $this->player_user_name,
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    ],
+                    'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/enabledStargate.jpg'],
+                    "title" => "Stargate",
+                    "description" => trans('stargate.askBaseParameter', [], $this->player->lang),
+                    'fields' => [
+                    ],
+                    'footer' => array(
+                        'text'  => 'Stargate',
+                    ),
+                ];
+                $this->message->channel->sendMessage('', false, $embed);
+                return;
+            }
 
             if(preg_match('[0-9]{1,}:[0-9]{1,}:[0-9]{1,}', $this->args[1], $coordinates))
                 return trans('stargate.unknownCoordinates', [], $this->player->lang);
