@@ -15,6 +15,11 @@ use Carbon\Carbon;
 
 class Stargate extends CommandHandler implements CommandInterface
 {
+    public $listner;
+    public $paginatorMessage;
+    public $tradeResources;
+    public $maxTime;
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -75,7 +80,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 if(is_null($coordinate))
                     return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
-                if(!is_null($coordinate->colony))
+                if(!is_null($coordinate->colony) && $this->player->user_id != 125641223544373248)
                 {
                     $researchCenter = Building::find(7);
                     $centerLevel = $coordinate->colony->hasBuilding($researchCenter);
@@ -148,7 +153,139 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($coordinate->colony))
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
-                    return 'Under developement';
+                    if(count($this->args) < 4)
+                        return trans('stargate.missingParameters', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
+
+                    $availableResources = config('stargate.resources');
+                    $availableResources[] = 'E2PZ';
+                    $availableResources[] = 'military';
+                        
+                    $this->tradeResources = [];
+                    $capacityNeeded = 0;
+                    for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
+                    {
+                        if(isset($this->args[$cptRes+1]))
+                        {
+                            if((int)$this->args[$cptRes+1] > 0)
+                                $qty = $this->args[$cptRes+1];
+                            else
+                                return trans('generic.wrongQuantity', [], $this->player->lang);
+
+                            $resource = $this->args[$cptRes];
+                            $resFound = false;
+                            foreach($availableResources as $availableResource)
+                            {
+                                if(Str::startsWith($availableResource,$resource))
+                                {
+                                    $resFound = true;
+                                    $resource = $availableResource;
+                                    $capacityNeeded += $qty;
+                                }
+                            }
+                            if(!$resFound)
+                            {
+                                $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
+                                if(is_null($unit))
+                                    return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
+                                else
+                                {
+                                    $resFound = true;
+                                    $resource = $unit->slug;
+                                }
+                            }
+                            $this->tradeResources[$resource] = $qty;
+                        }
+                        else
+                            return trans('generic.wrongQuantity', [], $this->player->lang);
+                    }
+
+                    $tradeCapacity = $this->player->colonies[0]->tradeCapacity();
+                    if($tradeCapacity < $capacityNeeded)
+                        return trans('generic.notEnoughCapacity', ['missingCapacity' => number_format(round($capacityNeeded - $tradeCapacity))], $this->player->lang);
+
+                    $tradeString = "";
+                    foreach($this->tradeResources as $tradeResource => $qty)
+                        $tradeString .= $tradeResource.': '.$qty." ";
+
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage($tradeString)->then(function ($messageSent){
+                        
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                            });
+                        });
+    
+                        $this->listner = function ($messageReaction){
+                            if($this->maxTime < time())
+                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+    
+                            if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                            {
+                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                {
+                                    echo 'CONFIRMED'; 
+
+                                    foreach($this->tradeResources as $tradeResource => $qty)
+                                    {
+                                        $unit = Unit::Where('slug', $tradeResource)->first();
+                                        if(!is_null($unit))
+                                        {
+                                            $ownedUnits = $this->player->colonies[0]->hasCraft($unit);
+                                            if(!$ownedUnits)
+                                            {
+                                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.number_format($qty)], $this->player->lang));
+                                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                return;
+                                            }
+                                            elseif($ownedUnits < $qty)
+                                            {
+                                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.number_format($qty-$ownedUnits)], $this->player->lang));
+                                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                return;
+                                            }
+                                        }        
+                                        elseif($this->player->colonies[0]->$tradeResource < $qty)
+                                        {
+                                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.$tradeResource)." ".ucfirst($tradeResource).': '.number_format(round($qty-$this->player->colonies[0]->$tradeResource))], $this->player->lang));
+                                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                            return;
+                                        }                             
+                                    }     
+
+                                    /**
+                                    * 
+                                    * 
+                                    * 
+                                    * 
+                                    * Déplacement des ressources
+                                    *
+                                    *
+                                    *
+                                    *
+                                    *LOG
+                                    *Message aux 2 parties
+                                    */
+
+
+
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'Confirmed');
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    echo 'CANCELLED'; 
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('stargate.tradeCancelled', [], $this->player->lang));
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                }
+                            }
+                        };
+                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                    });
+
+
+                    return;
                 }
 
                 if(Str::startsWith('spy',$this->args[0]))

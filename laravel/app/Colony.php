@@ -114,6 +114,39 @@ class Colony extends Model
         }
     }
 
+    public function tradeCapacity()
+    {
+        $maxCapacity = 0;
+        $transports = $this->units->filter(function ($value){
+            return !is_null($value->capacity) && $value->capacity > 0;
+        });
+        foreach($transports as $transport)
+            $maxCapacity += $transport->pivot->number * $transport->capacity;
+        return $maxCapacity;
+    }
+
+
+    public function hasCraft(Unit $unit)
+    {
+        try{
+            $unitExists = $this->units->filter(function ($value) use($unit){
+                return $value->id == $unit->id;
+            });
+            if($unitExists->count() > 0)
+            {
+                $foundUnit = $unitExists->first();
+                return $foundUnit->pivot->number;
+            }
+            else
+                return false;
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
     
     public function getResearchBonus()
     {
@@ -334,7 +367,7 @@ class Colony extends Model
                         $this->$resource = $this->$varNameStorage;
                 }
                 $this->military += ($this->production_military / 60) * $minuteToClaim;
-                $this->e2pz += ($this->production_e2pz / 10080) * $minuteToClaim;
+                $this->E2PZ += ($this->production_e2pz / 10080) * $minuteToClaim;
 
                 $this->last_claim = date("Y-m-d H:i:s");
 

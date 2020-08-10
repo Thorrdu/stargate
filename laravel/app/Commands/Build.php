@@ -269,9 +269,19 @@ class Build extends CommandHandler implements CommandInterface
                                 }
                                 else
                                 {
-                                    if($currentLvl)
-                                        $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
-                                    $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                                    if($building->slug == 'asuranfactory')
+                                    {
+                                        if($currentLvl)
+                                            $productionString .= "Lvl ".$currentLvl." - ".round($building->getProductionE2PZ($currentLvl))."\n";
+                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProductionE2PZ($currentLvl+1));
+                                    }
+                                    else
+                                    {
+                                        if($currentLvl)
+                                            $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
+                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                                    }
+
                                 }
 
                             }

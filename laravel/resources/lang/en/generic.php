@@ -33,6 +33,7 @@ return [
     'production' => 'Production',
     'page' => 'Page',
     'notEnoughResources' => 'Missing resources: :missingResources',
+    'notEnoughCapacity' => 'Missing transport capacity: :missingCapacity',
     'busyBuilding' => 'Busy building...',
     'missingRequirements' => "You're missing some requirement.",
     'wrongQuantity' => "Please enter a valid quantity.",
