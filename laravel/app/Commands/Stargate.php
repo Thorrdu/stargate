@@ -289,7 +289,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     ];
 
                                     $userExist = $this->discord->users->filter(function ($value){
-                                        return $value->id == $this->player->user_id;//$this->coordinateDestination->colony->player->user_id;
+                                        return $value->id == $this->coordinateDestination->colony->player->user_id;
                                     });
                                     if($userExist->count() > 0)
                                     {
