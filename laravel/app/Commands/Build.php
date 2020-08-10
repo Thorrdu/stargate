@@ -143,7 +143,7 @@ class Build extends CommandHandler implements CommandInterface
                                 if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
                                 {
                                     $hasEnough = false;
-                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($this->player->colonies[0]->$resource-$buildingPrices[$resource]));
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->player->colonies[0]->$resource));
                                 }
                             }
                             if(!$hasEnough)
