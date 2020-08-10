@@ -303,9 +303,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                     if($userExist->count() > 0)
                                     {
                                         $foundUser = $userExist->first();
-                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => round($travelCost,3)], $this->player->lang));
+                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).' '.round($travelCost,3)], $this->player->lang));
                                     }
-
 
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'Confirmed');
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);

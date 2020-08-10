@@ -26,5 +26,5 @@ return [
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
                        "External activation detected on [:coordinateDestination] incoming from [:coordinateSource] (:player)\n\n".
                        "The following resources have been delivred:\n:resources",
-    "tradeSent" => "You sent the following resources from [:coordinateSource] to [:coordinateDestination] (:player):\n:resources\nAt a cost of: [:consumption]",
+    "tradeSent" => "You sent the following resources from [:coordinateSource] to [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
 ];
