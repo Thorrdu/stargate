@@ -23,4 +23,7 @@ return [
     "exploreSucessCraftTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
                                "The craft :name requires Lvl :lvlRequirement: :nameRequirement",
     "exploreCriticalFailed" => "The tam sent to the planet [:coordinates] has not gave any life sign...",
+    "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
+                       "External activation detected on [:coordinateDestination] incoming from [:coordinateSource] (:player)\n\n".
+                       "The following resources have been delivred:\n:resources"
 ];

@@ -23,4 +23,7 @@ return [
     "exploreSucessCraftTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
                                "Le craft :name requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
+    "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
+                       "Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n".
+                       "Les ressources suivantes vous ont été délivrées:\n:resources"
 ];

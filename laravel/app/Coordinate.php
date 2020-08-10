@@ -14,4 +14,9 @@ class Coordinate extends Model
     {
         return $this->hasOne('App\Colony');
     }
+
+    public function humanCoordinates()
+    {
+        return $this->$this->galaxy.':'.$this->system.':'.$this->planet;
+    }
 }

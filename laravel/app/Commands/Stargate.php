@@ -19,6 +19,7 @@ class Stargate extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $tradeResources;
     public $maxTime;
+    public $coordinateDestination;
 
     public function execute()
     {
@@ -75,7 +76,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                 //Est-ce que la destination à une porte ?
                 $coordinates = explode(':',$coordinatesMatch[0]);
-                $coordinate = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
+                $this->coordinateDestination = $coordinate = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
 
                 if(is_null($coordinate))
                     return trans('stargate.unknownCoordinates', [], $this->player->lang);
@@ -225,7 +226,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     echo 'CONFIRMED'; 
-
+                                    $receivedString = "";
                                     foreach($this->tradeResources as $tradeResource => $qty)
                                     {
                                         $unit = Unit::Where('slug', $tradeResource)->first();
@@ -244,15 +245,20 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                                 return;
                                             }
+                                            $receivedString .= $unit->name.': '.number_format($qty)."\n";
                                         }        
                                         elseif($this->player->colonies[0]->$tradeResource < $qty)
                                         {
                                             $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.$tradeResource)." ".ucfirst($tradeResource).': '.number_format(round($qty-$this->player->colonies[0]->$tradeResource))], $this->player->lang));
                                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                             return;
-                                        }                             
+                                        }
+                                        else
+                                        {
+                                            $receivedString .= config('stargate.emotes.'.$tradeResource)." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
+                                        }                           
                                     }     
-
+                                    $sentString = str_replace("\n",' ',$receivedString);
                                     /**
                                     * 
                                     * 
@@ -266,7 +272,44 @@ class Stargate extends CommandHandler implements CommandInterface
                                     *LOG
                                     *Message aux 2 parties
                                     */
+                                    
+                                    $sourceCoordinates = $this->player->colonies[0]->coordinates->humanCoordinates();
+                                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                                    $embed = [
+                                        'author' => [
+                                            'name' => $this->coordinateDestination->colony->player->user_name,
+                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                        ],
+                                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/bouteille.gif'],
+                                        "title" => "Stargate",
+                                        "description" => trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->player->lang),
+                                        'fields' => [
+                                        ],
+                                        'footer' => array(
+                                            'text'  => 'Stargate',
+                                        ),
+                                    ];
+                                    /*/!\ Incoming traveler /!\\n\n
+                                    Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n
+                                    Les ressources suivantes vous ont été délivrées:\n:resources
+                                    */
+                                    $userExist = $this->discord->users->filter(function ($value){
+                                        return $value->id == $this->player->user_id;//$this->coordinateDestination->colony->player->user_id;
+                                    });
+                                    if($userExist->count() > 0)
+                                    {
+                                        $foundUser = $userExist->first();
+                                        $foundUser->sendMessage('', false, $embed);
+                                    }
 
+                                    $userExist = $this->discord->users->filter(function ($value){
+                                        return $value->id == $this->player->user_id;
+                                    });
+                                    if($userExist->count() > 0)
+                                    {
+                                        $foundUser = $userExist->first();
+                                        $foundUser->sendMessage($sentString);
+                                    }
 
 
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'Confirmed');
