@@ -18,11 +18,11 @@ class CreateTradesTable extends Migration
             $table->integer('source_player_id')->unsigned()->nullable();
             $table->foreign('source_player_id')->references('id')->on('players');
             $table->integer('coordinate_source_id')->unsigned()->nullable();
-            $table->foreign('coordinate_source_id','s_coordinate_id')->references('id')->on('coordinates');
+            $table->foreign('coordinate_source_id')->references('id')->on('coordinates');
             $table->integer('dest_player_id')->unsigned()->nullable();
             $table->foreign('dest_player_id')->references('id')->on('players');
             $table->integer('coordinate_destination_id')->unsigned()->nullable();
-            $table->foreign('coordinate_destination_id','d_coordinate_id')->references('id')->on('coordinates');
+            $table->foreign('coordinate_destination_id')->references('id')->on('coordinates');
             $table->integer('trade_value')->length(18)->unsigned();
             $table->timestamps();
         });
