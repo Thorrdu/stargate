@@ -209,7 +209,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $tradeString .= $tradeResource.': '.$qty." ";
 
                     $this->maxTime = time()+180;
-                    $this->message->channel->sendMessage($tradeString)->then(function ($messageSent){
+                    $this->message->channel->sendMessage($tradeString)->then(function ($messageSent) use($travelCost){
                         
                         $this->paginatorMessage = $messageSent;
                         $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
@@ -217,7 +217,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             });
                         });
     
-                        $this->listner = function ($messageReaction){
+                        $this->listner = function ($messageReaction) use ($travelCost){
                             if($this->maxTime < time())
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
     
@@ -258,7 +258,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                             $receivedString .= config('stargate.emotes.'.$tradeResource)." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
                                         }                           
                                     }     
-                                    $sentString = str_replace("\n",' ',$receivedString);
                                     /**
                                     * 
                                     * 
@@ -270,7 +269,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                     *
                                     *
                                     *LOG
-                                    *Message aux 2 parties
                                     */
                                     
                                     $sourceCoordinates = $this->player->colonies[0]->coordinates->humanCoordinates();
@@ -282,18 +280,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ],
                                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/bouteille.gif'],
                                         "title" => "Stargate",
-                                        "description" => trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->player->lang),
+                                        "description" => trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->coordinateDestination->colony->player->lang),
                                         'fields' => [
                                         ],
                                         'footer' => array(
                                             'text'  => 'Stargate',
                                         ),
                                     ];
-                                    print_r($embed);
-                                    /*/!\ Incoming traveler /!\\n\n
-                                    Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n
-                                    Les ressources suivantes vous ont été délivrées:\n:resources
-                                    */
 
                                     $userExist = $this->discord->users->filter(function ($value){
                                         return $value->id == $this->player->user_id;//$this->coordinateDestination->colony->player->user_id;
@@ -310,9 +303,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     if($userExist->count() > 0)
                                     {
                                         $foundUser = $userExist->first();
-                                        $foundUser->sendMessage($sentString);
-                                        $foundUser->sendMessage('', false, $embed);
-
+                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => round($travelCost,3)], $this->player->lang));
                                     }
 
 

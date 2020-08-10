@@ -25,5 +25,6 @@ return [
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
                        "Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n".
-                       "Les ressources suivantes vous ont été délivrées:\n:resources"
+                       "Les ressources suivantes vous ont été délivrées:\n:resources",
+    "tradeSent" => "Vous avez envoyé les ressources suivantes depuis [:coordinateSource] sur [:coordinateDestination] (:player):\n:resources\nPour un coût de: [:consumption]",
 ];
