@@ -9,6 +9,9 @@ return [
     "unknownCoordinates" => "Unknown Coordinates",
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...",
     "failedDialing" => "The dialing to this planet failed. There is no gate to contact on those coordinates.",
+    "alreadyExploring" => "Une mission d'exploration est déjà en cours.",
+    "alreadyExplored" => "Vous avez déjà exploré cette planète.",
+    "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
     "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéréssantes.\n".
     "Ils ont ramenés avec eux: :resources",
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",

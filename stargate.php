@@ -73,6 +73,7 @@ use App\Building;
 use App\Player;
 use App\Colony;
 use App\Reminder;
+use App\Exploration;
 use Illuminate\Support\Str;
 
 use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand};
@@ -140,6 +141,21 @@ $discord->on('ready', function ($discord) {
                 $foundUser->sendMessage($reminder->reminder);
             }
             $reminder->delete();
+        }
+
+        $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
+        echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
+        foreach($explorations as $exploration)
+        {  
+            $explorationOutcome = $exploration->outcome();
+            $userExist = $discord->users->filter(function ($value) use($exploration){
+                return $value->id == $exploration->player->user_id;
+            });
+            if($userExist->count() > 0)
+            {
+                $foundUser = $userExist->first();
+                $foundUser->sendMessage($explorationOutcome);
+            }
         }
     });
 

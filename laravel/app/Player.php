@@ -23,6 +23,11 @@ class Player extends Model
         return $this->hasMany('App\Colony');
     }
 
+    public function explorations()
+    {
+        return $this->hasMany('App\Exploration');
+    }
+
     public function commandLogs()
     {
         return $this->hasMany('App\CommandLogs');

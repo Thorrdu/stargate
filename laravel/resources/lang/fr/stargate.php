@@ -9,6 +9,9 @@ return [
     "unknownCoordinates" => "Coordonées inconnues",
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...",
     "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonées.",
+    "alreadyExploring" => "Une mission d'exploration est déjà en cours.",
+    "alreadyExplored" => "Vous avez déjà exploré cette planète.",
+    "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
     "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéréssantes.\n".
                                 "Ils ont ramenés avec eux: :resources",
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
