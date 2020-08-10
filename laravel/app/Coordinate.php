@@ -17,6 +17,6 @@ class Coordinate extends Model
 
     public function humanCoordinates()
     {
-        return $this->$this->galaxy.':'.$this->system.':'.$this->planet;
+        return $this->galaxy.':'.$this->system.':'.$this->planet;
     }
 }
