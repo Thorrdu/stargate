@@ -295,18 +295,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                     Les ressources suivantes vous ont été délivrées:\n:resources
                                     */
 
-
-                                    $userExist = $this->discord->users->filter(function ($value){
-                                        return $value->id == $this->player->user_id;
-                                    });
-                                    if($userExist->count() > 0)
-                                    {
-                                        $foundUser = $userExist->first();
-                                        $foundUser->sendMessage($sentString);
-                                        $foundUser->sendMessage($receivedString);
-                                        $foundUser->sendMessage(trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->player->lang));
-
-                                    }
                                     $userExist = $this->discord->users->filter(function ($value){
                                         return $value->id == $this->player->user_id;//$this->coordinateDestination->colony->player->user_id;
                                     });
@@ -315,6 +303,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $foundUser = $userExist->first();
                                         $foundUser->sendMessage('', false, $embed);
                                     }
+
+                                    $userExist = $this->discord->users->filter(function ($value){
+                                        return $value->id == $this->player->user_id;
+                                    });
+                                    if($userExist->count() > 0)
+                                    {
+                                        $foundUser = $userExist->first();
+                                        $foundUser->sendMessage($sentString);
+                                        $foundUser->sendMessage('', false, $embed);
+
+                                    }
+
 
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'Confirmed');
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
