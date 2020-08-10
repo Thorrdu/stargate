@@ -14,9 +14,9 @@ return [
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
     "exploreFailed" => "Vos scientifiques n'ont rien trouvé d'intéréssant en explorant la planète [:coordinates].",
     "exploreSucessBuildingTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-        "Le bâtiment :name requiert Lvl :lvlRequirement: :nameRequirement",
+                                  "Le bâtiment :name requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessTechnologyTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-        "La technologie :name requiert Lvl :lvlRequirement: :nameRequirement",
+                                    "La technologie :name requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessCraftTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
                                "Le craft :name requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
