@@ -7,5 +7,6 @@ return [
                           "spy\n".
                           "attack\n",
     "unknownCoordinates" => "Unknown Coordinates",
-    "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem..."
+    "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...",
+    "failedDialing" => "The dialing to this planet failed. There is no gate to contact on those coordinates.",
 ];
