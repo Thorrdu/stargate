@@ -874,7 +874,7 @@ class DatabaseSeeder extends Seeder
             'required_technology_id' => 4,
             'level' => 6
         ]);
-        //Laser 4
+        //Laser 10
         DB::table('technology_technologies')->insert([
             'technology_id' => 13,
             'required_technology_id' => 11,
