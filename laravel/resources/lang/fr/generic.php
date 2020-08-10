@@ -41,4 +41,7 @@ return [
     'missingPerm' => "Permission manquantes...",
     'coordinates' => "Coordonées",
     "buildingSpace" => "Espace constructible",
+    "awaiting" => "En attente",
+    "cancelled" => "Annulé",
+    "confirmed" => "Confirmé",
 ];

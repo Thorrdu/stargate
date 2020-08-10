@@ -41,4 +41,7 @@ return [
     'missingPerm' => "Missing perm...",
     'coordinates' => "Coordinates",
     "buildingSpace" => "Building space",
+    "awaiting" => "Awaiting",
+    "cancelled" => "Cancelled",
+    "confirmed" => "Confirmed",
 ];

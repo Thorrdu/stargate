@@ -27,4 +27,10 @@ return [
                        "Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n".
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
     "tradeSent" => "Vous avez envoyé les ressources suivantes depuis [:coordinateSource] sur [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
+    "tradeMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
+                      "Destination: [:coordinateDestination] (:player)\n".
+                      "Ressources:\n".
+                      ":resources".
+                      "Coût: :consumption\n\n".
+                      "Statut de l'envoi: **En attente**",
 ];

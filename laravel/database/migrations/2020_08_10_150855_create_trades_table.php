@@ -23,6 +23,7 @@ class CreateTradesTable extends Migration
             $table->foreign('dest_player_id')->references('id')->on('players');
             $table->integer('coordinate_destination_id')->unsigned()->nullable();
             $table->foreign('coordinate_destination_id','d_coordinate_id')->references('id')->on('coordinates');
+            $table->integer('trade_value')->length(18)->unsigned();
             $table->timestamps();
         });
     }

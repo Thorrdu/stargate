@@ -27,4 +27,10 @@ return [
                        "External activation detected on [:coordinateDestination] incoming from [:coordinateSource] (:player)\n\n".
                        "The following resources have been delivred:\n:resources",
     "tradeSent" => "You sent the following resources from [:coordinateSource] to [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
+    "tradeMessage" => "__Sending resources from [:coordinateSource]__\n".
+                      "Destination: [:coordinateDestination] (:player)\n".
+                      "Resources:\n".
+                      ":resources".
+                      "Cost: :consumption\n\n".
+                      "Sending status: **Awaiting**",
 ];
