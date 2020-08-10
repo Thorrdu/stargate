@@ -289,6 +289,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             'text'  => 'Stargate',
                                         ),
                                     ];
+                                    print_r($embed);
                                     /*/!\ Incoming traveler /!\\n\n
                                     Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n
                                     Les ressources suivantes vous ont été délivrées:\n:resources
