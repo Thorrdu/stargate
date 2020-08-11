@@ -56,7 +56,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
                     $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->player->colonies[0]->military)." (".$this->player->colonies[0]->production_military."/h)";
-                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->colonies[0]->E2PZ)." (".$this->player->colonies[0]->production_e2pz."/w)";
+                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->colonies[0]->E2PZ,2)." (".$this->player->colonies[0]->production_e2pz."/w)";
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.production')." ".trans('generic.resources', [], $this->player->lang),
                                             'value' => $resourcesValue,
