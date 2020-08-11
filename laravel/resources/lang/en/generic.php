@@ -44,6 +44,6 @@ return [
     "awaiting" => "Awaiting",
     "cancelled" => "Cancelled",
     "confirmed" => "Confirmed",
-    "buildingUnlocked" => "Your scientists finalized the plan for a new building: :name",
-    "researchUnlocked" => "Your scientists have discovered a new technology: :name",
+    "buildingUnlocked" => "Your scientists finalized the plan for a new building: **:name**",
+    "researchUnlocked" => "Your scientists have discovered a new technology: **:name**",
 ];
