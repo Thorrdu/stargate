@@ -44,4 +44,6 @@ return [
     "awaiting" => "En attente",
     "cancelled" => "Annulé",
     "confirmed" => "Confirmé",
+    "buildingUnlocked" => "Vos scientifiques viennent de mettre au point le plan d'un nouveau bâtiment: :name",
+    "researchUnlocked" => "Vos scientifiques ont découvert une nouvelle technologie: :name",
 ];

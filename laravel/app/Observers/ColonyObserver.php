@@ -46,9 +46,7 @@ class ColonyObserver
             $buildings = Building::whereIn('id',$buildingsIds)->get();
         
             foreach($buildings as $building)
-            {
-                echo PHP_EOL.$building->id.' '.$building->name;
-                
+            {               
                 $hasRequirements = true;
                 foreach($building->requiredTechnologies as $requiredTechnology)
                 {
@@ -66,31 +64,42 @@ class ColonyObserver
                 {
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now();
-                    $reminder->reminder = trans('generic.buildingUnlocked', [], $colony->player->lang);
+                    $reminder->reminder = trans('generic.buildingUnlocked', ['name' => $building->name], $colony->player->lang); //researchUnlocked
                     $reminder->player_id = $colony->player->id;
                     $reminder->save();
                 }
-                else
-                {
-                    echo PHP_EOL.'NOPE -- '.$building->id.' '.$building->name;
-                }
             }
-        
-            /*
-            $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',7],['level',1]])->get()->toArray();
+            
+            $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',$endedBuilding->id],['level',$currentLvlOwned]])->get()->toArray();
             foreach($techIdsRaw as $raw)
                 $techIds[] = $raw->technology_id;
         
-            $buildings = Technology::whereIn('id',$techIds)->get();
+            $technologies = Technology::whereIn('id',$techIds)->get();
         
-            foreach($buildings as $building)
+            foreach($technologies as $technology)
             {
-                echo PHP_EOL.$building->id.' '.$building->name;
+                $hasRequirements = true;
+                foreach($technology->requiredTechnologies as $requiredTechnology)
+                {
+                    $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
+                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                        $hasRequirements = false;
+                }
+                foreach($technology->requiredBuildings as $requiredBuilding)
+                {
+                    $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
+                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                        $hasRequirements = false;
+                }
+                if($hasRequirements)
+                {
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now();
+                    $reminder->reminder = trans('generic.researchUnlocked', ['name' => $technology->name], $colony->player->lang);
+                    $reminder->player_id = $colony->player->id;
+                    $reminder->save();
+                }
             }
-            */
-
-
-            
 
             //$colony->unsetEventDispatcher();
             //$colony->calcProd();
