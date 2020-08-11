@@ -1,6 +1,6 @@
 <?php
 //DAILY EN
 return [
-    "dailyReward" => "Hourly reward: :reward",
-    "dailyWaiting" => "Your hourly reward can be claim in :time",
+    "hourlyReward" => "Hourly reward: :reward",
+    "hourlyWaiting" => "Your hourly reward can be claim in :time",
 ];

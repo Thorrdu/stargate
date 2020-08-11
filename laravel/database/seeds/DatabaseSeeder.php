@@ -199,8 +199,8 @@ class DatabaseSeeder extends Seeder
 
         DB::table('buildings')->insert([
             'id' => 9,
-            'name' => 'Chantier Spacial',
-            'slug' => Str::slug('spacial'),
+            'name' => 'Chantier spatial',
+            'slug' => Str::slug('shipyard'),
             'description' => "Permet de développer la construction de sondes et vaisseaux spaciaux",
             'type' => 'Military',
             'iron' => 100,
@@ -462,7 +462,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'energy_bonus' => 1.05
         ]);
-        //Chantier spacial 1
+        //Chantier spatial 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 4,
             'required_building_id' => 9,
@@ -1035,7 +1035,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 5
         ]);
-        //Chantier spacial 3
+        //Chantier spatial 3
         DB::table('unit_buildings')->insert([
             'unit_id' => 1,
             'required_building_id' => 9,
@@ -1053,7 +1053,7 @@ class DatabaseSeeder extends Seeder
             'type' => 'Probe',
             'name' => "Sonde wraith",
             'slug' => 'wraithProbe',
-            'description' => "Sonde spaciale wraith permettant le scanner une planète depuis l'espace.",
+            'description' => "Sonde spatiale wraith permettant le scanner une planète depuis l'espace.",
             'capacity' => 10,
             'buyable' => true,
             'iron' => 2000,
@@ -1068,7 +1068,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 6
         ]);
-        //Chantier spacial 5
+        //Chantier spatial 5
         DB::table('unit_buildings')->insert([
             'unit_id' => 2,
             'required_building_id' => 9,
@@ -1107,7 +1107,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 5
         ]);
-        //Chantier spacial 3
+        //Chantier spatial 3
         DB::table('unit_buildings')->insert([
             'unit_id' => 3,
             'required_building_id' => 9,
@@ -1142,7 +1142,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 6
         ]);
-        //Chantier spacial 5
+        //Chantier spatial 5
         DB::table('unit_buildings')->insert([
             'unit_id' => 4,
             'required_building_id' => 9,

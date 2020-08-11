@@ -39,7 +39,7 @@ class Hourly extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('hourly.dailyWaiting', ['time' => $nextHourlyTime], $this->player->lang);
+                        return trans('hourly.hourlyWaiting', ['time' => $nextHourlyTime], $this->player->lang);
                     }
                 }
                 else
