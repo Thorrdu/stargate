@@ -121,6 +121,11 @@ class Research extends CommandHandler implements CommandInterface
                             //if research en cours, return
                             if(!is_null($this->player->active_technology_end))
                             {
+                                $wantedLvl = 1;
+                                $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
+                                if($currentLevel)
+                                    $wantedLvl += $currentLevel;
+
                                 $now = Carbon::now();
                                 $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
                                 $buildingTime = $now->diffForHumans($buildingEnd,[

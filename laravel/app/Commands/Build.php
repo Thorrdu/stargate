@@ -118,6 +118,11 @@ class Build extends CommandHandler implements CommandInterface
                             //if construction en cours, return
                             if(!is_null($this->player->colonies[0]->active_building_end))
                             {
+                                $wantedLvl = 1;
+                                $currentLvl = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
+                                if($currentLvl)
+                                    $wantedLvl += $currentLvl;
+
                                 $now = Carbon::now();
                                 $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end);
                                 $buildingTime = $now->diffForHumans($buildingEnd,[
