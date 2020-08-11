@@ -30,7 +30,8 @@ return [
     "tradeMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
                       "Destination: [:coordinateDestination] (:player)\n".
                       "Ressources:\n".
-                      ":resources".
+                      ":resources\n".
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
+    'unknownResource' => "Ressource inconnue: :resource",
 ];

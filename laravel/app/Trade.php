@@ -31,19 +31,12 @@ class Trade extends Model
         return $this->hasMany('App\TradeResource');
     }
 
-    public function getTradeValue()
+    public function setTradeValue()
     {
-        foreach($this->tradeResources as $tradeRessource)
+        $this->trade_value = 0;
+        foreach($this->tradeResources as $tradeResource)
         {
-            if(!is_null($tradeRessource->unit_id))
-            {
-                //get price et équivalent fer
-            }
-            else
-            {
-                //equivalent fer
-            }
+            $this->trade_value += $tradeResource->trade_value;
         }
-        return 0;
     }
 }

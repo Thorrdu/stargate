@@ -131,7 +131,7 @@ class Research extends CommandHandler implements CommandInterface
 
                             $hasEnough = true;
                             $technologyPrices = $technology->getPrice($wantedLvl);
-                            $missingResString = 0;
+                            $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($technology->$resource > 0 && $technologyPrices[$resource] > $this->player->colonies[0]->$resource)

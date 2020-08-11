@@ -43,7 +43,7 @@ return [
         'usage' => '!infos'
     ],
     'invite' => [
-        'description' => "Affiche le lien permettatn d'inviter Stargate sur votre serveur.",
+        'description' => "Affiche le lien permettant d'inviter Stargate sur votre serveur.",
         'usage' => '!invite'
     ],
     'lang' => [

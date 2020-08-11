@@ -30,7 +30,8 @@ return [
     "tradeMessage" => "__Sending resources from [:coordinateSource]__\n".
                       "Destination: [:coordinateDestination] (:player)\n".
                       "Resources:\n".
-                      ":resources".
+                      ":resources\n".
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
+    'unknownResource' => "Unknown resource: :resource",
 ];
