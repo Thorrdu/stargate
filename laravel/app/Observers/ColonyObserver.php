@@ -69,7 +69,7 @@ class ColonyObserver
                     $reminder->save();
                 }
             }
-            
+            /*
             $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',$endedBuilding->id],['level',$currentLvlOwned]])->get()->toArray();
             foreach($techIdsRaw as $raw)
                 $techIds[] = $raw->technology_id;
@@ -100,7 +100,7 @@ class ColonyObserver
                     $reminder->save();
                 }
             }
-
+*/
             //$colony->unsetEventDispatcher();
             //$colony->calcProd();
             TopUpdater::update($colony->player); 
