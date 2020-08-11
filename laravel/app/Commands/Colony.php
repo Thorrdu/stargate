@@ -49,7 +49,6 @@ class Colony extends CommandHandler implements CommandInterface
                         $productionValue .= "\n";
                     }
                     $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/h)";
-                    //$productionValue .= number_format($this->player->colonies[0]['production_'.$resource]).' '.ucfirst($resource).' / Heure';
                     $storageValue .= number_format($this->player->colonies[0]['storage_'.$resource]).' '.ucfirst($resource)."\n";
                 }
 
@@ -122,17 +121,6 @@ class Colony extends CommandHandler implements CommandInterface
                                             'inline' => true
                                         );
                 }
-                /*
-                $storageBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
-                    return $value->type == "Storage";
-                });
-                $storageBuildingsValue = "";
-                foreach($storageBuildings as $storageBuilding)
-                {
-                    if(!empty($storageBuildingsValue))
-                        $storageBuildingsValue .= "\n";
-                    $storageBuildingsValue .= 'Lvl '.$storageBuilding->pivot->level.' '.$storageBuilding->pivot->level;
-                }*/
 
                 if(!empty($storageValue))
                 {
@@ -243,9 +231,6 @@ class Colony extends CommandHandler implements CommandInterface
                         'inline' => true
                     );
                 }
-
-                //print_r($embed['fields']);
-                //print_r($embed);
 
                 $this->message->channel->sendMessage('', false, $embed);
 

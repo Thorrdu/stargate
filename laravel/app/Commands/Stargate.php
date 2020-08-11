@@ -403,6 +403,36 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($coordinate->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
+
+                        //channel->editMessage($this->paginatorMessage->id,'',$this->getPage())
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                        ],
+                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
+                        "title" => "Stargate",
+                        "description" => trans('stargate.spyMessaageSending', [], $this->player->lang),
+                        'fields' => [
+                        ],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+                    $this->message->channel->sendMessage('', false, $embed);
+
+
+
+                    /**
+                     * 
+                     * SendingMessage;
+                     * 
+                     * malpSending.gif
+                     * 
+                     * 
+                     */
+
+
                     $spy = Technology::where('slug', 'spy')->first();
                     $counterSpy = Technology::where('slug', 'counterspy')->first();
 
@@ -420,9 +450,9 @@ class Stargate extends CommandHandler implements CommandInterface
                             'name' => $this->player->user_name,
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                         ],
-                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/disabledStargate.jpg'],
+                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
                         "title" => "Stargate",
-                        "description" => trans('stargate.spyReportDescription', [], $this->player->lang).' -- '.$counterSpyLvl.' -- '.$spyLvl,
+                        "description" => trans('stargate.spyReportDescription', [], $this->player->lang),
                         'fields' => [
                         ],
                         'footer' => array(
@@ -462,7 +492,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 $resourceString .= ' ';
                             $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($coordinate->colony->$resource);
                         }
-                        //$resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($coordinate->colony->E2PZ);
+                        $resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($coordinate->colony->E2PZ);
 
                         $embed['fields'][] = [
                             'name' => trans('generic.resources', [], $this->player->lang),
@@ -530,8 +560,17 @@ class Stargate extends CommandHandler implements CommandInterface
                         ];
                     }
 
-                    $this->message->channel->sendMessage('', false, $embed);
+                    $userExist = $this->discord->users->filter(function ($value){
+                        return $value->id == $this->player->user_id;
+                    });
+                    if($userExist->count() > 0)
+                    {
+                        $foundUser = $userExist->first();
+                        $foundUser->sendMessage('', false, $embed);
+                    }
                 }
+
+
                 if(Str::startsWith('attack',$this->args[0]))
                 {
                     if(is_null($coordinate->colony))
