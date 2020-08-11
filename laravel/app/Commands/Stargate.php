@@ -446,7 +446,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $foundUser = $userExist->first();
 
                                         //Vous avez été scan
-                                        $foundUser->sendMessage(trans('stargate.messageSpied', [], ), false, $embed);
+                                        $foundUser->sendMessage(trans('stargate.messageSpied', [], ));
                                     }
 
                                     $userExist = $this->discord->users->filter(function ($value){
@@ -456,7 +456,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     {
                                         $foundUser = $userExist->first();
 
-
+                                        try{
 
                                         /**SPY EMBED */
 
@@ -588,6 +588,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                         }
                     
                                         $foundUser->sendMessage('', $embed);
+
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo $e->getMessage();
+                                    }
+
 
                                     }
 
