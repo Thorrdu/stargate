@@ -26,15 +26,17 @@ class CommandHandler
         }
     }
 
-    /*
+    
     //CLI VERSION
     public function __construct1(array $args) {
         $this->message = null; //Factory message?
         $this->args = $args;
-    }*/
+        $this->player = Player::where('user_id', 125641223544373248)->first();
+    }
 
     //BASIC CALL
     public function __construct2(Message $message,array $args){
+
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
@@ -44,11 +46,12 @@ class CommandHandler
         if(!is_null($this->player) && $this->player->ban)
             return "Vous êtes banni...";
 
+            /*
         if(is_null($message->nonce))
         {
             $this->player->ban = true;
             $this->player->save();
-        }
+        }*/
 
         $this->log();
     }
@@ -60,10 +63,11 @@ class CommandHandler
         $this->player = Player::where('user_id', $message->author->id)->first();
         $this->discord = $discord;
 
+        /*
         if(is_null($message->nonce))
         {
             $this->player->ban = true;
-        }
+        }*/
 
         $this->log();
     }

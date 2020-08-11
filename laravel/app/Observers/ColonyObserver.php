@@ -32,78 +32,83 @@ class ColonyObserver
     public function updating(Colony $colony)
     {
         echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
-        if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
-        {
-            echo PHP_EOL.'OBSRVER top recalc';
-            //$colony->refresh();
-            //$colony->cast / $colony->original
-            $endedBuilding = Building::find($colony->getOriginal('active_building_id'));
-            $buildingsIds = [];
-            $currentLvlOwned = $colony->hasBuilding($endedBuilding);
-            $buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',$endedBuilding->id],['level',$currentLvlOwned]])->get()->toArray();
-            foreach($buildingsIdsRaw as $raw)
-                $buildingsIds[] = $raw->building_id;
-            $buildings = Building::whereIn('id',$buildingsIds)->get();
-        
-            foreach($buildings as $building)
-            {               
-                $hasRequirements = true;
-                foreach($building->requiredTechnologies as $requiredTechnology)
-                {
-                    $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
-                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
-                        $hasRequirements = false;
-                }
-                foreach($building->requiredBuildings as $requiredBuilding)
-                {
-                    $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
-                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
-                        $hasRequirements = false;
-                }
-                if($hasRequirements)
-                {
-                    $reminder = new Reminder;
-                    $reminder->reminder_date = Carbon::now();
-                    $reminder->reminder = trans('generic.buildingUnlocked', ['name' => $building->name], $colony->player->lang); //researchUnlocked
-                    $reminder->player_id = $colony->player->id;
-                    $reminder->save();
-                }
-            }
-            /*
-            $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',$endedBuilding->id],['level',$currentLvlOwned]])->get()->toArray();
-            foreach($techIdsRaw as $raw)
-                $techIds[] = $raw->technology_id;
-        
-            $technologies = Technology::whereIn('id',$techIds)->get();
-        
-            foreach($technologies as $technology)
+
+        try{
+            if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
             {
-                $hasRequirements = true;
-                foreach($technology->requiredTechnologies as $requiredTechnology)
-                {
-                    $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
-                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
-                        $hasRequirements = false;
+                echo PHP_EOL.'OBSRVER top recalc';
+                //$colony->cast / $colony->original
+                $endedBuilding = Building::find($colony->getOriginal('active_building_id'));
+                $buildingsIds = [];
+                $buildingEndedLvl = $colony->hasBuilding($endedBuilding);
+                $buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',$endedBuilding->id],['level',$buildingEndedLvl]])->get()->toArray();
+                foreach($buildingsIdsRaw as $raw)
+                    $buildingsIds[] = $raw->building_id;
+                $buildings = Building::whereIn('id',$buildingsIds)->get();
+            
+                foreach($buildings as $building)
+                {               
+                    $hasRequirements = true;
+                    foreach($building->requiredTechnologies as $requiredTechnology)
+                    {
+                        $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
+                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    foreach($building->requiredBuildings as $requiredBuilding)
+                    {
+                        $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
+                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    if($hasRequirements)
+                    {
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now();
+                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => $building->name], $colony->player->lang); //researchUnlocked
+                        $reminder->player_id = $colony->player->id;
+                        $reminder->save();
+                    }
                 }
-                foreach($technology->requiredBuildings as $requiredBuilding)
+                
+                $techIds = [];
+                $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',$endedBuilding->id],['level',$buildingEndedLvl]])->get()->toArray();
+                foreach($techIdsRaw as $raw)
+                    $techIds[] = $raw->technology_id;
+            
+                $technologies = Technology::whereIn('id',$techIds)->get();
+                foreach($technologies as $technology)
                 {
-                    $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
-                    if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
-                        $hasRequirements = false;
+                    $hasRequirements = true;
+                    foreach($technology->requiredTechnologies as $requiredTechnology)
+                    {
+                        $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
+                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    foreach($technology->requiredBuildings as $requiredBuilding)
+                    {
+                        $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
+                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    if($hasRequirements)
+                    {
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now();
+                        $reminder->reminder = trans('generic.researchUnlocked', ['name' => $technology->name], $colony->player->lang);
+                        $reminder->player_id = $colony->player->id;
+                        $reminder->save();
+                    }
                 }
-                if($hasRequirements)
-                {
-                    $reminder = new Reminder;
-                    $reminder->reminder_date = Carbon::now();
-                    $reminder->reminder = trans('generic.researchUnlocked', ['name' => $technology->name], $colony->player->lang);
-                    $reminder->player_id = $colony->player->id;
-                    $reminder->save();
-                }
+                //$colony->unsetEventDispatcher();
+                //$colony->calcProd();
+                TopUpdater::update($colony->player); 
             }
-*/
-            //$colony->unsetEventDispatcher();
-            //$colony->calcProd();
-            TopUpdater::update($colony->player); 
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
         }
     }
 

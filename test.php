@@ -82,28 +82,12 @@ for($cpt = 1; $cpt < 15; $cpt++)
 }*/
 //['colony_id' => $this->id, 'building_id' => $building->id]
 try{
-	//$buildingsId = DB::select('select * from users where active = ?', [1]);
-	$buildingsIds = [];
-	$buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',7],['level',1]])->get()->toArray();
-	foreach($buildingsIdsRaw as $raw)
-		$buildingsIds[] = $raw->building_id;
-	$buildings = Building::whereIn('id',$buildingsIds)->get();
 
-	foreach($buildings as $building)
-	{
-		echo PHP_EOL.$building->id.' '.$building->name;
-	}
-
-	$techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',7],['level',1]])->get()->toArray();
-	foreach($techIdsRaw as $raw)
-		$techIds[] = $raw->technology_id;
-
-	$buildings = Technology::whereIn('id',$techIds)->get();
-
-	foreach($buildings as $building)
-	{
-		echo PHP_EOL.$building->id.' '.$building->name;
-	}
+	$player = Player::find(1);
+	$player->colonies[0]->active_building_id = 5;
+	$player->colonies[0]->save();
+	$player->colonies[0]->active_building_id = null;
+	$player->colonies[0]->save();
 }
 catch(\Exception $e)
 {
