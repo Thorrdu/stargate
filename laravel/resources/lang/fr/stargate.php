@@ -34,4 +34,7 @@ return [
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
     'unknownResource' => "Ressource inconnue: :resource",
+    "spyConfirmation" => "Envoyer une sonde espionner [:coordinateDestination] (:player) ?\nCoût: :consumption",
+    "spySending" => "Vous avez lancé une mission d'espionnage sur [:coordinateDestination] (:player) !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
+    "messageSpied" => "Vous avez été visé par une mission d'espionnage en provenance de [:sourceCoordinates] (:player)."
 ];

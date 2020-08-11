@@ -34,4 +34,7 @@ return [
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
     'unknownResource' => "Unknown resource: :resource",
+    "spyConfirmation" => "Send a spy mission on [:coordinateDestination] (:player) ?\nCost: :consumption",
+    "spySending" => "You sent a spy mission on [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
+    "messageSpied" => "You've been targeted by a spy mission comming from [:sourceCoordinates] (:player)."
 ];
