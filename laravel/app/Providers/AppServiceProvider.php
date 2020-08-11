@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Colony;
 use App\Observers\ColonyObserver;
+use App\Player;
+use App\Observers\PlayerObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         date_default_timezone_set('Europe/Brussels');
         Colony::observe(ColonyObserver::class);
+        Player::observe(PlayerObserver::class);
+
     }
 }

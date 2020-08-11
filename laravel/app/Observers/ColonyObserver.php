@@ -65,7 +65,7 @@ class ColonyObserver
                     {
                         $reminder = new Reminder;
                         $reminder->reminder_date = Carbon::now();
-                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => $building->name], $colony->player->lang); //researchUnlocked
+                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => $building->name], $colony->player->lang);
                         $reminder->player_id = $colony->player->id;
                         $reminder->save();
                     }

@@ -84,10 +84,10 @@ for($cpt = 1; $cpt < 15; $cpt++)
 try{
 
 	$player = Player::find(1);
-	$player->colonies[0]->active_building_id = 5;
-	$player->colonies[0]->save();
-	$player->colonies[0]->active_building_id = null;
-	$player->colonies[0]->save();
+	$player->active_technology_id = 2;
+	$player->save();
+	$player->active_technology_id = null;
+	$player->save();
 }
 catch(\Exception $e)
 {
