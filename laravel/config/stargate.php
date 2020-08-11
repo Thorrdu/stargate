@@ -19,7 +19,7 @@ return [
         'productionBuilding' => '⚙️',
         'research' => '<:research:737769578045898775>',
         'military' => '<:military:737769413629182094>',
-        'storage' => '<:storage:737773247336022077>'
+        'storage' => '<:storage:742821649098866838>'
     ],
     'galaxy' => ['maxGalaxies' => 2, 'maxSystems' => 30, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 10],
