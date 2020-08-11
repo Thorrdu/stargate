@@ -395,12 +395,19 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($coordinate->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
+                    $malp = Unit::where('slug', 'malp')->first();
+                    $malpNumber = $this->player->colonies[0]->hasCraft($malp);
+                    if(!$malpNumber)
+                        return trans('generic.notEnoughResources', ['missingResources' => $malp->name.': 1'], $this->player->lang);
+                    elseif($malpNumber == 0)
+                        return trans('generic.notEnoughResources', ['missingResources' => $malp->name.': 1'], $this->player->lang);
+
                     $sourceCoordinates = $this->player->colonies[0]->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang).' '.$malp->name.': 1';
 
                     $this->maxTime = time()+180;
-                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates){
+                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
                         
                         $this->paginatorMessage = $messageSent;
                         $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
@@ -408,7 +415,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             });
                         });
     
-                        $this->listner = function ($messageReaction) use ($travelCost,$sourceCoordinates,$destCoordinates){
+                        $this->listner = function ($messageReaction) use ($travelCost,$sourceCoordinates,$destCoordinates,$malp){
                             if($this->maxTime < time())
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
     
@@ -417,9 +424,23 @@ class Stargate extends CommandHandler implements CommandInterface
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     try{
+
+                                    $this->player->colonies[0]->E2PZ -= $travelCost;
+                                    $this->player->save();
+
+                                    $malpExists = $this->player->colonies[0]->units->filter(function ($value){               
+                                        return $value->slug == 'malp';
+                                    });
+                                    if($malpExists->count() > 0)
+                                    {
+                                        $unitToUpdate = $malpExists->first();
+                                        $unitToUpdate->pivot->number -= 1;
+                                        $unitToUpdate->pivot->save();
+                                    }
+
                                     $sourceCoordinates = $this->player->colonies[0]->coordinates->humanCoordinates();
                                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                    $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                                    $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang).' '.$malp->name.': 1';
 
                                     $embed = [
                                         'author' => [
@@ -446,7 +467,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $foundUser = $userExist->first();
 
                                         //Vous avez été scan
-                                        $foundUser->sendMessage(trans('stargate.messageSpied', [], ));
+                                        $foundUser->sendMessage(trans('stargate.messageSpied', ['sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
                                     }
 
                                     $userExist = $this->discord->users->filter(function ($value){
@@ -587,7 +608,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             ];
                                         }
                     
-                                        $foundUser->sendMessage('', $embed);
+                                        $foundUser->sendMessage('', false, $embed);
 
                                     }
                                     catch(\Exception $e)
