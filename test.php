@@ -13,7 +13,12 @@ $app->make('Illuminate\Contracts\Http\Kernel')
 use App\Building;
 use App\Player;
 use App\Colony;
+use App\Technology;
+
+
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
 /*
 $players = Player::all();
 foreach ($players as $player) {
@@ -65,13 +70,45 @@ $timeZone = $date->getTimezone();
 echo $timeZone->getName();
 echo PHP_EOL.date("H:i:s");*/
 
-
+/*
 $building = Building::find(11); //17 fer 18 or
 
 for($cpt = 1; $cpt < 15; $cpt++)
 {
 	print_r($building->getPrice($cpt));
 	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getConsumption($cpt)).' | '.round($building->getProduction($cpt));
+	//finished: 3 lvl 5
+	// le 12 sera débloqué
+}*/
+//['colony_id' => $this->id, 'building_id' => $building->id]
+try{
+	//$buildingsId = DB::select('select * from users where active = ?', [1]);
+	$buildingsIds = [];
+	$buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',7],['level',1]])->get()->toArray();
+	foreach($buildingsIdsRaw as $raw)
+		$buildingsIds[] = $raw->building_id;
+	$buildings = Building::whereIn('id',$buildingsIds)->get();
+
+	foreach($buildings as $building)
+	{
+		echo PHP_EOL.$building->id.' '.$building->name;
+	}
+
+	$techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',7],['level',1]])->get()->toArray();
+	foreach($techIdsRaw as $raw)
+		$techIds[] = $raw->technology_id;
+
+	$buildings = Technology::whereIn('id',$techIds)->get();
+
+	foreach($buildings as $building)
+	{
+		echo PHP_EOL.$building->id.' '.$building->name;
+	}
+}
+catch(\Exception $e)
+{
+	echo PHP_EOL.$e->getMessage();
+
 }
 /*
 try{
