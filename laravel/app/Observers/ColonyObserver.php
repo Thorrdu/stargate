@@ -37,9 +37,10 @@ class ColonyObserver
             echo PHP_EOL.'OBSRVER top recalc';
             //$colony->refresh();
             //$colony->cast / $colony->original
+            $endedBuilding = Building::find($colony->getOriginal('active_building_id'));
             $buildingsIds = [];
-            $currentLvlOwned = $colony->hasBuilding($colony->original->activeBuilding);
-            $buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',$colony->original->active_building_id],['level',$currentLvlOwned]])->get()->toArray();
+            $currentLvlOwned = $colony->hasBuilding($endedBuilding);
+            $buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',$endedBuilding->id],['level',$currentLvlOwned]])->get()->toArray();
             foreach($buildingsIdsRaw as $raw)
                 $buildingsIds[] = $raw->building_id;
             $buildings = Building::whereIn('id',$buildingsIds)->get();
