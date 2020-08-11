@@ -35,7 +35,7 @@ class ColonyObserver
         if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
         {
             echo PHP_EOL.'OBSRVER top recalc';
-
+            print_r($colony);
             //$colony->refresh();
             
             $buildingsIds = [];
