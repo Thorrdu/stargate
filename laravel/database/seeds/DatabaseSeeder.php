@@ -755,11 +755,11 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1200,
             'time_coefficient' => 1.7
         ]);
-        //Energie 4
+        //Energie 3
         DB::table('building_technologies')->insert([
             'building_id' => 19,
             'required_technology_id' => 4,
-            'level' => 5
+            'level' => 3
         ]);
         //Centre de recherche 4
         DB::table('building_buildings')->insert([

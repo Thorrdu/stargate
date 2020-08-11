@@ -76,7 +76,7 @@ use App\Reminder;
 use App\Exploration;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand};
+use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -110,9 +110,8 @@ $discord->on('ready', function ($discord) {
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
 
-    
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
-        $tenMinutes = Carbon::now()->sub('minute', 15);
+        $tenMinutes = Carbon::now()->sub('minute', 14);
         $players = Player::where('last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s"))->get();
         foreach($players as $player)
             TopUpdater::update($player);
@@ -210,8 +209,8 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 1
     ]);	
 
-    $discord->registerCommand('stargate', function ($message, $args) {
-        $command = new Stargate($message,$args);
+    $discord->registerCommand('stargate', function ($message, $args) use($discord){
+        $command = new Stargate($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.stargate.description', [], 'fr'),
@@ -240,6 +239,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);
 
+    /*
     $discord->registerCommand('refresh', function ($message, $args) {
         $command = new Refresh($message,$args);
         return $command->execute();
@@ -248,7 +248,7 @@ $discord->on('ready', function ($discord) {
 		'usage' => trans('help.refresh.usage', [], 'fr'),
 		//'aliases' => array('r'),
         'cooldown' => 4
-    ]);	
+    ]);	*/
 
     $discord->registerCommand('top', function ($message, $args) use($discord){
         $command = new Top($message,$args,$discord);
@@ -270,6 +270,38 @@ $discord->on('ready', function ($discord) {
 		//'aliases' => array('r'),
         'cooldown' => 4
     ]);	
+
+    $discord->registerCommand('daily', function ($message, $args) {
+        try{
+            $command = new DailyCommand($message,$args);
+            return $command->execute();
+        }catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
+        echo 'bb';
+    },[
+        'description' => trans('help.daily.description', [], 'fr'),
+		'usage' => trans('help.daily.usage', [], 'fr'),
+		'aliases' => array('da','day'),
+        'cooldown' => 4
+    ]);
+
+    $discord->registerCommand('hourly', function ($message, $args) {
+        try{
+            $command = new HourlyCommand($message,$args);
+            return $command->execute();
+        }catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
+        echo 'bb';
+    },[
+        'description' => trans('help.hourly.description', [], 'fr'),
+		'usage' => trans('help.hourly.usage', [], 'fr'),
+		'aliases' => array('ho','hr','hor'),
+        'cooldown' => 4
+    ]);
 
     $discord->registerCommand('vote', function ($message, $args) {
         $command = new Vote($message,$args);

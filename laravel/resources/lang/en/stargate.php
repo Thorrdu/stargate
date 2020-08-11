@@ -36,5 +36,13 @@ return [
     'unknownResource' => "Unknown resource: :resource",
     "spyConfirmation" => "Send a spy mission on [:coordinateDestination] (:player) ?\nCost: :consumption",
     "spySending" => "You sent a spy mission on [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
-    "messageSpied" => "You've been targeted by a spy mission comming from [:sourceCoordinates] (:player)."
+    "messageSpied" => "You've been targeted by a spy mission comming from [:sourceCoordinates] (:player).",
+    "emptyReportTitle" => "Partial report",
+    "technologyTooLow" => "No date has been recovered, due to Spy technology too low",
+    "spyReportDescription" => "Spy report from planet [:coordinateDestination] (:player)",
+    'fleet' => 'Fleet',
+    'emptyFleet' => 'No fleet docked',
+    'defenses' => 'Defences',
+    'emptyDefenses' => 'No defense',
+    'buildings' => 'Buildings',
 ];

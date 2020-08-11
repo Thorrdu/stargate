@@ -13,6 +13,7 @@ use App\Exploration;
 use Carbon\Carbon;
 use App\Trade;
 use App\TradeResource;
+use App\SpyLog;
 
 class Stargate extends CommandHandler implements CommandInterface
 {
@@ -128,7 +129,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $exploration->player_id = $this->player->id;
                     $exploration->coordinate_source_id = $this->player->colonies[0]->coordinates->id;
                     $exploration->coordinate_destination_id = $coordinate->id;
-                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,300));
+                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
                     $exploration->save();
                     
                     $embed = [
@@ -174,15 +175,15 @@ class Stargate extends CommandHandler implements CommandInterface
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             $resource = $this->args[$cptRes];
+                            if(Str::startsWith('e2pz',$resource) || Str::startsWith('zpm',$resource) || Str::startsWith('ZPM',$resource))
+                                $resource = 'E2PZ';
+
                             $resFound = false;
                             foreach($availableResources as $availableResource)
                             {
-                                if(Str::startsWith($availableResource,$resource) || $resource == 'e2pz')
+                                if(Str::startsWith($availableResource,$resource))
                                 {
-                                    if($resource == 'e2pz')
-                                        $resource = 'E2PZ';
-                                    else
-                                        $resource = $availableResource;
+                                    $resource = $availableResource;
 
                                     $resFound = true;
                                     $capacityNeeded += $qty;
@@ -479,7 +480,12 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         try{
 
-                                        /**SPY EMBED */
+                                        $spyLog = new SpyLog;
+                                        $spyLog->source_player_id = $this->player->id;
+                                        $spyLog->coordinate_source_id = $this->player->colonies[0]->coordinates->id;
+                                        $spyLog->dest_player_id = $this->coordinateDestination->colony->player->id;
+                                        $spyLog->coordinate_destination_id = $this->coordinateDestination->id;
+                                        $spyLog->save();
 
                                         $spy = Technology::where('slug', 'spy')->first();
                                         $counterSpy = Technology::where('slug', 'counterspy')->first();
@@ -500,7 +506,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             ],
                                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
                                             "title" => "Stargate",
-                                            "description" => trans('stargate.spyReportDescription', [], $this->player->lang),
+                                            "description" => trans('stargate.spyReportDescription', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang),
                                             'fields' => [
                                             ],
                                             'footer' => array(
@@ -517,6 +523,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'value' => trans('stargate.technologyTooLow', [], $this->player->lang),
                                             ];
                                         }
+
                                         elseif($spyLvl <= $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 0)
                                             $showResources = true;
                                         elseif($spyLvl > $counterSpyLvl)
@@ -536,11 +543,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $resourceString = "";
                                             foreach(config('stargate.resources') as $resource){
-                                                if(!empty($resourceString))
-                                                    $resourceString .= ' ';
-                                                $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($this->coordinateDestination->colony->$resource);
+                                                $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($this->coordinateDestination->colony->$resource).' ';
                                             }
-                                            $resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->E2PZ);
+                                            //$resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->E2PZ);
                     
                                             $embed['fields'][] = [
                                                 'name' => trans('generic.resources', [], $this->player->lang),

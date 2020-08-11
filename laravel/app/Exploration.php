@@ -34,7 +34,7 @@ class Exploration extends Model
 
             return trans('stargate.exploreFailed', ['coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
-        elseif($randomEvent <= 37)
+        elseif($randomEvent <= 38)
         {
             //Building
             $buildings = Building::all();
@@ -59,7 +59,7 @@ class Exploration extends Model
 
             return trans('stargate.exploreSucessBuildingTip', ['name' => $randomBuilding->name, 'lvlRequirement' => $randomRequirement->pivot->level, 'nameRequirement' => $randomRequirement->name, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
-        elseif($randomEvent <= 44)
+        elseif($randomEvent <= 46)
         {
             //Technology
             $technologies = Technology::all();
@@ -84,7 +84,7 @@ class Exploration extends Model
 
             return trans('stargate.exploreSucessTechnologyTip', ['name' => $randomTechnology->name, 'lvlRequirement' => $randomRequirement->pivot->level, 'nameRequirement' => $randomRequirement->name, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
-        elseif($randomEvent <= 52)
+        elseif($randomEvent <= 54)
         {
             //Craft
             $units = Unit::all();
@@ -105,11 +105,11 @@ class Exploration extends Model
 
             return trans('stargate.exploreSucessCraftTip', ['name' => $randomUnit->name, 'lvlRequirement' => $randomRequirement->pivot->level, 'nameRequirement' => $randomRequirement->name, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
-        elseif($randomEvent <= 60)
+        elseif($randomEvent <= 62)
         {
             //Craft aléatoire
             $randomUnit = Unit::all()->random();
-            $resValue = rand(1,3);
+            $resValue = rand(1,4);
             $resourceString = ucfirst($randomUnit->name).': '.number_format($resValue);
 
             $this->exploration_result = true;
@@ -169,8 +169,8 @@ class Exploration extends Model
             if($resType == 'E2PZ')
                 $resValue = rand(1,5);
             else
-                $resValue = $this->coordinateSource->colony->$varProd * rand(1,3);
-            $resourceString = config('stargate.emotes.'.$resType)." ".ucfirst($resType).': '.number_format($resValue);
+                $resValue = $this->coordinateSource->colony->$varProd * rand(1,6);
+            $resourceString = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue);
 
             $this->exploration_result = true;
             $this->exploration_outcome = 'Resource';

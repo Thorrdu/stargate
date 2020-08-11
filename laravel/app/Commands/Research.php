@@ -30,7 +30,10 @@ class Research extends CommandHandler implements CommandInterface
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
                     
-                $this->player->checkTechnology();
+                /*$this->player->checkTechnology();
+                $this->player->refresh();*/
+
+                $this->player->colonies[0]->checkColony();
                 $this->player->refresh();
                 
                 if(empty($this->args) || $this->args[0] == 'list')

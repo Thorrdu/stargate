@@ -35,8 +35,8 @@ return [
         'usage' => '!galaxy'
     ],
     'stargate' => [
-        'description' => "Accès à la porte des étoiles de votre colonie",
-        'usage' => '!stargate'
+        'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer",
+        'usage' => "!stargate\n!stargate explore [coordonées]\n!stargate spy [coordonées]\n!stargate trade [coordonées] [Ress1] [Qty1]"
     ],
     'infos' => [
         'description' => 'Affiche les informations sur Stargate Bot.',
@@ -78,5 +78,13 @@ return [
     'vote' => [
         'description' => "Permet de voter pour Stargate si vous apprécier le bot.",
         'usage' => '!vote'
+    ],
+    'daily' => [
+        'description' => "Récompense quotidienne",
+        'usage' => '!daily'
+    ],
+    'hourly' => [
+        'description' => "Hourly reward",
+        'usage' => '!hourly'
     ],
 ];

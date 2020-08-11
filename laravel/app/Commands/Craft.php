@@ -24,6 +24,9 @@ class Craft extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
 
+            $this->player->colonies[0]->checkColony();
+            $this->player->refresh();
+
             try{
 
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
