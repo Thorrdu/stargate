@@ -2,5 +2,5 @@
 //DAILY EN
 return [
     "hourlyReward" => "Hourly reward: :reward",
-    "hourlyWaiting" => "Your hourly reward can be claim in :time",
+    "hourlyWaiting" => "Your hourly reward can be claimed in :time",
 ];
