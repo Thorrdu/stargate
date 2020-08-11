@@ -34,7 +34,7 @@ class PlayerObserver
         echo PHP_EOL.'Player OBERSER EVENT UPDATED';
         if(is_null($player->active_technology_id) && $player->isDirty('active_technology_id'))
         {
-            echo PHP_EOL.'player OBSRVER top recalc';
+            echo PHP_EOL.'player OBSRVER check requirements';
             //$player->unsetEventDispatcher();
             //$player->calcProd();
 

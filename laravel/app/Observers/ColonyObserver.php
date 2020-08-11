@@ -36,7 +36,7 @@ class ColonyObserver
         try{
             if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
             {
-                echo PHP_EOL.'OBSRVER top recalc';
+                echo PHP_EOL.'player OBSRVER check requirements';
                 //$colony->cast / $colony->original
                 $endedBuilding = Building::find($colony->getOriginal('active_building_id'));
                 $buildingsIds = [];
@@ -103,6 +103,8 @@ class ColonyObserver
                 }
                 //$colony->unsetEventDispatcher();
                 //$colony->calcProd();
+                echo PHP_EOL.'player OBSRVER TOP UPDATED';
+
                 TopUpdater::update($colony->player); 
             }
         }
