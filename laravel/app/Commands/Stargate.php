@@ -426,6 +426,14 @@ class Stargate extends CommandHandler implements CommandInterface
                                 {
                                     try{
 
+
+                                    $current = Carbon::now();
+                                    $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
+                                    if($current->diffInMinutes($lastClaim) > 720){
+                                        $this->coordinateDestination->colony->checkColony();
+                                        $this->coordinateDestination->load('colony');
+                                    }
+
                                     $this->player->colonies[0]->E2PZ -= $travelCost;
                                     $this->player->save();
 

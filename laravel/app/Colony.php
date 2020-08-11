@@ -350,6 +350,9 @@ class Colony extends Model
             $current = Carbon::now();
             $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->last_claim);
             $minuteToClaim = $current->diffInMinutes($lastClaim);
+
+            if($minuteToClaim > config('stargate.maxProdTime'))
+                $minuteToClaim = config('stargate.maxProdTime');
             if($minuteToClaim >= 1)
             {
                 foreach (config('stargate.resources') as $resource)

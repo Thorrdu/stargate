@@ -23,4 +23,5 @@ return [
     ],
     'galaxy' => ['maxGalaxies' => 2, 'maxSystems' => 30, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 10],
+    'maxProdTime' => 720, //12h
 ];
