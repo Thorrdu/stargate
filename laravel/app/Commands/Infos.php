@@ -27,7 +27,7 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Version',
-                    'value' => '0.08 (Early Access)',
+                    'value' => '0.31 (Early Access)',
                     'inline' => true
                 ],
                 [
