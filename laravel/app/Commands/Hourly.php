@@ -87,7 +87,7 @@ class Hourly extends CommandHandler implements CommandInterface
                     if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
                     {
                         $this->player->captcha = true;
-                        $this->captcha_key = Str::random(10);
+                        $this->playercaptcha_key = Str::random(10);
 
                         $userExist = $this->discord->users->filter(function ($value){
                             return $value->id == $this->player->user_id;
@@ -95,7 +95,7 @@ class Hourly extends CommandHandler implements CommandInterface
                         if($userExist->count() > 0)
                         {
                             $foundUser = $userExist->first();
-                            $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thorr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+                            $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
                         }
 
                     }
