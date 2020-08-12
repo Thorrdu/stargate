@@ -87,7 +87,7 @@ class Hourly extends CommandHandler implements CommandInterface
                     if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
                     {
                         $this->player->captcha = true;
-                        $this->playercaptcha_key = Str::random(10);
+                        $this->player->captcha_key = Str::random(10);
 
                         $userExist = $this->discord->users->filter(function ($value){
                             return $value->id == $this->player->user_id;
