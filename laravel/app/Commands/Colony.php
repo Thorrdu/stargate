@@ -29,7 +29,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count())
                     {
-                        $this->player->active_colony_id = $this->player->colonies[(int)$this->args[1]-1];
+                        $this->player->active_colony_id = $this->player->colonies[(int)$this->args[1]-1]->id;
                         return trans('colony.colonySwitched', [], $this->player->lang);
                     }
                     else
