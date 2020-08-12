@@ -662,6 +662,32 @@ class Stargate extends CommandHandler implements CommandInterface
                     });
                 }
 
+                if(Str::startsWith('colonize',$this->args[0]))
+                {
+                    if(!is_null($this->coordinateDestination->colony))
+                        return trans('stargate.playerOwned', [], $this->player->lang);
+                        
+                    if($this->player->user_id != 125641223544373248)
+                        return 'Under Developement';         
+
+                    if($this->player->activeColony->military < 1000)
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(1000-$this->player->activeColony->military,2)], $this->player->lang);
+
+                    if($this->player->colonies->count() < config('stargate.maxColonies'))
+                    {
+                        $this->player->activeColony->military -= 1000;
+                        $this->player->activeColony->E2PZ -= $travelCost;
+                        $this->player->activeColony->save();
+
+                        $this->player->addColony($this->coordinateDestination);
+                        return trans('stargate.colonizeDone', [], $this->player->lang);
+                    }
+                    else
+                    {
+                        return trans('stargate.toManyColonies', [], $this->player->lang);
+                    }
+
+                }
 
                 if(Str::startsWith('attack',$this->args[0]))
                 {

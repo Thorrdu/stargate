@@ -85,9 +85,11 @@ class Profile extends CommandHandler implements CommandInterface
             ];
 
             $coloniesString = "";
+            $colonyIndex = 1;
             foreach($this->player->colonies as $colony)
             {
-                $coloniesString .= $colony->name."\n";
+                $coloniesString .= $colonyIndex.'. '.$colony->name."\n";
+                $colonyIndex++;
             }
             $embed['fields'][] = [
                 'name' => trans('generic.colonies',[],$this->player->lang),

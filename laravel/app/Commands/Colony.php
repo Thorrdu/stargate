@@ -8,6 +8,7 @@ use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Str;
 
 class Colony extends CommandHandler implements CommandInterface
 {
@@ -23,6 +24,17 @@ class Colony extends CommandHandler implements CommandInterface
 
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
+
+                if(count($this->args) >= 2 && Str::startsWith('switch',$this->args[0]))
+                {
+                    if((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count())
+                    {
+                        $this->player->active_colony_id = $this->player->colonies[(int)$this->args[1]-1];
+                        return trans('colony.colonySwitched', [], $this->player->lang);
+                    }
+                    else
+                        return trans('colony.UnknownColony', [], $this->player->lang);
+                }         
 
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();

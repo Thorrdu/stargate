@@ -53,21 +53,29 @@ class Player extends Model
         return $this->hasMany('App\Reminder');
     }
 
-    public function addColony($first = true)
+    public function addColony(Coordinate $choosedCoordinate = null)
     {
         try{
             $newColony = new Colony;
             $newColony->colony_type = 1;
             $newColony->player_id = $this->id;
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
-            if($first)
-                $newColony->space_max = 180;
-            else
-                $newColony->space_max = rand(100,250);
             $newColony->last_claim = date("Y-m-d H:i:s");  
-            $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
-            $newColony->coordinate_id = $coordinate->id;
+
+            if($choosedCoordinate == null)
+            {
+                $newColony->space_max = 180;
+                $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
+                $newColony->coordinate_id = $coordinate->id;
+            }
+            else
+            {
+                $newColony->space_max = rand(100,250);
+                $newColony->coordinate_id = $choosedCoordinate->id;
+                $coordinate = $choosedCoordinate;
+            }
             $newColony->save();
+
             $coordinate->colony_id = $newColony->id;
             $coordinate->save();
 
