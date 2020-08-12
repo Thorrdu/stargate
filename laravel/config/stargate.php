@@ -18,7 +18,7 @@ return [
         'production' => '<:production:737769455915892757>',
         'productionBuilding' => '⚙️',
         'research' => '<:research:737769578045898775>',
-        'researchBuilding' => '<:scienceBuilding:743236939523686451>',
+        'researchBuilding' => '<:researchBuilding:743237547416879185>',
         'military' => '<:military:737769413629182094>',
         'storage' => '<:storage:742821649098866838>'
     ],
