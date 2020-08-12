@@ -61,10 +61,15 @@ class Player extends Model
             $newColony->player_id = $this->id;
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
             $newColony->last_claim = date("Y-m-d H:i:s");  
+            $newColony->space_max = 180;
 
-            if($choosedCoordinate == null)
+            if($choosedCoordinate == null && $this->player->user_id = 125641223544373248)
             {
-                $newColony->space_max = 180;
+                $coordinate = Coordinate::where([['galaxy', 1],['system', 1],['planet', 1],['colony_id', null]])->first();
+                $newColony->coordinate_id = $coordinate->id;
+            }
+            elseif($choosedCoordinate == null)
+            {
                 $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
                 $newColony->coordinate_id = $coordinate->id;
             }
