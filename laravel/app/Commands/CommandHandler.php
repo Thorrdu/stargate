@@ -88,7 +88,7 @@ class CommandHandler
                     $log->command_flag = true;
                     $this->player->captcha = true;
                     $this->player->captcha_key = Str::random(10);
-
+                    $this->player->save();
                     $userExist = $this->discord->users->filter(function ($value){
                         return $value->id == $this->player->user_id;
                     });
