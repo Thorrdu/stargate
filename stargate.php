@@ -112,7 +112,7 @@ $discord->on('ready', function ($discord) {
 
     $discord->loop->addPeriodicTimer(900, function () use ($discord) {
         $tenMinutes = Carbon::now()->sub('minute', 14);
-        $players = Player::where('last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s"))->get();
+        $players = Player::where([['npc', 0],['last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s")]])->get();
         foreach($players as $player)
             TopUpdater::update($player);
     });

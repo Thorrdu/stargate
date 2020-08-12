@@ -7,7 +7,7 @@ use App\Player;
 class TopUpdater
 {
     public static function update($player){
-        if(!is_null($player))
+        if(!is_null($player) && !$player->npc)
         {
             try{
                 echo PHP_EOL.'Top Recalc: '.$player->user_name;

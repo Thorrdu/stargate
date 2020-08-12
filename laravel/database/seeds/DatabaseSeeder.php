@@ -1158,6 +1158,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             GalaxySeeder::class,
+            NpcSeeder::class,
         ]);
 
     }
