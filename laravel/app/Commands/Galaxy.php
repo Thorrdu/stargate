@@ -160,7 +160,7 @@ class Galaxy extends CommandHandler implements CommandInterface
             foreach($coordinates as $coordinate)
             {
                 if(!is_null($coordinate->colony))
-                    $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (".$coordinate->colony->player->user_name.")"."\n";
+                    $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (".($coordinate->colony->player->npc?"NPC - ":"").$coordinate->colony->player->user_name.")"."\n";
                 else
                     $coordinateList .= $coordinate->planet."\n";
             }

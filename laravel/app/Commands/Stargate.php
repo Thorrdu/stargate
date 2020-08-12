@@ -349,10 +349,10 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $unitTodown->pivot->number -= $tradeResource->quantity;
                                                 $unitTodown->pivot->save();
                                             }
-                                            if(isset($tradeObject['resource']))
+                                            elseif(isset($tradeObject['resource']))
                                             {
                                                 $tradeResource->resource = $tradeObject['resource'];
-                                                $this->player->colonies[0]->{$tradeResource->resource} -= $tradeObject['quantity'];
+                                                $this->player->colonies[0]->{$tradeObject['resource']} -= $tradeObject['quantity'];
                                                 $this->coordinateDestination->colony->{$tradeObject['resource']} += $tradeObject['quantity'];
                                             }
                                             $tradeResource->setValue();
@@ -586,6 +586,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $buildingString .= ', ';
                                                 $buildingString .= $building->name.' ('.$building->pivot->level.')';
                                             }
+                                            if(empty($buildingString))
+                                                $buildingString = 'Aucun bâtiment';
                                             $embed['fields'][] = [
                                                 'name' => trans('stargate.buildings', [], $this->player->lang),
                                                 'value' => $buildingString
@@ -615,6 +617,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $technologyString .= ', ';
                                                 $technologyString .= $technology->name.' ('.$technology->pivot->level.')';
                                             }
+                                            if(empty($technologyString))
+                                                $technologyString = "Aucune technologie";
                                             $embed['fields'][] = [
                                                 'name' => trans('generic.technologies', [], $this->player->lang),
                                                 'value' => $technologyString
