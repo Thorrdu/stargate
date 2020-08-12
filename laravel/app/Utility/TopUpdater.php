@@ -35,7 +35,7 @@ class TopUpdater
                 $player->points_research = round($researchPoints/1000);
                 $player->points_total += $player->points_research;
 
-                foreach($player->colonies[0]->units as $unit)
+                foreach($player->activeColony->units as $unit)
                 {
                     $militaryPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
                 }

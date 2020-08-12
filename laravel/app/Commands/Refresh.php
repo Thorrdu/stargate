@@ -12,8 +12,8 @@ class Refresh extends CommandHandler implements CommandInterface
         {
             if($this->player->ban)
                 return 'Vous êtes banni...';
-            $this->player->colonies[0]->calcProd();
-            $this->player->colonies[0]->save();
+            $this->player->activeColony->calcProd();
+            $this->player->activeColony->save();
             return "Prod recalculée";
         }
         else

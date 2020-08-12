@@ -54,11 +54,11 @@ class Daily extends CommandHandler implements CommandInterface
                         $resType = 'naqahdah';
         
                     $varProd = 'production_'.$resType;
-                    $resValue = $this->player->colonies[0]->$varProd * rand(2,6);
+                    $resValue = $this->player->activeColony->$varProd * rand(2,6);
                     $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue);
 
-                    $this->player->colonies[0]->$resType += $resValue;
-                    $this->player->colonies[0]->save();
+                    $this->player->activeColony->$resType += $resValue;
+                    $this->player->activeColony->save();
 
                     $this->player->last_daily = Carbon::now();
                     $this->player->dailies++;

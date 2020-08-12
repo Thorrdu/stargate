@@ -20,17 +20,17 @@ class Colony extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Colony';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
-                $this->player->colonies[0]->checkColony();
+                $this->activeColony->checkColony();
                 $this->player->refresh();
 
-                $coordinates = $this->player->colonies[0]->coordinates;
+                $coordinates = $this->activeColony->coordinates;
 
                 $embed = [
                     'author' => [
                         'name' => $this->player->user_name,
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
-                    "title" => 'Colonie '.$this->player->colonies[0]->name,
+                    "title" => 'Colonie '.$this->activeColony->name,
                     "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->system.":".$coordinates->planet,
                     'fields' => [],
                     'footer' => array(
@@ -48,15 +48,15 @@ class Colony extends CommandHandler implements CommandInterface
                         $resourcesValue .= "\n";
                         $productionValue .= "\n";
                     }
-                    $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->colonies[0]->$resource)." (".number_format($this->player->colonies[0]['production_'.$resource])."/h)";
-                    $storageValue .= number_format($this->player->colonies[0]['storage_'.$resource]).' '.ucfirst($resource)."\n";
+                    $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->activeColony->$resource)." (".number_format($this->activeColony['production_'.$resource])."/h)";
+                    $storageValue .= number_format($this->activeColony->{'storage_'.$resource}).' '.ucfirst($resource)."\n";
                 }
 
                 if(!empty($resourcesValue))
                 {
-                    $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".($this->player->colonies[0]->energy_max - round($this->player->colonies[0]->energy_used)).' / '.$this->player->colonies[0]->energy_max;
-                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->player->colonies[0]->military)." (".$this->player->colonies[0]->production_military."/h)";
-                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->colonies[0]->E2PZ,2)." (".$this->player->colonies[0]->production_e2pz."/w)";
+                    $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".($this->activeColony->energy_max - round($this->activeColony->energy_used)).' / '.$this->activeColony->energy_max;
+                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->activeColony->military)." (".$this->activeColony->production_military."/h)";
+                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->activeColony->E2PZ,2)." (".$this->activeColony->production_e2pz."/w)";
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.production')." ".trans('generic.resources', [], $this->player->lang),
                                             'value' => $resourcesValue,
@@ -65,7 +65,7 @@ class Colony extends CommandHandler implements CommandInterface
                 }
 
 
-                $prodBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                $prodBuildings = $this->activeColony->buildings->filter(function ($value) {
                     return $value->type == 'Production' || $value->type == "Energy";
                 });
                 $prodBuildingsValue = "";
@@ -84,7 +84,7 @@ class Colony extends CommandHandler implements CommandInterface
                                         );
                 }
 
-                $scienceBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                $scienceBuildings = $this->activeColony->buildings->filter(function ($value) {
                     return $value->type == "Science";
                 });
                 $scienceBuildingsValue = "";
@@ -103,7 +103,7 @@ class Colony extends CommandHandler implements CommandInterface
                                         );
                 }
 
-                $militaryBuildings = $this->player->colonies[0]->buildings->filter(function ($value) {
+                $militaryBuildings = $this->activeColony->buildings->filter(function ($value) {
                     return $value->type == "Military";
                 });
                 $militaryBuildingsValue = "";
@@ -124,7 +124,7 @@ class Colony extends CommandHandler implements CommandInterface
 
                 if(!empty($storageValue))
                 {
-                    $storageValue = "\n".trans('generic.buildingSpace', [], $this->player->lang).": ".($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used).' / '.$this->player->colonies[0]->space_max."\n".$storageValue;
+                    $storageValue = "\n".trans('generic.buildingSpace', [], $this->player->lang).": ".($this->activeColony->space_max - $this->activeColony->space_used).' / '.$this->activeColony->space_max."\n".$storageValue;
 
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.storage')." ".trans('generic.storageCapacity', [], $this->player->lang),
@@ -149,10 +149,10 @@ class Colony extends CommandHandler implements CommandInterface
                                         );
                 }
 
-                if(count($this->player->colonies[0]->units) > 0)
+                if(count($this->activeColony->units) > 0)
                 {
                     $unitsString = '';
-                    foreach($this->player->colonies[0]->units as $unit)
+                    foreach($this->activeColony->units as $unit)
                     {
                         $unitsString .= number_format($unit->pivot->number).' '.$unit->name."\n";
                     }
@@ -164,20 +164,20 @@ class Colony extends CommandHandler implements CommandInterface
                 }
 
                 $now = Carbon::now();
-                if(!is_null($this->player->colonies[0]->active_building_end)){
-                    $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end);
+                if(!is_null($this->activeColony->active_building_end)){
+                    $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->activeColony->active_building_end);
                     $buildingTime = $now->diffForHumans($buildingEnd,[
                         'parts' => 3,
                         'short' => true, // short syntax as per current locale
                         'syntax' => CarbonInterface::DIFF_ABSOLUTE
                     ]);
 
-                    $currentLevel = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
+                    $currentLevel = $this->activeColony->hasBuilding($this->activeColony->activeBuilding);
                     if(!$currentLevel)
                         $currentLevel = 0;
                     $embed['fields'][] = array(
                         'name' => trans('colony.buildingUnderConstruction', [], $this->player->lang),
-                        'value' => "Lvl ".($currentLevel+1)." - ".$this->player->colonies[0]->activeBuilding->name."\n".$buildingTime,
+                        'value' => "Lvl ".($currentLevel+1)." - ".$this->activeColony->activeBuilding->name."\n".$buildingTime,
                         'inline' => true
                     );
                 }
@@ -200,9 +200,9 @@ class Colony extends CommandHandler implements CommandInterface
                     );
                 }
 
-                if($this->player->colonies[0]->craftQueues->count() > 0){
+                if($this->activeColony->craftQueues->count() > 0){
                     $queueString = "";
-                    $queuedUnits = $this->player->colonies[0]->craftQueues()->limit(5)->get();
+                    $queuedUnits = $this->activeColony->craftQueues()->limit(5)->get();
                     foreach($queuedUnits as $queuedUnit)
                     {
                         $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedUnit->pivot->craft_end);
@@ -213,9 +213,9 @@ class Colony extends CommandHandler implements CommandInterface
                         ]);
                         $queueString .= $queuedUnit->name." - ".$buildingTime."\n";    
                     }
-                    if($this->player->colonies[0]->craftQueues->count() > 5)
+                    if($this->activeColony->craftQueues->count() > 5)
                     {
-                        $lastQueue = $this->player->colonies[0]->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
+                        $lastQueue = $this->activeColony->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
                         $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
                         $buildingTime = $now->diffForHumans($buildingEnd,[
                             'parts' => 3,

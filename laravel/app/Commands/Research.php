@@ -33,7 +33,7 @@ class Research extends CommandHandler implements CommandInterface
                 /*$this->player->checkTechnology();
                 $this->player->refresh();*/
 
-                $this->player->colonies[0]->checkColony();
+                $this->player->activeColony->checkColony();
                 $this->player->refresh();
                 
                 if(empty($this->args) || $this->args[0] == 'list')
@@ -105,7 +105,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             foreach($technology->requiredBuildings as $requiredBuilding)
                             {
-                                $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                                 if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
                                     $hasRequirements = false;
                             }
@@ -142,17 +142,17 @@ class Research extends CommandHandler implements CommandInterface
                             $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
                             {
-                                if($technology->$resource > 0 && $technologyPrices[$resource] > $this->player->colonies[0]->$resource)
+                                if($technology->$resource > 0 && $technologyPrices[$resource] > $this->player->activeColony->$resource)
                                 {
                                     $hasEnough = false;
-                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($technologyPrices[$resource]-$this->player->colonies[0]->$resource));
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($technologyPrices[$resource]-$this->player->activeColony->$resource));
                                 }
                             }
 
                             if(!$hasEnough)
                                 return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                            if( !is_null($this->player->colonies[0]->active_building_id) && $this->player->colonies[0]->active_building_id == 7 )
+                            if( !is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 7 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->startResearch($technology));
@@ -175,7 +175,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             foreach($technology->requiredBuildings as $requiredBuilding)
                             {
-                                $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                                     $hasRequirements = false;
                             }
@@ -201,7 +201,7 @@ class Research extends CommandHandler implements CommandInterface
                             $buildingTime = $technology->getTime($wantedLevel);
                             
                             /** Application des bonus */
-                            $buildingTime *= $this->player->colonies[0]->getResearchBonus();
+                            $buildingTime *= $this->player->activeColony->getResearchBonus();
                 
                             $now = Carbon::now();
                             $buildingEnd = $now->copy()->addSeconds($buildingTime);
@@ -330,7 +330,7 @@ class Research extends CommandHandler implements CommandInterface
             $buildingTime = $technology->getTime($wantedLevel);
             
             /** Application des bonus */
-            $buildingTime *= $this->player->colonies[0]->getResearchBonus();
+            $buildingTime *= $this->player->activeColony->getResearchBonus();
 
             $now = Carbon::now();
             $buildingEnd = $now->copy()->addSeconds($buildingTime);
@@ -353,7 +353,7 @@ class Research extends CommandHandler implements CommandInterface
             }
             foreach($technology->requiredBuildings as $requiredBuilding)
             {
-                $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
             }

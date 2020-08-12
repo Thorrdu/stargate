@@ -24,7 +24,7 @@ class Craft extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
 
-            $this->player->colonies[0]->checkColony();
+            $this->player->activeColony->checkColony();
             $this->player->refresh();
 
             try{
@@ -85,9 +85,9 @@ class Craft extends CommandHandler implements CommandInterface
                 elseif(Str::startsWith('queue', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Craft Queue';
-                    if($this->player->colonies[0]->craftQueues->count() == 0)
+                    if($this->player->activeColony->craftQueues->count() == 0)
                         return trans('craft.emptyQueue', [], $this->player->lang);
-                    $this->craftQueue = $this->player->colonies[0]->craftQueues;
+                    $this->craftQueue = $this->player->activeColony->craftQueues;
     
                     $this->page = 1;
                     $this->maxPage = ceil($this->craftQueue->count()/5);
@@ -156,7 +156,7 @@ class Craft extends CommandHandler implements CommandInterface
                         }
                         foreach($unit->requiredBuildings as $requiredBuilding)
                         {
-                            $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                            $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                             if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
                                 $hasRequirements = false;
                         }
@@ -174,10 +174,10 @@ class Craft extends CommandHandler implements CommandInterface
                         $missingResString = "";
                         foreach (config('stargate.resources') as $resource)
                         {
-                            if($unit->$resource > 0 && $unitPrices[$resource] > $this->player->colonies[0]->$resource)
+                            if($unit->$resource > 0 && $unitPrices[$resource] > $this->player->activeColony->$resource)
                             {
                                 $hasEnough = false;
-                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]-$this->player->colonies[0]->$resource));
+                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]-$this->player->activeColony->$resource));
                             }
                         }
                         if(!$hasEnough)
@@ -187,7 +187,7 @@ class Craft extends CommandHandler implements CommandInterface
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
                         $now = Carbon::now();
-                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startCrafting($unit,$qty));
+                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startCrafting($unit,$qty));
                         $buildingTime = $now->diffForHumans($endingDate,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
@@ -289,7 +289,7 @@ class Craft extends CommandHandler implements CommandInterface
                 $unitTime = $unit->base_time;
 
                 /** Application des bonus */
-                $unitTime *= $this->player->colonies[0]->getCraftingBonus();
+                $unitTime *= $this->player->activeColony->getCraftingBonus();
 
                 $now = Carbon::now();
                 $unitEnd = $now->copy()->addSeconds($unitTime);
@@ -308,7 +308,7 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 foreach($unit->requiredBuildings as $requiredBuilding)
                 {
-                    $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                    $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                     if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                         $hasRequirements = false;
                 }

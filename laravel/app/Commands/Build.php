@@ -28,8 +28,8 @@ class Build extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
 
-            //$this->player->colonies[0]->checkBuilding();
-            $this->player->colonies[0]->checkColony();
+            //$this->player->activeColony->checkBuilding();
+            $this->player->activeColony->checkColony();
             $this->player->refresh();
 
             try{
@@ -103,7 +103,7 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             foreach($building->requiredBuildings as $requiredBuilding)
                             {
-                                $currentLvl = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                                 if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
                                     $hasRequirements = false;
                             }
@@ -111,27 +111,27 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('generic.missingRequirements', [], $this->player->lang);
 
                             $wantedLvl = 1;
-                            $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+                            $currentLvl = $this->player->activeColony->hasBuilding($building);
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
 
                             //if construction en cours, return
-                            if(!is_null($this->player->colonies[0]->active_building_end))
+                            if(!is_null($this->player->activeColony->active_building_end))
                             {
                                 $wantedLvl = 1;
-                                $currentLvl = $this->player->colonies[0]->hasBuilding($this->player->colonies[0]->activeBuilding);
+                                $currentLvl = $this->player->activeColony->hasBuilding($this->player->activeColony->activeBuilding);
                                 if($currentLvl)
                                     $wantedLvl += $currentLvl;
 
                                 $now = Carbon::now();
-                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->active_building_end);
+                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->active_building_end);
                                 $buildingTime = $now->diffForHumans($buildingEnd,[
                                     'parts' => 3,
                                     'short' => true, // short syntax as per current locale
                                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                                 ]);
                                 //:level :name will be done in :time
-                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => $this->player->colonies[0]->activeBuilding->name, 'time' => $buildingTime], $this->player->lang);
+                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => $this->player->activeColony->activeBuilding->name, 'time' => $buildingTime], $this->player->lang);
                             }
 
                             if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
@@ -139,7 +139,7 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('building.buildingMaxed', [], $this->player->lang);
                             }
 
-                            if(($this->player->colonies[0]->space_max - $this->player->colonies[0]->space_used) <= 0)
+                            if(($this->player->activeColony->space_max - $this->player->activeColony->space_used) <= 0)
                                 return trans('building.missingSpace', [], $this->player->lang);
                             
                             $hasEnough = true;
@@ -147,10 +147,10 @@ class Build extends CommandHandler implements CommandInterface
                             $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
                             {
-                                if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->colonies[0]->$resource)
+                                if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->activeColony->$resource)
                                 {
                                     $hasEnough = false;
-                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->player->colonies[0]->$resource));
+                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->player->activeColony->$resource));
                                 }
                             }
                             if(!$hasEnough)
@@ -159,7 +159,7 @@ class Build extends CommandHandler implements CommandInterface
                             if($building->energy_base > 0)
                             {
                                 $energyPrice = $building->getEnergy($wantedLvl);
-                                $energyLeft = ($this->player->colonies[0]->energy_max - $this->player->colonies[0]->energy_used);
+                                $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
                                 $missingEnergy = $energyPrice - $energyLeft;
                                 if($missingEnergy > 0)
                                     return trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
@@ -169,7 +169,7 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $now = Carbon::now();
-                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->colonies[0]->startBuilding($building));
+                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startBuilding($building));
                             $buildingTime = $now->diffForHumans($endingDate,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
@@ -188,7 +188,7 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             foreach($building->requiredBuildings as $requiredBuilding)
                             {
-                                $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                                $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                                     $hasRequirements = false;
                             }
@@ -198,7 +198,7 @@ class Build extends CommandHandler implements CommandInterface
                             }
 
                             $wantedLvl = 1;
-                            $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+                            $currentLvl = $this->player->activeColony->hasBuilding($building);
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
                 
@@ -229,7 +229,7 @@ class Build extends CommandHandler implements CommandInterface
                     
                                 $buildingTime = $building->getTime($wantedLvl);
                                 /** Application des bonus */
-                                $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+                                $buildingTime *= $this->player->activeColony->getBuildingBonus();
                                 $now = Carbon::now();
                                 $buildingEnd = $now->copy()->addSeconds($buildingTime);
                                 $buildingTime = $now->diffForHumans($buildingEnd,[
@@ -387,7 +387,7 @@ class Build extends CommandHandler implements CommandInterface
         foreach($displayList as $building)
         {
             $wantedLvl = 1;
-            $currentLvl = $this->player->colonies[0]->hasBuilding($building);
+            $currentLvl = $this->player->activeColony->hasBuilding($building);
             if($currentLvl)
                 $wantedLvl += $currentLvl;
 
@@ -419,7 +419,7 @@ class Build extends CommandHandler implements CommandInterface
                 $buildingTime = $building->getTime($wantedLvl);
 
                 /** Application des bonus */
-                $buildingTime *= $this->player->colonies[0]->getBuildingBonus();
+                $buildingTime *= $this->player->activeColony->getBuildingBonus();
 
                 $now = Carbon::now();
                 $buildingEnd = $now->copy()->addSeconds($buildingTime);
@@ -444,7 +444,7 @@ class Build extends CommandHandler implements CommandInterface
             }
             foreach($building->requiredBuildings as $requiredBuilding)
             {
-                $currentLvlOwned = $this->player->colonies[0]->hasBuilding($requiredBuilding);
+                $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                     $hasRequirements = false;
             }

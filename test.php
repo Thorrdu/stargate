@@ -46,7 +46,7 @@ $newPlayer->addColony();*/
 try{
 	$player = Player::where('user_id', 125641223544373248)->firstOrFail();
 	$buildingToBuild = Building::find(2);
-	$player->colonies[0]->startBuilding($buildingToBuild);
+	$player->activeColony->startBuilding($buildingToBuild);
 }
 catch(\Exception $e)
 {
@@ -55,13 +55,13 @@ catch(\Exception $e)
 /*
 try{
 	$player = Player::where('user_id', 125641223544373248)->firstOrFail();
-	//print_r($player->colonies[0]->buildings[0]->attributesToArray());
+	//print_r($player->activeColony->buildings[0]->attributesToArray());
 
-	foreach($player->colonies[0]->buildings as $building)
+	foreach($player->activeColony->buildings as $building)
 	{
 		echo PHP_EOL.$building->building->name.' --> '.$building->level;
 	}
-	echo PHP_EOL.$player->colonies[0]->active_building_end;
+	echo PHP_EOL.$player->activeColony->active_building_end;
 }
 catch(\Exception $e)
 {
@@ -125,11 +125,11 @@ try{
 
 	//print_r($playerByDiscordost->attributesToArray());
 	//echo count($playerByDiscordost->colonies).' colonies';
-	//print_r($playerByDiscordost->colonies[0]->attributesToArray());
-	//var_dump($playerByDiscordost->colonies[0]->name);
-	print_r($playerByDiscordost->colonies[0]->buildings[0]->attributesToArray());
-	print_r($playerByDiscordost->colonies[0]->buildings[0]->building->attributesToArray());
-	//var_dump($playerByDiscordost->colonies[0]->name);
+	//print_r($playerByDiscordost->activeColony->attributesToArray());
+	//var_dump($playerByDiscordost->activeColony->name);
+	print_r($playerByDiscordost->activeColony->buildings[0]->attributesToArray());
+	print_r($playerByDiscordost->activeColony->buildings[0]->building->attributesToArray());
+	//var_dump($playerByDiscordost->activeColony->name);
 }
 catch(\Exception $e)
 {

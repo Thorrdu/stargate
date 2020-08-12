@@ -62,7 +62,7 @@ class PlayerObserver
                         }
                         foreach($building->requiredBuildings as $requiredBuilding)
                         {
-                            $currentLvlOwned = $player->colonies[0]->hasBuilding($requiredBuilding);
+                            $currentLvlOwned = $player->activeColony->hasBuilding($requiredBuilding);
                             if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                                 $hasRequirements = false;
                         }
@@ -93,7 +93,7 @@ class PlayerObserver
                         }
                         foreach($technology->requiredBuildings as $requiredBuilding)
                         {
-                            $currentLvlOwned = $player->colonies[0]->hasBuilding($requiredBuilding);
+                            $currentLvlOwned = $player->activeColony->hasBuilding($requiredBuilding);
                             if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                                 $hasRequirements = false;
                         }

@@ -30,8 +30,8 @@ class Galaxy extends CommandHandler implements CommandInterface
                 return trans('generic.banned',[],$this->player->lang);
 
             try{
-                $this->galaxy = $this->player->colonies[0]->coordinates->galaxy;
-                $this->system = $this->player->colonies[0]->coordinates->system;
+                $this->galaxy = $this->player->activeColony->coordinates->galaxy;
+                $this->system = $this->player->activeColony->coordinates->system;
 
                 $this->galaxyRestriction = false;
                 $this->systemRestriction = false;

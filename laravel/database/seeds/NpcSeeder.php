@@ -71,14 +71,14 @@ class NpcSeeder extends Seeder
                 $npc->technologies()->attach([$techId => ['level' => $techLevel]]);
             
             foreach($builToAdd as $builId => $builLevel)
-                $npc->colonies[0]->buildings()->attach([$builId => ['level' => $builLevel]]);
+                $npc->activeColony->buildings()->attach([$builId => ['level' => $builLevel]]);
         
             foreach(config('stargate.resources') as $resource)
             {
-                $npc->colonies[0]->$resource = rand(500,10000);
+                $npc->activeColony->$resource = rand(500,10000);
             }
 
-            $npc->colonies[0]->save();
+            $npc->activeColony->save();
 	    }
 	        /*
 	            'name' => $faker->name,

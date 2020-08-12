@@ -18,6 +18,11 @@ class Player extends Model
         });
     }
 
+    public function activeColony()
+    {
+        return $this->hasOne('App\Colony','id','active_colony_id');
+    }
+
     public function colonies()
     {
         return $this->hasMany('App\Colony');
@@ -67,6 +72,8 @@ class Player extends Model
             $coordinate->save();
 
             $this->colonies->push($newColony);
+            $this->active_colony_id = $newColony->id;
+            $this->save();
         }
         catch(\Exception $e)
         {
@@ -106,7 +113,7 @@ class Player extends Model
         $buildingTime = $technology->getTime($wantedLvl);
 
         /** Application des bonus */
-        $buildingTime *= $this->colonies[0]->getResearchBonus();
+        $buildingTime *= $this->activeColony->getResearchBonus();
 
         $buildingEnd = $current->addSeconds($buildingTime);
 
@@ -118,7 +125,7 @@ class Player extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($technology->$resource > 0)
-                $this->colonies[0]->$resource -= round($buildingPrices[$resource]);
+                $this->activeColony->$resource -= round($buildingPrices[$resource]);
         }
 
         if($this->notification)
@@ -131,7 +138,7 @@ class Player extends Model
             //$this->player->reminders()->attach($reminder->id);
         }
 
-        $this->colonies[0]->save();
+        $this->activeColony->save();
         //$this->save();
         return $this->active_technology_end;
     }
@@ -169,8 +176,8 @@ class Player extends Model
 
             $this->active_technology_id = null;
             $this->active_technology_end = null;
-            $this->colonies[0]->calcProd();
-            //$this->colonies[0]->saveWithoutEvents();
+            $this->activeColony->calcProd();
+            //$this->activeColony->saveWithoutEvents();
             $this->save();
         }
         catch(\Exception $e)
