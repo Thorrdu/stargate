@@ -31,7 +31,6 @@ class Build extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
-            //$this->player->activeColony->checkBuilding();
             $this->player->activeColony->checkColony();
             $this->player->refresh();
 

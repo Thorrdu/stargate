@@ -27,7 +27,6 @@ class Ban extends CommandHandler implements CommandInterface
                         $playerToBan->ban = true;
                         $playerToBan->save();
                         return trans('ban.banApplied', ['name' => $this->message->mentions[0]->username], $this->player->lang);
-
                     }
                 }
                 else
