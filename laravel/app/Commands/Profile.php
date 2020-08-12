@@ -47,10 +47,10 @@ class Profile extends CommandHandler implements CommandInterface
 
 
             $totalPlayers = DB::table('players')->count();
-            $generalPosition = DB::table('players')->where('points_total', '>' , $this->player->points_total)->count() + 1;
-            $buildingPosition = DB::table('players')->where('points_building', '>' , $this->player->points_building)->count() + 1;
-            $researchPosition = DB::table('players')->where('points_research', '>' , $this->player->points_research)->count() + 1;
-            $militaryPosition = DB::table('players')->where('points_military', '>' , $this->player->points_military)->count() + 1;
+            $generalPosition = DB::table('players')->where([['npc', 0],['points_total', '>' , $this->player->points_total]])->count() + 1;
+            $buildingPosition = DB::table('players')->where([['npc', 0],['points_building', '>' , $this->player->points_building]])->count() + 1;
+            $researchPosition = DB::table('players')->where([['npc', 0],['points_research', '>' , $this->player->points_research]])->count() + 1;
+            $militaryPosition = DB::table('players')->where([['npc', 0],['points_military', '>' , $this->player->points_military]])->count() + 1;
 
             if($this->player->notification)
                 $notificationString = "On";
