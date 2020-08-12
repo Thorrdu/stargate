@@ -287,9 +287,9 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);
 
-    $discord->registerCommand('hourly', function ($message, $args) {
+    $discord->registerCommand('hourly', function ($message, $args) use($discord){
         try{
-            $command = new HourlyCommand($message,$args);
+            $command = new HourlyCommand($message,$args,$discord);
             return $command->execute();
         }catch(\Exception $e)
         {

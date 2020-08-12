@@ -88,7 +88,16 @@ class Hourly extends CommandHandler implements CommandInterface
                     {
                         $this->player->captcha = true;
                         $this->captcha_key = Str::random(10);
-                        $this->message->author->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+
+                        $userExist = $this->discord->users->filter(function ($value){
+                            return $value->id == $this->player->user_id;
+                        });
+                        if($userExist->count() > 0)
+                        {
+                            $foundUser = $userExist->first();
+                            $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+                        }
+
                     }
                     $this->player->save();
 
