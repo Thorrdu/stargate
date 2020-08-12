@@ -7,6 +7,7 @@ use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
 use App\Player;
 use Discord\DiscordCommandClient as Discord; 
+use Illuminate\Support\Str;
 
 class CommandHandler
 {
@@ -82,9 +83,24 @@ class CommandHandler
                 $log->player_id = $this->player->id;
                 $log->command_type = str_replace("App\Commands\\",'',get_class($this));
                 $log->command_raw = $this->message->content;
-                if(is_null($this->message->nonce))
+                if(is_null($this->message->nonce) && $this->discord)
+                {
                     $log->command_flag = true;
+                    $this->player->captcha = true;
+                    $this->player->captcha_key = Str::random(10);
+
+                    $userExist = $this->discord->users->filter(function ($value){
+                        return $value->id == $this->player->user_id;
+                    });
+                    if($userExist->count() > 0)
+                    {
+                        $foundUser = $userExist->first();
+                        $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
+                    }
+                }
                 $log->save();
+
+                
             }
         }
         catch(\Exception $e) {
