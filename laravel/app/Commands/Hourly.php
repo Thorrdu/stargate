@@ -95,7 +95,7 @@ class Hourly extends CommandHandler implements CommandInterface
                         if($userExist->count() > 0)
                         {
                             $foundUser = $userExist->first();
-                            $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+                            $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thorr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
                         }
 
                     }
