@@ -13,6 +13,7 @@ class TopUpdater
                 echo PHP_EOL.'Top Recalc: '.$player->user_name;
                 $buildingPoints = 0;
                 $player->points_total = 0;
+                $militaryPoint = 0;
                 foreach($player->colonies as $colony)
                 {
                     foreach($colony->buildings as $building)
@@ -20,6 +21,7 @@ class TopUpdater
                         for($cptPoint = 1;$cptPoint <= $building->pivot->level; $cptPoint++)
                             $buildingPoints += TopUpdater::priceMerging($building->getPrice($cptPoint));
                     }
+                    $militaryPoint += $colony->military * 0.2;
                 }
                 $player->points_building = round($buildingPoints/1000);
                 $player->points_total += $player->points_building;
@@ -33,14 +35,12 @@ class TopUpdater
                 $player->points_research = round($researchPoints/1000);
                 $player->points_total += $player->points_research;
 
-                $militaryPoint = 0;
                 foreach($player->colonies[0]->units as $unit)
                 {
-
                     $militaryPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
                 }
                 echo PHP_EOL."FINMIL";
-
+                
                 $player->points_military = round($militaryPoint/1000);
                 
                 $player->points_total += $player->points_military;
