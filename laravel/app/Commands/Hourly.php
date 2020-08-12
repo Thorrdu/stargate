@@ -52,14 +52,6 @@ class Hourly extends CommandHandler implements CommandInterface
 
                 if($hourlyOk)
                 {
-                    if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
-                    {
-                        $this->player->captcha = true;
-                        $this->captcha_key = Str::random(10);
-                        $this->player->save();
-                        $this->message->author->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
-                    }
-
                     $randomRes = rand(1,100);                   
                     if($randomRes < 45)
                         $resType = 'iron';
@@ -91,7 +83,16 @@ class Hourly extends CommandHandler implements CommandInterface
                     $this->player->activeColony->save();
 
                     $this->player->last_hourly = Carbon::now();
+                    /**CAPTCHA SECURITY*/
+                    if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
+                    {
+                        $this->player->captcha = true;
+                        $this->captcha_key = Str::random(10);
+                        $this->message->author->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+                    }
                     $this->player->save();
+
+
 
                     return trans('hourly.hourlyReward', ['reward' => $reward], $this->player->lang);
                 }
