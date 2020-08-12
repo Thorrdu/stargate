@@ -8,6 +8,9 @@ class Invite extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player) && $this->player->ban)
             return trans('generic.banned',[],$this->player->lang);
+                    
+        if($this->player->captcha)
+            return trans('generic.captchaMessage',[],$this->player->lang);
 
         echo PHP_EOL.'Execute Invite';
         if(!is_null($this->player))

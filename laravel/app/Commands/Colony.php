@@ -20,6 +20,10 @@ class Colony extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Colony';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
+
+                if($this->player->captcha)
+                    return trans('generic.captchaMessage',[],$this->player->lang);
+
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
 

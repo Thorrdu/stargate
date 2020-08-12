@@ -15,6 +15,9 @@ class Daily extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Daily';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
+                    
+                if($this->player->captcha)
+                    return trans('generic.captchaMessage',[],$this->player->lang);
 
                 $dailyOK = false;
                 if(!is_null($this->player->last_daily))

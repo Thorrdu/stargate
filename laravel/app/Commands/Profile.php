@@ -16,6 +16,9 @@ class Profile extends CommandHandler implements CommandInterface
             echo PHP_EOL.'Execute profile';
             if($this->player->ban)
                 return trans('generic.banned', [], $this->player->lang);
+                    
+            if($this->player->captcha)
+                return trans('generic.captchaMessage',[],$this->player->lang);
 
 
             if($this->player->user_id == 125641223544373248 && count($this->args) >= 1)

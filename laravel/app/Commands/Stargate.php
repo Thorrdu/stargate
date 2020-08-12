@@ -31,6 +31,9 @@ class Stargate extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Stargate';
                 if($this->player->ban)
                     return trans('generic.banned', [], $this->player->lang);
+                    
+                if($this->player->captcha)
+                    return trans('generic.captchaMessage',[],$this->player->lang);
 
                 $researchCenter = Building::find(7);
                 $centerLevel = $this->player->activeColony->hasBuilding($researchCenter);

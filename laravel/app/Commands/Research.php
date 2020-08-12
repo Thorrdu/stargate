@@ -29,6 +29,9 @@ class Research extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Research';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
+                
+                if($this->player->captcha)
+                    return trans('generic.captchaMessage',[],$this->player->lang);
                     
                 /*$this->player->checkTechnology();
                 $this->player->refresh();*/

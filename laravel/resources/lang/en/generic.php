@@ -46,4 +46,6 @@ return [
     "confirmed" => "Confirmed",
     "buildingUnlocked" => "Your scientists finalized the plan for a new building: **:name**",
     "researchUnlocked" => "Your scientists have discovered a new technology: **:name**",
+    "captchaLink" => "To pass the anti-cheat security please validate the captcha at the adress: :link",
+    "captchaMessage" => "**Captcha Actif**, veuillez vérifier vos messages privés.", 
 ];

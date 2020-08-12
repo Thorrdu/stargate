@@ -25,6 +25,9 @@ class Top extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
 
+            if($this->player->captcha)
+                return trans('generic.captchaMessage',[],$this->player->lang);
+
             try{
                 if(empty($this->args))
                     return trans('top.choice', [], $this->player->lang);

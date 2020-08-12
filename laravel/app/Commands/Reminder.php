@@ -15,6 +15,9 @@ class Reminder extends CommandHandler implements CommandInterface
         {
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
+                    
+            if($this->player->captcha)
+                return trans('generic.captchaMessage',[],$this->player->lang);
 
             echo PHP_EOL.'Execute Reminder';
 

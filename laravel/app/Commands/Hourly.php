@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Str;
 
 class Hourly extends CommandHandler implements CommandInterface
 {
@@ -15,6 +16,9 @@ class Hourly extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Hourly';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
+
+                if($this->player->captcha)
+                    return trans('generic.captchaMessage',[],$this->player->lang);
 
                 $hourlyOk = $comboReset = false;
                 if(!is_null($this->player->last_hourly))
@@ -48,6 +52,14 @@ class Hourly extends CommandHandler implements CommandInterface
 
                 if($hourlyOk)
                 {
+                    if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
+                    {
+                        $this->player->captcha = true;
+                        $this->captcha_key = Str::random(10);
+                        $this->player->save();
+                        $this->message->author->sendMessage(trans('generic.captchaLink', ['link' => 'http://web.thprr.ovh/captcha/'.$this->captcha_key], $this->player->lang));
+                    }
+
                     $randomRes = rand(1,100);                   
                     if($randomRes < 45)
                         $resType = 'iron';

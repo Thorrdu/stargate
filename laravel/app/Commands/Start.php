@@ -64,6 +64,8 @@ class Start extends CommandHandler implements CommandInterface
         }
         elseif($this->player->ban)
             return trans('generic.banned',[],$this->player->lang);
+        elseif($this->player->captcha)
+            return trans('generic.captchaMessage',[],$this->player->lang);
         else
             return trans('start.accountExists',[],$this->player->lang);
     }
