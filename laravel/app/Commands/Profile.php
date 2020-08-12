@@ -46,7 +46,7 @@ class Profile extends CommandHandler implements CommandInterface
             }
 
 
-            $totalPlayers = DB::table('players')->count();
+            $totalPlayers = DB::table('players')->where('npc', 0)->count();
             $generalPosition = DB::table('players')->where([['npc', 0],['points_total', '>' , $this->player->points_total]])->count() + 1;
             $buildingPosition = DB::table('players')->where([['npc', 0],['points_building', '>' , $this->player->points_building]])->count() + 1;
             $researchPosition = DB::table('players')->where([['npc', 0],['points_research', '>' , $this->player->points_research]])->count() + 1;
