@@ -101,7 +101,7 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!empty($scienceBuildingsValue))
                 {
                     $embed['fields'][] = array(
-                                            'name' => config('stargate.emotes.research')." ".trans('generic.scienceBuildings', [], $this->player->lang),
+                                            'name' => config('stargate.emotes.researchBuilding')." ".trans('generic.scienceBuildings', [], $this->player->lang),
                                             'value' => $scienceBuildingsValue,
                                             'inline' => true
                                         );
