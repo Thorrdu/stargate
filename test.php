@@ -21,12 +21,21 @@ use App\Utility\TopUpdater;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
+
+
+$building = Building::find(19); //17 fer 18 or
+
+for($cpt = 1; $cpt < 15; $cpt++)
+{
+	print_r($building->getPrice($cpt));
+	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getConsumption($cpt)).' | '.round($building->getProductionE2PZ($cpt));
+}
 /*
 $players = Player::all();
 foreach ($players as $player) {
-    echo 'aaaaaaaabbbbbbbb////';
-    echo $player->name;
-}*/
+	$player->active_colony_id = $player->colonies[0]->id;
+	$player->save();
+}
 /*
 
 $newPlayer = new Player;
@@ -52,6 +61,7 @@ catch(\Exception $e)
 {
 	echo $e->getMessage();
 }*/
+
 /*
 try{
 	$player = Player::where('user_id', 125641223544373248)->firstOrFail();

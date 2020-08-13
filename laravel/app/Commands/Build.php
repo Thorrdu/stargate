@@ -281,8 +281,8 @@ class Build extends CommandHandler implements CommandInterface
                                     if($building->slug == 'asuranfactory')
                                     {
                                         if($currentLvl)
-                                            $productionString .= "Lvl ".$currentLvl." - ".round($building->getProductionE2PZ($currentLvl))."\n";
-                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProductionE2PZ($currentLvl+1));
+                                            $productionString .= "Lvl ".$currentLvl." - ".round(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl))."\n";
+                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl+1));
                                     }
                                     else
                                     {
