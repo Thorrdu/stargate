@@ -119,12 +119,12 @@ $discord->on('ready', function ($discord) {
 
     $discord->loop->addPeriodicTimer(60, function () use ($discord) {
         
-        echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
+        /*echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
         $game = $discord->factory(Game::class, [
             'name' => "!help | {$discord->guilds->count()} servers | {$discord->users->count()} users",
             'type' => 3
         ]);
-        $discord->updatePresence($game);
+        $discord->updatePresence($game);*/
 
         $dateNow = Carbon::now();
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->get();
@@ -334,8 +334,8 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);	
 
-    $discord->registerCommand('ban', function ($message, $args) {
-        $command = new Ban($message,$args);
+    $discord->registerCommand('ban', function ($message, $args) use($discord) {
+        $command = new Ban($message, $args, $discord);
         return $command->execute();
     },[
         'description' => trans('help.ban.description', [], 'fr'),

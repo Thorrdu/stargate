@@ -22,6 +22,8 @@ class Stargate extends CommandHandler implements CommandInterface
     public $tradeResources;
     public $maxTime;
     public $coordinateDestination;
+    public $attackMilitaries;
+    public $attackUnits;
 
     public function execute()
     {
@@ -189,7 +191,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $availableResource;
 
                                     $resFound = true;
-                                    $capacityNeeded += $qty;
+                                    if($resource != 'military')
+                                        $capacityNeeded += $qty;
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
 
                                 }
@@ -693,9 +696,187 @@ class Stargate extends CommandHandler implements CommandInterface
                 {
                     if(is_null($coordinate->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
+
+                    if($this->player->user_id != 125641223544373248)
+                        return 'Under Developement';     
+
+                    /*
+                    if($this->player->activeColony->military < 1000)
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->player->activeColony->military,2)], $this->player->lang);
+                    */
+
+                    /**
+                     * Voulez vous attacker machin depuis marchin avec:
+                     * 
+                     * detail
+                     * 
+                     * ppour un cout de: travelCost
+                     */
+                    $capacityNeeded = 0;
+                    $attackConfirmPower = "";
+                    $this->attackMilitaries = 0;
+                    $this->attackUnits = [];
+                    for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
+                    {
+                        if(isset($this->args[$cptRes+1]))
+                        {
+                            if((int)$this->args[$cptRes+1] > 0)
+                                $qty = $this->args[$cptRes+1];
+                            else
+                                return trans('generic.wrongQuantity', [], $this->player->lang);
+
+                            $resource = $this->args[$cptRes];
+                            $resFound = false;
+                            if(Str::startsWith('military',$resource))
+                            {
+                                $resource = 'military';
+                                $this->attackMilitaries = $qty;
+                                $attackConfirmPower .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
+                            }
+                            else
+                            {
+                                $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
+                                if(is_null($unit))
+                                    return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
+                                else
+                                {
+                                    $resFound = true;
+                                    $resource = $unit->slug;
+                                    $attackConfirmPower .= $unit->name.': '.number_format($qty)."\n";
+                                    $this->attackUnits[] = ['qty' => $qty, 'unit' => $unit];
+                                }
+                            }
+                        }
+                        else
+                            return trans('generic.wrongQuantity', [], $this->player->lang);
+                    }
+                    if($this->attackMilitaries < 100)
+                    {
+                        if($this->attackMilitaries < 100)
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->player->activeColony->military,2)], $this->player->lang);
+                    }
+
+                    $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
+                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                    $spyMessage = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
                         
-                    return 'Under developement';
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                            });
+                        });
+    
+                        $this->listner = function ($messageReaction) use ($travelCost,$sourceCoordinates,$destCoordinates,$malp){
+                            if($this->maxTime < time())
+                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+    
+                            if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                            {
+                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                {
+                                    try{
+
+
+
+                                        /** 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * Vérifier que le joueur à assez de ce qu'il indique 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * 
+                                         * */
+
+
+                                        $current = Carbon::now();
+                                        $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
+                                        if($current->diffInMinutes($lastClaim) > 720){
+                                            $this->coordinateDestination->colony->checkColony();
+                                            $this->coordinateDestination->load('colony');
+                                        }
+                                        $this->player->activeColony->E2PZ -= $travelCost;
+                                        $this->player->save();
+
+                                        $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
+                                        $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                                        $attackSentMessage = trans('stargate.attackSent', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+
+                                        $embed = [
+                                            'author' => [
+                                                'name' => $this->player->user_name,
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                            ],
+                                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
+                                            "title" => "Stargate",
+                                            "description" => $attackSentMessage,
+                                            'fields' => [
+                                            ],
+                                            'footer' => array(
+                                                'text'  => 'Stargate',
+                                            ),
+                                        ];
+                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, '', $embed);
+
+
+                                        /*CHECK LA DEFENSE => 1 point d attaque => 20 military */
+
+                                        /**Check resources plus haut */
+
+                                        /* RAPPORT D ATTAQUE 
+                                        
+                                        Pertes
+                                         (Nb Mili Défenseur)² / (Nb Mili Attaquant)
+
+                                         Gains
+                                          (Nb Mili Défenseur)/5
+
+
+                                          Pille jusqu'à 60M% selon capacités, proportionnel
+                                        */
+
+
+                                        /* RAPPORT DE DEFESSE 
+                                        Vous avez été attaqué
+                                        -N'ont rien pillé
+                                        =>vous perdez...
+                                        =>vous gagnez x transport/militaires
+                                        -pillé
+                                        =>Vous avez perdu x ressources / militaires 
+                                        */
+
+
+
+                                
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo $e->getMessage();
+                                    }
+
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('stargate.spyCancelled', [], $this->player->lang), null);
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                }
+                            }
+                        };
+                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                    });
                 }
+
             }
             catch(\Exception $e)
             {

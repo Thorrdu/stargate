@@ -26,7 +26,20 @@ class Ban extends CommandHandler implements CommandInterface
                     {
                         $playerToBan->ban = true;
                         $playerToBan->save();
+
+                        $userExist = $this->discord->users->filter(function ($value) use($playerToBan){
+                            return $value->id == $playerToBan->user_id;
+                        });
+                        if($userExist->count() > 0)
+                        {
+                            $foundUser = $userExist->first();
+                            $foundUser->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
+                        }
+
+
                         return trans('ban.banApplied', ['name' => $this->message->mentions[0]->username], $this->player->lang);
+
+
                     }
                 }
                 else
