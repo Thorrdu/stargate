@@ -13,7 +13,11 @@ class Ban extends CommandHandler implements CommandInterface
             if($this->message->author->id == 125641223544373248)
             {
                 echo PHP_EOL.'Ban';
+                $playerToBan = null;
                 $playerToBan = Player::where('user_id', $this->message->mentions[0]->id)->first();
+                if(is_null($playerToBan) && count($this->args) > 0)
+                    $playerToBan = Player::where('user_id', $this->args[0])->first();
+
                 if(!is_null($playerToBan))
                 {
                     if($playerToBan->ban)
