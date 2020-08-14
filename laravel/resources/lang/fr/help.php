@@ -1,6 +1,9 @@
 <?php
 //HELP FR
 return [
+    'usage' => 'Exemple(s)',
+    'mainHelp' => "Utilisez `!help [commande]` pour obtenir des informations supplémentaire comme un exemple d'utilisation.",
+
     'ban' => [
         'description' => 'Ban/Unban un joueur du bot.',
         'usage' => '!ban @mention'
@@ -18,11 +21,11 @@ return [
         'usage' => "!research\n!research [id/slug]\n!research [id/slug] confirm"
     ],
     'colony' => [
-        'description' => 'Affiche les informations sur votre colonie (Ressources, Bâtiments, Production, ... ).',
-        'usage' => '!colony'
+        'description' => 'Affiche les informations essentielles sur votre colonie (Ressources, Bâtiments, Production, ... ) et permet de changer de colonie.',
+        'usage' => "!colony\n!colony switch [numéro]"
     ],
     'craft' => [
-        'description' => "Construit des appareils tel que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
+        'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
         'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantité]"
     ],
     'galaxy' => [
@@ -59,24 +62,20 @@ return [
                         ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
         'usage' => "!profile\n!profile notification [on/off]"
     ],
-    'refresh' => [
-        'description' => '[Commande temporaire] Permet de forcer le recalcul de votre production.',
-        'usage' => '!refresh'
-    ],
     'start' => [
         'description' => "Créer votre profile Stargate afin de commencer votre aventure.",
         'usage' => '!start'
     ],
     'top' => [
         'description' => "Indique les meilleurs joueur par catégories.\n1 point = 1k ressources dépensées",
-        'usage' => "!top [general/building/research/military]"
+        'usage' => "!top [general/building/research/military/defence]"
     ],
     'uptime' => [
         'description' => "Indique la durée depuis laquelle le bot est en ligne.",
         'usage' => '!uptime'
     ],
     'vote' => [
-        'description' => "Permet de voter pour Stargate si vous apprécier le bot.",
+        'description' => "Si vous appréciez Stargate, vous pouvez voter pour ce bot avec le lien derrière cette commande.",
         'usage' => '!vote'
     ],
     'daily' => [

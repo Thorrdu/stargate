@@ -55,10 +55,7 @@ class CommandHandler
                 $this->player->save();
             }
         }
-        else
-        {
-            echo PHP_EOL.'pas de nom';
-        }
+
 
         if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
@@ -92,10 +89,7 @@ class CommandHandler
                 $this->player->save();
             }
         }
-        else
-        {
-            echo PHP_EOL.'pas de nom';
-        }
+
         $this->discord = $discord;
 
         /*

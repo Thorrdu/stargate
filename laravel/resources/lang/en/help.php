@@ -1,8 +1,10 @@
 <?php
-//HELP FR
+//HELP EN
 return [
+    'usage' => 'Usage',
+    'mainHelp' => 'Run !help command to get more information about a specific command.',
     'ban' => [
-        'description' => 'Ban/Unban un joueur du bot.',
+        'description' => 'Ban/Unban a player from the bot.',
         'usage' => '!ban @mention'
     ],
     'reminder' => [
@@ -10,77 +12,73 @@ return [
         'usage' => "!reminder [time] [reason]\nreminder list\n!reminder 1h20m5s go to sleep\n!reminder remove [id]"
     ],
     'build' => [
-        'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment.",
+        'description' => "List available buildings, Show building details or build/upgrade some building.",
         'usage' => "!build\n!build [id/slug]\n!build [id/slug] confirm"
     ],
     'research' => [
-        'description' => "Permet de lister les technologies disponible, d'afficher le détails d'une technologie ou encore rechercher/upgrade une technologie.",
+        'description' => "List available technologies, Show research details start/upgrade some research.",
         'usage' => "!research\n!research [id/slug]\n!research [id/slug] confirm"
     ],
     'colony' => [
-        'description' => 'Affiche les informations sur votre colonie (Ressources, Bâtiments, Production, ... ).',
-        'usage' => '!colony'
+        'description' => 'Display some esential information about your colony (Resources, Buildings, Production, ... ). Also allows to switch between your colonies.',
+        'usage' => "!colony\n!colony switch [number]"
     ],
     'craft' => [
-        'description' => "Construit des appareils tel que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
-        'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantité]"
+        'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
+        'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantity]"
     ],
     'galaxy' => [
-        'description' => "Affiche une vue de la galaxie"
-                        ."\nVotre zone de vision dépend de la technologie Informatique et Communication."
-                        ."\nVision: 2^Lvl systèmes visibles autour de vous."
-                        ."\nExemples: \nLvl 0: vous voyez votre système solaire."
-                        ."\nLvl 3: Vous voyez 8 systèmes autour du votre"
-                        ."\nLvl 8: Accès à la vision des autres galaxies",
+        'description' => "Display a view of the current galaxy"
+                        ."\nYour vision range depends on your Communication technology."
+                        ."\nVision: 2^Lvl visible systems around you."
+                        ."\nExamples: \nLvl 0: You only see your home system."
+                        ."\nLvl 3: You can see up to 8 systems around you."
+                        ."\nLvl 8: Vision to all galaxies",
         'usage' => '!galaxy'
     ],
     'stargate' => [
-        'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer",
-        'usage' => "!stargate\n!stargate explore [coordonées]\n!stargate spy [coordonées]\n!stargate trade [coordonées] [Ress1] [Qty1]"
+        'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players",
+        'usage' => "!stargate\n!stargate explore [coordinate]\n!stargate spy [coordinate]\n!stargate trade [coordinate] [Res1] [Qty1]\n!stargate colonize [coordinate]"
     ],
     'infos' => [
-        'description' => 'Affiche les informations sur Stargate Bot.',
+        'description' => 'Display information on Stargate Bot such as Author, support server invite, ....',
         'usage' => '!infos'
     ],
     'invite' => [
-        'description' => "Affiche le lien permettatn d'inviter Stargate sur votre serveur.",
+        'description' => "Display a link to invite Stargate on your server.",
         'usage' => '!invite'
     ],
     'lang' => [
-        'description' => 'Donne la possibilité de changer de langue.',
+        'description' => 'Change language.',
         'usage' => '!lang [fr/en]'
     ],
     'ping' => [
-        'description' => 'Indique la latence de Stargate Bot.',
+        'description' => 'Display Stargate latency.',
         'usage' => '!ping'
     ],
     'profile' => [
-        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote, colonies,..."
-                        ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
+        'description' => "Display information about your profile such as lang, vote number, colonies list, ..."
+                        ."\nAlso allows to manage your notification at the end of building/research",
         'usage' => "!profile\n!profile notification [on/off]"
     ],
-    'refresh' => [
-        'description' => '[Commande temporaire] Permet de forcer le recalcul de votre production.',
-        'usage' => '!refresh'
-    ],
     'start' => [
-        'description' => "Créer votre profile Stargate afin de commencer votre aventure.",
+        'description' => "The first commande to start your Stargate adventure. Use it to create your player profile",
         'usage' => '!start'
     ],
     'top' => [
-        'description' => 'Indique les meilleurs joueur par catégories.',
-        'usage' => "!top [general/building/research/military]"
+        'description' => 'Shows the best player for each category.',
+        'usage' => "!top [general/building/research/military/defence]"
     ],
     'uptime' => [
-        'description' => "Indique la durée depuis laquelle le bot est en ligne.",
+        'description' => "Display the Stargate uptime.",
         'usage' => '!uptime'
     ],
     'vote' => [
-        'description' => "Permet de voter pour Stargate si vous apprécier le bot.",
+        'description' => "If you appreciate Stargate, your can vote for him with the link behind this command every 12h.",
         'usage' => '!vote'
     ],
     'daily' => [
-        'description' => "Récompense quotidienne",
+        'description' => "Daily reward",
         'usage' => '!daily'
     ],
     'hourly' => [

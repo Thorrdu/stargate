@@ -21,40 +21,37 @@ class HelpCommand extends CommandHandler implements CommandInterface
     public $listner;
     public $commandList;
     public $prefix;
+    public $lang;
     
     public function execute()
     {
         if(!is_null($this->player))
         {
             if($this->player->ban)
-                return trans('generic.banned',[],$this->player->lang);
+                return trans('generic.banned',[],$this->lang);
 
             if($this->player->captcha)
-                return trans('generic.captchaMessage',[],$this->player->lang);
+                return trans('generic.captchaMessage',[],$this->lang);
+
+            $this->lang = $this->player->lang;
+        }
+        else
+        {
+            $this->lang = 'en';
         }
 
-        $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
 
         try{
+
+            $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
+
+            
             if(empty($this->args) || $this->args[0] == 'list')
             {
-                echo PHP_EOL.'Execute Build';
+                echo PHP_EOL.'Execute Help';
 
-                $embed = [
-                    'author' => [
-                        'name' => $this->discord->commandClientOptions['name'],
-                        'icon_url' => $this->discord->client->avatar
-                    ],
-                    "title" => $this->discord->commandClientOptions['name'].'\'s Help',
-                    "description" => $this->discord->commandClientOptions['description']."\n\nRun `{$this->prefix}help` command to get more information about a specific command.\n----------------------------",
-                    'fields' => [],
-                    'footer' => array(
-                        'text'  => $this->discord->commandClientOptions['name'],
-                    ),
-                ];
-                
                 $this->page = 1;
-                $this->maxPage = ceil(count($this->discord->commands)/5);
+                $this->maxPage = ceil((count($this->discord->commands)-1)/5);
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
@@ -125,10 +122,10 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 $embed = [
                     'author' => [
                         'name' => $this->discord->commandClientOptions['name'],
-                        'icon_url' => $this->discord->client->user->avatar
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                     ],
-                    "title" => $help['command'].'\'s Help',
-                    "description" => !empty($help['longDescription'])?$help['longDescription']:$help['description'],
+                    "title" => 'Help: '.$help['command'],
+                    "description" => !empty($help['longDescription'])?$help['longDescription']:trans('help.'.$help['command'].'.description', [], $this->lang),
                     'fields' => [],
                     'footer' => array(
                         'text'  => $this->discord->commandClientOptions['name'],
@@ -139,7 +136,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 {
                     $embed['fields'][] = array(
                         'name' => 'Usage',
-                        'value' => "``".$help['usage']."``",
+                        'value' => "``".trans('help.'.$help['command'].'.usage', [], $this->lang)."``",
                         'inline' => true
                     );
                 }
@@ -161,17 +158,6 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     );
                 }
     
-                if(!empty($help['subCommandsHelp']))
-                {
-                    foreach($help['subCommandsHelp'] as $subCommandHelp) {
-                        $embed['fields'][] = array(
-                            'name' => $subCommandHelp['command'],
-                            'value' => $subCommandHelp['description'],
-                            'inline' => true
-                        );
-                    }
-                }
-    
                 $this->message->channel->sendMessage('', false, $embed);
     
                 return;
@@ -189,34 +175,40 @@ class HelpCommand extends CommandHandler implements CommandInterface
 
     public function getPage()
     {
-        $displayList = $this->discord->commands->skip(5*($this->page -1))->take(5);
+        try{
 
-        $embed = [
-            'author' => [
-                'name' => $this->discord->commandClientOptions['name'],
-                'icon_url' => $this->discord->client->avatar
-            ],
-            "title" => $this->discord->commandClientOptions['name'].'\'s Help',
-            "description" => $this->discord->commandClientOptions['description']."\n\nRun `{$this->prefix}help` command to get more information about a specific command.\n----------------------------",
-            'fields' => [],
-            'footer' => array(
-                'text'  => $this->discord->commandClientOptions['name'].' - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
+            $displayList = array_slice($this->discord->commands,(5*($this->page -1))+1,5);
+            $embed = [
+                'author' => [
+                    'name' => $this->discord->commandClientOptions['name'],
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                ],
+                "title" => $this->discord->commandClientOptions['name'].' Help',
+                "description" => trans('help.mainHelp', [], $this->lang)."\n----------------------------",
+                'fields' => [],
+                'footer' => array(
+                    'text'  => $this->discord->commandClientOptions['name'].' - '.trans('generic.page', [], $this->lang).' '.$this->page.' / '.$this->maxPage,
 
-            ),
-        ];
+                ),
+            ];
 
-        foreach($displayList as $command)
-        {
-
-            $help = $command->getHelp($this->prefix);
-            $embed['fields'][] = array(
-                'name' => $help['command'],
-                'value' => $help['description'],
-                'inline' => true
-            );
-
+            foreach($displayList as $command)
+            {
+                $help = $command->getHelp($this->prefix);
+                if($help['command'] != 'help')
+                {
+                    $embed['fields'][] = array(
+                        'name' => $this->prefix.$help['command'],
+                        'value' => trans('help.'.$help['command'].'.description', [], $this->lang),
+                        'inline' => false
+                    );
+                }
+            }
         }
-
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
         return $embed;
     }
 
