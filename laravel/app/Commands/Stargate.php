@@ -191,7 +191,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $availableResource;
 
                                     $resFound = true;
-                                    if($resource != 'military')
+                                    if(!in_array($resource,array('military','E2PZ')))
                                         $capacityNeeded += $qty;
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
 
@@ -431,8 +431,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     try{
-
-
                                     $current = Carbon::now();
                                     $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
                                     if($current->diffInMinutes($lastClaim) > 720){
@@ -681,9 +679,24 @@ class Stargate extends CommandHandler implements CommandInterface
                         $this->player->activeColony->military -= 1000;
                         $this->player->activeColony->E2PZ -= $travelCost;
                         $this->player->activeColony->save();
-
+                        $destCoordinates = $this->coordinateDestination->humanCoordinates();
                         $this->player->addColony($this->coordinateDestination);
-                        return trans('stargate.colonizeDone', [], $this->player->lang);
+
+                        $embed = [
+                            'author' => [
+                                'name' => $this->player->user_name,
+                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                            ],
+                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/colonize.gif'],
+                            "title" => "Stargate",
+                            "description" => trans('stargate.colonizeDone', ['destination' => $destCoordinates], $this->player->lang),
+                            'fields' => [
+                            ],
+                            'footer' => array(
+                                'text'  => 'Stargate',
+                            ),
+                        ];
+                        $this->message->channel->editMessage($this->message->id,'',$embed);
                     }
                     else
                     {
@@ -700,18 +713,6 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->player->user_id != 125641223544373248)
                         return 'Under Developement';     
 
-                    /*
-                    if($this->player->activeColony->military < 1000)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->player->activeColony->military,2)], $this->player->lang);
-                    */
-
-                    /**
-                     * Voulez vous attacker machin depuis marchin avec:
-                     * 
-                     * detail
-                     * 
-                     * ppour un cout de: travelCost
-                     */
                     $capacityNeeded = 0;
                     $attackConfirmPower = "";
                     $this->attackMilitaries = 0;
@@ -736,7 +737,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             else
                             {
                                 $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
-                                if(is_null($unit))
+                                if(is_null($unit) || $unit->slug == 'malp')
                                     return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
                                 else
                                 {
@@ -744,6 +745,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $unit->slug;
                                     $attackConfirmPower .= $unit->name.': '.number_format($qty)."\n";
                                     $this->attackUnits[] = ['qty' => $qty, 'unit' => $unit];
+
+                                    $unitOwned = $this->player->activeColony->hasCraft($unit);
+                                    if(!$unitOwned)
+                                        return trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.$qty], $this->player->lang);
+                                    elseif($unitOwned < $qty)
+                                        return trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.($qty-$unitOwned)], $this->player->lang);
+                                    
                                 }
                             }
                         }
@@ -755,13 +763,28 @@ class Stargate extends CommandHandler implements CommandInterface
                         if($this->attackMilitaries < 100)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->player->activeColony->military,2)], $this->player->lang);
                     }
-
+                    
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                    $attackConfirmation = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'planetName' => $destCoordinates->colony->name, 'coordinateDestination' => $destCoordinates,'planetNameSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                        ],
+                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/manStanding.gif'],
+                        "title" => "Stargate",
+                        "description" => $attackConfirmation,
+                        'fields' => [
+                        ],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
 
                     $this->maxTime = time()+180;
-                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
+                    $this->message->channel->sendMessage('', false, $embed)->then(function ($messageSent) use($travelCost){
                         
                         $this->paginatorMessage = $messageSent;
                         $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
@@ -769,34 +792,40 @@ class Stargate extends CommandHandler implements CommandInterface
                             });
                         });
     
-                        $this->listner = function ($messageReaction) use ($travelCost,$sourceCoordinates,$destCoordinates,$malp){
+                        $this->listner = function ($messageReaction) use ($travelCost){
                             if($this->maxTime < time())
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
     
                             if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                             {
-                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                
+                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('stargate.attackCancelled', [], $this->player->lang), null);
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     try{
 
-
-
-                                        /** 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * Vérifier que le joueur à assez de ce qu'il indique 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * 
-                                         * */
-
+                                        foreach($this->attackUnits as $attackUnit)
+                                        {
+                                            $unit = $attackUnit['unit'];
+                                            $ownedUnits = $this->player->activeColony->hasCraft($unit);
+                                            if(!$ownedUnits)
+                                            {
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.number_format($attackUnit['qty'])], $this->player->lang));
+                                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                return;
+                                            }
+                                            elseif($ownedUnits < $attackUnit['qty'])
+                                            {
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => $unit->name.': '.number_format($attackUnit['unit']-$ownedUnits)], $this->player->lang));
+                                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                return;
+                                            }
+                                        }
 
                                         $current = Carbon::now();
                                         $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
@@ -809,14 +838,14 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                        $attackSentMessage = trans('stargate.attackSent', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                                        $attackSentMessage = trans('stargate.attackSent', ['planet' => $this->coordinateDestination->colony->name,'coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang);
 
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
                                                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                             ],
-                                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
+                                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/moveMoveMove.gif'],
                                             "title" => "Stargate",
                                             "description" => $attackSentMessage,
                                             'fields' => [
@@ -827,32 +856,221 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ];
                                         $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, '', $embed);
 
+                                        $defensesAttackPoint = 0;
 
-                                        /*CHECK LA DEFENSE => 1 point d attaque => 20 military */
-
-                                        /**Check resources plus haut */
-
-                                        /* RAPPORT D ATTAQUE 
+                                        $defenseMilitary = floor($this->coordinateDestination->colony->military);
+                                        if($defenseMilitary < 1)
+                                            $defenseMilitary = 1;
+                                        $defenseValue = $defenseMilitary + $defensesAttackPoint*20;
                                         
-                                        Pertes
-                                         (Nb Mili Défenseur)² / (Nb Mili Attaquant)
+                                        /*Pertes
+                                        (Nb Mili Défenseur)² / (Nb Mili Attaquant) */
+                                        $attackerLoosing = floor(pow($defenseValue,2) / $this->attackMilitaries);                                       
+                                        $attackerLooseString = "";
+                                        $attackerWinString = "";
+                                        $defenderLooseString = "";
+                                        $defenderWinString = "";
 
-                                         Gains
-                                          (Nb Mili Défenseur)/5
+                                        if( $attackerLoosing >= $this->attackMilitaries )
+                                        {
+                                            //LOST
+                                            $winState = false;
+                                            $defenderLostMilitaries = floor(pow($this->attackMilitaries,2) / $defenseValue);                                     
+                                            $stolenMilitaries = ceil($this->attackMilitaries/5);
+
+                                            if($defenderLostMilitaries <= $this->coordinateDestination->colony->military)
+                                                $this->coordinateDestination->colony->military -= $defenderLostMilitaries;
+                                            else
+                                            {
+                                                $defenderLostMilitaries = $this->coordinateDestination->colony->military - 1;
+                                                $this->coordinateDestination->colony->military = 1;
+                                            }
+                                            $this->coordinateDestination->colony->military += $stolenMilitaries;
+
+                                            $attackerLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($this->attackMilitaries)."\n";
+                                            $defenderWinString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->coordinateDestination->colony->player->lang).': '.number_format($stolenMilitaries)."\n";
+                                            $defenderLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->coordinateDestination->colony->player->lang).': '.number_format($defenderLostMilitaries)."\n";
+
+                                            $this->player->activeColony->military -= $this->attackMilitaries;
+                                            
+                                            foreach($this->attackUnits as $attackUnit)
+                                            {
+                                                $uniQtyStolen = ceil($attackUnit['qty']/5);
+                                                $defenderWinString .= $attackUnit['unit']->name.': '.number_format($uniQtyStolen)."\n";
+                                                $attackerLooseString .= $attackUnit['unit']->name.': '.number_format($attackUnit['qty'])."\n";
+
+                                                $unitAttackerExists = $this->coordinateDestination->colony->units->filter(function ($value) use($attackUnit){               
+                                                    return $value->id == $attackUnit['unit']->id;
+                                                });
+                                                $unitToUpdate = $unitAttackerExists->first();
+                                                $unitToUpdate->pivot->number -= $attackUnit['qty'];
+                                                $unitToUpdate->pivot->save();
+
+                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($attackUnit){               
+                                                    return $value->id == $attackUnit['unit']->id;
+                                                });
+                                                if($unitExists->count() > 0)
+                                                {
+                                                    $unitToUpdate = $unitExists->first();
+                                                    $unitToUpdate->pivot->number += $uniQtyStolen;
+                                                    $unitToUpdate->pivot->save();
+                                                }
+                                                else
+                                                {
+                                                    $this->coordinateDestination->colony->units()->attach([$attackUnit['unit']->id => ['number' => $uniQtyStolen]]);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //WIN
+                                            $winState = true;
+
+                                            if($attackerLoosing == 0)
+                                            {
+                                                //Aucune pertes
+                                                $attackerLooseString .= trans('stargate.noCasuality', [], $this->player->lang)."\n";
+                                            }
+                                            else
+                                            {
+                                                $this->player->activeColony->military -= $attackerLoosing;
+                                                $attackerLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang)."\n";
+                                            }
+
+                                            //GAINS Militaires
+                                            //(Nb Mili Défenseur)/5
+                                            if($defenseMilitary > 0)
+                                            {
+                                                $stolenMilitaries = ceil($defenseMilitary/5);
+                                                $defenderLostMilitaries = ceil($defenseMilitary*0.9);
+                                                $attackerWinString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($stolenMilitaries);
+                                                $defenderLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->coordinateDestination->colony->player->lang).': '.number_format($defenderLostMilitaries);
+
+                                                $this->coordinateDestination->colony->military -= $defenderLostMilitaries;
+                                                $this->player->activeColony->military -= $attackerLoosing; 
+                                                $this->player->activeColony->military += $stolenMilitaries;
+                                            }
+
+                                            $totalCapacity = 0;
+                                            foreach($this->attackUnits as $attackUnit)
+                                            {      
+                                                if(!is_null($attackUnit['unit']->capacity))                                          
+                                                    $totalCapacity += $attackUnit['unit']->capacity * $attackUnit['qty'];
+                                            }
+
+                                            if($totalCapacity > 0)
+                                            {
+                                                $totalResource = 0;
+                                                foreach(config('stargate.resources') as $resource)
+                                                {
+                                                    $totalResource += $this->coordinateDestination->colony->$resource;
+                                                }
+                                                $claimAll = true;
+                                                if($totalCapacity >= ($totalResource*0.6))
+                                                    $claimAll = false;
+
+                                                foreach(config('stargate.resources') as $resource)
+                                                {
+                                                    $ratio = $this->coordinateDestination->colony->$resource / $totalResource;
+                                                    $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.6);
+
+                                                    $claimed = 0;
+                                                    if($claimAll)
+                                                        $claimed = $maxClaimable;
+                                                    else
+                                                        $claimed = $totalCapacity*$ratio;
+                                                    
+                                                    if($claimed > 0)
+                                                    {
+                                                        $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
+                                                        $this->player->activeColony->$resource += $claimed;
+                                                    }
+                                                }
+
+                                            }
+
+                                            /***
+                                             * 
+                                             * 
+                                            //La moitié des def en moins
+
+                                             * 
+                                             * 
+                                             */
 
 
-                                          Pille jusqu'à 60M% selon capacités, proportionnel
-                                        */
+                                        }
+
+                                        $this->coordinateDestination->colony->save();
+                                        $this->player->activeColony->save();;
 
 
-                                        /* RAPPORT DE DEFESSE 
-                                        Vous avez été attaqué
-                                        -N'ont rien pillé
-                                        =>vous perdez...
-                                        =>vous gagnez x transport/militaires
-                                        -pillé
-                                        =>Vous avez perdu x ressources / militaires 
-                                        */
+                                        if($winState)
+                                        {
+                                            $attackerReportString = trans('stargate.attackerWinReport', [
+                                                ['destination' => $destCoordinates],
+                                                ['planetName' => $this->coordinateDestination->colony->name],
+                                                ['player' => $this->coordinateDestination->colony->player->user_name],
+                                                ['loostTroops' => $attackerLooseString],
+                                                ['raidReward' => $attackerWinString],
+                                            ], $this->player->lang);
+
+                                            $defenderReportString = trans('stargate.defenderLostReport', [
+                                                ['destination' => $destCoordinates],
+                                                ['planetName' => $this->coordinateDestination->colony->name],
+                                                ['player' => $this->coordinateDestination->colony->player->user_name],
+                                                ['loostTroops' => $defenderLooseString],
+                                            ], $this->coordinateDestination->colony->player->lang);
+                                        }
+                                        else
+                                        {
+                                            $attackerReportString = trans('stargate.attackerLostReport', [
+                                                ['destination' => $destCoordinates],
+                                                ['planetName' => $this->coordinateDestination->colony->name],
+                                                ['player' => $this->coordinateDestination->colony->player->user_name],
+                                                ['loostTroops' => $attackerLooseString],
+                                            ], $this->player->lang);
+
+                                            $defenderReportString = trans('stargate.defenderWinReport', [
+                                                ['destination' => $destCoordinates],
+                                                ['planetName' => $this->coordinateDestination->colony->name],
+                                                ['player' => $this->coordinateDestination->colony->player->user_name],
+                                                ['loostTroops' => $defenderLooseString],
+                                                ['raidReward' => $defenderWinString],
+                                            ], $this->coordinateDestination->colony->player->lang);
+                                        }
+
+                                        $embed = [
+                                            'author' => [
+                                                'name' => $this->player->user_name,
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                            ],
+                                            //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/incoming.gif'],
+                                            "title" => "Stargate",
+                                            "description" => $attackerReportString,
+                                            'fields' => [
+                                            ],
+                                            'footer' => array(
+                                                'text'  => 'Stargate',
+                                            ),
+                                        ];
+
+
+                                        $embed = [
+                                            'author' => [
+                                                'name' => $this->player->user_name,
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                            ],
+                                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/incoming.gif'],
+                                            "title" => "Stargate",
+                                            "description" => $defenderReportString,
+                                            'fields' => [
+                                            ],
+                                            'footer' => array(
+                                                'text'  => 'Stargate',
+                                            ),
+                                        ];
+                    
 
 
 

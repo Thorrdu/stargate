@@ -51,7 +51,9 @@ class Research extends CommandHandler implements CommandInterface
                         $this->paginatorMessage->react('⏪')->then(function(){ 
                             $this->paginatorMessage->react('◀️')->then(function(){ 
                                 $this->paginatorMessage->react('▶️')->then(function(){ 
-                                    $this->paginatorMessage->react('⏩');
+                                    $this->paginatorMessage->react('⏩')->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                    });
                                 });
                             });
                         });
@@ -62,7 +64,12 @@ class Research extends CommandHandler implements CommandInterface
     
                             if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                             {
-                                if($messageReaction->emoji->name == '⏪')
+                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                }
+                                elseif($messageReaction->emoji->name == '⏪')
                                 {
                                     $this->page = 1;
                                     $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());

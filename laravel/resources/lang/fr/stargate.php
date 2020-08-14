@@ -45,4 +45,28 @@ return [
     'defenses' => 'Défenses',
     'emptyDefenses' => 'Aucune défense',
     'buildings' => 'Bâtiments',
+    "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie.\n(Liste présente dans `!p`).",
+    "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
+    "neverExploredWorld" => "Monde inhabité.",
+    "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] (:player) depuis :planetNameSource [:coordinateSource]\n".
+                            "Troupes:\n:militaryUnits".
+                            "\nCoût: :consumption",
+    "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination] (:player).\nUn rapport arrivera sous peu.",
+    "attackCancelled" => "Attaque annulée",
+    "attackerWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+                            "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
+                            "Bilan des pertes:\n:loostTroops\n".
+                            "Bilan des gains:\n:raidReward",
+    "attackerLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+                            "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
+                            "Bilan des pertes:\n:loostTroops",
+    "defenderWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+                            "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
+                            "Fort heureusement, vos troupes ont peu contenir l'attaque et repousser l'envahisseur.\n\n".
+                            "Bilan des pertes:\n:loostTroops".
+                            "Bilan des gains:\n:raidReward",
+    "defenderLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+                            "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
+                            "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
+                            "Bilan des pertes:\n:loostTroops",
 ];

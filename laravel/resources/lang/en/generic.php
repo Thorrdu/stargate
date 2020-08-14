@@ -48,4 +48,5 @@ return [
     "researchUnlocked" => "Your scientists have discovered a new technology: **:name**",
     "captchaLink" => "To pass the anti-cheat security please validate the captcha at the adress: :link",
     "captchaMessage" => "**Active captcha**, veuillez vérifier vos messages privés.", 
+    "closedList" => "Closed list",
 ];
