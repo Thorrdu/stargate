@@ -60,7 +60,10 @@ class Research extends CommandHandler implements CommandInterface
     
                         $this->listner = function ($messageReaction) {
                             if($this->maxTime < time())
+                            {
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                            }
     
                             if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
                             {

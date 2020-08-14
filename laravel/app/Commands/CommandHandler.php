@@ -40,12 +40,26 @@ class CommandHandler
 
         $this->message = $message;
         $this->args = $args;
+
         $this->player = Player::where('user_id', $message->author->id)->first();
-        if($this->player->user_name != $message->author->user_name)
+
+        if(!is_null($this->message->author->user_name) && !is_null($this->player))
         {
-            $this->player->user_name = $message->author->user_name;
-            $this->player->save();
+            echo PHP_EOL.'News name=: '.$this->message->author->user_name;
+
+            if($this->player->user_name != $this->message->author->user_name)
+            {
+                echo PHP_EOL.'DIFFERENT';
+
+                $this->player->user_name = $this->message->author->user_name;
+                $this->player->save();
+            }
         }
+        else
+        {
+            echo PHP_EOL.'pas de nom';
+        }
+
         if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
         if(!is_null($this->player) && $this->player->ban)
@@ -66,6 +80,22 @@ class CommandHandler
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
+        if(!is_null($this->message->author->user_name) && !is_null($this->player))
+        {
+            echo PHP_EOL.'News name=: '.$this->message->author->user_name;
+
+            if($this->player->user_name != $this->message->author->user_name)
+            {
+                echo PHP_EOL.'DIFFERENT';
+
+                $this->player->user_name = $this->message->author->user_name;
+                $this->player->save();
+            }
+        }
+        else
+        {
+            echo PHP_EOL.'pas de nom';
+        }
         $this->discord = $discord;
 
         /*
@@ -87,6 +117,9 @@ class CommandHandler
                 $log->player_id = $this->player->id;
                 $log->command_type = str_replace("App\Commands\\",'',get_class($this));
                 $log->command_raw = $this->message->content;
+                if($this->player->captcha)
+                    $log->captcha_flag = true;
+                
                 if(is_null($this->message->nonce) && $this->discord)
                 {
                     $log->command_flag = true;

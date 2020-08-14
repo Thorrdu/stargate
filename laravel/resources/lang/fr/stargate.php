@@ -69,4 +69,6 @@ return [
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
                             "Bilan des pertes:\n:loostTroops",
+    "noCasuality" => "Aucune perte à déplorer",
+    "playerOwned" => "Appartient à un joueur",
 ];

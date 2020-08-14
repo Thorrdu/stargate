@@ -20,6 +20,7 @@ class CreateCommandLogsTable extends Migration
             $table->string('command_type', 50);
             $table->string('command_raw', 255);
             $table->boolean('command_flag')->default(false);
+            $table->boolean('captcha_flag')->default(false);
             $table->timestamps();
         });
     }

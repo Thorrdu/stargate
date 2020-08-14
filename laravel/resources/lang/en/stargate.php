@@ -59,14 +59,16 @@ return [
                             "Bilan des gains:\n:raidReward",
     "attackerLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
                             "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
-                            "Bilan des pertes:\n:loostTroops",
+                            "Bilan des pertes:\n:loostTroops\n",
     "defenderWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Fort heureusement, vos troupes ont peu contenir l'attaque et repousser l'envahisseur.\n\n".
-                            "Bilan des pertes:\n:loostTroops".
+                            "Bilan des pertes:\n:loostTroops\n".
                             "Bilan des gains:\n:raidReward",
     "defenderLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
-                            "Bilan des pertes:\n:loostTroops",
+                            "Bilan des pertes:\n:loostTroops\n",
+    "noCasuality" => "No casualties",
+    "playerOwned" => "Already owned by a player",
 ];

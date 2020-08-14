@@ -11,6 +11,8 @@ class Ping extends CommandHandler implements CommandInterface
             $latency = ($messageSent->timestamp->timestamp.$messageSent->timestamp->milli) - ($this->message->timestamp->timestamp.$this->message->timestamp->milli);
             if($latency < 0)
                 $latency = 0;
+            if(abs($latency) > 100000)
+                $$latency = 'Error';
             $messageSent->channel->editMessage($messageSent->id, 'Pong! Latency: '.$latency.'ms');
         });
     }

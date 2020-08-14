@@ -386,11 +386,17 @@ $discord->on('ready', function ($discord) {
 		'usage' => trans('help.ping.usage', [], 'fr'),
         'cooldown' => 4
     ]);	
+
+
+
     /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
-        return 'test received';
-        $command = new Paginator($message,$args,$discord);
-        return $command->execute();
+        $replyMess = "";
+        foreach ($discord->guilds as $guild) {
+            $replyMess .= "\n" . $guild->name." :: ".count($guild->members)." members";;
+        }    
+        echo $replyMess;
+        return $replyMess;
     },[
         'description' => 'Commande test à tout faire',
 		'usage' => 'test',

@@ -36,7 +36,7 @@ class Colony extends CommandHandler implements CommandInterface
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
                 }         
-
+                
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
 
@@ -248,7 +248,7 @@ class Colony extends CommandHandler implements CommandInterface
                         'inline' => true
                     );
                 }
-
+                
                 $this->message->channel->sendMessage('', false, $embed);
 
             }
