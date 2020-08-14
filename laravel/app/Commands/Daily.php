@@ -49,9 +49,9 @@ class Daily extends CommandHandler implements CommandInterface
                     $randomRes = rand(1,100);                   
                     if($randomRes < 45)
                         $resType = 'iron';
-                    elseif($randomRes < 65)
+                    elseif($randomRes < 70)
                         $resType = 'gold';
-                    elseif($randomRes < 80)
+                    elseif($randomRes < 85)
                         $resType = 'quartz';
                     else
                         $resType = 'naqahdah';

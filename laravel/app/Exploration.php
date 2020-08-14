@@ -157,7 +157,7 @@ class Exploration extends Model
                 $resType = 'E2PZ';
             elseif($randomRes < 50)
                 $resType = 'iron';
-            elseif($randomRes < 70)
+            elseif($randomRes < 75)
                 $resType = 'gold';
             elseif($randomRes < 90)
                 $resType = 'quartz';

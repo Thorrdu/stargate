@@ -76,7 +76,7 @@ use App\Reminder;
 use App\Exploration;
 use Illuminate\Support\Str;
 
-use App\Commands\{Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand};
+use App\Commands\{HelpCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -91,7 +91,8 @@ $upTimeStart = Carbon::now();
 
 $discord = new DiscordCommandClient([
 	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
-	'prefix' => '!'
+    'prefix' => '!',
+    'defaultHelpCommand' => false
 ]);
 
 $discord->on('ready', function ($discord) {
@@ -157,6 +158,14 @@ $discord->on('ready', function ($discord) {
             }
         }
     });
+
+    $this->registerCommand('help', function ($message, $args) use($discord){
+        $command = new HelpCommand($message, $args, $discord);
+        return $command->execute();
+    }, [
+        'description' => 'Provides a list of commands available.',
+        'usage'       => '[command]',
+    ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
         $command = new Start($message,$args,$discord);
