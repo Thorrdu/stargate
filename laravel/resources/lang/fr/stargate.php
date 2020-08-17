@@ -1,11 +1,13 @@
 <?php
 //STARGATE FR
 return [
-    "askBaseParameter" => "Actions possibles:\n".
-                          "explore\n".
-                          "trade\n".
-                          "spy\n".
-                          "attack\n",
+    "askBaseParameter" => "Available Actions:\n".
+                            "explore (!stargate explore [coordonées])\n".
+                            "colonize (!stargate colonize [coordonées])\n".
+                            "move (!stargate move [NuméroDeColonie] [Res1] [Qté1])\n".
+                            "trade (!stargate move [coordonées] [Res1] [Qté1])\n".
+                            "spy (!stargate spy [coordonées])\n".
+                            "attack (!stargate attack [coordonées] military [Qté] [Unit1] [Qté1])\n",
     "unknownCoordinates" => "Coordonées inconnues",
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...",
     "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonées.",
@@ -51,7 +53,7 @@ return [
     'defences' => 'Défenses',
     'emptydefences' => 'Aucune défense',
     'buildings' => 'Bâtiments',
-    "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie.\n(Liste présente dans `!p`).",
+    "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie.\n(Liste présente dans `!profile`).",
     "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
     "neverExploredWorld" => "Monde inhabité.",
     "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] (:player) depuis :planetNameSource [:coordinateSource]\n".

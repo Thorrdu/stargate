@@ -2,10 +2,12 @@
 //STARGATE EN
 return [
     "askBaseParameter" => "Available Actions:\n".
-                          "explore\n".
-                          "trade\n".
-                          "spy\n".
-                          "attack\n",
+                          "explore (!stargate explore [coordinates])\n".
+                          "colonize (!stargate colonize [coordinates])\n".
+                          "move (!stargate move [colonyNumber] [Res1] [Qty1])\n".
+                          "trade (!stargate move [coordinates] [Res1] [Qty1])\n".
+                          "spy (!stargate spy [coordinates])\n".
+                          "attack (!stargate attack [coordinates] military [Qty] [Unit1] [Qty1])\n",
     "unknownCoordinates" => "Unknown Coordinates",
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...",
     "failedDialing" => "The dialing to this planet failed. There is no gate to contact on those coordinates.",
@@ -51,7 +53,7 @@ return [
     'defences' => 'Defences',
     'emptydefences' => 'No defence',
     'buildings' => 'Buildings',
-    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies.\n(The list can be seen in `!p`).",
+    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies.\n(The list can be seen in `!profile`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
     "neverExploredWorld" => "Empty planet.",
     "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] (:player) from :planetNameSource [:coordinateSource]\n".
