@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Utility\TopUpdater;
 use App\Coordinate;
+use App\Trades;
+use App\GateFight;
 
 class Player extends Model
 {
@@ -117,6 +119,33 @@ class Player extends Model
         }
     }
 
+    public function removeColony(Colony $colony)
+    {
+        $colony = $this->player->colonies[(int)$this->args[1]-1];
+        $colony->buildings()->detach();
+        $colony->units()->detach();
+
+        $trades = Trade::where('coordinate_source_id', $colony->coordinates->id)->orWhere('coordinate_destination_id', $colony->coordinates->id)->get();
+        foreach($trades as $trade)
+        {
+            foreach($trades->tradeResources as $tradeResource)
+                $tradeResource->delete();
+            $trade->delete();
+        }
+        $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
+        foreach($gateFigthts as $gateFight)
+            $gateFight->delete();
+        
+        if($this->active_colony_id == $colony->id)
+        {
+            $this->active_colony_id = $this->colonies[0]->id;
+            $this->save();
+        }
+        $colony->coordinate->colony_id = null;
+        $colony->coordinate->save();
+        $colony->delete();
+    }
+
     public function hasTechnology(Technology $technology)
     {
         try{
@@ -168,7 +197,7 @@ class Player extends Model
         {
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-            $reminder->reminder = "**Lvl ".$wantedLvl." - ".$technology->name."** ".trans("reminder.isDone", [], $this->lang);
+            $reminder->reminder = "**Lvl ".$wantedLvl." - ".config('research.'.$technology->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->lang);
             $reminder->player_id = $this->id;
             $reminder->save();
             //$this->player->reminders()->attach($reminder->id);
@@ -212,7 +241,11 @@ class Player extends Model
 
             $this->active_technology_id = null;
             $this->active_technology_end = null;
-            $this->activeColony->calcProd();
+            foreach($this->colonies as $colony)
+            {
+                $colony->calcProd();
+                $colony->save();
+            }
             //$this->activeColony->saveWithoutEvents();
             $this->save();
         }
@@ -220,5 +253,28 @@ class Player extends Model
         {
             echo $e->getMessage();
         }
-    }    
+    }
+    
+    public function isWeakOrStrong(Player $player2)
+    {
+        config('stargate.gateFight.StrongWeak');
+        
+        if($this->points_total > config('stargate.gateFight.StrongWeak') && $player2->points_total > config('stargate.gateFight.StrongWeak'))
+            return '';
+        elseif($player2->points_total > ($this->points_total*2))
+            return '[S] ';
+        elseif($player2->points_total < ($this->points_total/2))
+            return '[W] ';
+        else
+            return '';
+    }
+    public function isRaidable(Player $player2)
+    {  
+        if($this->points_total > config('stargate.gateFight.StrongWeak') && $player2->points_total > config('stargate.gateFight.StrongWeak'))
+            return true;
+        elseif($player2->points_total > ($this->points_total*2) || $player2->points_total < ($this->points_total/2))
+            return false;
+        else
+            return true;
+    }
 }

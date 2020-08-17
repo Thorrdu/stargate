@@ -103,14 +103,14 @@ class Exploration extends Model
             $this->coordinateSource->colony->military += 1000;
             $this->coordinateSource->colony->save();
 
-            return trans('stargate.exploreSucessCraftTip', ['name' => $randomUnit->name, 'lvlRequirement' => $randomRequirement->pivot->level, 'nameRequirement' => $randomRequirement->name, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreSucessCraftTip', ['name' => config('craft.'.$randomUnit->slug.'.name', [], $this->player->lang), 'lvlRequirement' => $randomRequirement->pivot->level, 'nameRequirement' => $randomRequirement->name, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
         elseif($randomEvent <= 62)
         {
             //Craft aléatoire
             $randomUnit = Unit::all()->random();
             $resValue = rand(1,4);
-            $resourceString = ucfirst($randomUnit->name).': '.number_format($resValue);
+            $resourceString = ucfirst(config('craft.'.$randomUnit->slug.'.name', [], $this->player->lang)).': '.number_format($resValue);
 
             $this->exploration_result = true;
             $this->exploration_outcome = 'Unit';
@@ -129,7 +129,7 @@ class Exploration extends Model
             }
             else
             {
-                $this->coordinateSource->colony->units()->attach([$randomUnit->id => ['number' => 1]]);
+                $this->coordinateSource->colony->units()->attach([$randomUnit->id => ['number' => $resValue]]);
             }
 
             $this->coordinateSource->colony->military += 1000;
@@ -139,7 +139,7 @@ class Exploration extends Model
         }
         /*elseif($randomEvent <= 60)
         {
-            //Defense TIP
+            //defence TIP
             return trans('stargate.exploreSucess', ['tip' => ''], $this->player->lang);
             //Vos scientifiques ont trouvé l'information suivante en explorant la planète [2:10:4]
         }

@@ -36,6 +36,24 @@ class Colony extends CommandHandler implements CommandInterface
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
                 }         
+
+                if(count($this->args) >= 2 && Str::startsWith('remove',$this->args[0]))
+                {
+                    if((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count())
+                    {
+                        $colonyAction = $this->args[1];
+                        if($colonyAction == 1)
+                            return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
+                        else
+                        {
+                            $this->player->removeColony($this->player->colonies[(int)$this->args[1]-1]);
+                            return trans('colony.colonyRemoved', [], $this->player->lang);
+                        }
+
+                    }
+                    else
+                        return trans('colony.UnknownColony', [], $this->player->lang);
+                }     
                 
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
@@ -155,7 +173,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if(!empty($technologyValue))
                         $technologyValue .= "\n";
-                    $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.$technology->name;
+                    $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang);
                 }
                 if(!empty($technologyValue))
                 {
@@ -171,11 +189,25 @@ class Colony extends CommandHandler implements CommandInterface
                     $unitsString = '';
                     foreach($this->player->activeColony->units as $unit)
                     {
-                        $unitsString .= number_format($unit->pivot->number).' '.$unit->name."\n";
+                        $unitsString .= number_format($unit->pivot->number).' '.config('craft.'.$unit->slug.'.name', [], $this->player->lang)."\n";
                     }
                     $embed['fields'][] = array(
                                             'name' => trans('generic.units', [], $this->player->lang),
                                             'value' => $unitsString,
+                                            'inline' => true
+                                        );
+                }
+
+                if(count($this->player->activeColony->defences) > 0)
+                {
+                    $defenceString = '';
+                    foreach($this->player->activeColony->defences as $defence)
+                    {
+                        $defenceString .= number_format($defence->pivot->number).' '.config('defence.'.$defence->name.'.name', [], $this->player->lang)."\n";
+                    }
+                    $embed['fields'][] = array(
+                                            'name' => trans('generic.defences', [], $this->player->lang),
+                                            'value' => $defenceString,
                                             'inline' => true
                                         );
                 }
@@ -212,7 +244,7 @@ class Colony extends CommandHandler implements CommandInterface
                         $currentLevel = 0;
                     $embed['fields'][] = array(
                         'name' => trans('colony.technologyUnderResearch', [], $this->player->lang),
-                        'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activeTechnology->name."\n".$buildingTime,
+                        'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activetechnology->slug."\n".$buildingTime,
                         'inline' => true
                     );
                 }
@@ -231,6 +263,38 @@ class Colony extends CommandHandler implements CommandInterface
                         $queueString .= $queuedUnit->name." - ".$buildingTime."\n";    
                     }
                     if($this->player->activeColony->craftQueues->count() > 5)
+                    {
+                        $lastQueue = $this->player->activeColony->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= "... - ".$buildingTime."\n";
+                    }
+
+                    $embed['fields'][] = array(
+                        'name' => trans('colony.craftQueue', [], $this->player->lang),
+                        'value' => $queueString,
+                        'inline' => true
+                    );
+                }
+
+                if($this->player->activeColony->defenceQueues->count() > 0){
+                    $queueString = "";
+                    $queuedDefences = $this->player->activeColony->defenceQueues()->limit(5)->get();
+                    foreach($queuedDefences as $queuedDefence)
+                    {
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedDefence->pivot->craft_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= $queuedDefence->name." - ".$buildingTime."\n";    
+                    }
+                    if($this->player->activeColony->defenceQueues->count() > 5)
                     {
                         $lastQueue = $this->player->activeColony->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
                         $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);

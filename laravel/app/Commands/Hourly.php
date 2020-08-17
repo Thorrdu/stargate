@@ -69,8 +69,17 @@ class Hourly extends CommandHandler implements CommandInterface
                     if($comboReset)
                         $this->player->hr_combo = 1;
                     
-                    $displayMultiplier = ($this->player->hr_combo-1) * 10;
-                    $multiplier = 1+($displayMultiplier / 100);
+                    if($this->player->hr_combo > config('maxHourly'))
+                    {
+                        $displayMultiplier = config('maxHourly') * 10;
+                        $multiplier = 1+($displayMultiplier / 100);
+                    }
+                    else
+                    {
+                        $displayMultiplier = ($this->player->hr_combo-1) * 10;
+                        $multiplier = 1+($displayMultiplier / 100);
+                    }
+
                     
                     if($this->player->hr_combo > $this->player->hr_max_combo)
                         $this->player->hr_max_combo = $this->player->hr_combo;

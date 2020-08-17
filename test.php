@@ -14,6 +14,7 @@ use App\Building;
 use App\Player;
 use App\Colony;
 use App\Technology;
+use App\Defence;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
 
@@ -21,15 +22,31 @@ use App\Utility\TopUpdater;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Config;
+/*
+$newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
 
+Config::set('stargate.gateFight.StrongWeak', $newLimit);
 
+echo config('stargate.gateFight.StrongWeak');
+die();*/
+$buildings = Defence::all();
+foreach($buildings as $buidling)
+{
+	echo PHP_EOL."'$buidling->slug' => [
+			'name' => \"{$buidling->name}\",
+			'description' => \"{$buidling->description}\",
+	],";
+} 
+die();
+/*
 $building = Building::find(19); //17 fer 18 or
 
 for($cpt = 1; $cpt < 15; $cpt++)
 {
 	print_r($building->getPrice($cpt));
 	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getConsumption($cpt)).' | '.round($building->getProductionE2PZ($cpt));
-}
+}*/
 /*
 $players = Player::all();
 foreach ($players as $player) {

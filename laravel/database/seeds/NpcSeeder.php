@@ -59,7 +59,7 @@ class NpcSeeder extends Seeder
                 4 => rand(4,7),
                 5 => rand(3,5),
 
-                /**Usine, labo, militaruy, chantier, defense*/
+                /**Usine, labo, militaruy, chantier, defence*/
                 6 => 5,
                 7 => 5,
                 8 => rand(2,5),

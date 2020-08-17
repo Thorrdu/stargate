@@ -63,7 +63,7 @@ try{
 
 	foreach($player->activeColony->buildings as $building)
 	{
-		echo PHP_EOL.$building->name.' --> '.$building->pivot->level;
+		echo PHP_EOL.trans('building.'.$building->slug.'.name', [], $this->player->lang).' --> '.$building->pivot->level;
 	}
 	echo PHP_EOL.'Prod Iron: '.$player->activeColony->production_iron;
 	echo PHP_EOL.'Prod Gold: '.$player->activeColony->production_gold;

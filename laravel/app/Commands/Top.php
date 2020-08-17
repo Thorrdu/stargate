@@ -48,6 +48,10 @@ class Top extends CommandHandler implements CommandInterface
                     $this->topType = 'military';
                     $this->playerList = Player::all()->where('npc', 0)->sortByDesc('points_military');   
                 }   
+                elseif(Str::startsWith('defence', $this->args[0])){
+                    $this->topType = 'defence';
+                    $this->playerList = Player::all()->where('npc', 0)->sortByDesc('points_defence');   
+                }   
                 else
                     return trans('top.choice', [], $this->player->lang);
                   

@@ -20,7 +20,7 @@ class GalaxySeeder extends Seeder
         {
             for($cptSys = 1; $cptSys <= $maxSys; $cptSys++)
             {
-                $randPlanets = rand(3,$maxPlanet);
+                $randPlanets = 10;//rand(3,$maxPlanet);
                 for($cptPlanet = 1; $cptPlanet <= $randPlanets; $cptPlanet++)
                 {
                     DB::table('coordinates')->insert([

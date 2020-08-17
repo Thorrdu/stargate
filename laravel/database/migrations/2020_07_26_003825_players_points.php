@@ -18,6 +18,7 @@ class PlayersPoints extends Migration
             $table->integer('points_building')->length(10)->unsigned()->default(0);
             $table->integer('points_research')->length(10)->unsigned()->default(0);
             $table->integer('points_military')->length(10)->unsigned()->default(0);
+            $table->integer('points_defence')->length(10)->unsigned()->default(0);
             $table->timestamp('last_top_update')->nullable();
         });
     }

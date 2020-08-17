@@ -76,7 +76,7 @@ use App\Reminder;
 use App\Exploration;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand};
+use App\Commands\{HelpCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -85,6 +85,9 @@ use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+
 
 global $upTimeStart;
 $upTimeStart = Carbon::now();
@@ -104,6 +107,9 @@ $discord->on('ready', function ($discord) {
     ]);
     $discord->updatePresence($game);
 
+    $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
+    Config::set('stargate.gateFight.StrongWeak', $newLimit);
+
 	// Listen for messages.
 	$discord->on('message', function ($message) {
         if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
@@ -117,6 +123,12 @@ $discord->on('ready', function ($discord) {
         foreach($players as $player)
             TopUpdater::update($player);
     });
+
+    $discord->loop->addPeriodicTimer(3600, function () use ($discord) {
+        $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
+        Config::set('stargate.gateFight.StrongWeak', $newLimit);
+    });
+
 
     $discord->loop->addPeriodicTimer(60, function () use ($discord) {
         
@@ -165,6 +177,8 @@ $discord->on('ready', function ($discord) {
     }, [
         'description' => 'Provides a list of commands available.',
         'usage'       => '[command]',
+        'aliases' => array('h','he'),
+        'cooldown' => 2
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -205,6 +219,16 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.craft.description', [], 'fr'),
 		'usage' => trans('help.craft.usage', [], 'fr'),
 		'aliases' => array('cr','cra','craf'),
+        'cooldown' => 4
+    ]);
+    
+    $discord->registerCommand('DefenceCommand', function ($message, $args) use($discord){
+        $command = new DefenceCommand($message, $args, $discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.defence.description', [], 'fr'),
+		'usage' => trans('help.defence.usage', [], 'fr'),
+		'aliases' => array('d','de','def'),
         'cooldown' => 4
     ]);	
 

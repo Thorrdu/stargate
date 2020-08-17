@@ -145,7 +145,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.7,
             'building_bonus' => 0.9,
             'crafting_bonus' => 0.9,
-
+            'ship_bonus' => 0.9,
         ]);
 
         DB::table('buildings')->insert([
@@ -174,7 +174,7 @@ class DatabaseSeeder extends Seeder
             'id' => 8,
             'name' => 'Centre de recrutement',
             'slug' => Str::slug('military'),
-            'description' => "Vous permet de recruter les autoctone et en faire des militaires capables de vous aider au combat ou en exploration.",
+            'description' => "Vous permet de recruter les autochtones et en faire des militaires capables de vous aider au combat ou en exploration.",
             'type' => 'Military',
             'iron' => 500,
             'gold' => 500,
@@ -350,7 +350,7 @@ class DatabaseSeeder extends Seeder
         DB::table('buildings')->insert([
             'id' => 15,
             'name' => 'Centre de défense',
-            'slug' => Str::slug('defense'),
+            'slug' => Str::slug('defence'),
             'description' => "Permet à votre colonie de se défendre en cas d'attaques.",
             'type' => 'Military',
             'iron' => 75,
@@ -361,7 +361,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 3,
             'upgrade_coefficient' => 1.9,
             'time_base' => 878,
-            'time_coefficient' => 1.7
+            'time_coefficient' => 1.7,
+            'defence_bonus' => 0.9
         ]);
         //Usine robotisée 3
         DB::table('building_buildings')->insert([
@@ -387,7 +388,8 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1602,
             'time_coefficient' => 2,
             'building_bonus' => 0.95,
-            'technology_bonus' => 0.95
+            'technology_bonus' => 0.95,
+            'ship_consumption_bonus' => 0.94,
         ]);
         //Centre de recherche 1
         DB::table('technology_buildings')->insert([
@@ -542,7 +544,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 450,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'fire_power_bonus' => 1.1
         ]);
         //- Centre de Recherche : Niveau 4
         DB::table('technology_buildings')->insert([
@@ -564,7 +567,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 1500,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'hull_bonus' => 1.1
         ]);
         //- Centre de Recherche : Niveau 1
         DB::table('technology_buildings')->insert([
@@ -594,7 +598,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 450,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'shield_bonus' => 1.1
         ]);
         //- Centre de Recherche : Niveau 5
         DB::table('technology_buildings')->insert([
@@ -622,7 +627,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 450,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'ship_speed_bonus' => 1.01,
         ]);
         //- Centre de Recherche : Niveau 1
         DB::table('technology_buildings')->insert([
@@ -661,6 +667,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.7,
             'building_bonus' => 0.5,
             'technology_bonus' => 0.5,
+            'ship_bonus' => 0.7,
         ]);
         //Centre de recherche 8
         DB::table('building_buildings')->insert([
@@ -770,6 +777,52 @@ class DatabaseSeeder extends Seeder
         
 
         /*
+
+
+
+        NECESSITE LE CENTRE DE DEFENCE AVANCé
+
+
+        DB::table('buildings')->insert([
+            'id' => 20,
+            'name' => 'Usine de replicateur',
+            'slug' => Str::slug('replicantFactory'),
+            'description' => "L'usine de réplicateur permet d'automatiser encore d'avantage votre colonie, réduisant la majorité des temps de construction",
+            'type' => 'Science',
+            'iron' => 5000000,
+            'gold' => 5000000,
+            'quartz' => 3000000,
+            'naqahdah' => 300000,
+            'display_order' => 1,
+            'upgrade_coefficient' => 1.5,
+            'time_base' => 172800,
+            'time_coefficient' => 1.7,
+            'energy_base' => null,
+            'energy_coefficient' => null,
+            'building_bonus' => 0.75,
+            'technology_bonus' => 0.75,
+            'ship_bonus' => 0.70,
+            'defence_bonus' => 0.85,
+            'craft_bonus' => 0.10,
+        ]);
+        //Centre de recherche 18
+        DB::table('building_buildings')->insert([
+            'building_id' => 20,
+            'required_building_id' => 7,
+            'level' => 18
+        ]);
+
+
+
+
+
+
+
+
+
+            */
+
+        /*
         Reacteur au naqadah
         */
         //Extracteur naqadah 5
@@ -825,7 +878,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 0,
             'display_order' => 5,
             'upgrade_coefficient' => 2,
-            'time_base' => 1200,
+            'time_base' => 1320,
             'time_coefficient' => 2
         ]);
         //Centre de Recherche Niveau 4
@@ -890,7 +943,7 @@ class DatabaseSeeder extends Seeder
         
         DB::table('technologies')->insert([
             'id' => 14, 
-            'name' => 'Naqahdah', // Impulsion
+            'name' => 'Maîtrise du Naqahdah', //Hydrogene
             'slug' => Str::slug('naqahdah'),
             'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant.",
             'type' => 'Labo',
@@ -901,7 +954,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 4000,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'ship_consumption_bonus' => 0.99
         ]);
         //Centre de Recherche 10
         DB::table('technology_buildings')->insert([
@@ -924,7 +978,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 2000,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'ship_speed_bonus' => 1.02
         ]);
         //Centre de Recherche 3
         DB::table('technology_buildings')->insert([
@@ -959,7 +1014,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 4000,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'ship_speed_bonus' => 1.05
         ]);
         //Centre de Recherche 7
         DB::table('technology_buildings')->insert([
@@ -999,7 +1055,8 @@ class DatabaseSeeder extends Seeder
             'display_order' => 5,
             'upgrade_coefficient' => 2,
             'time_base' => 8000,
-            'time_coefficient' => 2
+            'time_coefficient' => 2,
+            'ship_speed_bonus' => 1.08
         ]);
         //Centre de Recherche 12
         DB::table('technology_buildings')->insert([
@@ -1157,6 +1214,7 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
+            DefenceSeeder::class,
             GalaxySeeder::class,
             NpcSeeder::class,
         ]);

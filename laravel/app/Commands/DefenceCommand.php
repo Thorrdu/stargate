@@ -2,20 +2,22 @@
 
 namespace App\Commands;
 
-use App\Unit;
+use App\Defence;
+use App\Technology;
+use App\Building;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 
-class Craft extends CommandHandler implements CommandInterface
+class DefenceCommand extends CommandHandler implements CommandInterface
 {
     public $page;
     public $maxPage;
     public $maxTime;
     public $paginatorMessage;
     public $listner;
-    public $craftList;
-    public $craftQueue;
+    public $defenceList;
+    public $defenceQueue;
     
     public function execute()
     {
@@ -34,11 +36,11 @@ class Craft extends CommandHandler implements CommandInterface
 
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
-                    echo PHP_EOL.'Execute Craft';
-                    $this->craftList = Unit::all();      
+                    echo PHP_EOL.'Execute Defence';
+                    $this->defenceList = Defence::all();      
 
                     $this->page = 1;
-                    $this->maxPage = ceil($this->craftList->count()/5);
+                    $this->maxPage = ceil($this->defenceList->count()/5);
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
@@ -87,13 +89,13 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 elseif(Str::startsWith('queue', $this->args[0]))
                 {
-                    echo PHP_EOL.'Execute Craft Queue';
-                    if($this->player->activeColony->craftQueues->count() == 0)
-                        return trans('craft.emptyQueue', [], $this->player->lang);
-                    $this->craftQueue = $this->player->activeColony->craftQueues;
+                    echo PHP_EOL.'Execute Defence Queue';
+                    if($this->player->activeColony->defenceQueues->count() == 0)
+                        return trans('defence.emptyQueue', [], $this->player->lang);
+                    $this->defenceQueue = $this->player->activeColony->defenceQueues;
     
                     $this->page = 1;
-                    $this->maxPage = ceil($this->craftQueue->count()/5);
+                    $this->maxPage = ceil($this->defenceQueue->count()/5);
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getQueue())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
@@ -152,18 +154,18 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 else
                 {
-                    $unit = Unit::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
-                    if(!is_null($unit))
+                    $defence = Defence::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
+                    if(!is_null($defence))
                     {
                         //Requirement
                         $hasRequirements = true;
-                        foreach($unit->requiredTechnologies as $requiredTechnology)
+                        foreach($defence->requiredTechnologies as $requiredTechnology)
                         {
                             $currentLvl = $this->player->hasTechnology($requiredTechnology);
                             if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
                                 $hasRequirements = false;
                         }
-                        foreach($unit->requiredBuildings as $requiredBuilding)
+                        foreach($defence->requiredBuildings as $requiredBuilding)
                         {
                             $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                             if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
@@ -178,35 +180,35 @@ class Craft extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
 
                         $hasEnough = true;
-                        $unitPrices = $unit->getPrice($qty);
+                        $defencePrices = $defence->getPrice($qty);
 
                         $missingResString = "";
                         foreach (config('stargate.resources') as $resource)
                         {
-                            if($unit->$resource > 0 && $unitPrices[$resource] > $this->player->activeColony->$resource)
+                            if($defence->$resource > 0 && $defencePrices[$resource] > $this->player->activeColony->$resource)
                             {
                                 $hasEnough = false;
-                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]-$this->player->activeColony->$resource));
+                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($defencePrices[$resource]-$this->player->activeColony->$resource));
                             }
                         }
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                        if(!is_null($this->player->active_technology_id) && $unit->id == 15)
+                        if(!is_null($this->player->active_technology_id) && $defence->id == 15)
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
                         $now = Carbon::now();
-                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startCrafting($unit,$qty));
+                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startDefence($defence,$qty));
                         $buildingTime = $now->diffForHumans($endingDate,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('craft.buildingStarted', ['name' => config('craft.'.$unit->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+                        return trans('defence.buildingStarted', ['name' => config('defence.'.$defence->name.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
                     
                     }
                     else
-                        return trans('craft.unknownCraft', [], $this->player->lang);
+                        return trans('defence.unknownCraft', [], $this->player->lang);
                 }
             }
             catch(\Exception $e)
@@ -224,9 +226,9 @@ class Craft extends CommandHandler implements CommandInterface
     {
         try
         {
-            $displayList = $this->craftQueue->skip(5*($this->page -1))->take(5);
+            $displayList = $this->defenceQueue->skip(5*($this->page -1))->take(5);
             
-            $craftQueueString = "";
+            $defenceQueueString = "";
             foreach($displayList as $queuedCraft)
             {
                 $now = Carbon::now();
@@ -236,7 +238,7 @@ class Craft extends CommandHandler implements CommandInterface
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);      
 
-                $craftQueueString .= "1x ".$queuedCraft->name." - ".$craftTime."\n"; 
+                $defenceQueueString .= "1x ".$queuedCraft->name." - ".$craftTime."\n"; 
             }
 
             $embed = [
@@ -244,8 +246,8 @@ class Craft extends CommandHandler implements CommandInterface
                     'name' => $this->player->user_name,
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
-                "title" => trans('craft.craftQueue', [], $this->player->lang),
-                "description" => $craftQueueString,
+                "title" => trans('defence.defenceQueue', [], $this->player->lang),
+                "description" => $defenceQueueString,
                 'fields' => [],
                 'footer' => array(
                     //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
@@ -266,15 +268,15 @@ class Craft extends CommandHandler implements CommandInterface
     {
         try{
 
-            $displayList = $this->craftList->skip(5*($this->page -1))->take(5);
+            $displayList = $this->defenceList->skip(5*($this->page -1))->take(5);
             
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
-                "title" => trans('craft.craftList', [], $this->player->lang),
-                "description" => trans('craft.howTo', [], $this->player->lang),
+                "title" => trans('defence.defenceList', [], $this->player->lang),
+                "description" => trans('defence.howTo', [], $this->player->lang),
                 'fields' => [],
                 'footer' => array(
                     //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
@@ -282,61 +284,68 @@ class Craft extends CommandHandler implements CommandInterface
                 ),
             ];
 
-            foreach($displayList as $unit)
+            foreach($displayList as $defence)
             {
-                $unitPrice = "";
-                $unitPrices = $unit->getPrice(1);
+                $defencePrice = "";
+                $defencePrices = $defence->getPrice(1);
                 foreach (config('stargate.resources') as $resource)
                 {
-                    if($unit->$resource > 0)
+                    if($defence->$resource > 0)
                     {
-                        if(!empty($unitPrice))
-                            $unitPrice .= " ";
-                        $unitPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($unitPrices[$resource]));
+                        if(!empty($defencePrice))
+                            $defencePrice .= " ";
+                        $defencePrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($defencePrices[$resource]));
                     }
                 }
-                $unitTime = $unit->base_time;
+                $defenceTime = $defence->base_time;
 
                 /** Application des bonus */
-                $unitTime *= $this->player->activeColony->getCraftingBonus();
+                $defenceTime *= $this->player->activeColony->getDefencebuildBonus();
 
                 $now = Carbon::now();
-                $unitEnd = $now->copy()->addSeconds($unitTime);
-                $unitTime = $now->diffForHumans($unitEnd,[
+                $defenceEnd = $now->copy()->addSeconds($defenceTime);
+                $defenceTime = $now->diffForHumans($defenceEnd,[
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);      
 
                 $hasRequirements = true;
-                foreach($unit->requiredTechnologies as $requiredTechnology)
+                foreach($defence->requiredTechnologies as $requiredTechnology)
                 {
                     $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
                     if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                         $hasRequirements = false;
                 }
-                foreach($unit->requiredBuildings as $requiredBuilding)
+                foreach($defence->requiredBuildings as $requiredBuilding)
                 {
                     $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                     if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                         $hasRequirements = false;
-                }
-                $capacityString = "";
-                if(!is_null($unit->capacity))
-                    $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang);
+                }                    
                 if($hasRequirements == true)
                 {
+                    $firePower = $defence->fire_power;
+                    $armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
+                    $armamentLvl = $this->$this->coordinateDestination->colony->player->hasTechnology($armamentTec);
+                    if($armamentLvl)
+                        $firePower *= pow(1.1,$armamentLvl);
+                    $firePowerString = trans('defence.firePower', ['firepower' => number_format($firePower)], $this->player->lang);
+                    
+                    $hullString = trans('defence.capacity', ['capacity' => number_format($defence->capacity)], $this->player->lang);
                     $embed['fields'][] = array(
-                        'name' => $unit->id.' - '.config('craft.'.$unit->slug.'.name', [], $this->player->lang),
-                        'value' => config('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString,
+                        'name' => $defence->id.' - '.config('defence.'.$defence->name.'.name', [], $this->player->lang),
+                        'value' => config('defence.'.$defence->slug.'.description', [], $this->player->lang)."\nSlug: `".$defence->slug."`\n - ".
+                                   trans('generic.duration', [], $this->player->lang).": ".$defenceTime."\n".trans('generic.price', [], $this->player->lang).": ".
+                                   $defencePrice."\n".$firePowerString."\n".$hullString,
                         'inline' => true
                     );
                 }
                 else
                 {
                     $embed['fields'][] = array(
-                        'name' => trans('craft.hidden', [], $this->player->lang),
-                        'value' => trans('craft.unDiscovered', [], $this->player->lang),
+                        'name' => trans('defence.hidden', [], $this->player->lang),
+                        'value' => trans('defence.unDiscovered', [], $this->player->lang),
                         'inline' => true
                     );
                 }

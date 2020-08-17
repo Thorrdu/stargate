@@ -36,6 +36,13 @@ class CreateTechnologiesTable extends Migration
             $table->decimal('building_bonus', 5, 2)->nullable();
             $table->decimal('technology_bonus', 5, 2)->nullable();
             $table->decimal('crafting_bonus', 5, 2)->nullable();
+            $table->decimal('defence_bonus', 5, 2)->nullable();
+            $table->decimal('fire_power_bonus', 5, 2)->nullable();
+            $table->decimal('hull_bonus', 5, 2)->nullable();
+            $table->decimal('shield_bonus', 5, 2)->nullable();
+            $table->decimal('ship_bonus', 5, 2)->nullable();
+            $table->decimal('ship_consumption_bonus', 5, 2)->nullable();
+            $table->decimal('ship_speed_bonus', 5, 2)->nullable();
 
             $table->integer('display_order')->length(3)->default(0);
             $table->timestamps();

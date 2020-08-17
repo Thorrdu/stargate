@@ -94,6 +94,16 @@ class Colony extends Model
         return $this->belongsToMany('App\Unit')->withPivot('number');
     }
 
+    public function defenceQueues()
+    {
+        return $this->belongsToMany('App\Defence','defence_queues','colony_id','unit_id')->withPivot('defence_end');
+    }
+
+    public function defences()
+    {
+        return $this->belongsToMany('App\Defence')->withPivot('number');
+    }
+
     public function hasBuilding(Building $building)
     {
         try{
@@ -147,6 +157,27 @@ class Colony extends Model
         }
     }
 
+    public function hasDefence(Defence $defence)
+    {
+        try{
+            $defenceExists = $this->units->filter(function ($value) use($defence){
+                return $value->id == $defence->id;
+            });
+            if($defenceExists->count() > 0)
+            {
+                $foundDefence = $defenceExists->first();
+                return $foundDefence->pivot->number;
+            }
+            else
+                return false;
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
     
     public function getResearchBonus()
     {
@@ -184,6 +215,7 @@ class Colony extends Model
 
         return $bonus;
     }
+
     public function getCraftingBonus()
     {
         $bonus = 1;
@@ -199,6 +231,25 @@ class Colony extends Model
         });
         foreach($technologies as $technology)
             $bonus *= pow($technology->crafting_bonus, $technology->pivot->level);
+
+        return $bonus;
+    }
+
+    public function getDefencebuildBonus()
+    {
+        $bonus = 1;
+
+        $buildings = $this->buildings->filter(function ($value){
+            return !is_null($value->defence_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= pow($building->defence_bonus, $building->pivot->level);
+
+        $technologies = $this->player->technologies->filter(function ($value){
+            return !is_null($value->defence_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= pow($technology->defence_bonus, $technology->pivot->level);
 
         return $bonus;
     }
@@ -238,6 +289,41 @@ class Colony extends Model
         return $buildingEnd;
     }
 
+    public function startDefence(Defence $defence, int $qty)
+    {
+        $current = Carbon::now();
+
+        $buildingTime = $defence->base_time;
+
+        /** Application des bonus */
+        $buildingTime *= $this->getDefencebuildBonus();
+
+        $buildingPrices = $defence->getPrice($qty);
+        foreach (config('stargate.resources') as $resource)
+        {
+            if($defence->$resource > 0)
+                $this->$resource -= round($buildingPrices[$resource]);
+        }
+
+        if($this->defenceQueues->count() > 0)
+        {
+            $lastQueue = $this->defenceQueues->last();
+            $lastQueueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+            if(!$lastQueue->isPast())
+                $current = $lastQueueCarbon;
+        }
+
+        for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )
+        {
+            $buildingEnd = $current->addSeconds($buildingTime);
+            $this->defenceQueues()->attach([$defence->id => ['defence_end' => $buildingEnd]]);
+        }
+
+        $this->save();
+        return $buildingEnd;
+    }
+
+
     public function startBuilding(Building $building)
     {
         $current = Carbon::now();
@@ -269,7 +355,7 @@ class Colony extends Model
             try{
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-                $reminder->reminder = "**Lvl ".$wantedLvl." - ".$building->name."** ".trans("reminder.isDone", [], $this->player->lang);
+                $reminder->reminder = "**Lvl ".$wantedLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
             }

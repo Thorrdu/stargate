@@ -28,11 +28,17 @@ return [
                        "The following resources have been delivred:\n:resources",
     "tradeSent" => "You sent the following resources from [:coordinateSource] to [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
     "tradeMessage" => "__Sending resources from [:coordinateSource]__\n".
-                      "Destination: [:coordinateDestination] (:player)\n".
+                      "Destination: :planet [:coordinateDestination] (:player)\n".
                       "Resources:\n".
                       ":resources\n".
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
+    "moveMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
+                      "Destination: Colonie :planet [:coordinateDestination]\n".
+                      "Ressources:\n".
+                      ":resources\n".
+                      "Coût: :consumption\n\n".
+                      "Statut de l'envoi: **En attente**",
     'unknownResource' => "Unknown resource: :resource",
     "spyConfirmation" => "Send a spy mission on [:coordinateDestination] (:player) ?\nCost: :consumption",
     "spySending" => "You sent a spy mission on [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
@@ -42,8 +48,8 @@ return [
     "spyReportDescription" => "Spy report from planet [:coordinateDestination] (:player)",
     'fleet' => 'Fleet',
     'emptyFleet' => 'No fleet docked',
-    'defenses' => 'Defences',
-    'emptyDefenses' => 'No defense',
+    'defences' => 'Defences',
+    'emptydefences' => 'No defence',
     'buildings' => 'Buildings',
     "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies.\n(The list can be seen in `!p`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
@@ -71,4 +77,6 @@ return [
                             "Bilan des pertes:\n:loostTroops\n",
     "noCasuality" => "No casualties",
     "playerOwned" => "Already owned by a player",
+    "samePlayerAction" => "You can't make this action to yourself...",
+    "weakOrStrong" => "This player is too weak or too strong for you..."
 ];

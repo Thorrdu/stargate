@@ -163,18 +163,25 @@ class Galaxy extends CommandHandler implements CommandInterface
             foreach($coordinates as $coordinate)
             {
                 if(!is_null($coordinate->colony))
-                    $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (".($coordinate->colony->player->npc?"NPC - ":"").$coordinate->colony->player->user_name.")"."\n";
+                {
+
+                    
+                    $colonyPlayer = $coordinate->colony->player;
+                    if($colonyPlayer->npc)
+                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (NPC - ".$colonyPlayer->user_name.")"."\n";
+                    $coordinateList .= $this->player->isWeakOrStrong($colonyPlayer).$coordinate->planet." - ".$coordinate->colony->name." (NPC - ".$colonyPlayer->user_name.")"."\n";
+                }
                 else
                     $coordinateList .= $coordinate->planet."\n";
             }
 
             $embed = [
                 'author' => [
-                    'name' => "Stargate",
+                    'name' => "Galaxy",
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                 ],
                 "title" => "Galaxy ".$this->galaxy." - System ".$this->system,
-                "description" => "Liste des planètes du système:\n\n".$coordinateList,
+                "description" => trans('galaxy.systemList', [], $this->player->lang).$coordinateList,
                 'fields' => [],
                 'footer' => array(
                     'text'  => 'Stargate',

@@ -28,7 +28,13 @@ return [
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
     "tradeSent" => "Vous avez envoyé les ressources suivantes depuis [:coordinateSource] sur [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
     "tradeMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
-                      "Destination: [:coordinateDestination] (:player)\n".
+                      "Destination: : planet [:coordinateDestination] (:player)\n".
+                      "Ressources:\n".
+                      ":resources\n".
+                      "Coût: :consumption\n\n".
+                      "Statut de l'envoi: **En attente**",
+    "moveMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
+                      "Destination: Colonie :planet [:coordinateDestination]\n".
                       "Ressources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
@@ -42,8 +48,8 @@ return [
     "spyReportDescription" => "Rapport d'espionnage de la planète [:coordinateDestination] (:player)",
     'fleet' => 'Flotte',
     'emptyFleet' => 'Aucun flotte à quai',
-    'defenses' => 'Défenses',
-    'emptyDefenses' => 'Aucune défense',
+    'defences' => 'Défenses',
+    'emptydefences' => 'Aucune défense',
     'buildings' => 'Bâtiments',
     "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie.\n(Liste présente dans `!p`).",
     "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
@@ -71,4 +77,6 @@ return [
                             "Bilan des pertes:\n:loostTroops",
     "noCasuality" => "Aucune perte à déplorer",
     "playerOwned" => "Appartient à un joueur",
+    "samePlayerAction" => "Vous ne pouvez effectuer cette action sur vous même...",
+    "weakOrStrong" => "Ce joueur est trop for ou trop faible pour vous..."
 ];

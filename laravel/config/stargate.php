@@ -20,10 +20,13 @@ return [
         'research' => '<:research:737769578045898775>',
         'researchBuilding' => '<:researchBuilding:743237547416879185>',
         'military' => '<:military:737769413629182094>',
+        'defence' => '<:military:737769413629182094>',
         'storage' => '<:storage:742821649098866838>'
     ],
-    'galaxy' => ['maxGalaxies' => 2, 'maxSystems' => 30, 'maxPlanets' => 10],
-    'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 10],
+    'galaxy' => ['maxGalaxies' => 3, 'maxSystems' => 100, 'maxPlanets' => 10],
+    'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
     'maxProdTime' => 720, //12h
     'maxColonies' => 5,
+    'maxHourly' => 24,
+    'gateFight' => ['StrongWeak' => 0]
 ];

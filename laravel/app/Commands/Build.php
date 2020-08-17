@@ -186,7 +186,7 @@ class Build extends CommandHandler implements CommandInterface
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
-                            return trans('building.buildingStarted', ['name' => $building->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
+                            return trans('building.buildingStarted', ['name' => trans('building.'.$building->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -276,6 +276,17 @@ class Build extends CommandHandler implements CommandInterface
                                 $bonus = 100-($building->crafting_bonus*100);
                                 $bonusString .= "-{$bonus}% ".config('stargate.emotes.productionBuilding')." ".trans('generic.craftingTime', [], $this->player->lang)."\n";
                             }
+                            if(!is_null($building->defence_bonus))
+                            {
+                                $bonus = 100-($building->defence_bonus*100);
+                                $bonusString .= "-{$bonus}% ".trans('generic.defenceTime', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($building->ship_bonus))
+                            {
+                                $bonus = 100-($building->ship_bonus*100);
+                                $bonusString .= "-{$bonus}% ".trans('generic.shipTime', [], $this->player->lang)."\n";
+                            }
+
                             $productionString = $consoString = "";
                             if(!is_null($building->production_base))
                             {
@@ -320,8 +331,8 @@ class Build extends CommandHandler implements CommandInterface
                                     'name' => $this->player->user_name,
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
-                                "title" => 'Lvl '.$displayedLvl.' - '.$building->name,
-                                "description" => trans('building.howTo', ['id' => $building->id, 'slug' => $building->slug, 'description' => $building->description], $this->player->lang),
+                                "title" => 'Lvl '.$displayedLvl.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang),
+                                "description" => trans('building.howTo', ['id' => $building->id, 'slug' => $building->slug, 'description' => trans('building.'.$building->slug.'.description', [], $this->player->lang)], $this->player->lang),
                                 'fields' => [
                                     [
                                         'name' => trans('generic.info', [], $this->player->lang),
@@ -463,7 +474,7 @@ class Build extends CommandHandler implements CommandInterface
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
-                    'name' => $building->id.' - '.$building->name.' - Lvl '.$displayedLvl,
+                    'name' => $building->id.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang).' - Lvl '.$displayedLvl,
                     'value' => "\nSlug: `".$building->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
                     'inline' => true
                 );

@@ -147,7 +147,7 @@ class Research extends CommandHandler implements CommandInterface
                                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                                 ]);
                                 //:level :name will be done in :time
-                                return trans('research.alreadyResearching', ['level' => $wantedLvl, 'name' => $this->player->activeTechnology->name, 'time' => $buildingTime], $this->player->lang);
+                                return trans('research.alreadyResearching', ['level' => $wantedLvl, 'name' => $this->player->activetechnology->slug, 'time' => $buildingTime], $this->player->lang);
                             }
 
                             $hasEnough = true;
@@ -175,7 +175,7 @@ class Research extends CommandHandler implements CommandInterface
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);      
-                            return trans('research.researchStarted', ['name' => $technology->name, 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
+                            return trans('research.researchStarted', ['name' => config('research.'.$technology->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -248,6 +248,42 @@ class Research extends CommandHandler implements CommandInterface
                                 $bonus = 100-($technology->crafting_bonus*100);
                                 $bonusString .= "-{$bonus}% ".config('stargate.emotes.productionBuilding')." ".trans('generic.craftingTime', [], $this->player->lang)."\n";
                             }
+                            if(!is_null($technology->defence_bonus))
+                            {
+                                $bonus = 100-($technology->defence_bonus*100);
+                                $bonusString .= "-{$bonus}% ".trans('generic.defenceTime', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->ship_bonus))
+                            {
+                                $bonus = 100-($technology->ship_bonus*100);
+                                $bonusString .= "-{$bonus}% ".trans('generic.shipTime', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->ship_consumption_bonus))
+                            {
+                                $bonus = 100-($technology->ship_consumption_bonus*100);
+                                $bonusString .= "-{$bonus}% ".trans('generic.shipConsumption', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->ship_speed_bonus))
+                            {
+                                $bonus = 100-($technology->ship_speed_bonus*100);
+                                $bonusString .= "+{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->fire_power_bonus))
+                            {
+                                $bonus = 100-($technology->fire_power_bonus*100);
+                                $bonusString .= "+{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->hull_bonus))
+                            {
+                                $bonus = 100-($technology->hull_bonus*100);
+                                $bonusString .= "+{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
+                            }
+                            if(!is_null($technology->shield_bonus))
+                            {
+                                $bonus = 100-($technology->shield_bonus*100);
+                                $bonusString .= "+{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
+                            }
+
                             if(empty($bonusString))
                                 $bonusString = "/";
 
@@ -256,8 +292,8 @@ class Research extends CommandHandler implements CommandInterface
                                     'name' => $this->player->user_name,
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
-                                "title" => 'Lvl '.$displayedLvl.' - '.$technology->name,
-                                "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => $technology->description], $this->player->lang),
+                                "title" => 'Lvl '.$displayedLvl.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang),
+                                "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => config('research.'.$technology->slug.'.description', [], $this->player->lang)], $this->player->lang),
                                 'fields' => [
                                     [
                                         'name' => trans('generic.info', [], $this->player->lang),
@@ -374,7 +410,7 @@ class Research extends CommandHandler implements CommandInterface
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
-                    'name' => $technology->id.' - '.$technology->name.' - LVL '.$displayedLvl,
+                    'name' => $technology->id.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang).' - LVL '.$displayedLvl,
                     'value' => "\nSlug: `".$technology->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
                     'inline' => true
                 );
