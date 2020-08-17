@@ -896,9 +896,6 @@ class Stargate extends CommandHandler implements CommandInterface
                 {
                     if(!is_null($this->coordinateDestination->colony))
                         return trans('stargate.playerOwned', [], $this->player->lang);
-                        
-                    if($this->player->user_id != 125641223544373248)
-                        return 'Under Developement';         
 
                     if($this->player->activeColony->military < 1000)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(1000-$this->player->activeColony->military,2)], $this->player->lang);
