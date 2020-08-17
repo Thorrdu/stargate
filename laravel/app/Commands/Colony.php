@@ -31,7 +31,7 @@ class Colony extends CommandHandler implements CommandInterface
                     {
                         $this->player->active_colony_id = $this->player->colonies[(int)$this->args[1]-1]->id;
                         $this->player->save();
-                        return trans('colony.colonySwitched', [], $this->player->lang);
+                        return trans('colony.colonySwitched', ['colony' => $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']'], $this->player->lang);
                     }
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
@@ -108,7 +108,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if(!empty($prodBuildingsValue))
                         $prodBuildingsValue .= "\n";
-                    $prodBuildingsValue .= 'Lvl '.$prodBuilding->pivot->level.' - '.$prodBuilding->name;
+                    $prodBuildingsValue .= 'Lvl '.$prodBuilding->pivot->level.' - '.trans('building.'.$prodBuilding->slug.'.name', [], $this->player->lang);
                 }
                 if(!empty($prodBuildingsValue))
                 {
@@ -127,7 +127,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if(!empty($scienceBuildingsValue))
                         $scienceBuildingsValue .= "\n";
-                    $scienceBuildingsValue .= 'Lvl '.$scienceBuilding->pivot->level.' - '.$scienceBuilding->name;
+                    $scienceBuildingsValue .= 'Lvl '.$scienceBuilding->pivot->level.' - '.trans('building.'.$scienceBuilding->slug.'.name', [], $this->player->lang);
                 }
                 if(!empty($scienceBuildingsValue))
                 {
@@ -146,7 +146,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if(!empty($militaryBuildingsValue))
                         $militaryBuildingsValue .= "\n";
-                    $militaryBuildingsValue .= 'Lvl '.$militaryBuilding->pivot->level.' - '.$militaryBuilding->name;
+                    $militaryBuildingsValue .= 'Lvl '.$militaryBuilding->pivot->level.' - '.trans('building.'.$militaryBuilding->slug.'.name', [], $this->player->lang);
                 }
                 if(!empty($militaryBuildingsValue))
                 {
@@ -173,7 +173,7 @@ class Colony extends CommandHandler implements CommandInterface
                 {
                     if(!empty($technologyValue))
                         $technologyValue .= "\n";
-                    $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang);
+                    $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang);
                 }
                 if(!empty($technologyValue))
                 {
@@ -189,7 +189,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $unitsString = '';
                     foreach($this->player->activeColony->units as $unit)
                     {
-                        $unitsString .= number_format($unit->pivot->number).' '.config('craft.'.$unit->slug.'.name', [], $this->player->lang)."\n";
+                        $unitsString .= number_format($unit->pivot->number).' '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang)."\n";
                     }
                     $embed['fields'][] = array(
                                             'name' => trans('generic.units', [], $this->player->lang),
@@ -203,7 +203,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $defenceString = '';
                     foreach($this->player->activeColony->defences as $defence)
                     {
-                        $defenceString .= number_format($defence->pivot->number).' '.config('defence.'.$defence->name.'.name', [], $this->player->lang)."\n";
+                        $defenceString .= number_format($defence->pivot->number).' '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang)."\n";
                     }
                     $embed['fields'][] = array(
                                             'name' => trans('generic.defences', [], $this->player->lang),
@@ -226,7 +226,7 @@ class Colony extends CommandHandler implements CommandInterface
                         $currentLevel = 0;
                     $embed['fields'][] = array(
                         'name' => trans('colony.buildingUnderConstruction', [], $this->player->lang),
-                        'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activeColony->activeBuilding->name."\n".$buildingTime,
+                        'value' => "Lvl ".($currentLevel+1)." - ".trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
                         'inline' => true
                     );
                 }
@@ -244,7 +244,7 @@ class Colony extends CommandHandler implements CommandInterface
                         $currentLevel = 0;
                     $embed['fields'][] = array(
                         'name' => trans('colony.technologyUnderResearch', [], $this->player->lang),
-                        'value' => "Lvl ".($currentLevel+1)." - ".$this->player->activetechnology->slug."\n".$buildingTime,
+                        'value' => "Lvl ".($currentLevel+1)." - ".trans('research.'.$this->player->activetechnology->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
                         'inline' => true
                     );
                 }
@@ -286,7 +286,7 @@ class Colony extends CommandHandler implements CommandInterface
                     $queuedDefences = $this->player->activeColony->defenceQueues()->limit(5)->get();
                     foreach($queuedDefences as $queuedDefence)
                     {
-                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedDefence->pivot->craft_end);
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedDefence->pivot->defence_end);
                         $buildingTime = $now->diffForHumans($buildingEnd,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
@@ -296,8 +296,8 @@ class Colony extends CommandHandler implements CommandInterface
                     }
                     if($this->player->activeColony->defenceQueues->count() > 5)
                     {
-                        $lastQueue = $this->player->activeColony->craftQueues()->where('craft_end','>',Carbon::now())->orderBy('craft_end', 'DESC')->first();
-                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
+                        $lastQueue = $this->player->activeColony->defenceQueues()->where('defence_end','>',Carbon::now())->orderBy('defence_end', 'DESC')->first();
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->defence_end);
                         $buildingTime = $now->diffForHumans($buildingEnd,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
@@ -307,7 +307,7 @@ class Colony extends CommandHandler implements CommandInterface
                     }
 
                     $embed['fields'][] = array(
-                        'name' => trans('colony.craftQueue', [], $this->player->lang),
+                        'name' => trans('colony.defenceQueue', [], $this->player->lang),
                         'value' => $queueString,
                         'inline' => true
                     );

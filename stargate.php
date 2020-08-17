@@ -76,7 +76,7 @@ use App\Reminder;
 use App\Exploration;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -92,10 +92,15 @@ use Illuminate\Support\Facades\DB;
 global $upTimeStart;
 $upTimeStart = Carbon::now();
 
+$beta = true;
+$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c';
+if($beta)
+    $token = 'NzQ1MDE1MzAwMTgwOTM0NzM2.XzrnkQ.77nbdwVfRZRYBsPCbIUaIs6YHfs';
+
 $discord = new DiscordCommandClient([
-	'token' => 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c',
-    'prefix' => '!',
-    'defaultHelpCommand' => false
+	'token' => $token,
+    'prefix' => '-',
+    'defaultHelpCommand' => false,
 ]);
 
 $discord->on('ready', function ($discord) {
@@ -103,12 +108,13 @@ $discord->on('ready', function ($discord) {
     echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
-        'type' => 3
+        'type' => 3,
     ]);
     $discord->updatePresence($game);
 
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
+    echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
 	// Listen for messages.
 	$discord->on('message', function ($message) {
@@ -127,6 +133,8 @@ $discord->on('ready', function ($discord) {
     $discord->loop->addPeriodicTimer(3600, function () use ($discord) {
         $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
         Config::set('stargate.gateFight.StrongWeak', $newLimit);
+        echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
+
     });
 
 
@@ -171,14 +179,16 @@ $discord->on('ready', function ($discord) {
         }
     });
 
-    $this->registerCommand('help', function ($message, $args) use($discord){
-        $command = new HelpCommand($message, $args, $discord);
+
+
+    $discord->registerCommand('help', function ($message, $args) use($discord){
+        $command = new CustomHelp($message,$args,$discord);
         return $command->execute();
-    }, [
-        'description' => 'Provides a list of commands available.',
-        'usage'       => '[command]',
+    },[
+        'description' => trans('help.start.description', [], 'fr'),
+        'usage' => trans('help.start.usage', [], 'fr'),
         'aliases' => array('h','he'),
-        'cooldown' => 2
+        'cooldown' => 4
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -222,7 +232,7 @@ $discord->on('ready', function ($discord) {
         'cooldown' => 4
     ]);
     
-    $discord->registerCommand('DefenceCommand', function ($message, $args) use($discord){
+    $discord->registerCommand('defence', function ($message, $args) use($discord){
         $command = new DefenceCommand($message, $args, $discord);
         return $command->execute();
     },[
@@ -312,7 +322,6 @@ $discord->on('ready', function ($discord) {
         {
             echo $e->getMessage();
         }
-        echo 'bb';
     },[
         'description' => trans('help.daily.description', [], 'fr'),
 		'usage' => trans('help.daily.usage', [], 'fr'),
@@ -363,7 +372,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
-        'aliases' => array('rem','remind'),
+        'aliases' => array('rmd','rem','remind'),
         'cooldown' => 4
     ]);	
 

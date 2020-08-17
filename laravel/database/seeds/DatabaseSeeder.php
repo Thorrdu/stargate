@@ -5,6 +5,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Colony;
 
 class DatabaseSeeder extends Seeder
 {
@@ -1214,10 +1215,19 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
-            DefenceSeeder::class,
             GalaxySeeder::class,
+            ThorrSeeder::class,
+            DefenceSeeder::class,
             NpcSeeder::class,
         ]);
+
+        $colonies = Colony::all();
+        foreach($colonies as $colony)
+        {
+            $colony->calcProd();
+            $colony->save();
+            $colony->checkColony();
+        }
 
     }
 }

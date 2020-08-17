@@ -6,7 +6,7 @@ return [
         'description' => "Reacteur permettant d'exploiter l'énergie thermique souteraine présente sur votre colonie"
     ],
     'ironmine' => [
-        'name' => 'Iron mine',
+        'name' => 'Mine de fer',
         'description' => "Mine rudimentaire permettant d'extraire du minerais de fer"
     ],
     'goldmine' => [

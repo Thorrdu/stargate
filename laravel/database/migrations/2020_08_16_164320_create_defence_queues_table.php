@@ -19,7 +19,7 @@ class CreateDefenceQueuesTable extends Migration
             $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('defence_id')->unsigned();
             $table->foreign('defence_id')->references('id')->on('defences');
-            $table->timestamp('craft_end')->nullable();
+            $table->timestamp('defence_end')->nullable();
             $table->timestamps();
         });
     }

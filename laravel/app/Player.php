@@ -69,7 +69,7 @@ class Player extends Model
                 $coordinate = Coordinate::where([['galaxy', 1],['system', 1],['planet', 1],['colony_id', null]])->first();
                 $newColony->coordinate_id = $coordinate->id;
                 $newColony->space_max = 200;
-
+                $newColony->name = 'Asgard';
             }
             elseif($choosedCoordinate == null)
             {
@@ -197,7 +197,7 @@ class Player extends Model
         {
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-            $reminder->reminder = "**Lvl ".$wantedLvl." - ".config('research.'.$technology->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->lang);
+            $reminder->reminder = "**Lvl ".$wantedLvl." - ".trans('research.'.$technology->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->lang);
             $reminder->player_id = $this->id;
             $reminder->save();
             //$this->player->reminders()->attach($reminder->id);

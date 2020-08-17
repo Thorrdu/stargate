@@ -59,9 +59,11 @@ class Research extends CommandHandler implements CommandInterface
                         });
     
                         $this->listner = function ($messageReaction) {
+
+                            ${'listnerNameRes'.Str::random(10)} = 55;
                             if($this->maxTime < time())
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
     
@@ -69,7 +71,7 @@ class Research extends CommandHandler implements CommandInterface
                             {
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                 }
                                 elseif($messageReaction->emoji->name == '⏪')
@@ -147,7 +149,7 @@ class Research extends CommandHandler implements CommandInterface
                                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                                 ]);
                                 //:level :name will be done in :time
-                                return trans('research.alreadyResearching', ['level' => $wantedLvl, 'name' => $this->player->activetechnology->slug, 'time' => $buildingTime], $this->player->lang);
+                                return trans('research.alreadyResearching', ['level' => $wantedLvl, 'name' => trans('research.'.$this->player->activetechnology->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
                             }
 
                             $hasEnough = true;
@@ -175,7 +177,7 @@ class Research extends CommandHandler implements CommandInterface
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);      
-                            return trans('research.researchStarted', ['name' => config('research.'.$technology->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
+                            return trans('research.researchStarted', ['name' => trans('research.'.$technology->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -292,8 +294,8 @@ class Research extends CommandHandler implements CommandInterface
                                     'name' => $this->player->user_name,
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
                                 ],
-                                "title" => 'Lvl '.$displayedLvl.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang),
-                                "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => config('research.'.$technology->slug.'.description', [], $this->player->lang)], $this->player->lang),
+                                "title" => 'Lvl '.$displayedLvl.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang),
+                                "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => trans('research.'.$technology->slug.'.description', [], $this->player->lang)], $this->player->lang),
                                 'fields' => [
                                     [
                                         'name' => trans('generic.info', [], $this->player->lang),
@@ -410,7 +412,7 @@ class Research extends CommandHandler implements CommandInterface
             if($hasRequirements == true)
             {
                 $embed['fields'][] = array(
-                    'name' => $technology->id.' - '.config('research.'.$technology->slug.'.name', [], $this->player->lang).' - LVL '.$displayedLvl,
+                    'name' => $technology->id.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang).' - LVL '.$displayedLvl,
                     'value' => "\nSlug: `".$technology->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
                     'inline' => true
                 );

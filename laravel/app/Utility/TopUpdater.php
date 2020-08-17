@@ -14,6 +14,7 @@ class TopUpdater
                 $buildingPoints = 0;
                 $player->points_total = 0;
                 $militaryPoint = 0;
+                $defencePoints = 0;
                 foreach($player->colonies as $colony)
                 {
                     foreach($colony->buildings as $building)
@@ -22,9 +23,17 @@ class TopUpdater
                             $buildingPoints += TopUpdater::priceMerging($building->getPrice($cptPoint));
                     }
                     $militaryPoint += $colony->military * 0.2;
+
+                    foreach($colony->units as $unit)
+                        $militaryPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
+                    foreach($colony->defences as $defence)
+                        $defencePoints += TopUpdater::priceMerging($defence->getPrice($defence->pivot->number));
                 }
+                                
+                $player->points_military = round($militaryPoint/1000);
+                $player->points_defence = round($defencePoints/1000);
                 $player->points_building = round($buildingPoints/1000);
-                $player->points_total += $player->points_building;
+                $player->points_total += $player->points_building + $player->points_defence + $player->points_military;
 
                 $researchPoints = 0;
                 foreach($player->technologies as $technology)
@@ -35,15 +44,6 @@ class TopUpdater
                 $player->points_research = round($researchPoints/1000);
                 $player->points_total += $player->points_research;
 
-                foreach($player->activeColony->units as $unit)
-                {
-                    $militaryPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
-                }
-                echo PHP_EOL."FINMIL";
-                
-                $player->points_military = round($militaryPoint/1000);
-                
-                $player->points_total += $player->points_military;
                 $player->last_top_update = date("Y-m-d H:i:s");
 
                 $player->save();

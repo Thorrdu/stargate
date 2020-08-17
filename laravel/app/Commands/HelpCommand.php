@@ -40,12 +40,9 @@ class HelpCommand extends CommandHandler implements CommandInterface
             $this->lang = 'en';
         }
 
-
         try{
-
             $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
 
-            
             if(empty($this->args) || $this->args[0] == 'list')
             {
                 echo PHP_EOL.'Execute Help';
@@ -66,8 +63,10 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     });
 
                     $this->listner = function ($messageReaction) {
+                        
+                        ${'listnerNameHelp'.Str::random(10)} = 55;
                         if($this->maxTime < time()){
-                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                         }
 
@@ -75,7 +74,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         {
                             if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
                             elseif($messageReaction->emoji->name == '⏪')

@@ -8,4 +8,5 @@ return [
     "UnknownColony" => "Colonie inconnue",
     'cannotRemoveHomePlanet' => 'Vous ne pouvez abandonner votre colonie principale...',
     'colonyRemoved' => 'Colonie abandonnée...',
+    'colonySwitched' => 'Déplacement vers la colonie :colony',
 ];

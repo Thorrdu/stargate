@@ -101,7 +101,7 @@ class PlayerObserver
                         {
                             $reminder = new Reminder;
                             $reminder->reminder_date = Carbon::now();
-                            $reminder->reminder = trans('generic.researchUnlocked', ['name' => config('research.'.$technology->slug.'.name', [], $player->lang)], $player->lang);
+                            $reminder->reminder = trans('generic.researchUnlocked', ['name' => trans('research.'.$technology->slug.'.name', [], $player->lang)], $player->lang);
                             $reminder->player_id = $player->id;
                             $reminder->save();
                         }

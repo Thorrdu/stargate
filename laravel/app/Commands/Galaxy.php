@@ -5,6 +5,7 @@ namespace App\Commands;
 use Illuminate\Support\Facades\DB;
 use App\Coordinate;
 use App\Technology;
+use Illuminate\Support\Str;
 
 class Galaxy extends CommandHandler implements CommandInterface
 {
@@ -89,6 +90,8 @@ class Galaxy extends CommandHandler implements CommandInterface
                         }
                     }
                     $this->listner = function ($messageReaction) {
+
+                        ${'listnerNameGal'.Str::random(10)} = 55;
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
@@ -163,13 +166,11 @@ class Galaxy extends CommandHandler implements CommandInterface
             foreach($coordinates as $coordinate)
             {
                 if(!is_null($coordinate->colony))
-                {
-
-                    
+                {                    
                     $colonyPlayer = $coordinate->colony->player;
                     if($colonyPlayer->npc)
                         $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (NPC - ".$colonyPlayer->user_name.")"."\n";
-                    $coordinateList .= $this->player->isWeakOrStrong($colonyPlayer).$coordinate->planet." - ".$coordinate->colony->name." (NPC - ".$colonyPlayer->user_name.")"."\n";
+                    $coordinateList .= $this->player->isWeakOrStrong($colonyPlayer).$coordinate->planet." - ".$coordinate->colony->name." (".$colonyPlayer->user_name.")"."\n";
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";

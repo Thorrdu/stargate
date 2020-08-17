@@ -96,7 +96,7 @@ class Colony extends Model
 
     public function defenceQueues()
     {
-        return $this->belongsToMany('App\Defence','defence_queues','colony_id','unit_id')->withPivot('defence_end');
+        return $this->belongsToMany('App\Defence','defence_queues','colony_id','defence_id')->withPivot('defence_end');
     }
 
     public function defences()
@@ -275,7 +275,7 @@ class Colony extends Model
         {
             $lastQueue = $this->craftQueues->last();
             $lastQUeueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
-            if(!$lastQueue->isPast())
+            if(!$lastQUeueCarbon->isPast())
                 $current = $lastQUeueCarbon;
         }
 
@@ -308,8 +308,8 @@ class Colony extends Model
         if($this->defenceQueues->count() > 0)
         {
             $lastQueue = $this->defenceQueues->last();
-            $lastQueueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->craft_end);
-            if(!$lastQueue->isPast())
+            $lastQueueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->defence_end);
+            if(!$lastQueueCarbon->isPast())
                 $current = $lastQueueCarbon;
         }
 
@@ -403,6 +403,7 @@ class Colony extends Model
                         $unitToUpdate = $unitExists->first();
                         $unitToUpdate->pivot->number++;
                         $unitToUpdate->pivot->save();
+                        $this->load('units'); 
                     }
                     else
                     {
@@ -426,6 +427,49 @@ class Colony extends Model
         }
     }
 
+    public function checkDefenceQueues()
+    {
+        try{
+            echo PHP_EOL.'CHECK_DEFENCE_QUEUES';
+            if($this->defenceQueues->count() > 0)
+            {
+                $endedDefences = $this->defenceQueues->filter(function ($value){
+                    return Carbon::createFromFormat("Y-m-d H:i:s",$value->pivot->defence_end)->isPast();
+                });
+
+                foreach($endedDefences as $endedDefence)
+                {
+                    $defenceExists = $this->defences->filter(function ($value) use($endedDefence){               
+                        return $value->id == $endedDefence->id;
+                    });
+                    if($defenceExists->count() > 0)
+                    {
+                        $defenceToUpdate = $defenceExists->first();
+                        $defenceToUpdate->pivot->number++;
+                        $defenceToUpdate->pivot->save();
+                        $this->load('defences'); 
+                    }
+                    else
+                    {
+                        $this->defences()->attach([$endedDefence->id => ['number' => 1]]);
+                        $this->load('defences'); 
+                    }
+                }
+                DB::table('defence_queues')->where('defence_end', '<=', Carbon::now())->delete();
+                $this->load('defenceQueues'); 
+
+            }
+            else
+            {
+                echo PHP_EOL.'NO DEFENCE';
+            }
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return $e->getMessage();
+        }
+    }
     
 
     public function checkProd()
@@ -546,6 +590,7 @@ class Colony extends Model
         $this->player->checkTechnology();
         $this->checkBuilding();
         $this->checkCraftQueues();
+        $this->checkDefenceQueues();
 
     }
 

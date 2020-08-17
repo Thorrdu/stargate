@@ -51,6 +51,8 @@ class Craft extends CommandHandler implements CommandInterface
                         });
     
                         $this->listner = function ($messageReaction) {
+
+                            $listnerName = Str::random(10);
                             if($this->maxTime < time())
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
     
@@ -110,7 +112,7 @@ class Craft extends CommandHandler implements CommandInterface
                         $this->listner = function ($messageReaction) {
                             if($this->maxTime < time())
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
     
@@ -118,7 +120,7 @@ class Craft extends CommandHandler implements CommandInterface
                             {
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                 }
                                 elseif($messageReaction->emoji->name == '⏪')
@@ -202,7 +204,7 @@ class Craft extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('craft.buildingStarted', ['name' => config('craft.'.$unit->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+                        return trans('craft.buildingStarted', ['name' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
                     
                     }
                     else
@@ -327,8 +329,8 @@ class Craft extends CommandHandler implements CommandInterface
                 if($hasRequirements == true)
                 {
                     $embed['fields'][] = array(
-                        'name' => $unit->id.' - '.config('craft.'.$unit->slug.'.name', [], $this->player->lang),
-                        'value' => config('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString,
+                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
+                        'value' => trans('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString,
                         'inline' => true
                     );
                 }

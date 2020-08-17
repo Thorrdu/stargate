@@ -15,7 +15,6 @@ class Start extends CommandHandler implements CommandInterface
     public function execute()
     {
         echo PHP_EOL.'Execute Start';
-
         if(is_null($this->player))
         {
             try{

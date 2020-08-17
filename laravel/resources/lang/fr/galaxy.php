@@ -1,5 +1,5 @@
 <?php
-//GALAXY EN
+//GALAXY FR
 return [
-    "systemList" => "List of the system's planets:\nS = Too strong for you\nW = Too weak for you\n\n",
+    "systemList" => "Liste des planètes du système:\nS = Trop fort pour vous\nW = Trop faible pour vous\n\n",
 ];

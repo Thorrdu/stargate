@@ -112,7 +112,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         $this->listner = function ($messageReaction) {
                             if($this->maxTime < time())
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
     
@@ -120,7 +120,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             {
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                 }
                                 elseif($messageReaction->emoji->name == '⏪')
@@ -204,11 +204,11 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('defence.buildingStarted', ['name' => config('defence.'.$defence->name.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+                        return trans('defence.buildingStarted', ['name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
                     
                     }
                     else
-                        return trans('defence.unknownCraft', [], $this->player->lang);
+                        return trans('defence.unknownDefence', [], $this->player->lang);
                 }
             }
             catch(\Exception $e)
@@ -229,16 +229,16 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             $displayList = $this->defenceQueue->skip(5*($this->page -1))->take(5);
             
             $defenceQueueString = "";
-            foreach($displayList as $queuedCraft)
+            foreach($displayList as $queuedDefence)
             {
                 $now = Carbon::now();
-                $craftTime = $now->diffForHumans($queuedCraft->pivot->craft_end,[
+                $defenceTime = $now->diffForHumans($queuedDefence->pivot->defence_end,[
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);      
 
-                $defenceQueueString .= "1x ".$queuedCraft->name." - ".$craftTime."\n"; 
+                $defenceQueueString .= "1x ".$queuedDefence->name." - ".$defenceTime."\n"; 
             }
 
             $embed = [
@@ -327,15 +327,15 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                 {
                     $firePower = $defence->fire_power;
                     $armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
-                    $armamentLvl = $this->$this->coordinateDestination->colony->player->hasTechnology($armamentTec);
+                    $armamentLvl = $this->player->hasTechnology($armamentTec);
                     if($armamentLvl)
                         $firePower *= pow(1.1,$armamentLvl);
                     $firePowerString = trans('defence.firePower', ['firepower' => number_format($firePower)], $this->player->lang);
                     
-                    $hullString = trans('defence.capacity', ['capacity' => number_format($defence->capacity)], $this->player->lang);
+                    $hullString = trans('defence.hull', ['hull' => number_format($defence->hull)], $this->player->lang);
                     $embed['fields'][] = array(
-                        'name' => $defence->id.' - '.config('defence.'.$defence->name.'.name', [], $this->player->lang),
-                        'value' => config('defence.'.$defence->slug.'.description', [], $this->player->lang)."\nSlug: `".$defence->slug."`\n - ".
+                        'name' => $defence->id.' - '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
+                        'value' => trans('defence.'.$defence->slug.'.description', [], $this->player->lang)."\nSlug: `".$defence->slug."`\n - ".
                                    trans('generic.duration', [], $this->player->lang).": ".$defenceTime."\n".trans('generic.price', [], $this->player->lang).": ".
                                    $defencePrice."\n".$firePowerString."\n".$hullString,
                         'inline' => true

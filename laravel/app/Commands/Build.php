@@ -45,6 +45,7 @@ class Build extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
+
                         $this->paginatorMessage->react('⏪')->then(function(){ 
                             $this->paginatorMessage->react('◀️')->then(function(){ 
                                 $this->paginatorMessage->react('▶️')->then(function(){ 
@@ -54,10 +55,12 @@ class Build extends CommandHandler implements CommandInterface
                                 });
                             });
                         });
-    
+
                         $this->listner = function ($messageReaction) {
+
+                            ${'listnerNameBuil'.Str::random(10)} = 55;
                             if($this->maxTime < time()){
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
     
@@ -65,7 +68,7 @@ class Build extends CommandHandler implements CommandInterface
                             {
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->name), null);
+                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                 }
                                 elseif($messageReaction->emoji->name == '⏪')
@@ -142,7 +145,7 @@ class Build extends CommandHandler implements CommandInterface
                                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                                 ]);
                                 //:level :name will be done in :time
-                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => $this->player->activeColony->activeBuilding->name, 'time' => $buildingTime], $this->player->lang);
+                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
                             }
 
                             if(!is_null($building->level_max) && $wantedLvl > $building->level_max)

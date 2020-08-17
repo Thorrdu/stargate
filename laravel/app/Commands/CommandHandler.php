@@ -40,7 +40,6 @@ class CommandHandler
 
         $this->message = $message;
         $this->args = $args;
-
         $this->player = Player::where('user_id', $message->author->id)->first();
 
         if(!is_null($this->message->author->user_name) && !is_null($this->player))
@@ -75,13 +74,13 @@ class CommandHandler
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
+
         if(!is_null($this->message->author->user_name) && !is_null($this->player))
         {
-            echo PHP_EOL.'News name=: '.$this->message->author->user_name;
-
             if($this->player->user_name != $this->message->author->user_name)
             {
                 echo PHP_EOL.'DIFFERENT';
+                echo PHP_EOL.'News name=: '.$this->message->author->user_name;
 
                 $this->player->user_name = $this->message->author->user_name;
                 $this->player->save();
