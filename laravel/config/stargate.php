@@ -14,14 +14,14 @@ return [
         'naqahdah' => '<:naqahdah:742894577710661663>',
         'military' => '<:clone:737772878723940455>',
         'e2pz' => '<:e2pz:742847654492373144>',
-        'energy' => '<:energy:737769505790492782>',
-        'production' => '<:production:737769455915892757>',
+        'energy' => '<:energy:745058168169824437>',
+        'production' => '<:production:745056821101985882>',
         'productionBuilding' => '⚙️',
         'research' => '<:research:737769578045898775>',
         'researchBuilding' => '<:researchBuilding:743237547416879185>',
         'military' => '<:military:737769413629182094>',
         'defence' => '<:military:737769413629182094>',
-        'storage' => '<:storage:742821649098866838>'
+        'storage' => '<:storage:745057028455661678>'
     ],
     'galaxy' => ['maxGalaxies' => 3, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],

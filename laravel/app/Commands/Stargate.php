@@ -1242,7 +1242,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                              */
                                             foreach($this->coordinateDestination->colony->defences as $defence)
                                             {
-                                                $defence->pivot->number = ceil($defence->pivot->number/2);
+                                                $lostDefenceQty = ceil($defence->pivot->number/2);
+                                                $defenderLooseString .= trans('defence.'.$defence->slug.'.name', [], $this->coordinateDestination->colony->player->lang).': '.number_format($lostDefenceQty)."\n";
+                                                $defence->pivot->number = $lostDefenceQty;
                                                 $defence->pivot->save();
                                             }
                                         }
