@@ -88,7 +88,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     elseif(!Str::startsWith('move',$this->args[0]))
                         return trans('stargate.unknownCoordinates', [], $this->player->lang);
                     
-                    $this->coordinateDestination = $this->player->colonies[$this->args[0]-1]->coordinates;
+                    $this->coordinateDestination = $this->player->colonies[$this->args[1]-1]->coordinates;
                 }
                 else
                 {
