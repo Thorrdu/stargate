@@ -924,7 +924,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 'text'  => 'Stargate',
                             ),
                         ];
-                        $this->message->channel->editMessage($this->message->id,'',$embed);
+                        $this->message->channel->sendMessage('',false,$embed);
                     }
                     else
                     {
