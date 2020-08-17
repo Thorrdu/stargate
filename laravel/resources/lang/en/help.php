@@ -21,7 +21,7 @@ return [
     ],
     'colony' => [
         'description' => 'Display some esential information about your colony (Resources, Buildings, Production, ... ). Also allows to switch between your colonies.',
-        'usage' => "!colony\n!colony switch [number]"
+        'usage' => "!colony\n!colony switch [number]\n!colony remove [number]"
     ],
     'craft' => [
         'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
@@ -38,7 +38,12 @@ return [
     ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players",
-        'usage' => "!stargate\n!stargate explore [coordinate]\n!stargate spy [coordinate]\n!stargate trade [coordinate] [Res1] [Qty1]\n!stargate colonize [coordinate]"
+        'usage' => "**explore** (`!stargate explore [coordinates]\n".
+                    "!stargate colonize [coordinates]\n".
+                    "!stargate move [colonyNumber] [Res1] [Qty1]\n".
+                    "!stargate move [coordinates] [Res1] [Qty1]\n".
+                    "!stargate spy [coordinates]\n".
+                    "!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]\n"
     ],
     'infos' => [
         'description' => 'Display information on Stargate Bot such as Author, support server invite, ....',

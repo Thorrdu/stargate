@@ -1,7 +1,7 @@
 <?php
 //STARGATE FR
 return [
-    "askBaseParameter" => "Available Actions:\n".
+    "askBaseParameter" => "Actions possibles:\n".
                             "**explore** (`!stargate explore [coordonées]`)\n".
                             "**colonize** (`!stargate colonize [coordonées]`)\n".
                             "**move** (`!stargate move [NuméroDeColonie] [Res1] [Qté1]`)\n".

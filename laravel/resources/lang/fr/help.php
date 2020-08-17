@@ -22,7 +22,7 @@ return [
     ],
     'colony' => [
         'description' => 'Affiche les informations essentielles sur votre colonie (Ressources, Bâtiments, Production, ... ) et permet de changer de colonie.',
-        'usage' => "!colony\n!colony switch [numéro]"
+        'usage' => "!colony\n!colony switch [numéro]\n!colony remove [numéro]"
     ],
     'craft' => [
         'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
@@ -39,7 +39,12 @@ return [
     ],
     'stargate' => [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer",
-        'usage' => "!stargate\n!stargate explore [coordonées]\n!stargate spy [coordonées]\n!stargate trade [coordonées] [Ress1] [Qty1]"
+        'usage' => "!stargate explore [coordonées]\n".
+                    "!stargate colonize [coordonées]\n".
+                    "!stargate move [NuméroDeColonie] [Res1] [Qté1]\n".
+                    "!stargate move [coordonées] [Res1] [Qté1]\n".
+                    "!stargate spy [coordonées]\n".
+                    "!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]"
     ],
     'infos' => [
         'description' => 'Affiche les informations sur Stargate Bot.',
