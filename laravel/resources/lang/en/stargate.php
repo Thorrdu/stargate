@@ -53,7 +53,7 @@ return [
     'defences' => 'Defences',
     'emptydefences' => 'No defence',
     'buildings' => 'Buildings',
-    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies.\n(The list can be seen in `!profile`).",
+    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies or `!colony remove [Number]` to remove one.\n(The list can be seen in `!profile`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
     "neverExploredWorld" => "Empty planet.",
     "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] (:player) from :planetNameSource [:coordinateSource]\n".
