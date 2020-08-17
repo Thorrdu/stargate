@@ -92,14 +92,19 @@ use Illuminate\Support\Facades\DB;
 global $upTimeStart;
 $upTimeStart = Carbon::now();
 
-$beta = true;
+$beta = false;
 $token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c';
+$prefix = '!';
+
 if($beta)
+{
     $token = 'NzQ1MDE1MzAwMTgwOTM0NzM2.XzrnkQ.77nbdwVfRZRYBsPCbIUaIs6YHfs';
+    $prefix = '-';
+}
 
 $discord = new DiscordCommandClient([
 	'token' => $token,
-    'prefix' => '-',
+    'prefix' => $prefix,
     'defaultHelpCommand' => false,
 ]);
 
