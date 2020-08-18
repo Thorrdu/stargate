@@ -155,7 +155,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $exploration = new Exploration;
                     $exploration->player_id = $this->player->id;
-                    $exploration->coordinate_source_id = $this->player->activeColony->coordinates->id;
+                    $exploration->colony_source_id = $this->player->activeColony->id;
                     $exploration->coordinate_destination_id = $this->coordinateDestination->id;
                     $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
                     $exploration->save();

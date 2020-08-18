@@ -17,8 +17,8 @@ class CreateExplorationsTable extends Migration
             $table->increments('id');
             $table->integer('player_id')->unsigned()->nullable();
             $table->foreign('player_id')->references('id')->on('players');
-            $table->integer('coordinate_source_id')->unsigned()->nullable();
-            $table->foreign('coordinate_source_id','s_coordinate_id')->references('id')->on('coordinates');
+            $table->integer('colony_source_id')->unsigned()->nullable();
+            $table->foreign('colony_source_id','s_colony_id')->references('id')->on('colonies');
             $table->integer('coordinate_destination_id')->unsigned()->nullable();
             $table->foreign('coordinate_destination_id','d_coordinate_id')->references('id')->on('coordinates');
 

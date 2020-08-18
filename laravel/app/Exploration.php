@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Exploration extends Model
 {
-    public function coordinateSource()
+    public function colonySource()
     {
-        return $this->hasOne('App\Coordinate','id','coordinate_source_id');
+        return $this->hasOne('App\Colony','id','colony_source_id');
     }
 
     public function coordinateDestination()
