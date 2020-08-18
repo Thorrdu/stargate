@@ -140,8 +140,9 @@ class Player extends Model
             $this->active_colony_id = $this->colonies[0]->id;
             $this->save();
         }
-        $colony->coordinate->colony_id = null;
-        $colony->coordinate->save();
+        $coordinates = $colony->coordinates;
+        $coordinates->colony_id = null;
+        $coordinates->save();
         $colony->delete();
     }
 
