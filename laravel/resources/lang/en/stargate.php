@@ -80,5 +80,6 @@ return [
     "noCasuality" => "No casualties",
     "playerOwned" => "Already owned by a player",
     "samePlayerAction" => "You can't make this action to yourself...",
-    "weakOrStrong" => "This player is too weak or too strong for you..."
+    "weakOrStrong" => "This player is too weak or too strong for you...",
+    "AttackLimit" => "You already attacked this planet earlier. you'll be able to attack again in: :time",
 ];

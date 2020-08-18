@@ -11,6 +11,7 @@ use App\Coordinate;
 use App\Unit;
 use App\Exploration;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use App\Trade;
 use App\TradeResource;
 use App\SpyLog;
@@ -943,6 +944,39 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     if($this->player->isWeakOrStrong($this->coordinateDestination->colony->player))
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
+
+/*
+                    
+                    $lastHourly = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->last_hourly);
+                    if($lastHourly->diffInHours($now) >= 2)
+*/
+                    $activeFights = GateFight::Where([['active',true],['colony_id_source',$this->player->activeColony->id],['colony_id_dest',$this->coordinateDestination->colony->id]])->orderBy('created_at', 'asc')->get();
+                    if($activeFights->count() > 0)
+                    {
+                        $now = Carbon::now();
+                         
+                        $lastFight = Carbon::createFromFormat("Y-m-d H:i:s",$activeFights[$activeFights->count()-1]->created_at);
+                        if($lastFight->diffInHours($now) < 24){
+                            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                            return trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang);
+                        }
+
+                        $firstAttack = GateFight::Where([['active',true],['player_id_source',$this->player->id],['player_id_dest',$activeFights[0]->player_id_dest]])->orderBy('created_at', 'asc')->first();
+                        
+                        $firstAttackTime = Carbon::createFromFormat("Y-m-d H:i:s",$firstAttack->created_at);
+                        if($activeFights >= 2 && $firstAttackTime->diffInHours($now) < 72){
+                            $timeUntilAttack = $now->diffForHumans($firstAttackTime->addHours(72),[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                            return trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang);
+                        }
+                    }
 
                     if($this->player->user_id != 125641223544373248)
                         return 'Under Developement';     

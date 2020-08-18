@@ -74,6 +74,7 @@ use App\Player;
 use App\Colony;
 use App\Reminder;
 use App\Exploration;
+use App\GateFight;
 use Illuminate\Support\Str;
 
 use App\Commands\{HelpCommand as CustomHelp, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
@@ -140,6 +141,22 @@ $discord->on('ready', function ($discord) {
         Config::set('stargate.gateFight.StrongWeak', $newLimit);
         echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
+        $activeFights = GateFight::Where(['active',true])->get();
+        $now = Carbon::now();
+
+        foreach($activeFights as $activeFight)
+        {
+            $now = Carbon::now();     
+            $fightTime = Carbon::createFromFormat("Y-m-d H:i:s",$activeFight->created_at);
+            if($fightTime->diffInHours($now) > 72){
+                $updatingFights = GateFight::Where([['active',true],['player_id_source',$activeFight->player_id_source],['player_id_dest',$activeFight->player_id_dest]])->get();
+                foreach($updatingFights as $updatingFight)
+                {
+                    $updatingFight->active = false;
+                    $updatingFight->save();
+                }
+            }
+        }
     });
 
 

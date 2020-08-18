@@ -80,5 +80,6 @@ return [
     "noCasuality" => "Aucune perte à déplorer",
     "playerOwned" => "Appartient à un joueur",
     "samePlayerAction" => "Vous ne pouvez effectuer cette action sur vous même...",
-    "weakOrStrong" => "Ce joueur est trop for ou trop faible pour vous..."
+    "weakOrStrong" => "Ce joueur est trop for ou trop faible pour vous...",
+    "AttackLimit" => "Vous avez déjà attaqué cette planète il y a peu. Vous pourrez à nouveau attaquer dans: :time",
 ];

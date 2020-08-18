@@ -33,6 +33,7 @@ class CreateGateFightsTable extends Migration
             $table->integer('gold')->length(18)->unsigned()->nullable();
             $table->integer('quartz')->length(18)->unsigned()->nullable();
             $table->integer('naqahdah')->length(18)->unsigned()->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }
