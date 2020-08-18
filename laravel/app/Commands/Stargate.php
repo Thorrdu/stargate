@@ -968,7 +968,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $firstAttack = GateFight::Where([['active',true],['player_id_source',$this->player->id],['player_id_dest',$activeFights[0]->player_id_dest]])->orderBy('created_at', 'asc')->first();
                         
                         $firstAttackTime = Carbon::createFromFormat("Y-m-d H:i:s",$firstAttack->created_at);
-                        if($activeFights >= 2 && $firstAttackTime->diffInHours($now) < 72){
+                        if($activeFights->count() >= 2 && $firstAttackTime->diffInHours($now) < 72){
                             $timeUntilAttack = $now->diffForHumans($firstAttackTime->addHours(72),[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
