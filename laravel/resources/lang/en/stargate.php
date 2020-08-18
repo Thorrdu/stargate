@@ -35,12 +35,12 @@ return [
                       ":resources\n".
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
-    "moveMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
-                      "Destination: Colonie :planet [:coordinateDestination]\n".
-                      "Ressources:\n".
+    "moveMessage" => "__Sending de ressources depuis la planète [:coordinateSource]__\n".
+                      "Destination: Colony :planet [:coordinateDestination]\n".
+                      "Resources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
-                      "Statut de l'envoi: **En attente**",
+                      "Sending status: **En attente**",
     'unknownResource' => "Unknown resource: :resource",
     "spyConfirmation" => "Send a spy mission on [:coordinateDestination] (:player) ?\nCost: :consumption",
     "spySending" => "You sent a spy mission on [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",

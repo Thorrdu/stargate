@@ -411,7 +411,7 @@ class Colony extends Model
                         $this->load('units'); 
                     }
                 }
-                DB::table('craft_queues')->where('craft_end', '<=', Carbon::now())->delete();
+                DB::table('craft_queues')->where([['craft_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('craftQueues'); 
 
             }
@@ -455,7 +455,7 @@ class Colony extends Model
                         $this->load('defences'); 
                     }
                 }
-                DB::table('defence_queues')->where('defence_end', '<=', Carbon::now())->delete();
+                DB::table('defence_queues')->where([['defence_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('defenceQueues'); 
 
             }
