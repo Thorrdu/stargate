@@ -59,7 +59,7 @@ class TradeResource extends Model
                     $this->trade_value = $this->quantity * 0.2;
                 break;
                 case 'E2PZ':
-                    $this->trade_value = $this->quantity * 10000;
+                    $this->trade_value = $this->quantity * 2500;
                 break;
             }
 

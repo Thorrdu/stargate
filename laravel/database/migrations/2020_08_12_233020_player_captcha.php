@@ -14,8 +14,8 @@ class PlayerCaptcha extends Migration
     public function up()
     {
         Schema::table('players', function (Blueprint $table) {
-            $table->boolean('captcha')->default(false);
-            $table->string('captcha_key', 50)->nullable();
+            $table->boolean('captcha')->default(false)->after('ban');
+            $table->string('captcha_key', 50)->nullable()->after('captcha');
         });
     }
 

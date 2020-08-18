@@ -16,14 +16,14 @@ class Trade extends Model
         return $this->belongsTo('App\Player','id','dest_player_id');
     }
 
-    public function coordinateSource()
+    public function colonySource()
     {
-        return $this->belongsTo('App\Coordinate','id','coordinate_source_id');
+        return $this->belongsTo('App\Colony','id','colony__source_id');
     }
 
-    public function coordinateDest()
+    public function colonyDest()
     {
-        return $this->belongsTo('App\Coordinate','id','coordinate_destination_id');
+        return $this->belongsTo('App\Colony','id','colony_destination_id');
     }
 
     public function tradeResources()
@@ -36,7 +36,7 @@ class Trade extends Model
         $this->trade_value = 0;
         foreach($this->tradeResources as $tradeResource)
         {
-            $this->trade_value += $tradeResource->trade_value;
+            $this->{'trade_value_player'.$tradeResource->player} += $tradeResource->trade_value;
         }
     }
 }

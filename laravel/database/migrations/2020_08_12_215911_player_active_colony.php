@@ -14,7 +14,8 @@ class PlayerActiveColony extends Migration
     public function up()
     {
         Schema::table('players', function (Blueprint $table) {
-            $table->integer('active_colony_id')->unsigned()->nullable()->after('votes');
+            $table->boolean('npc')->default(false)->after('votes');
+            $table->integer('active_colony_id')->unsigned()->nullable()->after('npc');
             $table->foreign('active_colony_id')->references('id')->on('colonies');
         });
     }

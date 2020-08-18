@@ -17,6 +17,7 @@ class CreateTradeResourcesTable extends Migration
             $table->increments('id');
             $table->integer('trade_id')->unsigned()->nullable();
             $table->foreign('trade_id')->references('id')->on('trades');
+            $table->enum('player',[1,2]);
             $table->integer('unit_id')->unsigned()->nullable();
             $table->foreign('unit_id')->references('id')->on('units');
             $table->enum('resource', ['iron', 'gold', 'quartz ', 'naqahdah', 'E2PZ', 'military'])->nullable();

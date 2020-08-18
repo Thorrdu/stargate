@@ -529,17 +529,36 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
 
                                     try{
-                                        $tradeLog = new Trade;
-                                        $tradeLog->source_player_id = $this->player->id;
-                                        $tradeLog->coordinate_source_id = $this->player->activeColony->coordinates->id;
-                                        $tradeLog->dest_player_id = $this->coordinateDestination->colony->player->id;
-                                        $tradeLog->coordinate_destination_id = $this->coordinateDestination->id;
-                                        $tradeLog->trade_value = 0;
-                                        $tradeLog->save();
+
+                                        $tradeLogCheck = Trade::where([['player_id_dest',$this->coordinateDestination->colony->player->id], ['player_id_source',$this->player->id], ['active' => true]])
+                                                                ->orWhere([['player_id_source',$this->coordinateDestination->colony->player->id], ['player_id_dest',$this->player->id], ['active' => true]])->first();
+
+                                        if(!is_null($tradeLogCheck))
+                                        {
+                                            $tradeLog = $tradeLogCheck;
+                                            $tradePlayer = '';
+                                            if($this->player->id == $tradeLog->player_id_dest)
+                                                $tradePlayer = 1;
+                                            else
+                                                $tradePlayer = 2;
+                                        }
+                                        else
+                                        {
+                                            $tradeLog = new Trade;
+                                            $tradeLog->player_id_source = $this->player->id;
+                                            $tradeLog->colony_source_id = $this->player->activeColony->id;
+                                            $tradeLog->player_id_dest = $this->coordinateDestination->colony->player->id;
+                                            $tradeLog->colony_destination_id = $this->coordinateDestination->colony->id;
+                                            $tradeLog->trade_value = 0;
+                                            $tradeLog->save();
+                                            $tradePlayer = 1;
+                                        }
+
 
                                         foreach($tradeObjets as $tradeObject)
                                         {
                                             $tradeResource = new TradeResource;
+                                            $tradeResource->player = $tradePlayer;
                                             $tradeResource->trade_id = $tradeLog->id;
                                             $tradeResource->quantity = $tradeObject['quantity'];
                                             if(isset($tradeObject['unit_id']))
@@ -709,9 +728,9 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $spyLog = new SpyLog;
                                         $spyLog->source_player_id = $this->player->id;
-                                        $spyLog->coordinate_source_id = $this->player->activeColony->coordinates->id;
+                                        $spyLog->colony_source_id = $this->player->activeColony->id;
                                         $spyLog->dest_player_id = $this->coordinateDestination->colony->player->id;
-                                        $spyLog->coordinate_destination_id = $this->coordinateDestination->id;
+                                        $spyLog->colony_destination_id = $this->coordinateDestination->colony->id;
                                         $spyLog->save();
 
                                         $spy = Technology::where('slug', 'spy')->first();

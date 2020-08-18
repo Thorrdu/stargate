@@ -16,13 +16,13 @@ class SpyLog extends Model
         return $this->belongsTo('App\Player','id','dest_player_id');
     }
 
-    public function coordinateSource()
+    public function colonySource()
     {
-        return $this->belongsTo('App\Coordinate','id','coordinate_source_id');
+        return $this->belongsTo('App\Colony','id','colony_source_id');
     }
 
-    public function coordinateDest()
+    public function colonyDest()
     {
-        return $this->belongsTo('App\Coordinate','id','coordinate_destination_id');
+        return $this->belongsTo('App\Colony','id','colony_destination_id');
     }
 }

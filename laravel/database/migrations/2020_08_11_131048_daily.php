@@ -14,8 +14,8 @@ class Daily extends Migration
     public function up()
     {
         Schema::table('players', function (Blueprint $table) {
-            $table->integer('dailies')->length(10)->unsigned()->default(0);
-            $table->timestamp('last_daily')->nullable();
+            $table->integer('dailies')->length(10)->unsigned()->default(0)->after('ban');
+            $table->timestamp('last_daily')->nullable()->after('dailies');
         });
     }
 

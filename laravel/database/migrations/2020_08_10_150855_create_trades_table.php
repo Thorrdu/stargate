@@ -15,15 +15,17 @@ class CreateTradesTable extends Migration
     {
         Schema::create('trades', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('source_player_id')->unsigned()->nullable();
-            $table->foreign('source_player_id')->references('id')->on('players');
-            $table->integer('coordinate_source_id')->unsigned()->nullable();
-            $table->foreign('coordinate_source_id')->references('id')->on('coordinates');
-            $table->integer('dest_player_id')->unsigned()->nullable();
-            $table->foreign('dest_player_id')->references('id')->on('players');
-            $table->integer('coordinate_destination_id')->unsigned()->nullable();
-            $table->foreign('coordinate_destination_id')->references('id')->on('coordinates');
-            $table->integer('trade_value')->length(18)->unsigned();
+            $table->integer('player_id_source')->unsigned()->nullable();
+            $table->foreign('player_id_source')->references('id')->on('players');
+            $table->integer('colony_source_id')->unsigned()->nullable();
+            $table->foreign('colony_source_id')->references('id')->on('colonies');
+            $table->integer('trade_value_player1')->length(18)->unsigned();
+            $table->integer('player_id_dest')->unsigned()->nullable();
+            $table->foreign('player_id_dest')->references('id')->on('players');
+            $table->integer('colony_destination_id')->unsigned()->nullable();
+            $table->foreign('colony_destination_id')->references('id')->on('colonies');
+            $table->integer('trade_value_player2')->length(18)->unsigned();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

@@ -17,12 +17,12 @@ class CreateSpyLogsTable extends Migration
             $table->increments('id');
             $table->integer('source_player_id')->unsigned()->nullable();
             $table->foreign('source_player_id')->references('id')->on('players');
-            $table->integer('coordinate_source_id')->unsigned()->nullable();
-            $table->foreign('coordinate_source_id')->references('id')->on('coordinates');
+            $table->integer('colony_source_id')->unsigned()->nullable();
+            $table->foreign('colony_source_id')->references('id')->on('colonies');
             $table->integer('dest_player_id')->unsigned()->nullable();
             $table->foreign('dest_player_id')->references('id')->on('players');
-            $table->integer('coordinate_destination_id')->unsigned()->nullable();
-            $table->foreign('coordinate_destination_id')->references('id')->on('coordinates');
+            $table->integer('colony_destination_id')->unsigned()->nullable();
+            $table->foreign('colony_destination_id')->references('id')->on('colonies');
             $table->timestamps();
         });
     }

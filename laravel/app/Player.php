@@ -124,7 +124,7 @@ class Player extends Model
         $colony->buildings()->detach();
         $colony->units()->detach();
 
-        $trades = Trade::where('coordinate_source_id', $colony->coordinates->id)->orWhere('coordinate_destination_id', $colony->coordinates->id)->get();
+        $trades = Trade::where('colony_source_id', $colony->coordinates->id)->orWhere('colony_destination_id', $colony->coordinates->id)->get();
         foreach($trades as $trade)
         {
             foreach($trades->tradeResources as $tradeResource)
