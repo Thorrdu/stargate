@@ -116,7 +116,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.failedDialing', [], $this->player->lang);
                 }
 
-                if(!Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->id != 125641223544373248)
+                if(!Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->user_id != 125641223544373248)
                     return trans('stargate.samePlayerAction', [], $this->player->lang);
 
                 if($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != 125641223544373248)
