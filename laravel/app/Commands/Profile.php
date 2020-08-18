@@ -50,11 +50,11 @@ class Profile extends CommandHandler implements CommandInterface
 
 
             $totalPlayers = DB::table('players')->where('npc', 0)->count();
-            $generalPosition = DB::table('players')->where([['npc', 0],['points_total', '>' , $this->player->points_total]])->count() + 1;
-            $buildingPosition = DB::table('players')->where([['npc', 0],['points_building', '>' , $this->player->points_building]])->count() + 1;
-            $researchPosition = DB::table('players')->where([['npc', 0],['points_research', '>' , $this->player->points_research]])->count() + 1;
-            $militaryPosition = DB::table('players')->where([['npc', 0],['points_military', '>' , $this->player->points_military]])->count() + 1;
-            $defencePosition = DB::table('players')->where([['npc', 0],['points_defence', '>' , $this->player->points_defence]])->count() + 1;
+            $generalPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_total', '>' , $this->player->points_total]])->count() + 1;
+            $buildingPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_building', '>' , $this->player->points_building]])->count() + 1;
+            $researchPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_research', '>' , $this->player->points_research]])->count() + 1;
+            $militaryPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_military', '>' , $this->player->points_military]])->count() + 1;
+            $defencePosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_defence', '>' , $this->player->points_defence]])->count() + 1;
 
             if($this->player->notification)
                 $notificationString = "On";
