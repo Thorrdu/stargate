@@ -14,8 +14,8 @@ class Hourly extends Migration
     public function up()
     {
         Schema::table('players', function (Blueprint $table) {
-            $table->integer('hr_combo')->length(10)->unsigned()->default(0)->after('last_daily');
-            $table->integer('hr_max_combo')->length(10)->unsigned()->default(0)->after('hr_combo');
+            $table->integer('hr_combo')->length(3)->unsigned()->default(0)->after('last_daily');
+            $table->integer('hr_max_combo')->length(3)->unsigned()->default(0)->after('hr_combo');
             $table->timestamp('last_hourly')->nullable()->after('hr_max_combo');
         });
     }

@@ -19,7 +19,7 @@ class CreateColonyDefenceTable extends Migration
             $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('defence_id')->unsigned();
             $table->foreign('defence_id')->references('id')->on('defences');
-            $table->bigInteger('number')->length(18)->default(0);
+            $table->integer('number')->length(25)->default(0);
             $table->timestamps();
         });
     }

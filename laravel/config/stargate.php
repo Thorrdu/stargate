@@ -23,7 +23,7 @@ return [
         'defence' => '<:military:737769413629182094>',
         'storage' => '<:storage:745057028455661678>'
     ],
-    'galaxy' => ['maxGalaxies' => 3, 'maxSystems' => 100, 'maxPlanets' => 10],
+    'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
     'maxProdTime' => 720, //12h
     'maxColonies' => 5,

@@ -29,7 +29,7 @@ class CreateExplorationsTable extends Migration
             $table->enum('outcome_resource', ['iron', 'gold', 'quartz ', 'naqdahdah', 'E2PZ'])->nullable();
             $table->integer('unit_id')->unsigned()->nullable();
             $table->foreign('unit_id')->references('id')->on('units');
-            $table->integer('outcome_quantity')->length(18)->unsigned()->nullable();
+            $table->integer('outcome_quantity')->length(25)->unsigned()->nullable();
 
             $table->timestamps();
         });

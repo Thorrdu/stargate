@@ -19,7 +19,7 @@ class CreateColonyUnitTable extends Migration
             $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('unit_id')->unsigned();
             $table->foreign('unit_id')->references('id')->on('units');
-            $table->bigInteger('number')->length(18)->default(0);
+            $table->integer('number')->length(25)->default(0);
             $table->timestamps();
         });
     }

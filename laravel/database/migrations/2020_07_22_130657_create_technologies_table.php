@@ -22,14 +22,14 @@ class CreateTechnologiesTable extends Migration
 
             $table->enum('type', ['Labo', 'Center']);
 
-            $table->bigInteger('iron')->length(18)->unsigned()->default(0);
-            $table->bigInteger('gold')->length(18)->unsigned()->default(0);
-            $table->bigInteger('quartz')->length(18)->unsigned()->default(0);
-            $table->bigInteger('naqahdah')->length(18)->unsigned()->default(0);
+            $table->bigInteger('iron')->length(25)->unsigned()->default(0);
+            $table->bigInteger('gold')->length(25)->unsigned()->default(0);
+            $table->bigInteger('quartz')->length(25)->unsigned()->default(0);
+            $table->bigInteger('naqahdah')->length(25)->unsigned()->default(0);
 
             $table->decimal('upgrade_coefficient', 5, 2);
             
-            $table->bigInteger('time_base')->length(18)->default(1000);
+            $table->integer('time_base')->length(25)->default(1000);
             $table->decimal('time_coefficient', 5, 2)->default(1.4);
 
             $table->decimal('energy_bonus', 5, 2)->nullable();

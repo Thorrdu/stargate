@@ -21,8 +21,8 @@ class CreateTradeResourcesTable extends Migration
             $table->integer('unit_id')->unsigned()->nullable();
             $table->foreign('unit_id')->references('id')->on('units');
             $table->enum('resource', ['iron', 'gold', 'quartz ', 'naqahdah', 'E2PZ', 'military'])->nullable();
-            $table->integer('quantity')->length(18)->unsigned();
-            $table->integer('trade_value')->length(18)->unsigned();
+            $table->integer('quantity')->length(25)->unsigned();
+            $table->integer('trade_value')->length(25)->unsigned();
             $table->timestamps();
         });
     }

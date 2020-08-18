@@ -19,12 +19,12 @@ class CreateUnitsTable extends Migration
             $table->string('name', 50);
             $table->string('slug', 50);
             $table->longText('description');
-            $table->integer('capacity')->length(18)->unsigned()->default(0);
+            $table->integer('capacity')->length(25)->unsigned()->default(0);
             $table->boolean('buyable')->default(false);
-            $table->bigInteger('iron')->length(18)->unsigned()->nullable();
-            $table->bigInteger('gold')->length(18)->unsigned()->nullable();
-            $table->bigInteger('quartz')->length(18)->unsigned()->nullable();
-            $table->bigInteger('naqahdah')->length(18)->unsigned()->nullable();
+            $table->bigInteger('iron')->length(25)->unsigned()->nullable();
+            $table->bigInteger('gold')->length(25)->unsigned()->nullable();
+            $table->bigInteger('quartz')->length(25)->unsigned()->nullable();
+            $table->bigInteger('naqahdah')->length(25)->unsigned()->nullable();
             $table->integer('base_time')->lenght(5)->unsigned()->nullable();
             $table->timestamps();
         });

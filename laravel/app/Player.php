@@ -80,7 +80,12 @@ class Player extends Model
             else
             {
                 $minSpace = $maxSpace = 0;
-                if($choosedCoordinate->planet < 3)
+                if($this->user_id == 125641223544373248)
+                {
+                    $minSpace = 200;
+                    $maxSpace = 200;
+                }
+                elseif($choosedCoordinate->planet < 3)
                 {
                     $minSpace = 10;
                     $maxSpace = 100;

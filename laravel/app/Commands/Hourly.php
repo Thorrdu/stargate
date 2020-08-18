@@ -93,7 +93,7 @@ class Hourly extends CommandHandler implements CommandInterface
 
                     $this->player->last_hourly = Carbon::now();
                     /**CAPTCHA SECURITY*/
-                    if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 != 0)
+                    if($this->player->hr_combo > 4 && $this->player->hr_combo % 2 == 0)
                     {
                         $this->player->captcha = true;
                         $this->player->captcha_key = Str::random(10);
