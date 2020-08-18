@@ -980,9 +980,6 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     }
 
-                    if($this->player->user_id != 125641223544373248)
-                        return 'Under Developement';     
-
                     $capacityNeeded = 0;
                     $attackConfirmPower = "";
                     $this->attackMilitaries = 0;
