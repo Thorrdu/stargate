@@ -28,6 +28,10 @@ return [
         'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
         'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantité]"
     ],
+    'defence' => [
+        'description' => "Permet de lister et construire des défenses pour protéger vos colonies",
+        'usage' => "!defence list\n!defence queue\n!defence [id/slug] [quantité]"
+    ],
     'galaxy' => [
         'description' => "Affiche une vue de la galaxie"
                         ."\nVotre zone de vision dépend de la technologie Informatique et Communication."

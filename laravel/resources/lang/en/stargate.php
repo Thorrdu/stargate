@@ -5,7 +5,7 @@ return [
                           "**explore** (`!stargate explore [coordinates]`)\n".
                           "**colonize** (`!stargate colonize [coordinates]`)\n".
                           "**move** (`!stargate move [colonyNumber] [Res1] [Qty1]`)\n".
-                          "**trade** (`!stargate move [coordinates] [Res1] [Qty1]`)\n".
+                          "**trade** (`!stargate trade [coordinates] [Res1] [Qty1]`)\n".
                           "**spy** (`!stargate spy [coordinates]`) \n".
                           "**attack** (`!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]`)\n",
     "unknownCoordinates" => "Unknown Coordinates",

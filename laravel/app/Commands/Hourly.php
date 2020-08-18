@@ -69,9 +69,9 @@ class Hourly extends CommandHandler implements CommandInterface
                     if($comboReset)
                         $this->player->hr_combo = 1;
                     
-                    if($this->player->hr_combo > config('maxHourly'))
+                    if($this->player->hr_combo > config('stargate.maxHourly'))
                     {
-                        $displayMultiplier = config('maxHourly') * 10;
+                        $displayMultiplier = config('stargate.maxHourly') * 10;
                         $multiplier = 1+($displayMultiplier / 100);
                     }
                     else

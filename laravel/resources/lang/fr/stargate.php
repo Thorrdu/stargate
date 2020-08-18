@@ -5,7 +5,7 @@ return [
                             "**explore** (`!stargate explore [coordonées]`)\n".
                             "**colonize** (`!stargate colonize [coordonées]`)\n".
                             "**move** (`!stargate move [NuméroDeColonie] [Res1] [Qté1]`)\n".
-                            "**trade** (`!stargate move [coordonées] [Res1] [Qté1]`)\n".
+                            "**trade** (`!stargate trade [coordonées] [Res1] [Qté1]`)\n".
                             "**spy** (`!stargate spy [coordonées]`)\n".
                             "**attack** (`!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]`)\n",
     "unknownCoordinates" => "Coordonées inconnues",
@@ -80,6 +80,6 @@ return [
     "noCasuality" => "Aucune perte à déplorer",
     "playerOwned" => "Appartient à un joueur",
     "samePlayerAction" => "Vous ne pouvez effectuer cette action sur vous même...",
-    "weakOrStrong" => "Ce joueur est trop for ou trop faible pour vous...",
+    "weakOrStrong" => "Ce joueur est trop fort ou trop faible pour vous...",
     "AttackLimit" => "Vous avez déjà attaqué cette planète il y a peu. Vous pourrez à nouveau attaquer dans: :time",
 ];

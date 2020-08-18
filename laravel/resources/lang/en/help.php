@@ -27,6 +27,10 @@ return [
         'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
         'usage' => "!craft list\n!craft queue\n!craft [id/slug] [quantity]"
     ],
+    'defence' => [
+        'description' => "List available defences to build and protect your colonies",
+        'usage' => "!defence list\n!defence queue\n!defence [id/slug] [quantity]"
+    ],
     'galaxy' => [
         'description' => "Display a view of the current galaxy"
                         ."\nYour vision range depends on your Communication technology."
