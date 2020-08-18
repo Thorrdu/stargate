@@ -121,7 +121,6 @@ class Player extends Model
 
     public function removeColony(Colony $colony)
     {
-        $colony = $this->player->colonies[(int)$this->args[1]-1];
         $colony->buildings()->detach();
         $colony->units()->detach();
 
