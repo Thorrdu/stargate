@@ -51,6 +51,11 @@ class Infos extends CommandHandler implements CommandInterface
                     'inline' => true
                 ],
                 [
+                    'name' => 'Strong/Weak Limit',
+                    'value' => number_format(config('stargate.gateFight.StrongWeak')),
+                    'inline' => true
+                ],
+                [
                     'name' => 'Links',
                     'value' => "[Support Server](http://discord.gg/9hG6zaw)\n"
                               ."[Invitation](https://discordapp.com/oauth2/authorize?&client_id=730815388400615455&scope=bot&permissions=1047623)",
