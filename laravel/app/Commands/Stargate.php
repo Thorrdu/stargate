@@ -133,7 +133,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.explorePlayerImpossible', [], $this->player->lang);
 
                     if($this->player->activeColony->military < 1000)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(1000-$this->player->activeColony->military,2)], $this->player->lang);
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
                     if($this->player->explorations->count() > 0)
                     {
@@ -289,7 +289,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         }        
                                         elseif($this->player->activeColony->$tradeResource < $qty)
                                         {
-                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(round($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(ceil($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
                                             $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content));
                                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                             return;
@@ -904,7 +904,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.playerOwned', [], $this->player->lang);
 
                     if($this->player->activeColony->military < 1000)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(1000-$this->player->activeColony->military,2)], $this->player->lang);
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
                     if($this->player->colonies->count() < config('stargate.maxColonies'))
                     {
