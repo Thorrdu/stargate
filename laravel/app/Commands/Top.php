@@ -34,23 +34,23 @@ class Top extends CommandHandler implements CommandInterface
 
                 if(Str::startsWith('general', $this->args[0])){
                     $this->topType = 'general';
-                    $this->playerList = Player::all()->where([['id', '!=', 1],['npc', 0]])->sortByDesc('points_total'); 
+                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total'); 
                 }     
                 elseif(Str::startsWith('building', $this->args[0])){
                     $this->topType = 'building';
-                    $this->playerList = Player::all()->where([['id', '!=', 1],['npc', 0]])->sortByDesc('points_building');
+                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
                 }      
                 elseif(Str::startsWith('research', $this->args[0])){
                     $this->topType = 'research';
-                    $this->playerList = Player::all()->where([['id', '!=', 1],['npc', 0]])->sortByDesc('points_research');   
+                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
                 }  
                 elseif(Str::startsWith('military', $this->args[0])){
                     $this->topType = 'military';
-                    $this->playerList = Player::all()->where([['id', '!=', 1],['npc', 0]])->sortByDesc('points_military');   
+                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');   
                 }   
                 elseif(Str::startsWith('defence', $this->args[0])){
                     $this->topType = 'defence';
-                    $this->playerList = Player::all()->where([['id', '!=', 1],['npc', 0]])->sortByDesc('points_defence');   
+                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');   
                 }   
                 else
                     return trans('top.choice', [], $this->player->lang);
