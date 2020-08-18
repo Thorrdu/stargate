@@ -16,7 +16,7 @@ return [
         'e2pz' => '<:e2pz:742847654492373144>',
         'energy' => '<:energy:745058168169824437>',
         'production' => '<:production:745056821101985882>',
-        'productionBuilding' => '⚙️',
+        'productionBuilding' => '<:production:745056821101985882>',
         'research' => '<:research:737769578045898775>',
         'researchBuilding' => '<:researchBuilding:743237547416879185>',
         'military' => '<:military:737769413629182094>',
