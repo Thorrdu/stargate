@@ -81,7 +81,8 @@ class Stargate extends CommandHandler implements CommandInterface
                 }
                 
 
-                if(!preg_match('/[0-9]{1,}:[0-9]{1,}:[0-9]{1,}/', $this->args[1], $coordinatesMatch))
+
+                if(!preg_match('/(([0-9]{1,}:[0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,};[0-9]{1,}))/', $this->args[1], $coordinatesMatch))
                 {
                     if(Str::startsWith('move',$this->args[0]) && !((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count()))
                         return trans('colony.UnknownColony', [], $this->player->lang);
@@ -93,7 +94,11 @@ class Stargate extends CommandHandler implements CommandInterface
                 else
                 {
                     //Est-ce que la destination à une porte ?
-                    $coordinates = explode(':',$coordinatesMatch[0]);
+                    if(strstr($coordinatesMatch[0],';'))
+                        $coordinates = explode(';',$coordinatesMatch[0]);
+                    else
+                        $coordinates = explode(':',$coordinatesMatch[0]);
+
                     $this->coordinateDestination = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                 }
                 
@@ -1229,6 +1234,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     {
                                                         $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
                                                         $this->player->activeColony->$resource += $claimed;
+                                                        $defenderLooseString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
                                                         ${$resource} = $claimed;
                                                     }
                                                 }
