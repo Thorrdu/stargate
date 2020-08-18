@@ -90,7 +90,7 @@ class Profile extends CommandHandler implements CommandInterface
             $colonyIndex = 1;
             foreach($this->player->colonies as $colony)
             {
-                $coloniesString .= $colonyIndex.'. '.$colony->name."\n";
+                $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
                 $colonyIndex++;
             }
             $embed['fields'][] = [
