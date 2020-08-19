@@ -187,12 +187,13 @@ $discord->on('ready', function ($discord) {
             {
                 if($totalReminders == $rmdCounter)
                 {
-                    $rmdMessagesStr = $reminder->reminder;
+                    if($playerIdRemind == $reminder->player->user_id)
+                        $rmdMessagesStr .= $reminder->reminder;
+                    else
+                        $rmdMessagesStr = $reminder->reminder;
+
                     $playerIdRemind = $reminder->player->user_id;
                 }
-                else
-                    $rmdMessagesStr .= $reminder->reminder."\n";
-
 
                 $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
                     return $value->id == $playerIdRemind;
