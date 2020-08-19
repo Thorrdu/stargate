@@ -182,10 +182,10 @@ class Build extends CommandHandler implements CommandInterface
                             if( !is_null($this->player->active_technology_id) && $building->id == 7)
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
-                            if( $this->player->activeColony->defenceQueues->count() > 0 && $this->player->activeColony->active_building_id == 15 )
+                            if( $this->player->activeColony->defenceQueues->count() > 0 && $building->id == 15 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
-                            if( $this->player->activeColony->craftQueues->count() > 0 && $this->player->activeColony->active_building_id == 9 )
+                            if( $this->player->activeColony->craftQueues->count() > 0 && $building->id == 9 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $now = Carbon::now();
