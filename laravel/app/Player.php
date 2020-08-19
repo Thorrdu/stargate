@@ -195,7 +195,9 @@ class Player extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($technology->$resource > 0)
-                $this->activeColony->$resource -= round($buildingPrices[$resource]);
+                $this->activeColony->$resource -= $buildingPrices[$resource];
+            if($this->activeColony->$resource < 0)
+                $this->activeColony->$resource = 0;
         }
 
         if($this->notification)

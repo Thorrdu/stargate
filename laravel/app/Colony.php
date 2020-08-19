@@ -268,7 +268,9 @@ class Colony extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($unit->$resource > 0)
-                $this->$resource -= round($buildingPrices[$resource]);
+                $this->$resource -= $buildingPrices[$resource];
+            if($this->$resource < 0)
+                $this->$resource = 0;
         }
 
         if($this->craftQueues->count() > 0)
@@ -302,7 +304,9 @@ class Colony extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($defence->$resource > 0)
-                $this->$resource -= round($buildingPrices[$resource]);
+                $this->$resource -= $buildingPrices[$resource];
+            if($this->resource < 0)
+                $this->resource = 0;
         }
 
         if($this->defenceQueues->count() > 0)
@@ -347,7 +351,9 @@ class Colony extends Model
         foreach (config('stargate.resources') as $resource)
         {
             if($building->$resource > 0)
-                $this->$resource -= round($buildingPrices[$resource]);
+                $this->$resource -= $buildingPrices[$resource];
+            if($this->$resource < 0)
+                $this->$resource = 0;
         }
 
         if($this->player->notification)
@@ -498,6 +504,8 @@ class Colony extends Model
 
                     if($this->$varNameStorage < $this->$resource)
                         $this->$resource = $this->$varNameStorage;
+                    elseif($this->$resource < 0)
+                        $this->$resource = 0;
                 }
                 $this->military += ($this->production_military / 60) * $minuteToClaim;
                 $this->E2PZ += ($this->production_e2pz / 10080) * $minuteToClaim;

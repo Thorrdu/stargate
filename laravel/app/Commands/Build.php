@@ -319,21 +319,20 @@ class Build extends CommandHandler implements CommandInterface
                                             $productionString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.'.$building->production_type)." ".number_format($building->getProduction($currentLvl))."\n";
                                         $productionString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.'.$building->production_type)." ".number_format($building->getProduction($currentLvl+1));
                                     }
-
                                 }
+                            }
 
-                            }
-                            if(!is_null($building->energy_base))
-                            {
-                                if($currentLvl)
-                                    $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl))."\n";
-                                $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl+1));
-                            }
-                            elseif($building->slug == 'naqadahreactor')
+                            if($building->slug == 'naqadahreactor')
                             {
                                 if($currentLvl)
                                     $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl))."\n";
                                 $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl+1));
+                            }
+                            elseif(!is_null($building->energy_base))
+                            {
+                                if($currentLvl)
+                                    $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl))."\n";
+                                $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl+1));
                             }
 
                             if(empty($productionString))
