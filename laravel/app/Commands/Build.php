@@ -331,7 +331,6 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             elseif($building->slug == 'naqadahreactor')
                             {
-                                $this->consumption_naqahdah += floor($building->getConsumption($building->pivot->level));
                                 if($currentLvl)
                                     $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl))."\n";
                                 $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl+1));
