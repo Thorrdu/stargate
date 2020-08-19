@@ -44,7 +44,7 @@ return [
     'unknownResource' => "Ressource inconnue: :resource",
     "spyConfirmation" => "Envoyer une sonde espionner :planetDest [:coordinateDestination] (:player) ?\nCoût: :consumption",
     "spySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] (:player) !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
-    "messageSpied" => "Votre colonie :planet [:coordinate] été visé par une mission d'espionnage en provenance de :planetSource [:sourceCoordinates] (:player).",
+    "messageSpied" => "Votre colonie :planetName [:coordinate] été visé par une mission d'espionnage en provenance de :planetSource [:sourceCoordinates] (:player).",
     "emptyReportTitle" => "Rapport incomplet",
     "technologyTooLow" => "Aucune donnée n'a pu être récupérée , votre niveau d'espionnage est trop faible.",
     "spyReportDescription" => "Rapport d'espionnage de la planète :planetDest [:coordinateDestination] (:player)",
