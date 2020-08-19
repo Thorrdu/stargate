@@ -194,7 +194,7 @@ class Craft extends CommandHandler implements CommandInterface
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                        if(!is_null($this->player->active_technology_id) && $unit->id == 15)
+                        if(!is_null($this->player->active_technology_id) && $unit->id == 9)
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
                         $now = Carbon::now();
