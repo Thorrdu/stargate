@@ -244,13 +244,13 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
-                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 "title" => trans('defence.defenceQueue', [], $this->player->lang),
                 "description" => $defenceQueueString,
                 'fields' => [],
                 'footer' => array(
-                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png',
                     'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
                 ),
             ];
@@ -273,13 +273,13 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
-                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 "title" => trans('defence.defenceList', [], $this->player->lang),
                 "description" => trans('defence.howTo', [], $this->player->lang),
                 'fields' => [],
                 'footer' => array(
-                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                    //'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png',
                     'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
                 ),
             ];

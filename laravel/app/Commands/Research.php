@@ -292,7 +292,7 @@ class Research extends CommandHandler implements CommandInterface
                             $embed = [
                                 'author' => [
                                     'name' => $this->player->user_name,
-                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                 ],
                                 "title" => 'Lvl '.$displayedLvl.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang),
                                 "description" => trans('research.howTo', ['id' => $technology->id, 'slug' => $technology->slug, 'description' => trans('research.'.$technology->slug.'.description', [], $this->player->lang)], $this->player->lang),
@@ -349,7 +349,7 @@ class Research extends CommandHandler implements CommandInterface
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
-                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
             "title" => trans('research.technologyList', [], $this->player->lang),
             "description" => trans('research.genericHowTo', [], $this->player->lang),

@@ -46,7 +46,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
-                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/disabledStargate.jpg'],
                         "title" => "Stargate",
@@ -66,7 +66,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
-                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/enabledStargate.jpg'],
                         "title" => "Stargate",
@@ -163,7 +163,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
-                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/exploration.gif'],
                         "title" => "Stargate",
@@ -498,7 +498,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $embed = [
                                         'author' => [
                                             'name' => $this->coordinateDestination->colony->player->user_name,
-                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                         ],
                                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/bouteille.gif'],
                                         "title" => "Stargate",
@@ -692,7 +692,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $embed = [
                                         'author' => [
                                             'name' => $this->player->user_name,
-                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                         ],
                                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
                                         "title" => "Stargate",
@@ -748,7 +748,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
-                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                             ],
                                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
                                             "title" => "Stargate",
@@ -936,7 +936,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $embed = [
                             'author' => [
                                 'name' => $this->player->user_name,
-                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                             ],
                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/colonize.gif'],
                             "title" => "Stargate",
@@ -1058,7 +1058,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
-                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/manStanding.gif'],
                         "title" => "Stargate",
@@ -1130,7 +1130,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
-                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                             ],
                                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/moveMoveMove.gif'],
                                             "title" => "Stargate",
@@ -1375,7 +1375,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
-                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                             ],
                                             //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/incoming.gif'],
                                             "title" => "Stargate",
@@ -1398,7 +1398,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
-                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                             ],
                                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/incoming.gif'],
                                             "title" => "Stargate",

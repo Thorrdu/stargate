@@ -30,7 +30,7 @@ $embed = [
             //'color' => '#0099ff',
             'author' => [
                 'name' => 'Le joueur',
-                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
             //"title" => "",
             //"description" => "",
@@ -62,7 +62,7 @@ $embed = [
                 ),
             ),
             'footer' => array(
-                'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png',
+                'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png',
                 'text'  => 'Stargate',
             ),
         ];

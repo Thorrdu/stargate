@@ -121,7 +121,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 $embed = [
                     'author' => [
                         'name' => $this->discord->commandClientOptions['name'],
-                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                     ],
                     "title" => 'Help: '.$help['command'],
                     "description" => !empty($help['longDescription'])?$help['longDescription']:trans('help.'.$help['command'].'.description', [], $this->lang),
@@ -180,7 +180,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
             $embed = [
                 'author' => [
                     'name' => $this->discord->commandClientOptions['name'],
-                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/267e7aa294e04be5fba9a70c4e89e292.png'
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 "title" => $this->discord->commandClientOptions['name'].' Help',
                 "description" => trans('help.mainHelp', [], $this->lang)."\n----------------------------",
