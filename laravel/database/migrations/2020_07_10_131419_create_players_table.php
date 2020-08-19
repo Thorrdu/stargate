@@ -20,7 +20,7 @@ class CreatePlayersTable extends Migration
             $table->unique('user_id');
             $table->string('user_name', 50);
             $table->enum('lang', ['fr', 'en']);
-            $table->boolean('notification')->default(false);
+            $table->boolean('notification')->default(true);
             $table->boolean('ban')->default(false);
             $table->integer('votes')->default(0);
             $table->integer('points_total')->length(25)->unsigned()->default(0);

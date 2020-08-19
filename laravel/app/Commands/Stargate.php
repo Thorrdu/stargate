@@ -1335,7 +1335,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $attackerReportString = trans('stargate.attackerWinReport', [
                                                 'destination' => $destCoordinates,
-                                                'planetName' => $this->coordinateDestination->colony->name,
+                                                'planetDest' => $this->coordinateDestination->colony->name,
                                                 'player' => $this->coordinateDestination->colony->player->user_name,
                                                 'loostTroops' => $attackerLooseString,
                                                 'raidReward' => $attackerWinString,
@@ -1343,7 +1343,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                             $defenderReportString = trans('stargate.defenderLostReport', [
                                                 'destination' => $destCoordinates,
-                                                'planetName' => $this->coordinateDestination->colony->name,
+                                                'planetDest' => $this->coordinateDestination->colony->name,
                                                 'player' => $this->coordinateDestination->colony->player->user_name,
                                                 'sourcePLanet' => $this->player->activeColony->name,
                                                 'sourceDestination' => $sourceCoordinates,
@@ -1355,14 +1355,14 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $attackerReportString = trans('stargate.attackerLostReport', [
                                                 'destination' => $destCoordinates,
-                                                'planetName' => $this->coordinateDestination->colony->name,
+                                                'planetDest' => $this->coordinateDestination->colony->name,
                                                 'player' => $this->coordinateDestination->colony->player->user_name,
                                                 'loostTroops' => $attackerLooseString,
                                             ], $this->player->lang);
 
                                             $defenderReportString = trans('stargate.defenderWinReport', [
                                                 'destination' => $destCoordinates,
-                                                'planetName' => $this->coordinateDestination->colony->name,
+                                                'planetDest' => $this->coordinateDestination->colony->name,
                                                 'player' => $this->coordinateDestination->colony->player->user_name,
                                                 'sourcePLanet' => $this->player->activeColony->name,
                                                 'sourceDestination' => $sourceCoordinates,
