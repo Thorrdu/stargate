@@ -181,14 +181,14 @@ $discord->on('ready', function ($discord) {
             $rmdCounter++;
             
             if($playerIdRemind == 0)
-                $playerIdRemind = $reminder->player->id;
+                $playerIdRemind = $reminder->player->user_id;
                 
-            if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->id)
+            if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->user_id)
             {
                 if($totalReminders == $rmdCounter)
                 {
                     $rmdMessagesStr = $reminder->reminder;
-                    $playerIdRemind = $reminder->player->id;
+                    $playerIdRemind = $reminder->player->user_id;
                 }
 
                 $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
@@ -200,7 +200,7 @@ $discord->on('ready', function ($discord) {
                     $foundUser->sendMessage($rmdMessagesStr);
                 }
                 $rmdMessagesStr = "";
-                $playerIdRemind = $reminder->player->id;
+                $playerIdRemind = $reminder->player->user_id;
             }
             $rmdMessagesStr .= $reminder->reminder."\n";
 
