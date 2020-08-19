@@ -11,13 +11,19 @@ class Start extends CommandHandler implements CommandInterface
     public $listner;
     public $buildingList;
     public $newPlayerId;
+    public $userName;
 
     public function execute()
     {
-        echo PHP_EOL.'Execute Start';
+        echo PHP_EOL.'Execute Start ';
         if(is_null($this->player))
         {
             try{
+
+                if(!is_null($this->message->author->username))
+                    $this->userName = $this->message->author->username;
+                else
+                    $this->userName = $this->message->author->user_name;
 
                 $this->newPlayerId = $this->message->author->id;
                 $this->maxTime = time()+180;
@@ -26,7 +32,7 @@ class Start extends CommandHandler implements CommandInterface
                         'name' => "Stargate",
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                     ],
-                    "title" => $this->message->author->user_name,
+                    "title" => $this->userName,
                     "description" => trans('start.langChoice',[],'en')."\n\n".trans('start.langChoice',[],'fr'),
                     'fields' => [],
                     'footer' => array(
@@ -44,7 +50,7 @@ class Start extends CommandHandler implements CommandInterface
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->newPlayerId)
+                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
                         {
                             if($messageReaction->emoji->name == '🇫🇷')
                                 $this->start('fr');
@@ -74,7 +80,7 @@ class Start extends CommandHandler implements CommandInterface
         try{
             $newPlayer = new Player;
             $newPlayer->user_id = $this->newPlayerId;
-            $newPlayer->user_name = $this->message->author->user_name;
+            $newPlayer->user_name = $this->userName;
             $newPlayer->ban = false;
             $newPlayer->lang = $lang;
             $newPlayer->votes = 0;

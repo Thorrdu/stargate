@@ -66,15 +66,15 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         
                         ${'listnerNameHelp'.Str::random(10)} = 55;
                         if($this->maxTime < time()){
-                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
+                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->lang), null);
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                         }
 
-                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
                         {
                             if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
+                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->lang), null);
                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                             }
                             elseif($messageReaction->emoji->name == '⏪')
