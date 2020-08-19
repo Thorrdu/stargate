@@ -714,7 +714,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $foundUser = $userExist->first();
 
                                         //Vous avez été scan
-                                        $foundUser->sendMessage(trans('stargate.messageSpied', ['sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
+                                        $foundUser->sendMessage(trans('stargate.messageSpied', ['planet' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
                                     }
 
                                     $userExist = $this->discord->users->filter(function ($value){

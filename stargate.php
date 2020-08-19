@@ -170,18 +170,40 @@ $discord->on('ready', function ($discord) {
         $discord->updatePresence($game);*/
 
         $dateNow = Carbon::now();
-        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->get();
+        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         echo PHP_EOL."CHECK REMINDER: ".$reminders->count();
+        $playerIdRemind = 0;
+        $totalReminders = $reminders->count();
+        $rmdCounter = 0;
+        $rmdMessagesStr = "";
         foreach($reminders as $reminder)
         {  
-            $userExist = $discord->users->filter(function ($value) use($reminder){
-                return $value->id == $reminder->player->user_id;
-            });
-            if($userExist->count() > 0)
+            $rmdCounter++;
+            
+            if($playerIdRemind == 0)
+                $playerIdRemind = $reminder->player->id;
+                
+            if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->id)
             {
-                $foundUser = $userExist->first();
-                $foundUser->sendMessage($reminder->reminder);
+                if($totalReminders == $rmdCounter)
+                {
+                    $rmdMessagesStr = $reminder->reminder;
+                    $playerIdRemind = $reminder->player->id;
+                }
+
+                $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
+                    return $value->id == $playerIdRemind;
+                });
+                if($userExist->count() > 0)
+                {
+                    $foundUser = $userExist->first();
+                    $foundUser->sendMessage($rmdMessagesStr);
+                }
+                $rmdMessagesStr = "";
+                $playerIdRemind = $reminder->player->id;
             }
+            $rmdMessagesStr .= $reminder->reminder."\n";
+
             $reminder->delete();
         }
 
