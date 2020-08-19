@@ -30,6 +30,16 @@ Config::set('stargate.gateFight.StrongWeak', $newLimit);
 
 echo config('stargate.gateFight.StrongWeak');
 die();*/
+
+$building = Building::find(10); //17 fer 18 or
+
+for($cpt = 1; $cpt < 15; $cpt++)
+{
+	//print_r($building->getPrice($cpt));
+	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getConsumption($cpt)).' | '.round($building->getProductionE2PZ($cpt));
+}
+die();
+/*
 $buildings = Defence::all();
 foreach($buildings as $buidling)
 {
@@ -38,7 +48,7 @@ foreach($buildings as $buidling)
 			'description' => \"{$buidling->description}\",
 	],";
 } 
-die();
+die();*/
 /*
 $building = Building::find(19); //17 fer 18 or
 

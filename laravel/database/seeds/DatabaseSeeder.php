@@ -237,8 +237,8 @@ class DatabaseSeeder extends Seeder
             'production_type' => 'special',
             'production_base' => 300,
             'production_coefficient' => 1.3,
-            'energy_base' => NULL,
-            'energy_coefficient' => NULL,
+            'energy_base' => 26,
+            'energy_coefficient' => 1.3,
             'display_order' => 5,
             'upgrade_coefficient' => 1.6,
             'time_base' => 1800
