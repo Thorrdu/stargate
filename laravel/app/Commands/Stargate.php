@@ -242,7 +242,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->coordinateDestination->colony->name, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
@@ -434,7 +434,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
@@ -502,7 +502,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ],
                                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/bouteille.gif'],
                                         "title" => "Stargate",
-                                        "description" => trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->coordinateDestination->colony->player->lang),
+                                        "description" => trans('stargate.tradeReceived', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'player' => $this->player->user_name, 'resources' => $receivedString], $this->coordinateDestination->colony->player->lang),
                                         'fields' => [
                                         ],
                                         'footer' => array(
@@ -525,7 +525,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     if($userExist->count() > 0)
                                     {
                                         $foundUser = $userExist->first();
-                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang));
+                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang));
                                     }
 
                                     try{
@@ -645,7 +645,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
@@ -687,7 +687,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                    $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                                    $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
 
                                     $embed = [
                                         'author' => [
@@ -714,7 +714,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $foundUser = $userExist->first();
 
                                         //Vous avez été scan
-                                        $foundUser->sendMessage(trans('stargate.messageSpied', ['planet' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
+                                        $foundUser->sendMessage(trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
                                     }
 
                                     $userExist = $this->discord->users->filter(function ($value){
@@ -752,7 +752,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             ],
                                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
                                             "title" => "Stargate",
-                                            "description" => trans('stargate.spyReportDescription', ['coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang),
+                                            "description" => trans('stargate.spyReportDescription', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang),
                                             'fields' => [
                                             ],
                                             'footer' => array(

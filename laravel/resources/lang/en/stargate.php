@@ -19,35 +19,35 @@ return [
     "explorePlayerImpossible" => "It's not possible to explore another player's planet. try spy.",
     "exploreFailed" => "Your scientists have not found anything interresting during the exploration of the planet [:coordinates].",
     "exploreSucessBuildingTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                                  "The building :name requires :\n:requirements",
+                                  "The building **:name** requires Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessTechnologyTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                                    "The technology :name requires :\n:requirements",
+                                    "The technology **:name** requires Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessCraftTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                               "The craft :name requires :\n:requirements",
+                               "The craft **:name** requires Lvl :lvlRequirement: :nameRequirement",
     "exploreCriticalFailed" => "The tam sent to the planet [:coordinates] has not gave any life sign...",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
-                       "External activation detected on [:coordinateDestination] incoming from [:coordinateSource] (:player)\n\n".
+                       "External activation detected on :planetDest [:coordinateDestination] incoming from :planetSource [:coordinateSource] (:player)\n\n".
                        "The following resources have been delivred:\n:resources",
-    "tradeSent" => "You sent the following resources from [:coordinateSource] to [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
-    "tradeMessage" => "__Sending resources from [:coordinateSource]__\n".
+    "tradeSent" => "You sent the following resources from :planetSource [:coordinateSource] to :planetDest [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
+    "tradeMessage" => "__Sending resources from :planetSource [:coordinateSource]__\n".
                       "Destination: :planet [:coordinateDestination] (:player)\n".
                       "Resources:\n".
                       ":resources\n".
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
-    "moveMessage" => "__Sending de ressources depuis la planète [:coordinateSource]__\n".
+    "moveMessage" => "__Sending de ressources depuis la planète :planetSource [:coordinateSource]__\n".
                       "Destination: Colony :planet [:coordinateDestination]\n".
                       "Resources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Sending status: **En attente**",
     'unknownResource' => "Unknown resource: :resource",
-    "spyConfirmation" => "Send a spy mission on [:coordinateDestination] (:player) ?\nCost: :consumption",
-    "spySending" => "You sent a spy mission on [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
-    "messageSpied" => "Your colony :planetName [:coordinate] targeted by a spy mission comming from [:sourceCoordinates] (:player).",
+    "spyConfirmation" => "Send a spy mission on :planetDest [:coordinateDestination] (:player) ?\nCost: :consumption",
+    "spySending" => "You sent a spy mission on :planetDest [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
+    "messageSpied" => "Your colony :planetName [:coordinate] targeted by a spy mission comming from :planetSource [:sourceCoordinates] (:player).",
     "emptyReportTitle" => "Partial report",
     "technologyTooLow" => "No date has been recovered, due to Spy technology too low",
-    "spyReportDescription" => "Spy report from planet [:coordinateDestination] (:player)",
+    "spyReportDescription" => "Spy report from :planetDest [:coordinateDestination] (:player)",
     'fleet' => 'Fleet',
     'emptyFleet' => 'No fleet docked',
     'defences' => 'Defences',

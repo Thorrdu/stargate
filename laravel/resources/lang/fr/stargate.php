@@ -19,35 +19,35 @@ return [
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
     "exploreFailed" => "Vos scientifiques n'ont rien trouvé d'intéréssant en explorant la planète [:coordinates].",
     "exploreSucessBuildingTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                                  "Le bâtiment **:name** requiert :\n:requirements",
+                                  "Le bâtiment **:name** requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessTechnologyTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                                    "La technologie **:name **requiert :\n:requirements",
+                                    "La technologie **:name** requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreSucessCraftTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                               "Le craft **:name** requiert :\n:requirements",
+                               "Le craft **:name** requiert Lvl :lvlRequirement: :nameRequirement",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
-                       "Une activation extérieure à été détectée sur [:coordinateDestination] en provenance de [:coordinateSource] (:player)\n\n".
+                       "Une activation extérieure à été détectée sur :planetDest [:coordinateDestination] en provenance de :planetSource [:coordinateSource] (:player)\n\n".
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
-    "tradeSent" => "Vous avez envoyé les ressources suivantes depuis [:coordinateSource] sur [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
-    "tradeMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
-                      "Destination: : planet [:coordinateDestination] (:player)\n".
+    "tradeSent" => "Vous avez envoyé les ressources suivantes depuis :planetSource [:coordinateSource] sur :planetDest [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
+    "tradeMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".
+                      "Destination: :planetDest [:coordinateDestination] (:player)\n".
                       "Ressources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
-    "moveMessage" => "__Envoi de ressources depuis la planète [:coordinateSource]__\n".
-                      "Destination: Colonie :planet [:coordinateDestination]\n".
+    "moveMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".
+                      "Destination: Colonie :planetDest [:coordinateDestination]\n".
                       "Ressources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
     'unknownResource' => "Ressource inconnue: :resource",
-    "spyConfirmation" => "Envoyer une sonde espionner [:coordinateDestination] (:player) ?\nCoût: :consumption",
-    "spySending" => "Vous avez lancé une mission d'espionnage sur [:coordinateDestination] (:player) !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
-    "messageSpied" => "Votre colonie :planet [:coordinate] été visé par une mission d'espionnage en provenance de [:sourceCoordinates] (:player).",
+    "spyConfirmation" => "Envoyer une sonde espionner :planetDest [:coordinateDestination] (:player) ?\nCoût: :consumption",
+    "spySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] (:player) !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
+    "messageSpied" => "Votre colonie :planet [:coordinate] été visé par une mission d'espionnage en provenance de :planetSource [:sourceCoordinates] (:player).",
     "emptyReportTitle" => "Rapport incomplet",
     "technologyTooLow" => "Aucune donnée n'a pu être récupérée , votre niveau d'espionnage est trop faible.",
-    "spyReportDescription" => "Rapport d'espionnage de la planète [:coordinateDestination] (:player)",
+    "spyReportDescription" => "Rapport d'espionnage de la planète :planetDest [:coordinateDestination] (:player)",
     'fleet' => 'Flotte',
     'emptyFleet' => 'Aucun flotte à quai',
     'defences' => 'Défenses',
@@ -61,19 +61,19 @@ return [
                             "\nCoût: :consumption",
     "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination] (:player).\nUn rapport arrivera sous peu.",
     "attackCancelled" => "Attaque annulée",
-    "attackerWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+    "attackerWinReport" => "Attaque par la porte des étoiles :planetName [:destination] (:player)\n\n".
                             "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
                             "Bilan des gains:\n:raidReward",
-    "attackerLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+    "attackerLostReport" => "Attaque par la porte des étoiles :planetName [:destination] (:player)\n\n".
                             "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops",
-    "defenderWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+    "defenderWinReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Fort heureusement, vos troupes ont peu contenir l'attaque et repousser l'envahisseur.\n\n".
                             "Bilan des pertes:\n:loostTroops".
                             "Bilan des gains:\n:raidReward",
-    "defenderLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
+    "defenderLostReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
                             "Bilan des pertes:\n:loostTroops",
