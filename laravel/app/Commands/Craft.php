@@ -324,7 +324,7 @@ class Craft extends CommandHandler implements CommandInterface
                         $hasRequirements = false;
                 }
                 $capacityString = "";
-                if(!is_null($unit->capacity))
+                if(!is_null($unit->capacity) && $unit->capacity > 0)
                     $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang);
                 if($hasRequirements == true)
                 {
@@ -337,8 +337,8 @@ class Craft extends CommandHandler implements CommandInterface
                 else
                 {
                     $embed['fields'][] = array(
-                        'name' => trans('craft.hidden', [], $this->player->lang),
-                        'value' => trans('craft.unDiscovered', [], $this->player->lang),
+                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
+                        'value' => trans('craft.unDiscovered', [], $this->player->lang)."\n".$capacityString,
                         'inline' => true
                     );
                 }

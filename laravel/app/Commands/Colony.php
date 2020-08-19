@@ -89,9 +89,9 @@ class Colony extends CommandHandler implements CommandInterface
 
                 if(!empty($resourcesValue))
                 {
-                    $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".($this->player->activeColony->energy_max - round($this->player->activeColony->energy_used)).' / '.$this->player->activeColony->energy_max;
-                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->player->activeColony->military)." (".$this->player->activeColony->production_military."/h)";
-                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->activeColony->E2PZ,2)." (".$this->player->activeColony->production_e2pz."/w)";
+                    $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".number_format($this->player->activeColony->energy_max - round($this->player->activeColony->energy_used)).' / '.number_format($this->player->activeColony->energy_max);
+                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->player->activeColony->military)." (".number_format($this->player->activeColony->production_military)."/h)";
+                    $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->activeColony->E2PZ,2)." (".number_format($this->player->activeColony->production_e2pz)."/w)";
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.production')." ".trans('generic.resources', [], $this->player->lang),
                                             'value' => $resourcesValue,
