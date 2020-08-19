@@ -63,7 +63,34 @@ class Colony extends CommandHandler implements CommandInterface
 
                 if(count($this->args) >= 2 && Str::startsWith('remove',$this->args[0]))
                 {
-                    if((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count())
+                    if(preg_match('/(([0-9]{1,}:[0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,};[0-9]{1,}))/', $this->args[1], $coordinatesMatch))
+                    {
+                        //Est-ce que la destination à une porte ?
+                        if(strstr($coordinatesMatch[0],';'))
+                            $coordinates = explode(';',$coordinatesMatch[0]);
+                        else
+                            $coordinates = explode(':',$coordinatesMatch[0]);
+                        
+                        $coordinateSwitch = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
+                        if(!is_null($coordinateSwitch))
+                        {
+                            if(!is_null($coordinateSwitch->colony) && $coordinateSwitch->colony->player->id == $this->player->id)
+                            {
+                                if($this->player->colonies[0]->id == $coordinateSwitch->colony->id)
+                                    return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
+                                else
+                                {
+                                    $this->player->removeColony($coordinateSwitch->colony);
+                                    return trans('colony.colonyRemoved', [], $this->player->lang);
+                                }
+                            }
+                            else
+                                return trans('colony.UnknownColony', [], $this->player->lang);
+                        }
+                        else
+                            return trans('colony.UnknownColony', [], $this->player->lang);
+                    }
+                    elseif((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count())
                     {
                         $colonyAction = $this->args[1];
                         if($colonyAction == 1)
