@@ -34,7 +34,7 @@ class Reminder extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $reminderString .= "`".$reminder->id."` - ".$reminder->reminder_date." (".$reminderTimeString.") - `".str_replace("**Reminder:** ","",$reminder->reminder)."`\n";
+                        $reminderString .= "ID `".$reminder->id."` - ".$reminder->reminder_date." (".$reminderTimeString.") - `".str_replace("**Reminder:** ","",$reminder->reminder)."`\n";
                     }
                 }
                 return "__".trans('reminder.listTitle', [], $this->player->lang)."__:\n\n".$reminderString;

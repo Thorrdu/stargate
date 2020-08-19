@@ -190,6 +190,9 @@ $discord->on('ready', function ($discord) {
                     $rmdMessagesStr = $reminder->reminder;
                     $playerIdRemind = $reminder->player->user_id;
                 }
+                else
+                    $rmdMessagesStr .= $reminder->reminder."\n";
+
 
                 $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
                     return $value->id == $playerIdRemind;
