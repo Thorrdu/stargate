@@ -302,22 +302,22 @@ class Build extends CommandHandler implements CommandInterface
                                 if($building->type == "Energy")
                                 {
                                     if($currentLvl)
-                                        $productionString .= "Lvl ".$currentLvl." - ".round($building->getProductionEnergy($currentLvl))."\n";
-                                    $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProductionEnergy($currentLvl+1));
+                                        $productionString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.energy')." ".number_format($building->getProductionEnergy($currentLvl))."\n";
+                                    $productionString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.energy')." ".number_format($building->getProductionEnergy($currentLvl+1));
                                 }
                                 else
                                 {
                                     if($building->slug == 'asuranfactory')
                                     {
                                         if($currentLvl)
-                                            $productionString .= "Lvl ".$currentLvl." - ".round(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl))."\n";
-                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl+1));
+                                            $productionString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.e2pz')." ".number_format(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl))."\n";
+                                        $productionString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.e2pz')." ".number_format(config('stargate.base_prod.e2pz')+$building->getProductionE2PZ($currentLvl+1));
                                     }
                                     else
                                     {
                                         if($currentLvl)
-                                            $productionString .= "Lvl ".$currentLvl." - ".round($building->getProduction($currentLvl))."\n";
-                                        $productionString .= "Lvl ".($currentLvl+1)." - ".round($building->getProduction($currentLvl+1));
+                                            $productionString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.'.$building->production_type)." ".number_format($building->getProduction($currentLvl))."\n";
+                                        $productionString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.'.$building->production_type)." ".number_format($building->getProduction($currentLvl+1));
                                     }
 
                                 }
@@ -326,9 +326,17 @@ class Build extends CommandHandler implements CommandInterface
                             if(!is_null($building->energy_base))
                             {
                                 if($currentLvl)
-                                    $consoString .= "Lvl ".$currentLvl." - ".$building->getEnergy($currentLvl)."\n";
-                                $consoString .= "Lvl ".($currentLvl+1)." - ".$building->getEnergy($currentLvl+1);
+                                    $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl))."\n";
+                                $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.energy')." ".number_format($building->getEnergy($currentLvl+1));
                             }
+                            elseif($building->slug == 'naqadahreactor')
+                            {
+                                $this->consumption_naqahdah += floor($building->getConsumption($building->pivot->level));
+                                if($currentLvl)
+                                    $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl))."\n";
+                                $consoString .= "Lvl ".($currentLvl+1)." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl+1));
+                            }
+
                             if(empty($productionString))
                                 $productionString = "/";
                             if(empty($bonusString))
