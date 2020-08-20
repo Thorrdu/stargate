@@ -5,6 +5,7 @@ namespace App\Commands;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
+use App\Reminder;
 
 class Hourly extends CommandHandler implements CommandInterface
 {
@@ -49,7 +50,6 @@ class Hourly extends CommandHandler implements CommandInterface
                 else
                     $hourlyOk = true;
                 
-
                 if($hourlyOk)
                 {
                     $randomRes = rand(1,100);                   
@@ -106,11 +106,17 @@ class Hourly extends CommandHandler implements CommandInterface
                             $foundUser = $userExist->first();
                             $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
                         }
-
                     }
                     $this->player->save();
 
-
+                    if($this->player->notification)
+                    {
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now()->add('1h');
+                        $reminder->reminder = trans("hourly.hourlyAvailable", [], $this->player->lang);
+                        $reminder->player_id = $this->player->id;
+                        $reminder->save();
+                    }
 
                     return trans('hourly.hourlyReward', ['reward' => $reward], $this->player->lang);
                 }

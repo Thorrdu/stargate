@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use App\Reminder;
 
 class Daily extends CommandHandler implements CommandInterface
 {
@@ -66,6 +67,16 @@ class Daily extends CommandHandler implements CommandInterface
                     $this->player->last_daily = Carbon::now();
                     $this->player->dailies++;
                     $this->player->save();
+
+                    if($this->player->notification)
+                    {
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now()->add('24h');
+                        $reminder->reminder = trans("daily.dailyAvailable", [], $this->player->lang);
+                        $reminder->player_id = $this->player->id;
+                        $reminder->save();
+                    }
+
 
                     return trans('daily.dailyReward', ['reward' => $reward], $this->player->lang);
                 }
