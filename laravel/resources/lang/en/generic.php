@@ -23,8 +23,8 @@ return [
     'storageCapacity' => 'Storage capcity',
     'technologies' => 'Technologies',
     'laboratory' => 'Laboratory',
-    'center' => 'Center',
-
+    'ship' => 'Ship',
+    'ships' => 'Ships',
     'units' => 'Units',
     'produced' => 'produced',
     'buildingTime' => 'Building time',

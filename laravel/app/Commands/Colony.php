@@ -249,7 +249,7 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!empty($technologyCenterValue))
                 {
                     $embed['fields'][] = array(
-                                            'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang)." ".trans('generic.center', [], $this->player->lang),
+                                            'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang)." ".trans('generic.ships', [], $this->player->lang),
                                             'value' => $technologyCenterValue,
                                             'inline' => true
                                         );
