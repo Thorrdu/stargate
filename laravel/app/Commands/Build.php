@@ -237,11 +237,10 @@ class Build extends CommandHandler implements CommandInterface
                                 {
                                     if($building->$resource > 0)
                                     {
-                                        
                                         $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
                                     }
                                 }
-                                if($building->energy_base > 0)
+                                if($building->energy_base > 0 && $building->slug != 'naqadahreactor')
                                 {
                                     $energyRequired = $building->getEnergy($wantedLvl);
                                     $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
