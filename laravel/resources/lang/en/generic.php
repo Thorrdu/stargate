@@ -22,6 +22,9 @@ return [
     'militaryBuildings' => 'Military buildings',
     'storageCapacity' => 'Storage capcity',
     'technologies' => 'Technologies',
+    'laboratory' => 'Laboratory',
+    'center' => 'Center',
+
     'units' => 'Units',
     'produced' => 'produced',
     'buildingTime' => 'Building time',

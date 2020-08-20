@@ -219,18 +219,38 @@ class Colony extends CommandHandler implements CommandInterface
                                         );
                 }
 
-                $technologyValue = "";
+                $technologyLaboValue = "";
+                $technologyCenterValue = "";
+
                 foreach($this->player->technologies as $technology)
                 {
-                    if(!empty($technologyValue))
-                        $technologyValue .= "\n";
-                    $technologyValue .= 'Lvl '.$technology->pivot->level.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang);
+                    if($technology->type == "Labo")
+                    {
+                        if(!empty($technologyLaboValue))
+                            $technologyLaboValue .= "\n";
+                        $technologyLaboValue .= 'Lvl '.$technology->pivot->level.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang);
+                    }
+                    else
+                    {
+                        if(!empty($technologyCenterValue))
+                            $technologyCenterValue .= "\n";
+                        $technologyCenterValue .= 'Lvl '.$technology->pivot->level.' - '.trans('research.'.$technology->slug.'.name', [], $this->player->lang);
+                    }
+
                 }
-                if(!empty($technologyValue))
+                if(!empty($technologyLaboValue))
                 {
                     $embed['fields'][] = array(
-                                            'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang),
-                                            'value' => $technologyValue,
+                                            'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang)." ".trans('generic.laboratory', [], $this->player->lang),
+                                            'value' => $technologyLaboValue,
+                                            'inline' => true
+                                        );
+                }
+                if(!empty($technologyCenterValue))
+                {
+                    $embed['fields'][] = array(
+                                            'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang)." ".trans('generic.center', [], $this->player->lang),
+                                            'value' => $technologyCenterValue,
                                             'inline' => true
                                         );
                 }

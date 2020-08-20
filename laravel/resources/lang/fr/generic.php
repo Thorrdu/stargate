@@ -22,6 +22,8 @@ return [
     'militaryBuildings' => 'Bâtiments militaires',
     'storageCapacity' => 'Capacité des Entrepôts',
     'technologies' => 'Technologies',
+    'laboratory' => 'Laboratoire',
+    'center' => 'Centre',
     'units' => 'Unités',
     'produced' => 'produite',
     'buildingTime' => 'Temps de construction',
