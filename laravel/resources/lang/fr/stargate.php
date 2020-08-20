@@ -11,7 +11,7 @@ return [
     "unknownCoordinates" => "Coordonées inconnues",
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...\n\n".
                             "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
-                            "Cependant, au Lvl 5, les autres joueurs pourront se connecter à votre porte",
+                            "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
     "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonées.",
     "alreadyExploring" => "Une mission d'exploration est déjà en cours.",
     "alreadyExplored" => "Vous avez déjà exploré cette planète.",
