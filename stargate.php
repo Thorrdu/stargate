@@ -136,14 +136,13 @@ $discord->on('ready', function ($discord) {
             TopUpdater::update($player);
     });
 
-    $discord->loop->addPeriodicTimer(3600, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(3600, function () use ($discord) {       
         $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
         Config::set('stargate.gateFight.StrongWeak', $newLimit);
         echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
-        $activeFights = GateFight::Where(['active',true])->get();
+        $activeFights = GateFight::Where('active',true)->get();
         $now = Carbon::now();
-
         foreach($activeFights as $activeFight)
         {
             $now = Carbon::now();     
@@ -157,6 +156,7 @@ $discord->on('ready', function ($discord) {
                 }
             }
         }
+        echo PHP_EOL.'END ONE HOUR CRON';
     });
 
 
@@ -236,7 +236,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.start.description', [], 'fr'),
         'usage' => trans('help.start.usage', [], 'fr'),
         'aliases' => array('h','he'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -246,7 +246,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.start.description', [], 'fr'),
 		'usage' => trans('help.start.usage', [], 'fr'),
         //'aliases' => array('start'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
     //trans('generic.missingRequirements', [], $this->player->lang)
 
@@ -257,7 +257,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.profile.description', [], 'fr'),
 		'usage' => trans('help.profile.usage', [], 'fr'),
 		'aliases' => array('p'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('colony', function ($message, $args) {
@@ -267,7 +267,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.colony.description', [], 'fr'),
 		'usage' => trans('help.colony.usage', [], 'fr'),
 		'aliases' => array('c','co','col'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('craft', function ($message, $args) use($discord){
@@ -277,7 +277,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.craft.description', [], 'fr'),
 		'usage' => trans('help.craft.usage', [], 'fr'),
 		'aliases' => array('cr','cra','craf'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
     
     $discord->registerCommand('defence', function ($message, $args) use($discord){
@@ -287,7 +287,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.defence.description', [], 'fr'),
 		'usage' => trans('help.defence.usage', [], 'fr'),
 		'aliases' => array('d','de','def'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('galaxy', function ($message, $args) use($discord){
@@ -307,7 +307,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
 		'aliases' => array('s','st','sta','star'),
-        'cooldown' => 5
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {
@@ -317,7 +317,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.build.description', [], 'fr'),
 		'usage' => trans('help.build.usage', [], 'fr'),
 		'aliases' => array('b','bu'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('research', function ($message, $args) use($discord) {
@@ -327,7 +327,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.research.description', [], 'fr'),
 		'usage' => trans('help.research.usage', [], 'fr'),
 		'aliases' => array('r','search'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
 
     /*
@@ -338,7 +338,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.refresh.description', [], 'fr'),
 		'usage' => trans('help.refresh.usage', [], 'fr'),
 		//'aliases' => array('r'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	*/
 
     $discord->registerCommand('top', function ($message, $args) use($discord){
@@ -348,7 +348,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.top.description', [], 'fr'),
 		'usage' => trans('help.top.usage', [], 'fr'),
         //'aliases' => array('t')
-        'cooldown' => 4
+        'cooldown' => 2
 
     ]);	
 
@@ -359,7 +359,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.invite.description', [], 'fr'),
 		'usage' => trans('help.invite.usage', [], 'fr'),
 		//'aliases' => array('r'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('daily', function ($message, $args) {
@@ -374,7 +374,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.daily.description', [], 'fr'),
 		'usage' => trans('help.daily.usage', [], 'fr'),
 		'aliases' => array('da','day'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
 
     $discord->registerCommand('hourly', function ($message, $args) use($discord){
@@ -390,7 +390,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.hourly.description', [], 'fr'),
 		'usage' => trans('help.hourly.usage', [], 'fr'),
 		'aliases' => array('ho','hr','hor'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);
 
     $discord->registerCommand('vote', function ($message, $args) {
@@ -400,7 +400,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.vote.description', [], 'fr'),
 		'usage' => trans('help.vote.usage', [], 'fr'),
 		'aliases' => array('v','vo'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('lang', function ($message, $args){
@@ -410,7 +410,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.lang.description', [], 'fr'),
 		'usage' => trans('help.lang.usage', [], 'fr'),
         //'aliases' => array('b')
-        'cooldown' => 4
+        'cooldown' => 2
 
     ]);
 
@@ -421,7 +421,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
         'aliases' => array('rmd','rem','remind'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('ban', function ($message, $args) use($discord) {
@@ -441,7 +441,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.infos.description', [], 'fr'),
 		'usage' => trans('help.infos.usage', [], 'fr'),
         'aliases' => array('info'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('uptime', function ($message, $args){
@@ -465,7 +465,7 @@ $discord->on('ready', function ($discord) {
         'description' => trans('help.uptime.description', [], 'fr'),
 		'usage' => trans('help.uptime.usage', [], 'fr'),
         'aliases' => array('up'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('ping', function ($message, $args) {
@@ -474,7 +474,7 @@ $discord->on('ready', function ($discord) {
     },[
         'description' => trans('help.ping.description', [], 'fr'),
 		'usage' => trans('help.ping.usage', [], 'fr'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	
 
 
@@ -491,19 +491,18 @@ $discord->on('ready', function ($discord) {
         'description' => 'Commande test à tout faire',
 		'usage' => 'test',
         'aliases' => array('t'),
-        'cooldown' => 4
+        'cooldown' => 2
     ]);	*/
     
 
     $mainGuild = $discord->guilds->get('id', 735390211130916904);
     $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
     
-    /*
     $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
         echo PHP_EOL.'Bot is ready';
     }, function ($e) {
        echo $e->getMessage();
-    });*/
+    });
 
 });
 
