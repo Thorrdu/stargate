@@ -125,7 +125,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 //Check Consommation E2PZ
                 $travelCost = $this->getConsumption($this->player->activeColony->coordinates,$this->coordinateDestination);
                 if($this->player->activeColony->E2PZ < $travelCost)
-                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost-$this->player->activeColony->E2PZ,2)], $this->player->lang);
+                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost-$this->player->activeColony->E2PZ,3)], $this->player->lang);
 
                 if(Str::startsWith('explore',$this->args[0]))
                 {
@@ -1453,7 +1453,9 @@ class Stargate extends CommandHandler implements CommandInterface
         //3 * galaxy
         if($source->galaxy != $destination->galaxy)
             return abs($source->galaxy - $destination->galaxy)*2;
-        else
+        elseif($source->system != $destination->system)
             return abs($source->system - $destination->system)*0.03;
+        else
+            return 0.02;
     }
 }
