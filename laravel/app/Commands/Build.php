@@ -230,6 +230,8 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             else
                             {
+                                if(count($this->args) == 2 && (int)$this->args[1] > 0)
+                                    $wantedLvl = (int)$this->args[2];
 
                                 $buildingPrice = "";
                                 $buildingPrices = $building->getPrice($wantedLvl);
