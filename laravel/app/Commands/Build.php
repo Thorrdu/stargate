@@ -222,6 +222,11 @@ class Build extends CommandHandler implements CommandInterface
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
                 
+                            if(count($this->args) == 2 && (int)$this->args[1] >= 1)
+                            {
+                                $wantedLvl = (int)$this->args[1];
+                                $currentLvl = $wantedLvl-1;
+                            }
 
                             if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
                             {
@@ -230,12 +235,6 @@ class Build extends CommandHandler implements CommandInterface
                             }
                             else
                             {
-                                if(count($this->args) == 2 && (int)$this->args[1] > 0)
-                                {
-                                    $wantedLvl = (int)$this->args[1];
-                                    $currentLvl = $wantedLvl-1;
-                                }
-
                                 $buildingPrice = "";
                                 $buildingPrices = $building->getPrice($wantedLvl);
                                 foreach (config('stargate.resources') as $resource)

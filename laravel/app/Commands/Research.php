@@ -203,6 +203,12 @@ class Research extends CommandHandler implements CommandInterface
                             if($currentLvl)
                                 $wantedLevel += $currentLvl;
                 
+                            if(count($this->args) == 2 && (int)$this->args[1] >= 1)
+                            {
+                                $wantedLvl = (int)$this->args[1];
+                                $currentLvl = $wantedLvl-1;
+                            }
+
                             $buildingPrice = "";
                             $buildingPrices = $technology->getPrice($wantedLevel);
                             foreach (config('stargate.resources') as $resource)
