@@ -331,12 +331,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                             }
                                             elseif(isset($tradeObject['resource']))
                                             {
-                                                $tradeResource->resource = $tradeObject['resource'];
                                                 $this->player->activeColony->{$tradeObject['resource']} -= $tradeObject['quantity'];
                                                 $this->coordinateDestination->colony->{$tradeObject['resource']} += $tradeObject['quantity'];
                                             }
-                                            $tradeResource->setValue();
-                                            $tradeResource->save();
                                         }
 
                                         $this->player->activeColony->E2PZ -= $travelCost;
