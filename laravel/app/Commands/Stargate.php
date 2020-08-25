@@ -431,7 +431,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
@@ -527,6 +527,8 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                     try{
 
+
+
                                         $tradeLogCheck = Trade::where([['player_id_dest',$this->coordinateDestination->colony->player->id], ['player_id_source',$this->player->id], ['active', true]])
                                                                 ->orWhere([['player_id_source',$this->coordinateDestination->colony->player->id], ['player_id_dest',$this->player->id], ['active', true]])->first();
 
@@ -546,7 +548,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                             $tradeLog->colony_source_id = $this->player->activeColony->id;
                                             $tradeLog->player_id_dest = $this->coordinateDestination->colony->player->id;
                                             $tradeLog->colony_destination_id = $this->coordinateDestination->colony->id;
-                                            $tradeLog->trade_value = 0;
+                                            $tradeLog->trade_value_player1 = 0;
+                                            $tradeLog->trade_value_player2 = 0;
                                             $tradeLog->save();
                                             $tradePlayer = 1;
                                         }

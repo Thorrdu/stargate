@@ -33,7 +33,8 @@ class Trade extends Model
 
     public function setTradeValue()
     {
-        $this->trade_value = 0;
+        $this->{'trade_value_player1'} = 0;
+        $this->{'trade_value_player2'} = 0;
         foreach($this->tradeResources as $tradeResource)
         {
             $this->{'trade_value_player'.$tradeResource->player} += $tradeResource->trade_value;
