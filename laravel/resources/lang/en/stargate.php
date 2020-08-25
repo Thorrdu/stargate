@@ -64,11 +64,11 @@ return [
     "attackSent" => "Your troops have been send on :planet [:coordinateDestination] (:player).\nA report will arrive soon.",
     "attackCancelled" => "Attack cancelled",
     "attackerWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
+                            "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
                             "Bilan des gains:\n:raidReward",
     "attackerLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetName [:destination]**\n\n".
+                            "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops\n",
     "defenderWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
