@@ -21,11 +21,11 @@ return [
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
     "exploreFailed" => "Vos scientifiques n'ont rien trouvé d'intéréssant en explorant la planète [:coordinates].",
     "exploreSucessBuildingTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                                  "Le bâtiment **:name** requiert Lvl :lvlRequirement: :nameRequirement",
+                                  "Le bâtiment **:name** requiert:\n:requirements",
     "exploreSucessTechnologyTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                                    "La technologie **:name** requiert Lvl :lvlRequirement: :nameRequirement",
+                                    "La technologie **:name** requiert:\n:requirements",
     "exploreSucessCraftTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
-                               "Le craft **:name** requiert Lvl :lvlRequirement: :nameRequirement",
+                               "Le craft **:name** requiert:\n:requirements",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
                        "Une activation extérieure à été détectée sur :planetDest [:coordinateDestination] en provenance de :planetSource [:coordinateSource] (:player)\n\n".

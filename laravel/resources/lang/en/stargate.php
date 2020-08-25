@@ -21,11 +21,11 @@ return [
     "explorePlayerImpossible" => "It's not possible to explore another player's planet. try spy.",
     "exploreFailed" => "Your scientists have not found anything interresting during the exploration of the planet [:coordinates].",
     "exploreSucessBuildingTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                                  "The building **:name** requires Lvl :lvlRequirement: :nameRequirement",
+                                  "The building **:name** requires:\n:requirements",
     "exploreSucessTechnologyTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                                    "The technology **:name** requires Lvl :lvlRequirement: :nameRequirement",
+                                    "The technology **:name** requires:\n:requirements",
     "exploreSucessCraftTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
-                               "The craft **:name** requires Lvl :lvlRequirement: :nameRequirement",
+                               "The craft **:name** requires:\n:requirements",
     "exploreCriticalFailed" => "The tam sent to the planet [:coordinates] has not gave any life sign...",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
                        "External activation detected on :planetDest [:coordinateDestination] incoming from :planetSource [:coordinateSource] (:player)\n\n".
