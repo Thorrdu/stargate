@@ -527,8 +527,8 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                     try{
 
-                                        $tradeLogCheck = Trade::where([['player_id_dest',$this->coordinateDestination->colony->player->id], ['player_id_source',$this->player->id], ['active' => true]])
-                                                                ->orWhere([['player_id_source',$this->coordinateDestination->colony->player->id], ['player_id_dest',$this->player->id], ['active' => true]])->first();
+                                        $tradeLogCheck = Trade::where([['player_id_dest',$this->coordinateDestination->colony->player->id], ['player_id_source',$this->player->id], ['active', true]])
+                                                                ->orWhere([['player_id_source',$this->coordinateDestination->colony->player->id], ['player_id_dest',$this->player->id], ['active', true]])->first();
 
                                         if(!is_null($tradeLogCheck))
                                         {
