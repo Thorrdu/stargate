@@ -961,12 +961,11 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->player->isWeakOrStrong($this->coordinateDestination->colony->player) && $this->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
-/*
-                    
+                    /*
                     $lastHourly = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->last_hourly);
                     if($lastHourly->diffInHours($now) >= 2)
-*/
-                    $activeFights = GateFight::Where([['active',true],['colony_id_source',$this->player->activeColony->id],['colony_id_dest',$this->coordinateDestination->colony->id]])->orderBy('created_at', 'asc')->get();
+                    */
+                    $activeFights = GateFight::Where([['active', true],['colony_id_source',$this->player->activeColony->id],['colony_id_dest',$this->coordinateDestination->colony->id]])->orderBy('created_at', 'asc')->get();
                     if($activeFights->count() > 0)
                     {
                         $now = Carbon::now();
