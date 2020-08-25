@@ -320,7 +320,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 }
                                                 else
                                                 {
-                                                    $this->coordinateDestination->colony->units()->attach([$tradeResource->unit_id => ['number' => $tradeObject['quantity']]]);
+                                                    $this->coordinateDestination->colony->units()->attach([$tradeObject['unit_id'] => ['number' => $tradeObject['quantity']]]);
                                                 }
                                                 $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeUnit){               
                                                     return $value->id == $tradeUnit->id;
