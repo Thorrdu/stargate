@@ -673,7 +673,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
 
                                     $this->player->activeColony->E2PZ -= $travelCost;
-                                    $this->player->save();
+                                    $this->player->activeColony->save();
 
                                     $malpExists = $this->player->activeColony->units->filter(function ($value){               
                                         return $value->slug == 'malp';
@@ -1120,7 +1120,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             $this->coordinateDestination->load('colony');
                                         }
                                         $this->player->activeColony->E2PZ -= $travelCost;
-                                        $this->player->save();
+                                        $this->player->activeColony->save();
 
                                         $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
