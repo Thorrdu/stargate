@@ -1248,7 +1248,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $defenderLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->coordinateDestination->colony->player->lang).': '.number_format($defenderLostMilitaries)."\n";
 
                                                 $this->coordinateDestination->colony->military -= $defenderLostMilitaries;
-                                                $this->player->activeColony->military -= $attackerLoosing; 
                                                 $this->player->activeColony->military += $stolenMilitaries;
                                             }
 
