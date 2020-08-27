@@ -635,7 +635,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($this->coordinateDestination->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
-                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->player->npc == 0)
+                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
                     $malp = Unit::where('slug', 'malp')->first();
@@ -961,7 +961,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($this->coordinateDestination->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
-                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->player->npc == 0)
+                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
                     /*
