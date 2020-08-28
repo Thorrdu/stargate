@@ -181,7 +181,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 if(Str::startsWith('move',$this->args[0]))
                 {
                     if(count($this->args) < 4)
-                        return trans('stargate.missingParameters', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
+                        return trans('generic.missingArgs', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
 
                     $availableResources = config('stargate.resources');
                     $availableResources[] = 'E2PZ';
@@ -372,7 +372,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
                     if(count($this->args) < 4)
-                        return trans('stargate.missingParameters', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
+                        return trans('generic.missingArgs', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
 
                     $availableResources = config('stargate.resources');
                     $availableResources[] = 'E2PZ';
@@ -958,6 +958,9 @@ class Stargate extends CommandHandler implements CommandInterface
 
                 if(Str::startsWith('attack',$this->args[0]))
                 {
+                    if(count($this->args) < 4)
+                        return trans('generic.missingArgs', [], $this->player->lang).' / !stargate attack [Coordinates] [military/transporter] [quantity]';
+
                     if(is_null($this->coordinateDestination->colony))
                         return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
@@ -1017,6 +1020,9 @@ class Stargate extends CommandHandler implements CommandInterface
                             if(Str::startsWith('military',$resource))
                             {
                                 $resource = 'military';
+                                if($this->player->activeColony->military < $qty)
+                                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($qty-$this->player->activeColony->military)], $this->player->lang);
+
                                 $this->attackMilitaries = $qty;
                                 $attackConfirmPower .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
                             }
@@ -1047,7 +1053,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->attackMilitaries < 100)
                     {
                         if($this->attackMilitaries < 100)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->player->activeColony->military,2)], $this->player->lang);
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->attackMilitaries,2)], $this->player->lang);
                     }
                     
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
@@ -1111,6 +1117,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                                 return;
                                             }
+                                        }
+                                        if($this->player->activeColony->military < $this->attackMilitaries)
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($this->attackMilitaries-$this->player->activeColony->military)], $this->player->lang));
+                                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                            return;
                                         }
 
                                         $current = Carbon::now();
@@ -1181,8 +1193,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $this->coordinateDestination->colony->military -= $defenderLostMilitaries;
                                             else
                                             {
-                                                $defenderLostMilitaries = $this->coordinateDestination->colony->military - 1;
-                                                $this->coordinateDestination->colony->military = 1;
+                                                $defenderLostMilitaries = floor($this->coordinateDestination->colony->military);
+                                                $this->coordinateDestination->colony->military = 0;
                                             }
                                             $this->coordinateDestination->colony->military += $stolenMilitaries;
 
@@ -1234,7 +1246,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             }
                                             else
                                             {
-                                                $this->player->activeColony->military -= $attackerLoosing;
+                                                $this->player->activeColony->military -= floor($attackerLoosing);
                                                 $attackerLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).": ".number_format($attackerLoosing)."\n";
                                             }
 
