@@ -55,7 +55,7 @@ return [
     'defences' => 'Défenses',
     'emptydefences' => 'Aucune défense',
     'buildings' => 'Bâtiments',
-    "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie ou `!colony remove [Number]` pour en abandonner une.\n(Liste présente dans `!profile`).",
+    "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie ou `!colony remove [Number]` pour en abandonner une.\n(Liste visible via `!colony list`).",
     "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
     "neverExploredWorld" => "Monde inhabité.",
     "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] (:player) depuis :planetNameSource [:coordinateSource]\n".
@@ -82,6 +82,8 @@ return [
     "noCasuality" => "Aucune perte à déplorer",
     "playerOwned" => "Appartient à un joueur",
     "samePlayerAction" => "Vous ne pouvez effectuer cette action sur vous même...",
+    "notAColonyOfYour" => "Cette colonie ne vous appartient pas...",
     "weakOrStrong" => "Ce joueur est trop fort ou trop faible pour vous...",
     "AttackLimit" => "Vous avez déjà attaqué cette planète il y a peu. Vous pourrez à nouveau attaquer dans: :time",
+    "tradeNpcImpossible" => "Trade impossible avec un NPC",
 ];

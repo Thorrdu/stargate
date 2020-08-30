@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Colony;
 use App\Building;
 use App\Technology;
-use App\Utility\TopUpdater;
 use Illuminate\Support\Facades\DB;
 use App\Reminder;
 use Carbon\Carbon;
@@ -65,7 +64,7 @@ class ColonyObserver
                     {
                         $reminder = new Reminder;
                         $reminder->reminder_date = Carbon::now();
-                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => trans('building.'.$building->slug.'.name', [], $colony->player->lang)], $colony->player->lang);
+                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => trans('building.'.$building->slug.'.name', [], $colony->player->lang), 'planet' => $colony->name, 'coordinate' => $colony->coordinates->humanCoordinates()], $colony->player->lang);
                         $reminder->player_id = $colony->player->id;
                         $reminder->save();
                     }
@@ -96,7 +95,7 @@ class ColonyObserver
                     {
                         $reminder = new Reminder;
                         $reminder->reminder_date = Carbon::now();
-                        $reminder->reminder = trans('generic.researchUnlocked', ['name' => trans('research.'.$technology->slug.'.name', [], $colony->player->lang)], $colony->player->lang);
+                        $reminder->reminder = trans('generic.researchUnlocked', ['name' => trans('research.'.$technology->slug.'.name', [], $colony->player->lang), 'planet' => $colony->name, 'coordinate' => $colony->coordinates->humanCoordinates()], $colony->player->lang);
                         $reminder->player_id = $colony->player->id;
                         $reminder->save();
                     }
@@ -104,8 +103,6 @@ class ColonyObserver
                 //$colony->unsetEventDispatcher();
                 //$colony->calcProd();
                 echo PHP_EOL.'player OBSRVER TOP UPDATED';
-
-                TopUpdater::update($colony->player); 
             }
         }
         catch(\Exception $e)

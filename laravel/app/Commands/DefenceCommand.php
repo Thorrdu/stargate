@@ -194,7 +194,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                        if(!is_null($this->player->active_technology_id) && $defence->id == 15)
+                            if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 15)
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
                         $now = Carbon::now();
@@ -238,7 +238,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);      
 
-                $defenceQueueString .= "1x ".$queuedDefence->name." - ".$defenceTime."\n"; 
+                $defenceQueueString .= "1x ".trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$defenceTime."\n"; 
             }
 
             $embed = [

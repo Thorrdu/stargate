@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use App\Events\Event;
 use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeCoverage\Report\PHP;
-use App\Utility\TopUpdater;
 
 class Colony extends Model
 {
@@ -421,10 +420,6 @@ class Colony extends Model
                 $this->load('craftQueues'); 
 
             }
-            else
-            {
-                echo PHP_EOL.'NO CRAFT';
-            }
         }
         catch(\Exception $e)
         {
@@ -464,10 +459,6 @@ class Colony extends Model
                 DB::table('defence_queues')->where([['defence_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('defenceQueues'); 
 
-            }
-            else
-            {
-                echo PHP_EOL.'NO DEFENCE';
             }
         }
         catch(\Exception $e)
@@ -618,10 +609,11 @@ class Colony extends Model
             else
             {
                 $this->buildings()->attach([$building->id => ['level' => 1]]);
-                $this->load('buildings'); // solution avec query
-                //$this->refresh(); //solution complète
-                //$this->buildings->push($comment); // Will manually add the new comment to the existing collection
+                $this->load('buildings');
             }
+
+            if($building->id == 20) //terraformeur
+                $this->space_max += 30;
 
             $this->active_building_id = null;
             $this->active_building_end = null;

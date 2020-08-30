@@ -194,7 +194,7 @@ class Craft extends CommandHandler implements CommandInterface
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                        if(!is_null($this->player->active_technology_id) && $unit->id == 9)
+                        if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
                         $now = Carbon::now();
@@ -238,7 +238,7 @@ class Craft extends CommandHandler implements CommandInterface
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);      
 
-                $craftQueueString .= "1x ".$queuedCraft->name." - ".$craftTime."\n"; 
+                $craftQueueString .= "1x ".trans('craft.'.$queuedCraft->slug.'.name', [], $this->player->lang)." - ".$craftTime."\n"; 
             }
 
             $embed = [
@@ -325,7 +325,7 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 $capacityString = "";
                 if(!is_null($unit->capacity) && $unit->capacity > 0)
-                    $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang);
+                    $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang)."\n";
                 if($hasRequirements == true)
                 {
                     $embed['fields'][] = array(
@@ -338,7 +338,7 @@ class Craft extends CommandHandler implements CommandInterface
                 {
                     $embed['fields'][] = array(
                         'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
-                        'value' => trans('craft.unDiscovered', [], $this->player->lang)."\n".$capacityString,
+                        'value' => "\nSlug: `".$unit->slug."\n".$capacityString.trans('craft.unDiscovered', [], $this->player->lang),
                         'inline' => true
                     );
                 }

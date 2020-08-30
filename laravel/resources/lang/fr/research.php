@@ -3,7 +3,7 @@
 return [
     'communication' => [
         'name' => "Informatique et Communication",
-        'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.",
+        'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches",
         ],
     'spy' => [
         'name' => "Espionnage",
@@ -23,51 +23,51 @@ return [
         ],
     'blueprint' => [
         'name' => "Plans de vaisseaux",
-        'description' => "Permet la conception de vaisseaux spaciaux.",
+        'description' => "Permet la conception de vaisseaux spaciaux",
         ],
     'armament' => [
         'name' => "Armement",
-        'description' => "Permet la conception d'armes.",
+        'description' => "Permet la conception d'armes",
         ],
     'hull' => [
         'name' => "Coque",
-        'description' => "Permet la conception de coques de vaisseaux.",
+        'description' => "Permet la conception de coques de vaisseaux",
         ],
     'shield' => [
         'name' => "Bouclier",
-        'description' => "Permet la conception de boucliers.",
+        'description' => "Permet la conception de boucliers",
         ],
     'afterburner' => [
         'name' => "Combustion",
-        'description' => "Permet la conception de moteurs conventionels.",
+        'description' => "Permet la conception de moteurs conventionels",
         ],
     'laser' => [
         'name' => "Laser",
-        'description' => "Rayon laser à concentration élevée lors de l'accumulation de grandes quantités d'énergie.",
+        'description' => "Rayon laser à concentration élevée lors de l'accumulation de grandes quantités d'énergie",
         ],
     'ions' => [
         'name' => "Ions",
-        'description' => "Ion Desc",
+        'description' => "Permet le développement d'arme et réacteur à base de particules Ion",
         ],
     'plasma' => [
         'name' => "Plasma",
-        'description' => "Plasma Desc",
+        'description' => "La maîtrise de la technologie du plasma, créant un laser chauffé à des températures extrême permet le développement d'armes terriblement morteles",
         ],
     'naqahdah' => [
         'name' => "Maîtrise du Naqahdah",
-        'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant.",
+        'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant",
         ],
     'subluminal' => [
         'name' => "Vitesse subluminique",
-        'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
+        'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard",
         ],
     'antimatter' => [
         'name' => "Antimatière",
-        'description' => "Capaciuté à maîtriser l'antimatière.",
+        'description' => "Capacité à maîtriser l'antimatière",
         ],
     'hyperspace' => [
         'name' => "Hyper Espace",
-        'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage.",
+        'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage",
         ],
     'hiddenTechnology' => '-- Technologie cachée --',
     'unDiscovered' => 'Non découverte',
@@ -77,6 +77,6 @@ return [
     'genericHowTo' => "Pour voir le détail d'une technologie: `!research [ID/Slug]`\nPour commencer la recherche d'une technologie: `!research [ID/Slug] confirm`\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert cette technologie.",
     'alreadyResearching' => 'Une technologie est déjà en cours de recherche. **Lvl :level :name** sera terminée dans **:time**',
-    'researchStarted' => 'Recherche commencée, **Lvl :level :name ** sera terminée dans :time',
+    'researchStarted' => 'Recherche commencée, **Lvl :level :name ** sera terminée dans **:time**',
     'dmTechnologyIsOver' => 'Une recherche vient de se terminer...',
 ];

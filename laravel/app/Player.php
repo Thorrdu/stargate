@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use App\Utility\TopUpdater;
 use App\Coordinate;
 use App\Trades;
 use App\GateFight;
@@ -53,6 +52,16 @@ class Player extends Model
     public function reminders()
     {
         return $this->hasMany('App\Reminder');
+    }
+
+    public function alliance()
+    {
+        return $this->belongsTo('App\Alliance');
+    }
+
+    public function allianceRole()
+    {
+        return $this->belongsTo('App\AllianceRole','role_id','id');
     }
 
     public function addColony(Coordinate $choosedCoordinate = null)
@@ -263,9 +272,7 @@ class Player extends Model
     }
     
     public function isWeakOrStrong(Player $player2)
-    {
-        config('stargate.gateFight.StrongWeak');
-        
+    {    
         if($this->points_total > config('stargate.gateFight.StrongWeak') && $player2->points_total > config('stargate.gateFight.StrongWeak'))
             return '';
         elseif($player2->points_total > ($this->points_total*2))

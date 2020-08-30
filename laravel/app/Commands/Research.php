@@ -39,7 +39,7 @@ class Research extends CommandHandler implements CommandInterface
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
                 
-                if(empty($this->args) || $this->args[0] == 'list')
+                if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     $this->researchList = Technology::all();
 

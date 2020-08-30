@@ -32,7 +32,7 @@ class Exploration extends Model
             $this->colonySource->military += 1000;
             $this->colonySource->save();
 
-            return trans('stargate.exploreFailed', ['coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreFailed', ['coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
         }
         elseif($randomEvent <= 38)
         {

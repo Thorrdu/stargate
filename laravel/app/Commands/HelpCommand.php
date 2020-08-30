@@ -39,7 +39,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
         {
             $this->lang = 'en';
         }
-
+        
         try{
             $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
 
@@ -147,16 +147,17 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         if ($command != $commandString) {
                             continue;
                         }
-    
                         $aliasesString .= "{$alias}\r\n";
                     }
+                    if(empty($aliasesString))
+                        $aliasesString = "/";
                     $embed['fields'][] = array(
                         'name' => 'Aliases',
                         'value' => $aliasesString,
                         'inline' => true
                     );
                 }
-    
+
                 $this->message->channel->sendMessage('', false, $embed);
     
                 return;

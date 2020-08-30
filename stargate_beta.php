@@ -94,7 +94,7 @@ use Illuminate\Support\Facades\DB;
 global $upTimeStart;
 $upTimeStart = Carbon::now();
 
-$beta = false;
+$beta = true;
 $token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c';
 $prefix = '!';
 
@@ -130,7 +130,7 @@ $discord->on('ready', function ($discord) use($beta){
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
 
-    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(5, function () use ($discord) {
 
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)

@@ -86,7 +86,7 @@ class Hourly extends CommandHandler implements CommandInterface
 
                     $resValue = ($this->player->activeColony->$varProd / 60)* rand(15,25) * $multiplier;
 
-                    $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: +'.$displayMultiplier.'%)';
+                    $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: '.($displayMultiplier/10).' (+'.$displayMultiplier.'%))';
 
                     $this->player->activeColony->$resType += $resValue;
                     $this->player->activeColony->save();

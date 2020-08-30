@@ -44,11 +44,15 @@ class CommandHandler
 
         if(!is_null($this->message->author->user_name) && !is_null($this->player))
         {
-            if($this->player->user_name != $this->message->author->user_name)
+            if($this->player->user_name != $this->message->author->user_name || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user_name;
                 echo PHP_EOL.'DIFFERENT';
-                $this->player->user_name = $this->message->author->user_name;
+                $this->player->user_name = $this->player->untagged_user_name = $this->message->author->user_name;
+
+                if(!is_null($this->player->alliance))
+                    $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->user_name;
+
                 $this->player->save();
             }
         }
@@ -77,12 +81,15 @@ class CommandHandler
 
         if(!is_null($this->message->author->user_name) && !is_null($this->player))
         {
-            if($this->player->user_name != $this->message->author->user_name)
+            if($this->player->user_name != $this->message->author->user_name || $this->player->untagged_user_name == "not loaded")
             {
+                echo PHP_EOL.'News name: '.$this->message->author->user_name;
                 echo PHP_EOL.'DIFFERENT';
-                echo PHP_EOL.'News name=: '.$this->message->author->user_name;
+                $this->player->user_name = $this->player->untagged_user_name = $this->message->author->user_name;
 
-                $this->player->user_name = $this->message->author->user_name;
+                if(!is_null($this->player->alliance))
+                    $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->user_name;
+
                 $this->player->save();
             }
         }

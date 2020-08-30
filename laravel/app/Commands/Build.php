@@ -35,7 +35,7 @@ class Build extends CommandHandler implements CommandInterface
             $this->player->refresh();
 
             try{
-                if(empty($this->args) || $this->args[0] == 'list')
+                if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Build';
                     $this->buildingList = Building::all();      
@@ -344,6 +344,7 @@ class Build extends CommandHandler implements CommandInterface
                                 $bonusString = "/";
                             if(empty($consoString))
                                 $consoString = "/";
+                                
                             $embed = [
                                 'author' => [
                                     'name' => $this->player->user_name,

@@ -16,10 +16,10 @@ return [
     "alreadyExploring" => "An exploration mission is already ongoing.",
     "alreadyExplored" => "You already explored this planet.",
     "explorationSent" => "The exploration team is arrived on the planet [:coordinates].\nA report will be send at the end of the mission.",
-    "exploreSucessResources" => "During the exploration of the planet [:coordinates], the team has found a warehouse with interresting resources.\n".
+    "exploreSucessResources" => "During the exploration of the planet [:coordinates], the team has found a warehouse with interesting resources.\n".
     "They brought back with them: :resources",
     "explorePlayerImpossible" => "It's not possible to explore another player's planet. try spy.",
-    "exploreFailed" => "Your scientists have not found anything interresting during the exploration of the planet [:coordinates].",
+    "exploreFailed" => "Your scientists have not found anything interesting during the exploration of the planet [:coordinates].",
     "exploreSucessBuildingTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
                                   "The building **:name** requires:\n:requirements",
     "exploreSucessTechnologyTip" => "Your scientists have found the following information during the exploration of the planet [:coordinates]:\n".
@@ -55,7 +55,7 @@ return [
     'defences' => 'Defences',
     'emptydefences' => 'No defence',
     'buildings' => 'Buildings',
-    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies or `!colony remove [Number]` to remove one.\n(The list can be seen in `!profile`).",
+    "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies or `!colony remove [Number]` to remove one.\n(The list can be seen with `!colony list`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
     "neverExploredWorld" => "Empty planet.",
     "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] (:player) from :planetNameSource [:coordinateSource]\n".
@@ -63,25 +63,27 @@ return [
                             "\nCost: :consumption",
     "attackSent" => "Your troops have been send on :planet [:coordinateDestination] (:player).\nA report will arrive soon.",
     "attackCancelled" => "Attack cancelled",
-    "attackerWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
-                            "Bilan des pertes:\n:loostTroops\n".
-                            "Bilan des gains:\n:raidReward",
-    "attackerLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
-                            "Bilan des pertes:\n:loostTroops\n",
-    "defenderWinReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
-                            "Fort heureusement, vos troupes ont peu contenir l'attaque et repousser l'envahisseur.\n\n".
-                            "Bilan des pertes:\n:loostTroops\n".
-                            "Bilan des gains:\n:raidReward",
-    "defenderLostReport" => "Attaque par la porte des étoiles [:destination] (:player)\n\n".
-                            "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
+    "attackerWinReport" => "Attack through Stargate [:destination] (:player)\n\n".
+                            "Your troops emerged victorious from the fight against **:player** on planet **:planetDest [:destination]**\n\n".
+                            "Losses result:\n:loostTroops\n".
+                            "Winning result:\n:raidReward",
+    "attackerLostReport" => "Attack through Stargate [:destination] (:player)\n\n".
+                            "Your troops were decimated in the fight against **:player** on planet **:planetDest [:destination]**\n\n".
+                            "Losses result:\n:loostTroops\n",
+    "defenderWinReport" => "Attack through Stargate [:destination] (:player)\n\n".
+                            "An attack has occurred from the planet **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
+                            "Fortunately, your troops have contained the attack and push back the invader.\n\n".
+                            "Losses result:\n:loostTroops\n".
+                            "Winning result::\n:raidReward",
+    "defenderLostReport" => "Attack through Stargate [:destination] (:player)\n\n".
+                            "An attack has occurred from the planet **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
-                            "Bilan des pertes:\n:loostTroops\n",
+                            "Losses result:\n:loostTroops\n",
     "noCasuality" => "No casualties",
     "playerOwned" => "Already owned by a player",
     "samePlayerAction" => "You can't make this action to yourself...",
+    "notAColonyOfYour" => "This colony isn't one of your...",
     "weakOrStrong" => "This player is too weak or too strong for you...",
     "AttackLimit" => "You already attacked this planet earlier. you'll be able to attack again in: :time",
+    "tradeNpcImpossible" => "Impossible to trade with an NPC",
 ];

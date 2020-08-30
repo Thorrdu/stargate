@@ -2,20 +2,20 @@
 //CRAFT EN
 return [
     'malp' => [
-            'name' => "Sonde M.A.L.P.",
-            'description' => "Sonde terrestre vous permetant d'explorer une planète et relever des informations sur une colonie.",
+            'name' => "M.A.L.P. probe",
+            'description' => "Earth probe able to explore a planet/colony and reveal information about it.",
             ],
     'wraithProbe' => [
-            'name' => "Sonde wraith",
-            'description' => "Sonde spaciale wraith permettant le scanner une planète depuis l'espace.",
+            'name' => "Wraith probe",
+            'description' => "Space probe able to scan planet from the orbit.",
             ],
     'transport' => [
-            'name' => "Petit transporteur",
-            'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
+            'name' => "Little transporter",
+            'description' => "Mobile transport allowing to move resources between 2 colonies.",
             ],
     'bigtransport' => [
-            'name' => "Grand transporteur",
-            'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
+            'name' => "Big transporter",
+            'description' => "Mobile transport allowing to move even larger amount of resources between 2 colonies.",
         ],
     'hidden' => '-- Hidden craft --',
     'unDiscovered' => 'Undiscovered',

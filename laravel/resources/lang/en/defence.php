@@ -24,7 +24,7 @@ return [
     "genericHowTo" => "TEXT",
     "defenceQueue" => "Defence queue",
     "emptyQueue" => "Defence queue is empty",
-    "firePower" => "Fire power: :firepower",
-    "hull" => "Hull: :hull",
+    "firePower" => "Fire power: **:firepower**",
+    "hull" => "Hull: **:hull**",
 ];
 

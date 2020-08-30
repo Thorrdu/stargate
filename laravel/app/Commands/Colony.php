@@ -26,6 +26,18 @@ class Colony extends CommandHandler implements CommandInterface
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
+        
+                if(isset($this->args[0]) && Str::startsWith('list',$this->args[0]))
+                {
+                    $coloniesString = "";
+                    $colonyIndex = 1;
+                    foreach($this->player->colonies as $colony)
+                    {
+                        $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
+                        $colonyIndex++;
+                    }
+                    return "\n__".trans('generic.colonies',[],$this->player->lang)."__\n".$coloniesString;
+                }
                 if(count($this->args) >= 2 && Str::startsWith('switch',$this->args[0]))
                 {
                     if(preg_match('/(([0-9]{1,}:[0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,};[0-9]{1,}))/', $this->args[1], $coordinatesMatch))
@@ -331,7 +343,7 @@ class Colony extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $queueString .= $queuedUnit->name." - ".$buildingTime."\n";    
+                        $queueString .= trans('craft.'.$queuedUnit->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";    
                     }
                     if($this->player->activeColony->craftQueues->count() > 5)
                     {
@@ -363,7 +375,7 @@ class Colony extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $queueString .= $queuedDefence->name." - ".$buildingTime."\n";    
+                        $queueString .= trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";    
                     }
                     if($this->player->activeColony->defenceQueues->count() > 5)
                     {

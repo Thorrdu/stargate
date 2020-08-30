@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Player;
 use App\Building;
 use App\Technology;
-use App\Utility\TopUpdater;
 use Illuminate\Support\Facades\DB;
 use App\Reminder;
 use Carbon\Carbon;
@@ -114,8 +113,6 @@ class PlayerObserver
             {
                 echo $e->getMessage();
             }
-
-            //TopUpdater::update($player); 
         }
     }
 

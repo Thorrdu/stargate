@@ -2,72 +2,72 @@
 //RESEARCH EN
 return [
     'communication' => [
-        'name' => "Informatique et Communication",
-        'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.",
+        'name' => "IT and Communication",
+        'description' => "Equipped with a powerful computer and communication system, your colonists are more efficient in their tasks",
         ],
     'spy' => [
-        'name' => "Espionnage",
-        'description' => "Détermine votre efficacité lors de l'espionnage d'une planète ennemie",
+        'name' => "Spying",
+        'description' => "Determines your efficiency while spying on an enemy planet",
         ],
     'counterspy' => [
-        'name' => "Contre-Espionage",
-        'description' => "Détermine votre efficacité à contre la tentative d'espionage d'un joueur étranger",
+        'name' => "Counter-Spy",
+        'description' => "Determines your effectiveness against a foreign player's spy attempt",
         ],
     'energy' => [
-        'name' => "Energie",
-        'description' => "Permet de maîtriser d'avantage l'énergie, vous octroyant un bonus de 5% du rendement des bâtiments d'énergie par niveau",
+        'name' => "Energy",
+        'description' => "Enables more energy control, granting you a 5% bonus to energy building performance per level",
         ],
     'ia' => [
-        'name' => "Intelligence artificielle",
-        'description' => "Permet de développer une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
+        'name' => "Artificial intelligence",
+        'description' => "Allows you to develop an artificial intelligence capable of helping you on a daily basis in your colony",
         ],
     'blueprint' => [
-        'name' => "Plans de vaisseaux",
-        'description' => "Permet la conception de vaisseaux spaciaux.",
+        'name' => "Ship Bluprint",
+        'description' => "Allows the design of spaceships",
         ],
     'armament' => [
-        'name' => "Armement",
-        'description' => "Permet la conception d'armes.",
+        'name' => "Armament",
+        'description' => "Allows the design of weapons",
         ],
     'hull' => [
-        'name' => "Coque",
-        'description' => "Permet la conception de coques de vaisseaux.",
+        'name' => "Hull",
+        'description' => "Allows the design of ship hulls",
         ],
     'shield' => [
-        'name' => "Bouclier",
-        'description' => "Permet la conception de boucliers.",
+        'name' => "Shield",
+        'description' => "Allows the design of shields",
         ],
     'afterburner' => [
         'name' => "Combustion",
-        'description' => "Permet la conception de moteurs conventionels.",
+        'description' => "Allows the design of conventional engines",
         ],
     'laser' => [
         'name' => "Laser",
-        'description' => "Rayon laser à concentration élevée lors de l'accumulation de grandes quantités d'énergie.",
+        'description' => "High concentration laser beam when accumulating large amounts of energy",
         ],
     'ions' => [
         'name' => "Ions",
-        'description' => "Ion Desc",
+        'description' => "Enables the development of Ion particle-based weapon and reactor",
         ],
     'plasma' => [
         'name' => "Plasma",
-        'description' => "Plasma Desc",
+        'description' => "Mastery of plasma technology, creating a laser heated to extreme temperatures enables the development of terribly lethal weapons",
         ],
     'naqahdah' => [
-        'name' => "Naqahdah mastery",
-        'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant.",
+        'name' => "Naqahdah Mastery",
+        'description' => "Mastery of technology related to Naqahdah. Allows the manufacture of weapons related to this resource and reduce fuel consumption",
         ],
     'subluminal' => [
-        'name' => "Vitesse subluminique",
-        'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
+        'name' => "Sublumic speed",
+        'description' => "Ability to propel a ship at a higher speed than a standard combusion",
         ],
     'antimatter' => [
-        'name' => "Antimatière",
-        'description' => "Capaciuté à maîtriser l'antimatière.",
+        'name' => "Antimatter",
+        'description' => "Ability to master antimatter",
         ],
     'hyperspace' => [
-        'name' => "Hyper Espace",
-        'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage.",
+        'name' => "Hyperspace",
+        'description' => "Ability to travel at the speed of light and more",
         ],
     'hiddenTechnology' => '-- Hidden technology --',
     'unDiscovered' => 'undiscovered',

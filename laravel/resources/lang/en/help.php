@@ -21,7 +21,7 @@ return [
     ],
     'colony' => [
         'description' => 'Display some esential information about your colony (Resources, Buildings, Production, ... ). Also allows to switch between your colonies.',
-        'usage' => "!colony\n!colony switch [number]\n!colony remove [number]"
+        'usage' => "!colony\n!colony list\n!colony switch [number]\n!colony remove [number]"
     ],
     'craft' => [
         'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
@@ -39,6 +39,19 @@ return [
                         ."\nLvl 3: You can see up to 8 systems around you."
                         ."\nLvl 8: Vision to all galaxies",
         'usage' => '!galaxy'
+    ],
+    'alliance' => [
+        'description' => "Allows you to create or manage your alliance.",
+        'usage' => "!alliance create [Tag] [Name]\n".
+                    "!alliance set internal_description [Description]\n".
+                    "!alliance set external_description [Description]\n".
+                    "!alliance set leader [@mention]\n".
+                    "!alliance set recruitement [on/off]\n".
+                    "!alliance role list\n".
+                    "!alliance role [role] set [parameter] [value/on/off]\n".
+                    "!alliance invite [@mention]\n".
+                    "!alliance leave\n".
+                    "!alliance upgrade\n"
     ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players",
@@ -66,7 +79,7 @@ return [
         'usage' => '!ping'
     ],
     'profile' => [
-        'description' => "Display information about your profile such as lang, vote number, colonies list, ..."
+        'description' => "Display information about your profile such as lang, vote number, ..."
                         ."\nAlso allows to manage your notification at the end of building/research",
         'usage' => "!profile\n!profile notification [on/off]"
     ],
@@ -76,7 +89,7 @@ return [
     ],
     'top' => [
         'description' => 'Shows the best player for each category.',
-        'usage' => "!top [general/building/research/military/defence]"
+        'usage' => "!top [general/building/research/military/defence]\n!top [general/building/research/military/defence] alliance"
     ],
     'uptime' => [
         'description' => "Display the Stargate uptime.",

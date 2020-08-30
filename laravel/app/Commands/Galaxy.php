@@ -169,9 +169,9 @@ class Galaxy extends CommandHandler implements CommandInterface
                 {                    
                     $colonyPlayer = $coordinate->colony->player;
                     if($colonyPlayer->npc)
-                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." (NPC - ".$colonyPlayer->user_name.")"."\n";
+                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." [NPC] ".$colonyPlayer->user_name."\n";
                     else
-                        $coordinateList .= $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." (".$colonyPlayer->user_name.")"."\n";
+                        $coordinateList .= $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." ".$colonyPlayer->user_name."\n";
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";

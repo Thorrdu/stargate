@@ -75,9 +75,14 @@ return [
         'description' => "Désormais habitués à miner de l'or sur cette colonie, vos volons ont dévellopés une manière bien plus éfficace d'extraire l'or de la planete"
     ],
     'asuranfactory' => [
-        'name' => 'Asuran factory',
+        'name' => 'Usine Asuran',
         'description' => "Après de longues analyses, vos chercheurs réussissent à réactiver cette vieille usine Asuran de production d'E2PZ. vous ouvrant la voie vers le voyage interplanétaire"
     ],
+    'terraformer' => [
+        'name' => 'Terraformeur',
+        'description' => "Par procédé de terraformation, cette usine modifie l'aspect de votre planète pour agrandir l'espace constructible"
+    ],
+    
     'hiddenBuilding' => '-- Bâtiment caché --',
     'unDiscovered' => 'Non découvert',
     'unknownBuilding' => 'Bâtiment inconnu...',

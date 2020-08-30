@@ -15,8 +15,8 @@ class CreateUnitsTable extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type', ['Military', 'Spy', 'Probe', 'Transport']); //Prépare le futur
             $table->string('name', 50);
+            $table->enum('type', ['Military', 'Spy', 'Probe', 'Transport']); //Prépare le futur
             $table->string('slug', 50);
             $table->longText('description');
             $table->integer('capacity')->length(25)->unsigned()->default(0);

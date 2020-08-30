@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Player;
+use App\Alliance;
 use Illuminate\Support\Str;
 
 class Top extends CommandHandler implements CommandInterface
@@ -13,8 +14,9 @@ class Top extends CommandHandler implements CommandInterface
     public $maxTime;
     public $paginatorMessage;
     public $listner;
-    public $playerList;
+    public $topList;
     public $topType;
+    public $topAlliance;
 
     public function execute()
     {
@@ -32,32 +34,51 @@ class Top extends CommandHandler implements CommandInterface
                 if(empty($this->args))
                     return trans('top.choice', [], $this->player->lang);
 
+                $this->topAlliance = false;
+                if(count($this->args) > 1 && Str::startsWith('alliance', $this->args[1]))
+                    $this->topAlliance = true;
+            
                 if(Str::startsWith('general', $this->args[0])){
                     $this->topType = 'general';
-                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total'); 
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->sortByDesc('points_total'); 
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total'); 
                 }     
                 elseif(Str::startsWith('building', $this->args[0])){
                     $this->topType = 'building';
-                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->sortByDesc('points_building'); 
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
                 }      
                 elseif(Str::startsWith('research', $this->args[0])){
                     $this->topType = 'research';
-                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->sortByDesc('points_research'); 
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
                 }  
-                elseif(Str::startsWith('military', $this->args[0])){
-                    $this->topType = 'military';
-                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');   
+                elseif(Str::startsWith('craft', $this->args[0])){
+                    $this->topType = 'craft';
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->sortByDesc('points_military'); 
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');   
                 }   
                 elseif(Str::startsWith('defence', $this->args[0])){
                     $this->topType = 'defence';
-                    $this->playerList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');   
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->sortByDesc('points_defence'); 
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');   
                 }   
                 else
                     return trans('top.choice', [], $this->player->lang);
                   
                 $this->page = 1;
                 $this->perPage = 10;
-                $this->maxPage = ceil($this->playerList->count()/$this->perPage);
+                $this->maxPage = ceil($this->topList->count()/$this->perPage);
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
@@ -118,7 +139,7 @@ class Top extends CommandHandler implements CommandInterface
 
     public function getPage()
     {
-        $displayList = $this->playerList->skip($this->perPage*($this->page -1))->take($this->perPage);
+        $displayList = $this->topList->skip($this->perPage*($this->page -1))->take($this->perPage);
         if($this->topType == 'general')
             $varName = 'points_total';
         else
@@ -126,14 +147,46 @@ class Top extends CommandHandler implements CommandInterface
         
         $counter = (($this->page-1)*$this->perPage)+1;
 
-        $playerList = "";
-        foreach($displayList as $player)
+        $topList = "";
+        foreach($displayList as $listItem)
         {
-            $playerList .= $counter.". ".$player->user_name.' - '.number_format($player->$varName)." Points\n";
+            if($this->topAlliance)
+            {
+                $allianceName = "[".$listItem->tag."] ".$listItem->name;
+                if(!is_null($this->player->alliance) && $listItem->id == $this->player->alliance->id)
+                    $allianceName = "**".$allianceName."**";
+                $topList .= $counter.". ".$allianceName." - ".number_format($listItem->$varName)." Points";
+
+                if($listItem->{'old_'.$varName} == $listItem->$varName)
+                    $topList .= ' (=)';
+                elseif($listItem->{'old_'.$varName} < $listItem->$varName)
+                    $topList .= ' (+'.number_format(abs($listItem->$varName - $listItem->{'old_'.$varName})).')';
+                elseif($listItem->{'old_'.$varName} > $listItem->$varName)
+                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';
+
+                $topList .= "\n";
+            }
+            else
+            {
+                $playerName = $listItem->user_name;
+
+                if($listItem->id == $this->player->id)
+                    $playerName = "**".$playerName."**";
+                $topList .= $counter.". ".$playerName." - ".number_format($listItem->$varName)." Points";
+
+                if($listItem->{'old_'.$varName} == $listItem->$varName)
+                    $topList .= ' (=)';
+                elseif($listItem->{'old_'.$varName} < $listItem->$varName)
+                    $topList .= ' (+'.number_format(abs($listItem->$varName - $listItem->{'old_'.$varName})).')';
+                elseif($listItem->{'old_'.$varName} > $listItem->$varName)
+                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';
+            
+                $topList .= "\n";
+            }
             $counter++;
         }
-        if(empty($playerList))
-            $playerList = "/";
+        if(empty($topList))
+            $topList = "/";
 
         $embed = [
             'author' => [
@@ -141,7 +194,7 @@ class Top extends CommandHandler implements CommandInterface
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
             "title" => 'Top '.trans('generic.'.$this->topType, [], $this->player->lang),
-            "description" => $playerList,
+            "description" => $topList,
             'fields' => [],
             'footer' => array(
                 'text'  => 'Stargate - Page '.$this->page.' / '.$this->maxPage,

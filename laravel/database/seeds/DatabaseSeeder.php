@@ -776,14 +776,26 @@ class DatabaseSeeder extends Seeder
             'level' => 4
         ]);
         
+        DB::table('buildings')->insert([
+            'id' => 20,
+            'name' => 'Terraformeur',
+            'slug' => Str::slug('terraformer'),
+            'description' => "Par procédé de terraformation, cette usine modifie l'aspect de votre planète pour agrandir l'espace constructible.",
+            'type' => 'Science',
+            'iron' => 500000,
+            'gold' => 500000,
+            'quartz' => 0,
+            'naqahdah' => 0,
+            'display_order' => 1,
+            'upgrade_coefficient' => 2,
+            'time_base' => 36000,
+            'time_coefficient' => 2,
+            'energy_base' => null,
+            'energy_coefficient' => null
+        ]);
 
         /*
-
-
-
         NECESSITE LE CENTRE DE DEFENCE AVANCé
-
-
         DB::table('buildings')->insert([
             'id' => 20,
             'name' => 'Usine de replicateur',

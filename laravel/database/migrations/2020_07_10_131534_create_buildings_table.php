@@ -38,7 +38,7 @@ class CreateBuildingsTable extends Migration
             $table->integer('level_max')->nullable();
             
             $table->integer('time_base')->length(25)->default(1000);
-            $table->decimal('time_coefficient', 5, 2)->default(1.4);
+            $table->decimal('time_coefficient', 5, 2)->default(1.45);
 
             $table->decimal('building_bonus', 5, 2)->nullable();
             $table->decimal('technology_bonus', 5, 2)->nullable();

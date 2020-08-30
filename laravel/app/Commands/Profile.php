@@ -5,7 +5,6 @@ namespace App\Commands;
 use App\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Utility\TopUpdater;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -24,7 +23,6 @@ class Profile extends CommandHandler implements CommandInterface
             if($this->player->user_id == 125641223544373248 && count($this->args) >= 1)
             {
                 $player = Player::where('user_id', $this->args[0])->first();
-                    TopUpdater::update($player);
                 $this->player = $player;
             }
 
@@ -69,6 +67,7 @@ class Profile extends CommandHandler implements CommandInterface
                 "title" => $this->player->user_name,
                 "description" => "Lang: ".config('stargate.emotes.'.$this->player->lang)."\n"
                                 ."Notification: ".$notificationString."\n"
+                                ."Combo Hourly Max: ".$this->player->hr_max_combo."\n"
                                 ."Votes: ".$this->player->votes."\n",
                 'fields' => [
                     [
@@ -76,7 +75,7 @@ class Profile extends CommandHandler implements CommandInterface
                         'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." Points (Position: ".number_format($generalPosition)."/{$totalPlayers})\n"
                                   .config('stargate.emotes.productionBuilding')." ".trans('generic.building',[],$this->player->lang).": Points ".number_format($this->player->points_building)." (".number_format($buildingPosition)."/{$totalPlayers})\n"
                                   .config('stargate.emotes.research')." ".trans('generic.research',[],$this->player->lang).": Points ".number_format($this->player->points_research)." (Position: ".number_format($researchPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).": Points ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.craft')." ".trans('generic.unit',[],$this->player->lang).": Points ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition)."/{$totalPlayers})\n"
                                   .config('stargate.emotes.defence')." ".trans('generic.defence',[],$this->player->lang).": Points ".number_format($this->player->points_defence)." (Position: ".number_format($defencePosition)."/{$totalPlayers})\n",
                         'inline' => true
                     ]
@@ -85,20 +84,7 @@ class Profile extends CommandHandler implements CommandInterface
                     'text'  => 'Stargate',
                 ),
             ];
-
-            $coloniesString = "";
-            $colonyIndex = 1;
-            foreach($this->player->colonies as $colony)
-            {
-                $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
-                $colonyIndex++;
-            }
-            $embed['fields'][] = [
-                'name' => trans('generic.colonies',[],$this->player->lang),
-                'value' => $coloniesString,
-                'inline' => true
-            ];
-
+            
             $this->message->channel->sendMessage('', false, $embed);
             return ;
         }

@@ -78,6 +78,10 @@ return [
         'name' => 'Asuran factory',
         'description' => "After long analysis, you scientists have succed to activate an old Asuran factory of ZPM. It opens you the way to intergalactis travels through the stargate"
     ],
+    'terraformer' => [
+        'name' => 'Terraformer',
+        'description' => "By terraforming process, this factory modifies the appearance of your planet to enlarge the constructible space"
+    ],
     'hiddenBuilding' => '-- Hidden building --',
     'unDiscovered' => 'Undiscovered',
     'unknownBuilding' => 'Unknown building...',

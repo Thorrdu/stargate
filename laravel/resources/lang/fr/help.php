@@ -22,7 +22,7 @@ return [
     ],
     'colony' => [
         'description' => 'Affiche les informations essentielles sur votre colonie (Ressources, Bâtiments, Production, ... ) et permet de changer de colonie.',
-        'usage' => "!colony\n!colony switch [numéro]\n!colony remove [numéro]"
+        'usage' => "!colony\n!colony list\n!colony switch [numéro]\n!colony remove [numéro]"
     ],
     'craft' => [
         'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
@@ -40,6 +40,19 @@ return [
                         ."\nLvl 3: Vous voyez 8 systèmes autour du votre"
                         ."\nLvl 8: Accès à la vision des autres galaxies",
         'usage' => '!galaxy'
+    ],
+    'alliance' => [
+        'description' => "Vous permet de créer ou gérer votre alliance.",
+        'usage' => "!alliance create [Tag] [Name]\n".
+                    "!alliance set internal_description [Description]\n".
+                    "!alliance set external_description [Description]\n".
+                    "!alliance set leader [@mention]\n".
+                    "!alliance set recruitement [on/off]\n".
+                    "!alliance role list\n".
+                    "!alliance role [role] set [paramètre] [valeur/on/off]\n".
+                    "!alliance invite [@mention]\n".
+                    "!alliance leave\n".
+                    "!alliance upgrade\n"
     ],
     'stargate' => [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer",
@@ -67,7 +80,7 @@ return [
         'usage' => '!ping'
     ],
     'profile' => [
-        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote, colonies,..."
+        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
                         ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
         'usage' => "!profile\n!profile notification [on/off]"
     ],
@@ -77,7 +90,7 @@ return [
     ],
     'top' => [
         'description' => "Indique les meilleurs joueur par catégories.\n1 point = 1k ressources dépensées",
-        'usage' => "!top [general/building/research/military/defence]"
+        'usage' =>  "!top [general/building/research/military/defence]\n!top [general/building/research/military/defence] alliance"
     ],
     'uptime' => [
         'description' => "Indique la durée depuis laquelle le bot est en ligne.",
