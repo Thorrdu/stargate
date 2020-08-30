@@ -133,7 +133,7 @@ $discord->on('ready', function ($discord) use($beta){
     $discord->loop->addPeriodicTimer(360, function () use ($discord) {
 
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
-        if($topRegen == 1)
+        if($topRegen > 0)
         {
             echo PHP_EOL."Top REGEN";
             $players = Player::where(['npc' => 0])->get();
