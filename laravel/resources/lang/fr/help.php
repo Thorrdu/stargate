@@ -51,6 +51,8 @@ return [
                     "!alliance role list\n".
                     "!alliance role [role] set [paramètre] [valeur/on/off]\n".
                     "!alliance invite [@mention]\n".
+                    "!alliance promote [@mention]\n".
+                    "!alliance demote [@mention]\n".
                     "!alliance leave\n".
                     "!alliance disband\n".
                     "!alliance upgrade\n"
