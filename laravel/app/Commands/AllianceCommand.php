@@ -616,7 +616,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                                         }
 
                                                         $newRole = AllianceRole::where([["alliance_id", $this->player->alliance->id], ['right_level', 1]])->first();
-                                                        DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => $this->player->alliance->id,'role_id' => $newRole->id, 'user_name' => '['.$this->player->alliance->tag.'] '.$this->player->user_name]);
+                                                        DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => $this->player->alliance->id,'role_id' => $newRole->id, 'user_name' => '['.$this->player->alliance->tag.'] '.$memberEdit->user_name]);
                                                         
                                                         $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('alliance.inviteAccepted', ['name'=>$memberEdit->user_name, 'allianceName'=>$allianceCheck->name], $this->player->lang));
                                                         $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
