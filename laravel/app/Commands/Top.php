@@ -41,35 +41,35 @@ class Top extends CommandHandler implements CommandInterface
                 if(Str::startsWith('general', $this->args[0])){
                     $this->topType = 'general';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->sortByDesc('points_total'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_total'); 
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total'); 
                 }     
                 elseif(Str::startsWith('building', $this->args[0])){
                     $this->topType = 'building';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->sortByDesc('points_building'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_building'); 
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
                 }      
                 elseif(Str::startsWith('research', $this->args[0])){
                     $this->topType = 'research';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->sortByDesc('points_research'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_research'); 
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
                 }  
                 elseif(Str::startsWith('craft', $this->args[0])){
                     $this->topType = 'craft';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->sortByDesc('points_military'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_military'); 
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');   
                 }   
                 elseif(Str::startsWith('defence', $this->args[0])){
                     $this->topType = 'defence';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->sortByDesc('points_defence'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_defence'); 
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');   
                 }   
