@@ -130,11 +130,12 @@ $discord->on('ready', function ($discord) use($beta){
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
 
-    $discord->loop->addPeriodicTimer(5, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
 
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
+            echo PHP_EOL."Top REGEN";
             $players = Player::where(['npc' => 0])->get();
             foreach($players as $player)
                 TopUpdater::update($player);

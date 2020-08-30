@@ -51,6 +51,7 @@ return [
                     "!alliance role [role] set [parameter] [value/on/off]\n".
                     "!alliance invite [@mention]\n".
                     "!alliance leave\n".
+                    "!alliance disband\n".
                     "!alliance upgrade\n"
     ],
     'stargate' => [
