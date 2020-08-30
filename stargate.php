@@ -75,10 +75,9 @@ use App\Colony;
 use App\Reminder;
 use App\Exploration;
 use App\GateFight;
-use App\Alliance;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, AllianceCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -110,7 +109,7 @@ $discord = new DiscordCommandClient([
     'defaultHelpCommand' => false,
 ]);
 
-$discord->on('ready', function ($discord) use($beta){
+$discord->on('ready', function ($discord) {
     echo "Bot is starting up!", PHP_EOL;
     echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
@@ -130,24 +129,11 @@ $discord->on('ready', function ($discord) use($beta){
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
 
-    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
-
-        $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
-        if($topRegen == 1)
-        {
-            $players = Player::where(['npc' => 0])->get();
-            foreach($players as $player)
-                TopUpdater::update($player);
-
-            $alliances = Alliance::All();
-            foreach($alliances as $alliance)
-                TopUpdater::updateAlliance($alliance);
-
-            $nextTopRegen = date("Y-m-").(date("d")+1).' 00:00:00';
-            $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
-
-        }
-
+    $discord->loop->addPeriodicTimer(900, function () use ($discord) {
+        $tenMinutes = Carbon::now()->sub('minute', 14);
+        $players = Player::where([['npc', 0],['last_top_update', '<', $tenMinutes->format("Y-m-d H:i:s")]])->get();
+        foreach($players as $player)
+            TopUpdater::update($player);
     });
 
     $discord->loop->addPeriodicTimer(3600, function () use ($discord) {       
@@ -311,7 +297,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		'aliases' => array('g','ga','gal'),
-        'cooldown' => 35
+        'cooldown' => 1
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) use($discord){
@@ -321,7 +307,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
 		'aliases' => array('s','st','sta','star'),
-        'cooldown' => 5
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {
@@ -354,17 +340,6 @@ $discord->on('ready', function ($discord) use($beta){
 		//'aliases' => array('r'),
         'cooldown' => 2
     ]);	*/
-
-    $discord->registerCommand('alliance', function ($message, $args) use($discord){
-        $command = new AllianceCommand($message,$args,$discord);
-        return $command->execute();
-    },[
-        'description' => trans('help.alliance.description', [], 'fr'),
-		'usage' => trans('help.alliance.usage', [], 'fr'),
-        'aliases' => array('a','al','ally'),
-        'cooldown' => 2
-
-    ]);	
 
     $discord->registerCommand('top', function ($message, $args) use($discord){
         $command = new Top($message,$args,$discord);
@@ -502,6 +477,8 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
+
+
     /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
         $replyMess = "";
@@ -517,17 +494,15 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	*/
     
-    if(!$beta)
-    {
-        $mainGuild = $discord->guilds->get('id', 735390211130916904);
-        $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
-        
-        $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
-            echo PHP_EOL.'Bot is ready';
-        }, function ($e) {
-        echo $e->getMessage();
-        });
-    }
+
+    $mainGuild = $discord->guilds->get('id', 735390211130916904);
+    $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
+    
+    $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
+        echo PHP_EOL.'Bot is ready';
+    }, function ($e) {
+       echo $e->getMessage();
+    });
 
 });
 
