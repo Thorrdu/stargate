@@ -7,6 +7,8 @@ use App\Technology;
 use App\Building;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use \Discord\Parts\Channel\Message as Message;
+use Discord\Parts\Embed\Embed;
 use Illuminate\Support\Str;
 
 class DefenceCommand extends CommandHandler implements CommandInterface
@@ -18,7 +20,8 @@ class DefenceCommand extends CommandHandler implements CommandInterface
     public $listner;
     public $defenceList;
     public $defenceQueue;
-    
+    public $closed;
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -39,6 +42,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     echo PHP_EOL.'Execute Defence';
                     $this->defenceList = Defence::all();      
 
+                    $this->closed = false;
                     $this->page = 1;
                     $this->maxPage = ceil($this->defenceList->count()/5);
                     $this->maxTime = time()+180;
@@ -52,39 +56,56 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             });
                         });
     
-                        $this->listner = function ($messageReaction) {
-                            if($this->maxTime < time())
-                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-    
-                            if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                                return false;
+                            
+                            if($messageReaction->user_id == $this->message->author->id)
                             {
-                                if($messageReaction->emoji->name == '⏪')
-                                {
-                                    $this->page = 1;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏪')
+                                    {
+                                        $this->page = 1;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    {
+                                        $this->page--;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    {
+                                        $this->page++;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏩')
+                                    {
+                                        $this->page = $this->maxPage;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                 }
-                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                catch(\Exception $e)
                                 {
-                                    $this->page--;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                    echo $e->getMessage();
                                 }
-                                elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
-                                {
-                                    $this->page++;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
-                                elseif($messageReaction->emoji->name == '⏩')
-                                {
-                                    $this->page = $this->maxPage;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
+                                return true;
                             }
+                            else
+                                return false;
                         };
-                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                        $this->paginatorMessage->createReactionCollector($filter);
                     });
                 }
                 elseif(Str::startsWith('queue', $this->args[0]))
@@ -94,6 +115,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         return trans('defence.emptyQueue', [], $this->player->lang);
                     $this->defenceQueue = $this->player->activeColony->defenceQueues;
     
+                    $this->closed = false;
                     $this->page = 1;
                     $this->maxPage = ceil($this->defenceQueue->count()/5);
                     $this->maxTime = time()+180;
@@ -109,47 +131,56 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             });
                         });
     
-                        $this->listner = function ($messageReaction) {
-                            if($this->maxTime < time())
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                                return false;
+                            
+                            if($messageReaction->user_id == $this->message->author->id)
                             {
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
-                                $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏪')
+                                    {
+                                        $this->page = 1;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    {
+                                        $this->page--;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    {
+                                        $this->page++;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏩')
+                                    {
+                                        $this->page = $this->maxPage;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo $e->getMessage();
+                                }
+                                return true;
                             }
-    
-                            if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
-                            {
-                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
-                                {
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
-                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-                                }
-                                elseif($messageReaction->emoji->name == '⏪')
-                                {
-                                    $this->page = 1;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
-                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
-                                {
-                                    $this->page--;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
-                                elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
-                                {
-                                    $this->page++;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
-                                elseif($messageReaction->emoji->name == '⏩')
-                                {
-                                    $this->page = $this->maxPage;
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getQueue());
-                                    $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                }
-                            }
+                            else
+                                return false;
                         };
-                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                        $this->paginatorMessage->createReactionCollector($filter);
                     });
                 }
                 else

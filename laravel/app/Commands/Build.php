@@ -68,7 +68,7 @@ class Build extends CommandHandler implements CommandInterface
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                     {
-                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->lang)]);
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
                                         $messageReaction->message->addEmbed($newEmbed);
                                         $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                         $this->closed = true;
