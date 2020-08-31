@@ -123,18 +123,12 @@ class CommandHandler
                     $this->player->captcha = true;
                     $this->player->captcha_key = Str::random(10);
                     $this->player->save();
-                    $userExist = $this->discord->users->filter(function ($value){
-                        return $value->id == $this->player->user_id;
-                    });
-                    if($userExist->count() > 0)
-                    {
-                        $foundUser = $userExist->first();
-                        $foundUser->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
-                    }
+
+                    $userExist = $this->discord->users->get('id',$this->player->user_id);
+                    if(!is_null($userExist))
+                        $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
                 }
                 $log->save();
-
-                
             }
         }
         catch(\Exception $e) {

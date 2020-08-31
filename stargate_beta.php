@@ -541,22 +541,20 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    
+    /*
     $discord->registerCommand('test', function ($message, $args) use($discord) {
-        /*$replyMess = "";
+        $replyMess = "";
         foreach ($discord->guilds as $guild) {
             $replyMess .= "\n" . $guild->name." :: ".count($guild->members)." members";;
         }    
-        echo $replyMess;*/
-        $command = new Ping($message,$args);
-        return $command->execute();
-        return 'aa';
+        echo $replyMess;
+
     },[
         'description' => 'Commande test à tout faire',
 		'usage' => 'test',
         'aliases' => array('t'),
         'cooldown' => 2
-    ]);	
+    ]);	*/
     
     if(!$beta)
     {

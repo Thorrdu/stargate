@@ -512,27 +512,16 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ),
                                     ];
 
-                                    $userExist = $this->discord->users->filter(function ($value){
-                                        return $value->id == $this->coordinateDestination->colony->player->user_id;
-                                    });
-                                    if($userExist->count() > 0)
-                                    {
-                                        $foundUser = $userExist->first();
-                                        $foundUser->sendMessage('', false, $embed);
-                                    }
 
-                                    $userExist = $this->discord->users->filter(function ($value){
-                                        return $value->id == $this->player->user_id;
-                                    });
-                                    if($userExist->count() > 0)
-                                    {
-                                        $foundUser = $userExist->first();
-                                        $foundUser->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang));
-                                    }
+                                    $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
+                                    if(!is_null($userExist))
+                                        $userExist->sendMessage('', false, $embed);
+
+                                    $userExist = $this->discord->users->get('id',$this->player->user_id);
+                                    if(!is_null($userExist))
+                                        $userExist->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang));
 
                                     try{
-
-
 
                                         $tradeLogCheck = Trade::where([['player_id_dest',$this->coordinateDestination->colony->player->id], ['player_id_source',$this->player->id], ['active', true]])
                                                                 ->orWhere([['player_id_source',$this->coordinateDestination->colony->player->id], ['player_id_dest',$this->player->id], ['active', true]])->first();
@@ -713,25 +702,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ];
                                         $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, '', $embed);
 
+                                        $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
+                                        if(!is_null($userExist))
+                                            $userExist->sendMessage(trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
 
-                                        $userExist = $this->discord->users->filter(function ($value){
-                                            return $value->id == $this->coordinateDestination->colony->player->user_id;
-                                        });
-                                        if($userExist->count() > 0)
+                                        $userExist = $this->discord->users->get('id',$this->player->user_id);
+                                        if(!is_null($userExist))
                                         {
-                                            $foundUser = $userExist->first();
-
-                                            //Vous avez été scan
-                                            $foundUser->sendMessage(trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
-                                        }
-
-                                        $userExist = $this->discord->users->filter(function ($value){
-                                            return $value->id == $this->player->user_id;
-                                        });
-                                        if($userExist->count() > 0)
-                                        {
-                                            $foundUser = $userExist->first();
-
                                             try
                                             {
 
@@ -892,7 +869,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     ];
                                                 }
                             
-                                                $foundUser->sendMessage('', false, $embed);
+                                                $userExist->sendMessage('', false, $embed);
 
                                             }
                                             catch(\Exception $e)
@@ -1399,14 +1376,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'text'  => 'Stargate',
                                             ),
                                         ];
-                                        $userExist = $this->discord->users->filter(function ($value){
-                                            return $value->id == $this->player->user_id;
-                                        });
-                                        if($userExist->count() > 0)
-                                        {
-                                            $foundUser = $userExist->first();
-                                            $foundUser->sendMessage('', false, $embed);
-                                        }
+
+                                        $userExist = $this->discord->users->get('id',$this->player->user_id);
+                                        if(!is_null($userExist))
+                                            $userExist->sendMessage('', false, $embed);
+
 
                                         $embed = [
                                             'author' => [
@@ -1422,17 +1396,10 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'text'  => 'Stargate',
                                             ),
                                         ];
-                                        $userExist = $this->discord->users->filter(function ($value){
-                                            return $value->id == $this->coordinateDestination->colony->player->user_id;
-                                        });
-                                        if($userExist->count() > 0)
-                                        {
-                                            $foundUser = $userExist->first();
-                                            $foundUser->sendMessage('', false, $embed);
-                                        }
 
-
-                                
+                                        $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
+                                        if(!is_null($userExist))
+                                            $userExist->sendMessage('', false, $embed);                               
                                     }
                                     catch(\Exception $e)
                                     {

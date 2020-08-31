@@ -108,12 +108,13 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
+    'discordOptions' => ['loadAllMembers' => true]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
     
-/*
+    /*
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
         'name' => '!help',
         'type' => Activity::TYPE_LISTENING
@@ -189,9 +190,7 @@ $discord->on('ready', function ($discord) use($beta){
             'type' => 3
         ]);
         $discord->updatePresence($game);*/
-
-
-        /*
+        
         $dateNow = Carbon::now();
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
@@ -214,49 +213,30 @@ $discord->on('ready', function ($discord) use($beta){
                     {
                         $rmdMessagesStr .= $reminder->reminder;
 
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        });
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
                     }
                     else
                     {
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        });
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
 
                         $playerIdRemind = $reminder->player->user_id;
                         $rmdMessagesStr = $reminder->reminder;
 
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        });
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
                     }
                 }
                 else
                 {
-                    $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                        return $value->id == $playerIdRemind;
-                    });
-                    if($userExist->count() > 0)
-                    {
-                        $foundUser = $userExist->first();
-                        $foundUser->sendMessage($rmdMessagesStr);
-                    }
+                    $userExist = $discord->users->get('id',$playerIdRemind);
+                    if(!is_null($userExist))
+                        $userExist->sendMessage($rmdMessagesStr);
+
                     $rmdMessagesStr = "";
                     $playerIdRemind = $reminder->player->user_id;
                 }
@@ -264,20 +244,17 @@ $discord->on('ready', function ($discord) use($beta){
             $rmdMessagesStr .= $reminder->reminder."\n";
 
             $reminder->delete();
-        }*/
+        }
 
         $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
         echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
         foreach($explorations as $exploration)
         {  
             $explorationOutcome = $exploration->outcome();
-            $userExist = $discord->users->filter(function ($value) use($exploration){
-                return $value->id == $exploration->player->user_id;
-            });
-            if($userExist->count() > 0)
+            $userExist = $discord->users->get('id',$exploration->player->user_id);
+            if(!is_null($userExist))
             {
-                $foundUser = $userExist->first();
-                $foundUser->sendMessage($explorationOutcome);
+                $userExist->sendMessage($explorationOutcome);
             }
         }
     });

@@ -40,9 +40,7 @@ class Ban extends CommandHandler implements CommandInterface
                         {
                             echo $e->getMessage();
                         }
-                        return trans('ban.banApplied', ['name' => $this->message->mentions[0]->username], $this->player->lang);
-
-
+                        return trans('ban.banApplied', ['name' => $playerToBan->user_name], $this->player->lang);
                     }
                 }
                 else
