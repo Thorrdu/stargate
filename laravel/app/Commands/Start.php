@@ -50,7 +50,7 @@ class Start extends CommandHandler implements CommandInterface
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
+                        if($messageReaction->message->id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
                         {
                             if($messageReaction->emoji->name == '🇫🇷')
                                 $this->start('fr');
