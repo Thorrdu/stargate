@@ -49,7 +49,9 @@ class Craft extends CommandHandler implements CommandInterface
                         $this->paginatorMessage->react('⏪')->then(function(){ 
                             $this->paginatorMessage->react('◀️')->then(function(){ 
                                 $this->paginatorMessage->react('▶️')->then(function(){ 
-                                    $this->paginatorMessage->react('⏩');
+                                    $this->paginatorMessage->react('⏩')->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                    });
                                 });
                             });
                         });

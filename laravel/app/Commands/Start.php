@@ -100,7 +100,7 @@ class Start extends CommandHandler implements CommandInterface
                 )
             ];
 
-            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, '',$embed);
+            $this->paginatorMessage->addEmbed($embed);
             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
         }
         catch(\Exception $e)
