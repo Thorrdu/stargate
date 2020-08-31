@@ -92,7 +92,10 @@ class HelpCommand extends CommandHandler implements CommandInterface
                             elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                             {
                                 $this->page++;
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
+                                
+                                $this->paginatorMessage->embeds[0] = $this->getPage();
+                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                //$this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
                                 $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
                             elseif($messageReaction->emoji->name == '⏩')
