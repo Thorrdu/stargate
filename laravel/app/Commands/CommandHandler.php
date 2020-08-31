@@ -37,14 +37,13 @@ class CommandHandler
 
     //BASIC CALL
     public function __construct2(Message $message,array $args){
-
         $this->message = $message;
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(!is_null($this->message->author->user_name) && !is_null($this->player))
+        if(!is_null($this->message->author->username) && !is_null($this->player))
         {
-            if($this->player->untagged_user_name != $this->message->author->user_name || $this->player->untagged_user_name == "not loaded")
+            if($this->player->untagged_user_name != $this->message->author->username || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user_name;
                 echo PHP_EOL.'DIFFERENT';

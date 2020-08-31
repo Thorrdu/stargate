@@ -108,17 +108,20 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
-    //'discordOptions' => ['loadAllMembers' => true]
+    'discordOptions' => ['loadAllMembers' => true]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
+
+    echo $discord->users->count();
     /*echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
         'type' => 3,
     ]);
     $discord->updatePresence($game);*/
+    var_dump($discord);
 
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
@@ -132,7 +135,6 @@ $discord->on('ready', function ($discord) use($beta){
     });
 
     $discord->loop->addPeriodicTimer(5, function () use ($discord) {
-
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
@@ -539,20 +541,22 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    /*
+    
     $discord->registerCommand('test', function ($message, $args) use($discord) {
-        $replyMess = "";
+        /*$replyMess = "";
         foreach ($discord->guilds as $guild) {
             $replyMess .= "\n" . $guild->name." :: ".count($guild->members)." members";;
         }    
-        echo $replyMess;
-        return $replyMess;
+        echo $replyMess;*/
+        $command = new Ping($message,$args);
+        return $command->execute();
+        return 'aa';
     },[
         'description' => 'Commande test à tout faire',
 		'usage' => 'test',
         'aliases' => array('t'),
         'cooldown' => 2
-    ]);	*/
+    ]);	
     
     if(!$beta)
     {

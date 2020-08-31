@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Player;
+use \Discord\Repository\UserRepository;
 
 class Ban extends CommandHandler implements CommandInterface
 {
@@ -14,9 +15,9 @@ class Ban extends CommandHandler implements CommandInterface
             {
                 echo PHP_EOL.'Ban';
                 $playerToBan = null;
-                $playerToBan = Player::where('user_id', $this->message->mentions[0]->id)->first();
-                if(is_null($playerToBan) && count($this->args) > 0)
-                    $playerToBan = Player::where('user_id', $this->args[0])->first();
+
+                if(count($this->args) > 0 && preg_match("/[0-9]{18}/", $this->args[0], $playerMatch))
+                    $playerToBan = Player::where('user_id', $playerMatch[0])->first();
 
                 if(!is_null($playerToBan))
                 {
@@ -24,13 +25,29 @@ class Ban extends CommandHandler implements CommandInterface
                     {
                         $playerToBan->ban = false;
                         $playerToBan->save();
-                        return trans('ban.banLift', ['name' => $this->message->mentions[0]->username], $this->player->lang);
+                        return trans('ban.banLift', ['name' => $playerToBan->user_name], $this->player->lang);
                     }
                     else
                     {
-                        $playerToBan->ban = true;
-                        $playerToBan->save();
+                        echo PHP_EOL.'IDPL '.$playerToBan->id;
 
+                        try{
+                            echo PHP_EOL.'IDPL '.$playerToBan->user_id;
+                            var_dump($this->discord);
+                            //$userExist = $this->discord->users->get('id', 125641223544373248);
+                            
+                            //$userExist = $this->message->channel->guild->members->get('id',$playerToBan->user_id);
+                            //var_dump($userExist);
+
+                            $playerToBan->ban = true;
+                            $playerToBan->save();
+                        }catch(\Exception $e)
+                        {
+                            echo $e->getMessage();
+                        }
+                        
+                        $userExist->sendMessage("coucou");
+                        return;
                         $userExist = $this->discord->users->filter(function ($value) use($playerToBan){
                             return $value->id == $playerToBan->user_id;
                         });
