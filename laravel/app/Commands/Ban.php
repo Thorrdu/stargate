@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\Player;
-use \Discord\Repository\UserRepository;
 
 class Ban extends CommandHandler implements CommandInterface
 {

@@ -89,7 +89,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-
+use Discord\Parts\User\Activity;
 
 global $upTimeStart;
 $upTimeStart = Carbon::now();
@@ -113,19 +113,13 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
-    
-    /*
+
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
-        'name' => '!help',
-        'type' => Activity::TYPE_LISTENING
-    ]);
-    $discord->updatePresence($activity);*/
-    //echo 'UPDATING PRESENCE'.PHP_EOL;
-    /*$game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
-        'type' => 3,
+        'type' => 3
     ]);
-    $discord->updatePresence($game);*/
+    $discord->updatePresence($activity);
+    
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
