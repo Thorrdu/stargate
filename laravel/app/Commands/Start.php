@@ -24,7 +24,7 @@ class Start extends CommandHandler implements CommandInterface
                     $this->userName = $this->message->author->user->username ;
                 else
                     $this->userName = $this->message->author->user->username ;
-
+                echo 'aaa';
                 $this->newPlayerId = $this->message->author->id;
                 $this->maxTime = time()+180;
                 $embed = [
@@ -39,6 +39,7 @@ class Start extends CommandHandler implements CommandInterface
                         'text'  => 'Stargate',
                     )
                 ];
+                echo 'bb';
 
                 $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
@@ -50,8 +51,13 @@ class Start extends CommandHandler implements CommandInterface
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
+                            echo PHP_EOL.$messageReaction->message->id.'<--';
+                            echo PHP_EOL.$this->message->author->id.'-->';
+
                         if($messageReaction->message->id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
                         {
+                            echo 'cc';
+
                             if($messageReaction->emoji->name == '🇫🇷')
                                 $this->start('fr');
                             elseif($messageReaction->emoji->name == '🇬🇧')
