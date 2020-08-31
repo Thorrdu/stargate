@@ -29,35 +29,17 @@ class Ban extends CommandHandler implements CommandInterface
                     }
                     else
                     {
-                        echo PHP_EOL.'IDPL '.$playerToBan->id;
-
                         try{
-                            echo PHP_EOL.'IDPL '.$playerToBan->user_id;
-                            var_dump($this->discord);
-                            //$userExist = $this->discord->users->get('id', 125641223544373248);
-                            
-                            //$userExist = $this->message->channel->guild->members->get('id',$playerToBan->user_id);
-                            //var_dump($userExist);
-
                             $playerToBan->ban = true;
                             $playerToBan->save();
+                            $userExist = $this->discord->users->get('id', $playerToBan->user_id);
+                            if(!is_null($userExist))
+                                $userExist->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
+
                         }catch(\Exception $e)
                         {
                             echo $e->getMessage();
                         }
-                        
-                        $userExist->sendMessage("coucou");
-                        return;
-                        $userExist = $this->discord->users->filter(function ($value) use($playerToBan){
-                            return $value->id == $playerToBan->user_id;
-                        });
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
-                        }
-
-
                         return trans('ban.banApplied', ['name' => $this->message->mentions[0]->username], $this->player->lang);
 
 

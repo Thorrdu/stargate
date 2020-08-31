@@ -43,7 +43,7 @@ class CommandHandler
 
         if(!is_null($this->message->author->username) && !is_null($this->player))
         {
-            if($this->player->untagged_user_name != $this->message->author->username || $this->player->untagged_user_name == "not loaded")
+            if($this->player->untagged_user_name != $this->message->author->user->username || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user_name;
                 echo PHP_EOL.'DIFFERENT';
@@ -80,7 +80,7 @@ class CommandHandler
 
         if(!is_null($this->message->author->user_name) && !is_null($this->player))
         {
-            if($this->player->untagged_user_name != $this->message->author->user_name || $this->player->untagged_user_name == "not loaded")
+            if($this->player->untagged_user_name != $this->message->author->user->username || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user_name;
                 echo PHP_EOL.'DIFFERENT';
