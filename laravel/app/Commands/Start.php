@@ -12,6 +12,7 @@ class Start extends CommandHandler implements CommandInterface
     public $buildingList;
     public $newPlayerId;
     public $userName;
+    public $messageReaction;
 
     public function execute()
     {
@@ -51,12 +52,9 @@ class Start extends CommandHandler implements CommandInterface
                         if($this->maxTime < time())
                             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                            echo PHP_EOL.$messageReaction->message->id.'<--';
-                            echo PHP_EOL.$this->message->author->id.'-->';
-
                         if($messageReaction->message->id == $this->paginatorMessage->id && $messageReaction->user_id == $this->message->author->id)
                         {
-                            echo 'cc';
+                            $this->messageReaction = $messageReaction;
 
                             if($messageReaction->emoji->name == '🇫🇷')
                                 $this->start('fr');
@@ -90,8 +88,8 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->ban = false;
             $newPlayer->lang = $lang;
             $newPlayer->votes = 0;
-            $newPlayer->save();   
-            $newPlayer->addColony();
+           // $newPlayer->save();   
+           // $newPlayer->addColony();
 
             $embed = [
                 'author' => [
@@ -105,8 +103,8 @@ class Start extends CommandHandler implements CommandInterface
                     'text'  => 'Stargate',
                 )
             ];
-
-            $this->paginatorMessage->addEmbed($embed);
+            $newEmbed = $this->discord->factory(Embed::class,$embed);
+            $this->paginatorMessage->addEmbed($newEmbed);
             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
         }
         catch(\Exception $e)
