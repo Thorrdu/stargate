@@ -23,7 +23,7 @@ class Start extends CommandHandler implements CommandInterface
                 if(!is_null($this->message->author->username))
                     $this->userName = $this->message->author->username;
                 else
-                    $this->userName = $this->message->author->user_name;
+                    $this->userName = $this->message->author->user->username ;
 
                 $this->newPlayerId = $this->message->author->id;
                 $this->maxTime = time()+180;
