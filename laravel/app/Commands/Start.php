@@ -90,8 +90,8 @@ class Start extends CommandHandler implements CommandInterface
             $newPlayer->ban = false;
             $newPlayer->lang = $lang;
             $newPlayer->votes = 0;
-           // $newPlayer->save();   
-           // $newPlayer->addColony();
+            $newPlayer->save();   
+            $newPlayer->addColony();
 
             $embed = [
                 'author' => [
