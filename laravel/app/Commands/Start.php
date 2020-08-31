@@ -27,7 +27,7 @@ class Start extends CommandHandler implements CommandInterface
                     $this->userName = $this->message->author->user->username ;
                 else
                     $this->userName = $this->message->author->user->username ;
-                echo 'aaa';
+
                 $this->newPlayerId = $this->message->author->id;
                 $this->maxTime = time()+180;
                 $embed = [
@@ -42,7 +42,6 @@ class Start extends CommandHandler implements CommandInterface
                         'text'  => 'Stargate',
                     )
                 ];
-                echo 'bb';
 
                 $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
