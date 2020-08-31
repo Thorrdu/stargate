@@ -133,7 +133,7 @@ $discord->on('ready', function ($discord) use($beta){
 	$discord->on('message', function ($message) {
         if($message->channel->guild_id != 735390211130916904 && $message->channel->guild_id != 735390211130916904)
             return;
-		echo "{$message->author->username}: {$message->content}",PHP_EOL;
+		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
     });
 
     $discord->loop->addPeriodicTimer(360, function () use ($discord) {

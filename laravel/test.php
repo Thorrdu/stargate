@@ -119,7 +119,7 @@ $discord->on('ready', function ($discord) {
 
 	// Listen for messages.
 	$discord->on('message', function ($message, $discord) {
-		echo "{$message->author->username}: {$message->content}",PHP_EOL;
+		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
 	});
 });
 

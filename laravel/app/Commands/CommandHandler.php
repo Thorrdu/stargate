@@ -41,7 +41,7 @@ class CommandHandler
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(!is_null($this->message->author->username) && !is_null($this->player))
+        if(!is_null($this->message->author->user->username ) && !is_null($this->player))
         {
             if($this->player->untagged_user_name != $this->message->author->user->username || $this->player->untagged_user_name == "not loaded")
             {

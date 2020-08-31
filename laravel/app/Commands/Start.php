@@ -20,8 +20,8 @@ class Start extends CommandHandler implements CommandInterface
         {
             try{
 
-                if(!is_null($this->message->author->username))
-                    $this->userName = $this->message->author->username;
+                if(!is_null($this->message->author->user->username ))
+                    $this->userName = $this->message->author->user->username ;
                 else
                     $this->userName = $this->message->author->user->username ;
 
