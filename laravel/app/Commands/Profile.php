@@ -19,12 +19,12 @@ class Profile extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
-
+            /*
             if($this->player->user_id == 125641223544373248 && count($this->args) >= 1)
             {
                 $player = Player::where('user_id', $this->args[0])->first();
                 $this->player = $player;
-            }
+            }*/
 
             if(!empty($this->args) && Str::startsWith('notification', $this->args[0]))
             {

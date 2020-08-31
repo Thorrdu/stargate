@@ -108,16 +108,17 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
+    //'discordOptions' => ['loadAllMembers' => true]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
-    echo 'UPDATING PRESENCE'.PHP_EOL;
+    /*echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
         'type' => 3,
     ]);
-    $discord->updatePresence($game);
+    $discord->updatePresence($game);*/
 
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
@@ -183,6 +184,7 @@ $discord->on('ready', function ($discord) use($beta){
         ]);
         $discord->updatePresence($game);*/
 
+        return;
         $dateNow = Carbon::now();
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
@@ -205,9 +207,10 @@ $discord->on('ready', function ($discord) use($beta){
                     {
                         $rmdMessagesStr .= $reminder->reminder;
 
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
+                        $userExist = $discord->users->get('id', $playerIdRemind);
+                        /*filter(function ($value) use($playerIdRemind){
                             return $value->id == $playerIdRemind;
-                        });
+                        })*/
                         if($userExist->count() > 0)
                         {
                             $foundUser = $userExist->first();
@@ -216,9 +219,7 @@ $discord->on('ready', function ($discord) use($beta){
                     }
                     else
                     {
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        });
+                        $userExist = $discord->users->get('id', $playerIdRemind);
                         if($userExist->count() > 0)
                         {
                             $foundUser = $userExist->first();
@@ -228,9 +229,11 @@ $discord->on('ready', function ($discord) use($beta){
                         $playerIdRemind = $reminder->player->user_id;
                         $rmdMessagesStr = $reminder->reminder;
 
+                        $userExist = $discord->users->get('id', $playerIdRemind);
+                        /*
                         $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
                             return $value->id == $playerIdRemind;
-                        });
+                        });*/
                         if($userExist->count() > 0)
                         {
                             $foundUser = $userExist->first();
@@ -240,9 +243,11 @@ $discord->on('ready', function ($discord) use($beta){
                 }
                 else
                 {
+                    $userExist = $discord->users->get('id', $playerIdRemind);
+                    /*
                     $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
                         return $value->id == $playerIdRemind;
-                    });
+                    });*/
                     if($userExist->count() > 0)
                     {
                         $foundUser = $userExist->first();

@@ -112,20 +112,26 @@ $discord = new DiscordCommandClient([
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
-    echo 'UPDATING PRESENCE'.PHP_EOL;
-    $game = $discord->factory(Game::class, [
+    
+/*
+    $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+        'name' => '!help',
+        'type' => Activity::TYPE_LISTENING
+    ]);
+    $discord->updatePresence($activity);*/
+    //echo 'UPDATING PRESENCE'.PHP_EOL;
+    /*$game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
         'type' => 3,
     ]);
-    $discord->updatePresence($game);
-
+    $discord->updatePresence($game);*/
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
 	// Listen for messages.
 	$discord->on('message', function ($message) {
-        if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
+        if($message->channel->guild_id != 735390211130916904 && $message->channel->guild_id != 735390211130916904)
             return;
 		echo "{$message->author->username}: {$message->content}",PHP_EOL;
     });
@@ -184,6 +190,8 @@ $discord->on('ready', function ($discord) use($beta){
         ]);
         $discord->updatePresence($game);*/
 
+
+        /*
         $dateNow = Carbon::now();
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
@@ -256,7 +264,7 @@ $discord->on('ready', function ($discord) use($beta){
             $rmdMessagesStr .= $reminder->reminder."\n";
 
             $reminder->delete();
-        }
+        }*/
 
         $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
         echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
@@ -552,6 +560,7 @@ $discord->on('ready', function ($discord) use($beta){
     
     if(!$beta)
     {
+        /*
         $mainGuild = $discord->guilds->get('id', 735390211130916904);
         $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
         
@@ -560,6 +569,7 @@ $discord->on('ready', function ($discord) use($beta){
         }, function ($e) {
         echo $e->getMessage();
         });
+        */
     }
 
 });

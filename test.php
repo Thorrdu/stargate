@@ -30,7 +30,7 @@ Config::set('stargate.gateFight.StrongWeak', $newLimit);
 
 echo config('stargate.gateFight.StrongWeak');
 die();*/
-
+/*
 $building = Building::find(10); //17 fer 18 or
 
 for($cpt = 1; $cpt < 15; $cpt++)
@@ -38,7 +38,7 @@ for($cpt = 1; $cpt < 15; $cpt++)
 	//print_r($building->getPrice($cpt));
 	echo PHP_EOL.'Lvl '.$cpt.' '.round($building->getConsumption($cpt)).' | '.round($building->getProductionE2PZ($cpt));
 }
-die();
+die();*/
 /*
 $buildings = Defence::all();
 foreach($buildings as $buidling)
@@ -130,13 +130,43 @@ try{
 	//$faker = Faker::create();
 
 
-	$colonies = Colony::all();
-	foreach($colonies as $colony)
+	$players = Player::where('npc',1)->get();
+	foreach($players as $player)
 	{
-		$colony->calcProd();
-		$colony->save();
-		$colony->checkColony();
+
+		$defIds = [1,2,3];
+
+
+
+		foreach($player->colonies as $colony)
+		{
+			$colony->calcProd();
+			$colony->save();
+			$colony->checkColony();
+
+			$colony->military += rand(500,4000);
+			$colony->save();
+			
+			foreach($defIds as $defId)
+			{
+				switch($defId)
+				{
+					default:
+					case 1:
+						$qty = rand(5,25);
+					break;
+					case 2:
+						$qty = rand(2,10);
+					break;
+					case 3:
+						$qty = rand(1,5);
+					break;
+				}
+				///$colony->defences()->attach([$defId => ['number' => $qty]]);
+			}
+		}
 	}
+
 	/*** 
 	$arrayLocales = ['ar_EG', 'ar_PS', 'ar_SA', 'bg_BG', 'bs_BA', 'cs_CZ', 'de_DE', 'dk_DK', 'el_GR', 'en_AU', 'en_CA', 'en_GB', 'en_IN', 'en_NZ', 'en_US', 'es_ES', 'es_MX', 'et_EE', 'fa_IR', 'fi_FI', 'fr_FR', 'hi_IN', 'hr_HR', 'hu_HU', 'hy_AM', 'it_IT', 'ja_JP', 'ka_GE', 'ko_KR', 'lt_LT', 'lv_LV', 'ne_NP', 'nl_NL', 'no_NO', 'pl_PL', 'pt_BR', 'pt_PT', 'ro_RO', 'ru_RU', 'sl_SI', 'sv_SE', 'tr_TR', 'uk_UA', 'zh_CN', 'zh_TW'];
     	foreach (range(1,100) as $index) {

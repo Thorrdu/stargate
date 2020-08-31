@@ -1,5 +1,5 @@
 {
     "require": {
-        "rocketmates/discord-php": "^5.1"
+        "team-reflex/discord-php": "dev-develop"
     }
 }
