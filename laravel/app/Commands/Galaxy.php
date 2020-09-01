@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use App\Coordinate;
 use App\Technology;
 use Illuminate\Support\Str;
+use Discord\Parts\Embed\Embed;
+use \Discord\Parts\Channel\Message as Message;
 
 class Galaxy extends CommandHandler implements CommandInterface
 {
@@ -20,6 +22,8 @@ class Galaxy extends CommandHandler implements CommandInterface
     public $maxTime;
     public $paginatorMessage;
     public $listner;
+    public $closed;
+
 
     public function execute()
     {
@@ -37,6 +41,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                 $this->galaxy = $this->player->activeColony->coordinates->galaxy;
                 $this->system = $this->player->activeColony->coordinates->system;
 
+                $this->closed = false;
                 $this->galaxyRestriction = false;
                 $this->systemRestriction = false;
                 $communication = Technology::find(1);
@@ -70,7 +75,9 @@ class Galaxy extends CommandHandler implements CommandInterface
                                     $this->paginatorMessage->react('⏪')->then(function(){ 
                                         $this->paginatorMessage->react('◀️')->then(function(){ 
                                             $this->paginatorMessage->react('▶️')->then(function(){ 
-                                                $this->paginatorMessage->react('⏩');
+                                                $this->paginatorMessage->react('⏩')->then(function(){
+                                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                                });
                                             });
                                         });
                                     });
@@ -82,67 +89,87 @@ class Galaxy extends CommandHandler implements CommandInterface
                             $this->paginatorMessage->react('⏪')->then(function(){ 
                                 $this->paginatorMessage->react('◀️')->then(function(){ 
                                     $this->paginatorMessage->react('▶️')->then(function(){ 
-                                        $this->paginatorMessage->react('⏩');
+                                        $this->paginatorMessage->react('⏩')->then(function(){
+                                            $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                        });
                                     });
                                 });
                             });
 
                         }
                     }
-                    $this->listner = function ($messageReaction) {
 
-                        ${'listnerNameGal'.Str::random(10)} = 55;
-                        if($this->maxTime < time())
-                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
 
-                        if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+
+                    $filter = function($messageReaction){
+                        if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                            return false;
+                        
+                        if($messageReaction->user_id == $this->message->author->id)
                         {
-                            if(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏭️' && $this->maxGalaxyPage > $this->galaxy)
-                            {
-                                $this->galaxy++;
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                            }
-                            elseif(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏮️' && $this->galaxy > 1)
-                            {
-                                $this->galaxy--;
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                            }
-                            if($messageReaction->emoji->name == '⏪')
-                            {
-                                $this->system = 1;
-                                if($this->systemRestrictionMin > 1)
-                                    $this->system = $this->systemRestrictionMin;
+                            try{
+                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                    $this->closed = true;
+                                }
+                                elseif(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏭️' && $this->maxGalaxyPage > $this->galaxy)
+                                {
+                                    $this->galaxy++;
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif(!$this->galaxyRestriction && $messageReaction->emoji->name == '⏮️' && $this->galaxy > 1)
+                                {
+                                    $this->galaxy--;
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif($messageReaction->emoji->name == '⏪')
+                                {
+                                    $this->system = 1;
+                                    if($this->systemRestrictionMin > 1)
+                                        $this->system = $this->systemRestrictionMin;
+    
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif($messageReaction->emoji->name == '◀️'  && $this->system > 1 && $this->system > $this->systemRestrictionMin)
+                                {
+                                    $this->system--;
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif($messageReaction->emoji->name == '▶️' && $this->maxSystemPage > $this->system && $this->system < $this->systemRestrictionMax)
+                                {
+                                    $this->system++;
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif($messageReaction->emoji->name == '⏩')
+                                {
+                                    $this->system = $this->maxSystemPage;
+                                    if($this->systemRestrictionMax < $this->system)
+                                        $this->system = $this->systemRestrictionMax;
 
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                    $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
-                            elseif($messageReaction->emoji->name == '◀️' && $this->system > 1 && $this->system > $this->systemRestrictionMin)
+                            catch(\Exception $e)
                             {
-                                $this->system--;
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                echo $e->getMessage();
                             }
-                            elseif($messageReaction->emoji->name == '▶️' && $this->maxSystemPage > $this->system && $this->system < $this->systemRestrictionMax)
-                            {
-                                $this->system++;
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                            }
-                            elseif($messageReaction->emoji->name == '⏩')
-                            {
-                                $this->system = $this->maxSystemPage;
-                                if($this->systemRestrictionMax < $this->system)
-                                    $this->system = $this->systemRestrictionMax;
-
-                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                            }
+                            return true;
                         }
+                        else
+                            return false;
                     };
                     if(!$this->systemRestriction)
-                        $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                        $this->paginatorMessage->createReactionCollector($filter);
                 });
 
             }
