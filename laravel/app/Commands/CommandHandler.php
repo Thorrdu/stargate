@@ -41,13 +41,18 @@ class CommandHandler
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(!is_null($this->message->author->user->username ) && !is_null($this->player))
+        if(isset($this->message->author->user))
+            $discordUsername = $this->message->author->user->username;
+        else
+            $discordUsername = $this->message->author->username;
+
+        if(!is_null($this->player))
         {
-            if($this->player->untagged_user_name != $this->message->author->user->username || $this->player->untagged_user_name == "not loaded")
+            if($this->player->untagged_user_name != $discordUsername || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user->username ;
                 echo PHP_EOL.'DIFFERENT';
-                $this->player->user_name = $this->player->untagged_user_name = $this->message->author->user->username ;
+                $this->player->user_name = $this->player->untagged_user_name = $discordUsername ;
 
                 if(!is_null($this->player->alliance))
                     $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->untagged_user_name;
@@ -55,7 +60,6 @@ class CommandHandler
                 $this->player->save();
             }
         }
-
 
         if(is_null($this->player) && !in_array(get_class($this),array('App\Commands\Start','App\Commands\Help')))
             return "Pour commencer votre aventure, utilisez `!start`";
@@ -78,13 +82,18 @@ class CommandHandler
         $this->args = $args;
         $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(!is_null($this->message->author->user->username ) && !is_null($this->player))
+        if(isset($this->message->author->user))
+            $discordUsername = $this->message->author->user->username;
+        else
+            $discordUsername = $this->message->author->username;
+
+        if(!is_null($this->player))
         {
-            if($this->player->untagged_user_name != $this->message->author->user->username || $this->player->untagged_user_name == "not loaded")
+            if($this->player->untagged_user_name != $discordUsername || $this->player->untagged_user_name == "not loaded")
             {
                 echo PHP_EOL.'News name: '.$this->message->author->user->username ;
                 echo PHP_EOL.'DIFFERENT';
-                $this->player->user_name = $this->player->untagged_user_name = $this->message->author->user->username ;
+                $this->player->user_name = $this->player->untagged_user_name = $discordUsername ;
 
                 if(!is_null($this->player->alliance))
                     $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->untagged_user_name;
