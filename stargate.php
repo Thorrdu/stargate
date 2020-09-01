@@ -127,7 +127,7 @@ $discord->on('ready', function ($discord) use($beta){
         'type' => 3,
     ]);
     $discord->updatePresence($game);*/
-    var_dump($discord);
+    //var_dump($discord);
 
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
@@ -142,7 +142,7 @@ $discord->on('ready', function ($discord) use($beta){
 		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
     });
 
-    $discord->loop->addPeriodicTimer(5, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
@@ -336,6 +336,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) use($discord){
+        return 'Under maintenance...';
         $command = new Stargate($message,$args,$discord);
         return $command->execute();
     },[
@@ -377,6 +378,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	*/
 
     $discord->registerCommand('alliance', function ($message, $args) use($discord){
+        return 'Under maintenance...';
         $command = new AllianceCommand($message,$args,$discord);
         return $command->execute();
     },[
