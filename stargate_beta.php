@@ -89,6 +89,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Discord\Parts\User\Activity;
 
 
 global $upTimeStart;
@@ -108,33 +109,49 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
-    'discordOptions' => ['loadAllMembers' => true]
+    'discordOptions' => ['loadAllMembers' => true, 'pmChannels' => true]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting up!", PHP_EOL;
 
-    echo $discord->users->count();
+    $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+        'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
+        'type' => 3
+    ]);
+    $discord->updatePresence($activity);
+
     /*echo 'UPDATING PRESENCE'.PHP_EOL;
     $game = $discord->factory(Game::class, [
         'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
         'type' => 3,
     ]);
     $discord->updatePresence($game);*/
-    var_dump($discord);
+    //var_dump($discord);
 
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
-	// Listen for messages.
+    // Listen for messages.
+    /*
 	$discord->on('message', function ($message) {
+        if($message->author->user->bot == true)
+            return;
         if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
             return;
 		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
-    });
+    });*/
 
-    $discord->loop->addPeriodicTimer(5, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
+
+        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+            'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($activity);
+    
+
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
@@ -186,7 +203,6 @@ $discord->on('ready', function ($discord) use($beta){
         ]);
         $discord->updatePresence($game);*/
 
-        return;
         $dateNow = Carbon::now();
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
@@ -209,52 +225,30 @@ $discord->on('ready', function ($discord) use($beta){
                     {
                         $rmdMessagesStr .= $reminder->reminder;
 
-                        $userExist = $discord->users->get('id', $playerIdRemind);
-                        /*filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        })*/
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
                     }
                     else
                     {
-                        $userExist = $discord->users->get('id', $playerIdRemind);
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
 
                         $playerIdRemind = $reminder->player->user_id;
                         $rmdMessagesStr = $reminder->reminder;
 
-                        $userExist = $discord->users->get('id', $playerIdRemind);
-                        /*
-                        $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                            return $value->id == $playerIdRemind;
-                        });*/
-                        if($userExist->count() > 0)
-                        {
-                            $foundUser = $userExist->first();
-                            $foundUser->sendMessage($rmdMessagesStr);
-                        }
+                        $userExist = $discord->users->get('id',$playerIdRemind);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage($rmdMessagesStr);
                     }
                 }
                 else
                 {
-                    $userExist = $discord->users->get('id', $playerIdRemind);
-                    /*
-                    $userExist = $discord->users->filter(function ($value) use($playerIdRemind){
-                        return $value->id == $playerIdRemind;
-                    });*/
-                    if($userExist->count() > 0)
-                    {
-                        $foundUser = $userExist->first();
-                        $foundUser->sendMessage($rmdMessagesStr);
-                    }
+                    $userExist = $discord->users->get('id',$playerIdRemind);
+                    if(!is_null($userExist))
+                        $userExist->sendMessage($rmdMessagesStr);
+
                     $rmdMessagesStr = "";
                     $playerIdRemind = $reminder->player->user_id;
                 }
@@ -269,13 +263,10 @@ $discord->on('ready', function ($discord) use($beta){
         foreach($explorations as $exploration)
         {  
             $explorationOutcome = $exploration->outcome();
-            $userExist = $discord->users->filter(function ($value) use($exploration){
-                return $value->id == $exploration->player->user_id;
-            });
-            if($userExist->count() > 0)
+            $userExist = $discord->users->get('id',$exploration->player->user_id);
+            if(!is_null($userExist))
             {
-                $foundUser = $userExist->first();
-                $foundUser->sendMessage($explorationOutcome);
+                $userExist->sendMessage($explorationOutcome);
             }
         }
     });
@@ -354,6 +345,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) use($discord){
+        return 'Under maintenance...';
         $command = new Stargate($message,$args,$discord);
         return $command->execute();
     },[
@@ -395,6 +387,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	*/
 
     $discord->registerCommand('alliance', function ($message, $args) use($discord){
+        return 'Under maintenance...';
         $command = new AllianceCommand($message,$args,$discord);
         return $command->execute();
     },[
@@ -558,6 +551,7 @@ $discord->on('ready', function ($discord) use($beta){
     
     if(!$beta)
     {
+        /*
         $mainGuild = $discord->guilds->get('id', 735390211130916904);
         $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
         
@@ -565,7 +559,7 @@ $discord->on('ready', function ($discord) use($beta){
             echo PHP_EOL.'Bot is ready';
         }, function ($e) {
         echo $e->getMessage();
-        });
+        });*/
     }
 
 });

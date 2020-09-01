@@ -109,7 +109,7 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
-    'discordOptions' => ['loadAllMembers' => true]
+    'discordOptions' => ['loadAllMembers' => true, 'pmChannels' => true]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
@@ -143,6 +143,13 @@ $discord->on('ready', function ($discord) use($beta){
     });
 
     $discord->loop->addPeriodicTimer(360, function () use ($discord) {
+
+        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+            'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($activity);
+
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
