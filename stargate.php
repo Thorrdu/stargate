@@ -160,8 +160,10 @@ $discord->on('ready', function ($discord) use($beta){
             $alliances = Alliance::All();
             foreach($alliances as $alliance)
                 TopUpdater::updateAlliance($alliance);
-
-            $nextTopRegen = date("Y-m-").(date("d")+1).' 00:00:00';
+            $newday = date("d")+1;
+            if($newday<10)
+                $newday = '0'.$newday;
+            $nextTopRegen = date("Y-m-").($newday).' 00:00:00';
             $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
 
         }
