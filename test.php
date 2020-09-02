@@ -23,6 +23,67 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
+
+
+
+
+
+$json = file_get_contents('php://input');
+if(isset($json) && !empty($json))
+{
+	$data = json_decode($json);
+	if(!is_null($data->user))
+	{
+		
+	}
+}
+
+
+
+
+
+
+
+/*
+$curl = curl_init();
+
+switch ($method)
+{
+	case "POST":
+		curl_setopt($curl, CURLOPT_POST, 1);
+
+		if ($data)
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+		break;
+	case "PUT":
+		curl_setopt($curl, CURLOPT_PUT, 1);
+		break;
+	default:
+		if ($data)
+			$url = sprintf("%s?%s", $url, http_build_query($data));
+}
+
+$url = 'https://top.gg/api/bots/{bot.id?}/votes';
+
+
+curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($curl, CURLOPT_USERPWD, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczMDgxNTM4ODQwMDYxNTQ1NSIsImJvdCI6dHJ1ZSwiaWF0IjoxNTk5MDcwNjczfQ.yfggNGkf534cT613lcBBOBMUBIpb30FAgvFB5lp8jJg");
+
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+$result = curl_exec($curl);
+
+curl_close($curl);
+
+return $result;
+*/
+
+die();
+
+
+
+
 /*
 $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
 
