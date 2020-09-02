@@ -103,7 +103,7 @@ class Exploration extends Model
             $this->colonySource->military += 1000;
             $this->colonySource->save();
 
-            return trans('stargate.exploreSucessCraftTip', ['name' => trans('craft.'.$randomUnit->slug.'.name', [], $this->player->lang), 'requirements' => $requirementString, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreSucessCraftTip', ['name' => trans('craft.'.$randomUnit->slug.'.name', [], $this->player->lang), 'requirements' => $requirementString, 'coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
         }
         elseif($randomEvent <= 62)
         {
@@ -135,7 +135,7 @@ class Exploration extends Model
             $this->colonySource->military += 1000;
             $this->colonySource->save();
 
-            return trans('stargate.exploreSucessResources', ['resources' => $resourceString, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreSucessResources', ['resources' => $resourceString, 'coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
         }
         /*elseif($randomEvent <= 60)
         {
@@ -182,13 +182,13 @@ class Exploration extends Model
             $this->colonySource->military += 1000;
             $this->colonySource->save();
 
-            return trans('stargate.exploreSucessResources', ['resources' => $resourceString, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreSucessResources', ['resources' => $resourceString, 'coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
         }
         else
         {
             $this->exploration_result = false;
             $this->save();
-            return trans('stargate.exploreCriticalFailed', ['coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
+            return trans('stargate.exploreCriticalFailed', ['coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
         }
     }
 }

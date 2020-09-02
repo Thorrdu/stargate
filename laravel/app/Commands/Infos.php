@@ -12,6 +12,9 @@ class Infos extends CommandHandler implements CommandInterface
     {
         echo PHP_EOL.'Execute Infos';
 
+        $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
+        $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
+
         $totalPlayers = DB::table('players')->count();
         $embed = [
             'author' => [
@@ -28,7 +31,7 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Version',
-                    'value' => '0.4 (Early Access)',
+                    'value' => config('stargate.version'),
                     'inline' => true
                 ],
                 [
@@ -37,13 +40,18 @@ class Infos extends CommandHandler implements CommandInterface
                     'inline' => true
                 ],
                 [
+                    'name' => 'Shards',
+                    'value' => "{$this->discord->commandClientOptions['discordOptions']['shardId']}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
+                    'inline' => true
+                ],
+                [
                     'name' => 'Servers',
-                    'value' => number_format($this->discord->guilds->count()),
+                    'value' => $totalServer,
                     'inline' => true
                 ],
                 [
                     'name' => 'Users',
-                    'value' => number_format($this->discord->users->count()),
+                    'value' => $totalUsers,
                     'inline' => true
                 ],
                 [
