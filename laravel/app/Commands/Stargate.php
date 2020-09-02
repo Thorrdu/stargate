@@ -1294,6 +1294,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     {
                                                         $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
                                                         $this->player->activeColony->$resource += $claimed;
+                                                        $this->coordinateDestination->colony->$resource -= $claimed;
                                                         $defenderLooseString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
                                                         ${$resource} = $claimed;
                                                     }
