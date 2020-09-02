@@ -192,6 +192,18 @@ $discord->on('ready', function ($discord) use($beta){
 
     $discord->loop->addPeriodicTimer(30, function () use ($discord) {   
 
+        $playersVoted = Player::Where('vote_flag',true)->get();
+        foreach($playersVoted as $playerVoted)
+        {
+            $userExist = $discord->users->get('id',$playerVoted->user_id);
+            if(!is_null($userExist))
+            {
+                $userExist->sendMessage(trans('vote.thankyou', [], $playerVoted->lang));
+                $playerVoted->vote_flag = false;
+                $playerVoted->save();
+            }
+        }
+
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
         $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
 
