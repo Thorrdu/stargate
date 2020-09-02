@@ -168,6 +168,14 @@ $discord->on('ready', function ($discord) use($beta){
 
     });
 
+    $discord->loop->addPeriodicTimer(200, function () use ($discord) {   
+        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+            'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($activity);
+    });
+
     $discord->loop->addPeriodicTimer(3600, function () use ($discord) {       
         $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
         Config::set('stargate.gateFight.StrongWeak', $newLimit);
