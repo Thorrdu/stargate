@@ -42,8 +42,9 @@ class Start extends CommandHandler implements CommandInterface
                         'text'  => 'Stargate',
                     )
                 ];
+                $newEmbed = $this->discord->factory(Embed::class,$embed);
 
-                $this->message->channel->sendMessage('',false, $embed)->then(function ($messageSent){
+                $this->message->channel->sendMessage('',false, $newEmbed)->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
                     $this->paginatorMessage->react('🇬🇧')->then(function(){ 
                         $this->paginatorMessage->react('🇫🇷');

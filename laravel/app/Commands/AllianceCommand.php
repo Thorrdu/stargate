@@ -9,6 +9,8 @@ use App\Alliance;
 use App\AllianceRole;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use \Discord\Parts\Channel\Message as Message;
+use Discord\Parts\Embed\Embed;
 
 class AllianceCommand extends CommandHandler implements CommandInterface
 {
@@ -18,6 +20,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $allianceList;
+    public $closed;
 
     public function execute()
     {
@@ -91,7 +94,8 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 'value' => $membersString,
                                 'inline' => false
                             );
-                            $this->message->channel->sendMessage('', false, $embed);
+                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+                            $this->message->channel->sendMessage('', false, $newEmbed);
 
                         }
                     }
@@ -106,6 +110,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                         $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                             $this->paginatorMessage = $messageSent;
     
+                            $this->closed = false;
                             $this->paginatorMessage->react('⏪')->then(function(){ 
                                 $this->paginatorMessage->react('◀️')->then(function(){ 
                                     $this->paginatorMessage->react('▶️')->then(function(){ 
@@ -116,48 +121,56 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 });
                             });
     
-                            $this->listner = function ($messageReaction) {
-    
-                                ${'listnerNameAlly'.Str::random(10)} = 55;
-                                if($this->maxTime < time()){
-                                    $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
-                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-                                }
-        
-                                if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
+                            $filter = function($messageReaction){
+                                if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                    return false;
+                                
+                                if($messageReaction->user_id == $this->player->user_id)
                                 {
-                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
-                                    {
-                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('generic.closedList', [], $this->player->lang), null);
-                                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                    try{
+                                        if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                            $this->closed = true;
+                                        }
+                                        elseif($messageReaction->emoji->name == '⏪')
+                                        {
+                                            $this->page = 1;
+                                            $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                        {
+                                            $this->page--;
+                                            $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                        {
+                                            $this->page++;
+                                            $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        elseif($messageReaction->emoji->name == '⏩')
+                                        {
+                                            $this->page = $this->maxPage;
+                                            $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                     }
-                                    elseif($messageReaction->emoji->name == '⏪')
+                                    catch(\Exception $e)
                                     {
-                                        $this->page = 1;
-                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                        $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        echo $e->getMessage();
                                     }
-                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
-                                    {
-                                        $this->page--;
-                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                        $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                    }
-                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
-                                    {
-                                        $this->page++;
-                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                        $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                    }
-                                    elseif($messageReaction->emoji->name == '⏩')
-                                    {
-                                        $this->page = $this->maxPage;
-                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,'',$this->getPage());
-                                        $this->paginatorMessage->deleteReaction('id', urlencode($messageReaction->emoji->name), $messageReaction->user_id);
-                                    }
+                                    return true;
                                 }
+                                else
+                                    return false;
                             };
-                            $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                            $this->paginatorMessage->createReactionCollector($filter);
                         });
                     }
                     else
@@ -294,23 +307,24 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                             $this->maxTime = time()+180;
                             $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
                                 
+                                $this->closed = false;
                                 $this->paginatorMessage = $messageSent;
                                 $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
                                     $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
                                     });
                                 });
-            
-                                $this->listner = function ($messageReaction){
-                                    if($this->maxTime < time())
-                                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-            
-                                    if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $this->player->user_id)
-                                    {
+
+                                $filter = function($messageReaction){
+                                    return $messageReaction->user_id == $this->player->user_id;
+                                };
+                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                    $messageReaction = $collector->first();
+                                    try{
                                         if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                         {
-                                            try{
                                             $alliance = $this->player->alliance;
                                             $alliance->refresh();
+                                            $this->player->activeColony->refresh();
                                             $upgradePrice = $this->getUpgradePrice($alliance->player_limit);
                                             $hasEnough = true;
                                             $missingResString = "";
@@ -326,30 +340,35 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                             }
                                             if(!$hasEnough)
                                             {
-                                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang));
+                                                $this->paginatorMessage->content = trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+                                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                $this->closed = true;
                                             }
                                             else
                                             {
                                                 $this->player->activeColony->save();
                                                 $alliance->player_limit += 1;
                                                 $alliance->save();
-                                                $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id, trans('alliance.upgradeSuccess', ['newLimit' => $alliance->player_limit], $this->player->lang));
+
+                                                $this->paginatorMessage->content = trans('alliance.upgradeSuccess', ['newLimit' => $alliance->player_limit], $this->player->lang);
+                                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                $this->closed = true;
                                             }
-                                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
                                             return;
-                                            }catch(\Exception $e)
-                                            {
-                                                echo $e->getMessage();
-                                            }
                                         }
-                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel') && $messageReaction->user_id == $this->player->user_id)
+                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                         {
-                                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('generic.cancelled', [], $this->player->lang));
-                                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                            $this->paginatorMessage->content = trans('generic.cancelled', [], $this->player->lang);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            $this->closed = true;
                                         }
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
                                     }
-                                };
-                                $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                                    catch(\Exception $e)
+                                    {
+                                        echo $e->getMessage();
+                                    }
+                                });
                             });
                         }
                         elseif(Str::startsWith('role', $this->args[0]))
@@ -401,7 +420,8 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                     );
                                 }
 
-                                $this->message->channel->sendMessage('', false, $embed);
+                                $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                $this->message->channel->sendMessage('', false, $newEmbed);
                         
                             }
                             else
@@ -593,42 +613,56 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                         $this->maxTime = time()+180;
                                         $this->message->channel->sendMessage($inviteMsg)->then(function ($messageSent) use($memberEdit,$allianceCheck){
                                             
+                                            $this->closed = false;
                                             $this->paginatorMessage = $messageSent;
                                             $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
                                                 $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
                                                 });
                                             });
                         
-                                            $this->listner = function ($messageReaction) use($memberEdit,$allianceCheck){
-                                                if($this->maxTime < time())
-                                                    $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-                        
-                                                if($messageReaction->message_id == $this->paginatorMessage->id && $messageReaction->user_id == $memberEdit->user_id)
+                                            $filter = function($messageReaction) use($memberEdit,$allianceCheck){
+                                                if($messageReaction->user_id != $memberEdit->user_id || $this->closed == true)
+                                                    return false;
+                                                
+                                                if($messageReaction->user_id == $memberEdit->user_id)
                                                 {
-                                                    if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
-                                                    {
-                                                        $allianceCheck->refresh();
-                                                        if($allianceCheck->player_limit <= $allianceCheck->members->count())
+                                                    try{
+                                                        if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                                         {
-                                                            $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('alliance.membersLimitReached', [], $this->player->lang));
-                                                            $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
-                                                            return;
+                                                            $allianceCheck->refresh();
+                                                            if($allianceCheck->player_limit <= $allianceCheck->members->count())
+                                                            {
+                                                                $this->paginatorMessage->content = trans('alliance.membersLimitReached', [], $this->player->lang);
+                                                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                                $this->closed = true;
+                                                                return;
+                                                            }
+    
+                                                            $newRole = AllianceRole::where([["alliance_id", $this->player->alliance->id], ['right_level', 1]])->first();
+                                                            DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => $this->player->alliance->id,'role_id' => $newRole->id, 'user_name' => '['.$this->player->alliance->tag.'] '.$memberEdit->user_name]);
+                                                            
+                                                            $this->paginatorMessage->content = trans('alliance.inviteAccepted', ['name'=>$memberEdit->user_name, 'allianceName'=>$allianceCheck->name], $this->player->lang);
+                                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                            $this->closed = true;
                                                         }
-
-                                                        $newRole = AllianceRole::where([["alliance_id", $this->player->alliance->id], ['right_level', 1]])->first();
-                                                        DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => $this->player->alliance->id,'role_id' => $newRole->id, 'user_name' => '['.$this->player->alliance->tag.'] '.$memberEdit->user_name]);
-                                                        
-                                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('alliance.inviteAccepted', ['name'=>$memberEdit->user_name, 'allianceName'=>$allianceCheck->name], $this->player->lang));
-                                                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                                        {
+                                                            $this->paginatorMessage->content = trans('alliance.inviteRefused', ['name'=>$memberEdit->user_name], $this->player->lang);
+                                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                            $this->closed = true;
+                                                        }
+                                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
                                                     }
-                                                    elseif($messageReaction->emoji->name == config('stargate.emotes.cancel') && ($messageReaction->user_id == $memberEdit->user_id || $messageReaction->user_id == $this->player->user_id))
+                                                    catch(\Exception $e)
                                                     {
-                                                        $this->paginatorMessage->channel->editMessage($this->paginatorMessage->id,trans('alliance.inviteRefused', ['name'=>$memberEdit->user_name], $this->player->lang));
-                                                        $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+                                                        echo $e->getMessage();
                                                     }
+                                                    return true;
                                                 }
+                                                else
+                                                    return false;
                                             };
-                                            $this->discord->on('MESSAGE_REACTION_ADD', $this->listner);
+                                            $this->paginatorMessage->createReactionCollector($filter);
                                         });
                                     }
                                     elseif(!is_null($memberEdit->alliance) && $memberEdit->alliance->id == $this->player->alliance->id)

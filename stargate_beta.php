@@ -109,7 +109,7 @@ $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
-    'discordOptions' => ['loadAllMembers' => true, 'pmChannels' => true]
+    'discordOptions' => ['loadAllMembers' => true/*, 'pmChannels' => true*/]
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
@@ -294,8 +294,8 @@ $discord->on('ready', function ($discord) use($beta){
     ]);
     //trans('generic.missingRequirements', [], $this->player->lang)
 
-    $discord->registerCommand('profile', function ($message, $args) {
-        $command = new Profile($message,$args);
+    $discord->registerCommand('profile', function ($message, $args) use($discord){
+        $command = new Profile($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.profile.description', [], 'fr'),
@@ -304,8 +304,8 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    $discord->registerCommand('colony', function ($message, $args) {
-        $command = new ColonyCommand($message,$args);
+    $discord->registerCommand('colony', function ($message, $args) use($discord){
+        $command = new ColonyCommand($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.colony.description', [], 'fr'),
@@ -345,7 +345,6 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) use($discord){
-        return 'Under maintenance...';
         $command = new Stargate($message,$args,$discord);
         return $command->execute();
     },[
@@ -376,8 +375,8 @@ $discord->on('ready', function ($discord) use($beta){
     ]);
 
     /*
-    $discord->registerCommand('refresh', function ($message, $args) {
-        $command = new Refresh($message,$args);
+    $discord->registerCommand('refresh', function ($message, $args) use($discord){
+        $command = new Refresh($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.refresh.description', [], 'fr'),
@@ -387,7 +386,6 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	*/
 
     $discord->registerCommand('alliance', function ($message, $args) use($discord){
-        return 'Under maintenance...';
         $command = new AllianceCommand($message,$args,$discord);
         return $command->execute();
     },[
@@ -409,8 +407,8 @@ $discord->on('ready', function ($discord) use($beta){
 
     ]);	
 
-    $discord->registerCommand('invite', function ($message, $args) {
-        $command = new Invite($message,$args);
+    $discord->registerCommand('invite', function ($message, $args) use($discord){
+        $command = new Invite($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.invite.description', [], 'fr'),
@@ -419,9 +417,9 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    $discord->registerCommand('daily', function ($message, $args) {
+    $discord->registerCommand('daily', function ($message, $args) use($discord){
         try{
-            $command = new DailyCommand($message,$args);
+            $command = new DailyCommand($message,$args,$discord);
             return $command->execute();
         }catch(\Exception $e)
         {
@@ -450,8 +448,8 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);
 
-    $discord->registerCommand('vote', function ($message, $args) {
-        $command = new Vote($message,$args);
+    $discord->registerCommand('vote', function ($message, $args) use($discord){
+        $command = new Vote($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.vote.description', [], 'fr'),
@@ -460,8 +458,8 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    $discord->registerCommand('lang', function ($message, $args){
-        $command = new LangCommand($message,$args);
+    $discord->registerCommand('lang', function ($message, $args) use($discord){
+        $command = new LangCommand($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.lang.description', [], 'fr'),
@@ -471,8 +469,8 @@ $discord->on('ready', function ($discord) use($beta){
 
     ]);
 
-    $discord->registerCommand('reminder', function ($message, $args){
-        $command = new ReminderCommand($message,$args);
+    $discord->registerCommand('reminder', function ($message, $args) use($discord){
+        $command = new ReminderCommand($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.reminder.description', [], 'fr'),
@@ -525,8 +523,8 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
-    $discord->registerCommand('ping', function ($message, $args) {
-        $command = new Ping($message,$args);
+    $discord->registerCommand('ping', function ($message, $args) use($discord){
+        $command = new Ping($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.ping.description', [], 'fr'),

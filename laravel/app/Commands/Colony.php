@@ -5,6 +5,7 @@ namespace App\Commands;
 use Illuminate\Database\Eloquent\Model;
 use Discord\DiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
+use Discord\Parts\Embed\Embed;
 use App\Player;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;

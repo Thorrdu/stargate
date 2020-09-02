@@ -73,14 +73,7 @@ class Player extends Model
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
             $newColony->last_claim = date("Y-m-d H:i:s");  
 
-            if($choosedCoordinate == null && $this->user_id == 125641223544373248)
-            {
-                $coordinate = Coordinate::where([['galaxy', 1],['system', 1],['planet', 1],['colony_id', null]])->first();
-                $newColony->coordinate_id = $coordinate->id;
-                $newColony->space_max = 200;
-                $newColony->name = 'Asgard';
-            }
-            elseif($choosedCoordinate == null)
+            if($choosedCoordinate == null)
             {
                 $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
                 $newColony->coordinate_id = $coordinate->id;

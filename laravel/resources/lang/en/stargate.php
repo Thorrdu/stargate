@@ -86,4 +86,6 @@ return [
     "weakOrStrong" => "This player is too weak or too strong for you...",
     "AttackLimit" => "You already attacked this planet earlier. you'll be able to attack again in: :time",
     "tradeNpcImpossible" => "Impossible to trade with an NPC",
+    'spyCancelled' => "Spy cancelled",
+    'colonizeCancel' => 'Colonize Cancelled',
 ];

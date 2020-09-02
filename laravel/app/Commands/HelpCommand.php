@@ -66,10 +66,10 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     });
 
                     $filter = function($messageReaction){
-                        if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                        if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                             return false;
                         
-                        if($messageReaction->user_id == $this->message->author->id)
+                        if($messageReaction->user_id == $this->player->user_id)
                         {
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -129,7 +129,8 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 }
     
                 $help = $command->getHelp($this->prefix);
-    
+                $help['command'] = str_replace(array('!','-'),'',$help['command']);
+
                 $embed = [
                     'author' => [
                         'name' => $this->discord->commandClientOptions['name'],
@@ -170,7 +171,8 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     );
                 }
 
-                $this->message->channel->sendMessage('', false, $embed);
+                $newEmbed = $this->discord->factory(Embed::class,$embed);
+                $this->message->channel->sendMessage('', false, $newEmbed);
     
                 return;
             }
@@ -207,6 +209,8 @@ class HelpCommand extends CommandHandler implements CommandInterface
             foreach($displayList as $command)
             {
                 $help = $command->getHelp($this->prefix);
+                $help['command'] = str_replace(array('!','-'),'',$help['command']);
+
                 if($help['command'] != 'help')
                 {
                     $embed['fields'][] = array(

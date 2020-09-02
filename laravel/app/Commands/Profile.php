@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Discord\Parts\Embed\Embed;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -84,8 +85,13 @@ class Profile extends CommandHandler implements CommandInterface
                     'text'  => 'Stargate',
                 ),
             ];
-            
-            $this->message->channel->sendMessage('', false, $embed);
+            try{
+            $newEmbed = $this->discord->factory(Embed::class,$embed);
+            $this->message->channel->sendMessage('', false, $newEmbed);
+            }catch(\Exception $e)
+            {
+                echo $e->getMessage();
+            }
             return ;
         }
         else

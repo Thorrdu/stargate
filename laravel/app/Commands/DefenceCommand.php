@@ -59,10 +59,10 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         });
     
                         $filter = function($messageReaction){
-                            if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
                             
-                            if($messageReaction->user_id == $this->message->author->id)
+                            if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -134,10 +134,10 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         });
     
                         $filter = function($messageReaction){
-                            if($messageReaction->user_id != $this->message->author->id || $this->closed == true)
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
                             
-                            if($messageReaction->user_id == $this->message->author->id)
+                            if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.cancel'))

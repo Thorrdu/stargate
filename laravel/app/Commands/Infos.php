@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Player;
 use Illuminate\Support\Facades\DB;
+use Discord\Parts\Embed\Embed;
 
 class Infos extends CommandHandler implements CommandInterface
 {
@@ -67,7 +68,8 @@ class Infos extends CommandHandler implements CommandInterface
             )
         ];
 
-        $this->message->channel->sendMessage('', false, $embed);
+        $newEmbed = $this->discord->factory(Embed::class,$embed);
+        $this->message->channel->sendMessage('', false, $newEmbed);
 
     }
 }
