@@ -250,6 +250,17 @@ $discord->on('ready', function ($discord) use($beta){
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
         echo PHP_EOL."CHECK REMINDER: {$totalReminders}";
+
+        foreach($reminders as $reminder)
+        {  
+            $userExist = $discord->users->get('id',$reminder->player->user_id);
+            if(!is_null($userExist))
+            {
+                $userExist->sendMessage($reminder->reminder);
+                $reminder->delete();
+            }
+        }
+        /*
         $playerIdRemind = 0;
         $rmdCounter = 0;
         $rmdMessagesStr = "";
@@ -299,7 +310,7 @@ $discord->on('ready', function ($discord) use($beta){
             $rmdMessagesStr .= $reminder->reminder."\n";
 
             $reminder->delete();
-        }
+        }*/
 
         $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
         echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();

@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
-
+/*
 
 
 $json = file_get_contents('php://input');
@@ -34,11 +34,11 @@ if(isset($json) && !empty($json))
 	$data = json_decode($json);
 	if(!is_null($data->user))
 	{
-		
+
 	}
 }
 
-
+*/
 
 
 
