@@ -61,6 +61,8 @@ return [
     "researchUnlocked" => "Vos scientifiques ont désormais accès à la technologie: **:name**",
     "captchaLink" => "Pour passer outre la vérification anti-robot, merci de valider le captcha à cette adresse: :link",
     "captchaMessage" => "**Captcha actif**, veuillez vérifier vos messages privés.", 
+    "noCaptcha" => "Vous n'avez pas besoin de ceci pour le moment...", 
+    "newCaptchaMessage" => "Un nouveau lien à été envoyé en DM.",
     "closedList" => "Liste fermée",
     "missingArgs" => "Arguments manquants",
     "missingPermission" => "Permission manquantes",

@@ -61,6 +61,8 @@ return [
     "researchUnlocked" => "Your scientists have not access to the technology: **:name**",
     "captchaLink" => "To pass the anti-cheat security please validate the captcha at the adress: :link",
     "captchaMessage" => "**Active captcha**, veuillez vérifier vos messages privés.", 
+    "noCaptcha" => "You don't have to use this for the moment...", 
+    "newCaptchaMessage" => "A new link has been sent in DM.",
     "closedList" => "Closed list",
     "missingArgs" => "Missing arguments",
     "missingPermission" => "Missing permission",

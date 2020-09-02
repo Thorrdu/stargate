@@ -78,7 +78,7 @@ use App\GateFight;
 use App\Alliance;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, AllianceCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Captcha, AllianceCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -522,6 +522,15 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.uptime.description', [], 'fr'),
 		'usage' => trans('help.uptime.usage', [], 'fr'),
         'aliases' => array('up'),
+        'cooldown' => 2
+    ]);	
+
+    $discord->registerCommand('captcha', function ($message, $args) use($discord){
+        $command = new Captcha($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.ping.description', [], 'fr'),
+		'usage' => trans('help.ping.usage', [], 'fr'),
         'cooldown' => 2
     ]);	
 
