@@ -76,6 +76,10 @@ return [
         'description' => 'Donne la possibilité de changer de langue.',
         'usage' => '!lang [fr/en]'
     ],
+    'captcha' => [
+        'description' => 'Permet de renvoyer le lien du captcha en cas de besoin.',
+        'usage' => '!captcha'
+    ],
     'ping' => [
         'description' => 'Indique la latence de Stargate Bot.',
         'usage' => '!ping'

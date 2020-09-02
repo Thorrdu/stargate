@@ -75,6 +75,10 @@ return [
         'description' => 'Change language.',
         'usage' => '!lang [fr/en]'
     ],
+    'captcha' => [
+        'description' => 'Allow to resend a captcha link in case you need it.',
+        'usage' => '!captcha'
+    ],
     'ping' => [
         'description' => 'Display Stargate latency.',
         'usage' => '!ping'

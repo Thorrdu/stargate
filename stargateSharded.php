@@ -593,8 +593,8 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Captcha($message,$args,$discord);
         return $command->execute();
     },[
-        'description' => trans('help.ping.description', [], 'fr'),
-		'usage' => trans('help.ping.usage', [], 'fr'),
+        'description' => trans('help.captcha.description', [], 'fr'),
+		'usage' => trans('help.captcha.usage', [], 'fr'),
         'cooldown' => 2
     ]);	
 
