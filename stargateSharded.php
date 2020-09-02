@@ -169,7 +169,7 @@ $discord->on('ready', function ($discord) use($beta){
 		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
     });
 
-    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(300, function () use ($discord) {
         $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
         if($topRegen == 1)
         {
@@ -180,7 +180,7 @@ $discord->on('ready', function ($discord) use($beta){
             $alliances = Alliance::All();
             foreach($alliances as $alliance)
                 TopUpdater::updateAlliance($alliance);
-            $newday = date("d")+1;
+            $newday = (int)date("d")+1;
             if($newday<10)
                 $newday = '0'.$newday;
             $nextTopRegen = date("Y-m-").($newday).' 00:00:00';
