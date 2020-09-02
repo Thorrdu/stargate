@@ -589,6 +589,15 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 2
     ]);	
 
+    $discord->registerCommand('captcha', function ($message, $args) use($discord){
+        $command = new Captcha($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.ping.description', [], 'fr'),
+		'usage' => trans('help.ping.usage', [], 'fr'),
+        'cooldown' => 2
+    ]);	
+
     $discord->registerCommand('ping', function ($message, $args) use($discord){
         $command = new Ping($message,$args,$discord);
         return $command->execute();
