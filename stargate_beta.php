@@ -1,5 +1,4 @@
 <?php
-
 //DiscordPHP
 include __DIR__.'/vendor/autoload.php';
 
@@ -105,98 +104,162 @@ if($beta)
     $prefix = '-';
 }
 
+$discorOpt = ['loadAllMembers' => true, 'pmChannels' => true];
+
+if(isset($argv) && count($argv) > 2)
+{
+    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => $argv[1], 'shardCount' => $argv[2]];
+}
+else
+{
+    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => 0, 'shardCount' => 1];
+}
+
 $discord = new DiscordCommandClient([
 	'token' => $token,
     'prefix' => $prefix,
     'defaultHelpCommand' => false,
-    'discordOptions' => ['loadAllMembers' => true/*, 'pmChannels' => true*/]
+    'discordOptions' => $discorOpt
 ]);
 
 $discord->on('ready', function ($discord) use($beta){
-    echo "Bot is starting up!", PHP_EOL;
+    echo "Bot is starting upp!", PHP_EOL;
 
+    echo 'UPDATING PRESENCE'.PHP_EOL;
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
-        'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
+        'name' => "Shard {$discord->commandClientOptions['discordOptions']['shardId']}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
         'type' => 3
     ]);
     $discord->updatePresence($activity);
 
-    /*echo 'UPDATING PRESENCE'.PHP_EOL;
-    $game = $discord->factory(Game::class, [
-        'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
-        'type' => 3,
-    ]);
-    $discord->updatePresence($game);*/
-    //var_dump($discord);
-
+    try{
+        $rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
+        if($rowExists == 0)
+        {
+            DB::table('configuration')->insert([
+                'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
+                'value' => $discord->guilds->count(),
+            ]);
+            DB::table('configuration')->insert([
+                'key' => 'shardUser'.$discord->commandClientOptions['discordOptions']['shardId'],
+                'value' => $discord->users->count(),
+            ]);
+        }
+        else
+        {
+            DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
+            DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->users->count()]);
+        }
+    }
+    catch(\Exception $e)
+    {
+        echo $e->getMessage();
+    }
+    
     $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
-    // Listen for messages.
-    /*
+	// Listen for messages.
 	$discord->on('message', function ($message) {
         if($message->author->user->bot == true)
             return;
         if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
             return;
 		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
-    });*/
+    });
 
-    $discord->loop->addPeriodicTimer(360, function () use ($discord) {
 
+    if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+    {
+        $discord->loop->addPeriodicTimer(300, function () use ($discord) {
+
+            $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
+            if($topRegen == 1)
+            {
+                echo PHP_EOL.'Top recalc';
+
+                $players = Player::where(['npc' => 0])->get();
+                foreach($players as $player)
+                    TopUpdater::update($player);
+
+                $alliances = Alliance::All();
+                foreach($alliances as $alliance)
+                    TopUpdater::updateAlliance($alliance);
+                $newday = (int)date("d")+1;
+                if($newday<10)
+                    $newday = '0'.$newday;
+                $nextTopRegen = date("Y-m-").($newday).' 00:00:00';
+                $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
+            }
+        });
+
+
+        $discord->loop->addPeriodicTimer(3600, function () use ($discord) {
+
+            echo PHP_EOL.'New Limit Calc';
+
+            $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
+            Config::set('stargate.gateFight.StrongWeak', $newLimit);
+            echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
+    
+            $activeFights = GateFight::Where('active',true)->get();
+            $now = Carbon::now();
+            foreach($activeFights as $activeFight)
+            {
+                $now = Carbon::now();     
+                $fightTime = Carbon::createFromFormat("Y-m-d H:i:s",$activeFight->created_at);
+                if($fightTime->diffInHours($now) > 72){
+                    $updatingFights = GateFight::Where([['active',true],['player_id_source',$activeFight->player_id_source],['player_id_dest',$activeFight->player_id_dest]])->get();
+                    foreach($updatingFights as $updatingFight)
+                    {
+                        $updatingFight->active = false;
+                        $updatingFight->save();
+                    }
+                }
+            }
+            
+        });
+    }
+
+    $discord->loop->addPeriodicTimer(30, function () use ($discord) {   
+
+        $playersVoted = Player::Where('vote_flag',true)->get();
+        foreach($playersVoted as $playerVoted)
+        {
+            $playerVoted->vote_flag = false;
+            $playerVoted->save();
+            
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->reminder = trans('vote.thankyou', [], $playerVoted->lang);
+            $reminder->player_id = $playerVoted->id;
+            $reminder->save();
+        }
+
+        $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
+        $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
+
+        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+            'name' => "!help | {$totalServer} servers {$totalUsers} users",
+            'type' => 3
+        ]);
+        $discord->updatePresence($activity);
+
+        DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
+        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->users->count()]);
+        
+            /*
         $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
             'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
             'type' => 3
         ]);
-        $discord->updatePresence($activity);
-    
-
-        $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
-        if($topRegen == 1)
-        {
-            $players = Player::where(['npc' => 0])->get();
-            foreach($players as $player)
-                TopUpdater::update($player);
-
-            $alliances = Alliance::All();
-            foreach($alliances as $alliance)
-                TopUpdater::updateAlliance($alliance);
-
-            $nextTopRegen = date("Y-m-").(date("d")+1).' 00:00:00';
-            $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
-
-        }
-
+        $discord->updatePresence($activity);*/
     });
 
 
 
-    $discord->loop->addPeriodicTimer(3600, function () use ($discord) {       
-        $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
-        Config::set('stargate.gateFight.StrongWeak', $newLimit);
-        echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
-
-        $activeFights = GateFight::Where('active',true)->get();
-        $now = Carbon::now();
-        foreach($activeFights as $activeFight)
-        {
-            $now = Carbon::now();     
-            $fightTime = Carbon::createFromFormat("Y-m-d H:i:s",$activeFight->created_at);
-            if($fightTime->diffInHours($now) > 72){
-                $updatingFights = GateFight::Where([['active',true],['player_id_source',$activeFight->player_id_source],['player_id_dest',$activeFight->player_id_dest]])->get();
-                foreach($updatingFights as $updatingFight)
-                {
-                    $updatingFight->active = false;
-                    $updatingFight->save();
-                }
-            }
-        }
-        echo PHP_EOL.'END ONE HOUR CRON';
-    });
-
-
-    $discord->loop->addPeriodicTimer(60, function () use ($discord) {
+    $discord->loop->addPeriodicTimer(rand(50,60), function () use ($discord) {
         
         /*echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
         $game = $discord->factory(Game::class, [
@@ -209,6 +272,24 @@ $discord->on('ready', function ($discord) use($beta){
         $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
         $totalReminders = $reminders->count();
         echo PHP_EOL."CHECK REMINDER: {$totalReminders}";
+
+        foreach($reminders as $reminder)
+        {  
+            $userExist = $discord->users->get('id',$reminder->player->user_id);
+            if(!is_null($userExist))
+            {
+                if(!is_null($reminder->embed))
+                {
+                    $reminderEmbed = json_decode($reminder->embed,true);
+                    $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
+                    $userExist->sendMessage('', false, $newEmbed);
+                }
+                else
+                    $userExist->sendMessage($reminder->reminder);
+                $reminder->delete();
+            }
+        }
+        /*
         $playerIdRemind = 0;
         $rmdCounter = 0;
         $rmdMessagesStr = "";
@@ -218,7 +299,7 @@ $discord->on('ready', function ($discord) use($beta){
             
             if($playerIdRemind == 0)
                 $playerIdRemind = $reminder->player->user_id;
-                
+            
             if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->user_id)
             {
                 if($totalReminders == $rmdCounter)
@@ -258,18 +339,19 @@ $discord->on('ready', function ($discord) use($beta){
             $rmdMessagesStr .= $reminder->reminder."\n";
 
             $reminder->delete();
-        }
+        }*/
 
         $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
         echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
         foreach($explorations as $exploration)
         {  
             $explorationOutcome = $exploration->outcome();
-            $userExist = $discord->users->get('id',$exploration->player->user_id);
-            if(!is_null($userExist))
-            {
-                $userExist->sendMessage($explorationOutcome);
-            }
+            
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->reminder = $explorationOutcome;
+            $reminder->player_id = $exploration->player->id;
+            $reminder->save();
         }
     });
 

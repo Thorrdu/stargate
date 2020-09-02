@@ -16,6 +16,7 @@ use App\Trade;
 use App\TradeResource;
 use App\SpyLog;
 use App\GateFight;
+use App\Reminder;
 use \Discord\Parts\Channel\Message as Message;
 use Discord\Parts\Embed\Embed;
 
@@ -530,17 +531,17 @@ class Stargate extends CommandHandler implements CommandInterface
                                         ),
                                     ];
 
+                                    $reminder = new Reminder;
+                                    $reminder->reminder_date = Carbon::now()->add('1s');
+                                    $reminder->embed = json_encode($embed);
+                                    $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                    $reminder->save();
 
-                                    $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
-                                    if(!is_null($userExist))
-                                    {
-                                        $newEmbed = $this->discord->factory(Embed::class,$embed);
-                                        $userExist->sendMessage('', false, $newEmbed);
-                                    }
-
-                                    $userExist = $this->discord->users->get('id',$this->player->user_id);
-                                    if(!is_null($userExist))
-                                        $userExist->sendMessage(trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang));
+                                    $reminder = new Reminder;
+                                    $reminder->reminder_date = Carbon::now()->add('1s');
+                                    $reminder->reminder = trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                                    $reminder->player_id = $this->player->user_id;
+                                    $reminder->save();
 
                                     try{
 
@@ -727,172 +728,172 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $newEmbed = $this->discord->factory(Embed::class,$embed);
                                         $messageReaction->message->addEmbed($newEmbed);
 
-                                        $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
-                                        if(!is_null($userExist))
-                                            $userExist->sendMessage(trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang));
+                                        $reminder = new Reminder;
+                                        $reminder->reminder_date = Carbon::now()->add('1s');
+                                        $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang);
+                                        $reminder->player_id = $this->coordinateDestination->colony->player->id;
+                                        $reminder->save();
 
-                                        $userExist = $this->discord->users->get('id',$this->player->user_id);
-                                        if(!is_null($userExist))
+                                        $spyLog = new SpyLog;
+                                        $spyLog->source_player_id = $this->player->id;
+                                        $spyLog->colony_source_id = $this->player->activeColony->id;
+                                        $spyLog->dest_player_id = $this->coordinateDestination->colony->player->id;
+                                        $spyLog->colony_destination_id = $this->coordinateDestination->colony->id;
+                                        $spyLog->save();
+
+                                        $spy = Technology::where('slug', 'spy')->first();
+                                        $counterSpy = Technology::where('slug', 'counterspy')->first();
+                    
+                                        $playerDestination = $this->coordinateDestination->colony->player;
+                                        $spyLvl = $this->player->hasTechnology($spy);
+                                        $counterSpyLvl = $playerDestination->hasTechnology($counterSpy);
+                    
+                                        if(!$spyLvl)
+                                            $spyLvl = 0;
+                                        if(!$counterSpyLvl)
+                                            $counterSpyLvl = 0;
+                    
+                                        $embed = [
+                                            'author' => [
+                                                'name' => $this->player->user_name,
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                            ],
+                                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
+                                            "title" => "Stargate",
+                                            "description" => trans('stargate.spyReportDescription', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang),
+                                            'fields' => [
+                                            ],
+                                            'footer' => array(
+                                                'text'  => 'Stargate',
+                                            ),
+                                        ];
+                    
+                                        $showResources = $showFleet = $showdefences = $showBuildings = $showMilitaries = $showTechnologies = false;
+                    
+                                        if($spyLvl < $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 4)
+                                        {
+                                            $embed['fields'][] = [
+                                                'name' => trans('stargate.emptyReportTitle', [], $this->player->lang),
+                                                'value' => trans('stargate.technologyTooLow', [], $this->player->lang),
+                                            ];
+                                        }
+
+                                        elseif($spyLvl <= $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 0)
+                                            $showResources = true;
+                                        elseif($spyLvl > $counterSpyLvl)
+                                        {
+                                            $showResources = true;
+                                            if(($spyLvl-$counterSpyLvl) >= 1)
+                                                $showFleet = true;
+                                            if(($spyLvl-$counterSpyLvl) >= 2)
+                                                $showdefences = true;
+                                            if(($spyLvl-$counterSpyLvl) >= 3)
+                                                $showBuildings = $showMilitaries = true;
+                                            if(($spyLvl-$counterSpyLvl) >= 4)
+                                                $showTechnologies = true;
+                                        }
+                    
+                                        if($showResources)
+                                        {
+                                            $resourceString = "";
+                                            foreach(config('stargate.resources') as $resource){
+                                                $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($this->coordinateDestination->colony->$resource).' ';
+                                            }
+                                            //$resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->E2PZ);
+                    
+                                            $embed['fields'][] = [
+                                                'name' => trans('generic.resources', [], $this->player->lang),
+                                                'value' => $resourceString
+                                            ];
+                                        }
+                    
+                                        if($showFleet)
+                                        {
+                                            $embed['fields'][] = [
+                                                'name' => trans('stargate.fleet', [], $this->player->lang),
+                                                'value' => trans('stargate.emptyFleet', [], $this->player->lang)
+                                            ];
+                                        }
+                    
+                                        if($showdefences)
                                         {
 
-                                            $spyLog = new SpyLog;
-                                            $spyLog->source_player_id = $this->player->id;
-                                            $spyLog->colony_source_id = $this->player->activeColony->id;
-                                            $spyLog->dest_player_id = $this->coordinateDestination->colony->player->id;
-                                            $spyLog->colony_destination_id = $this->coordinateDestination->colony->id;
-                                            $spyLog->save();
-
-                                            $spy = Technology::where('slug', 'spy')->first();
-                                            $counterSpy = Technology::where('slug', 'counterspy')->first();
-                        
-                                            $playerDestination = $this->coordinateDestination->colony->player;
-                                            $spyLvl = $this->player->hasTechnology($spy);
-                                            $counterSpyLvl = $playerDestination->hasTechnology($counterSpy);
-                        
-                                            if(!$spyLvl)
-                                                $spyLvl = 0;
-                                            if(!$counterSpyLvl)
-                                                $counterSpyLvl = 0;
-                        
-                                            $embed = [
-                                                'author' => [
-                                                    'name' => $this->player->user_name,
-                                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
-                                                ],
-                                                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
-                                                "title" => "Stargate",
-                                                "description" => trans('stargate.spyReportDescription', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang),
-                                                'fields' => [
-                                                ],
-                                                'footer' => array(
-                                                    'text'  => 'Stargate',
-                                                ),
-                                            ];
-                        
-                                            $showResources = $showFleet = $showdefences = $showBuildings = $showMilitaries = $showTechnologies = false;
-                        
-                                            if($spyLvl < $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 4)
+                                            if(count($this->coordinateDestination->colony->defences) > 0)
                                             {
-                                                $embed['fields'][] = [
-                                                    'name' => trans('stargate.emptyReportTitle', [], $this->player->lang),
-                                                    'value' => trans('stargate.technologyTooLow', [], $this->player->lang),
-                                                ];
-                                            }
-
-                                            elseif($spyLvl <= $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 0)
-                                                $showResources = true;
-                                            elseif($spyLvl > $counterSpyLvl)
-                                            {
-                                                $showResources = true;
-                                                if(($spyLvl-$counterSpyLvl) >= 1)
-                                                    $showFleet = true;
-                                                if(($spyLvl-$counterSpyLvl) >= 2)
-                                                    $showdefences = true;
-                                                if(($spyLvl-$counterSpyLvl) >= 3)
-                                                    $showBuildings = $showMilitaries = true;
-                                                if(($spyLvl-$counterSpyLvl) >= 4)
-                                                    $showTechnologies = true;
-                                            }
-                        
-                                            if($showResources)
-                                            {
-                                                $resourceString = "";
-                                                foreach(config('stargate.resources') as $resource){
-                                                    $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($this->coordinateDestination->colony->$resource).' ';
-                                                }
-                                                //$resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->E2PZ);
-                        
-                                                $embed['fields'][] = [
-                                                    'name' => trans('generic.resources', [], $this->player->lang),
-                                                    'value' => $resourceString
-                                                ];
-                                            }
-                        
-                                            if($showFleet)
-                                            {
-                                                $embed['fields'][] = [
-                                                    'name' => trans('stargate.fleet', [], $this->player->lang),
-                                                    'value' => trans('stargate.emptyFleet', [], $this->player->lang)
-                                                ];
-                                            }
-                        
-                                            if($showdefences)
-                                            {
-
-                                                if(count($this->coordinateDestination->colony->defences) > 0)
+                                                $defenceString = '';
+                                                foreach($this->coordinateDestination->colony->defences as $defence)
                                                 {
-                                                    $defenceString = '';
-                                                    foreach($this->coordinateDestination->colony->defences as $defence)
-                                                    {
-                                                        $defenceString .= number_format($defence->pivot->number).' '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang)."\n";
-                                                    }
-                                                    $embed['fields'][] = array(
-                                                                            'name' => trans('stargate.defences', [], $this->player->lang),
-                                                                            'value' => $defenceString,
-                                                                            'inline' => true
-                                                                        );
+                                                    $defenceString .= number_format($defence->pivot->number).' '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang)."\n";
                                                 }
-                                                else
-                                                {
-                                                    $embed['fields'][] = [
-                                                        'name' => trans('stargate.defences', [], $this->player->lang),
-                                                        'value' => trans('stargate.emptydefences', [], $this->player->lang)
-                                                    ];
-                                                }
+                                                $embed['fields'][] = array(
+                                                                        'name' => trans('stargate.defences', [], $this->player->lang),
+                                                                        'value' => $defenceString,
+                                                                        'inline' => true
+                                                                    );
                                             }
-                    
-                                            if($showBuildings)
+                                            else
                                             {
-                                                $buildingString = "";
-                                                foreach($this->coordinateDestination->colony->buildings as $building)
-                                                {
-                                                    if(!empty($buildingString))
-                                                        $buildingString .= ', ';
-                                                    $buildingString .= trans('building.'.$building->slug.'.name', [], $this->player->lang).' ('.$building->pivot->level.')';
-                                                }
-                                                if(empty($buildingString))
-                                                    $buildingString = 'Aucun bâtiment';
                                                 $embed['fields'][] = [
-                                                    'name' => trans('stargate.buildings', [], $this->player->lang),
-                                                    'value' => $buildingString
+                                                    'name' => trans('stargate.defences', [], $this->player->lang),
+                                                    'value' => trans('stargate.emptydefences', [], $this->player->lang)
                                                 ];
                                             }
-                        
-                                            if($showMilitaries)
-                                            {
-                                                $militaryString = config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->military);
-                                                foreach($this->coordinateDestination->colony->units as $unit)
-                                                {
-                                                    $militaryString .= ', ';
-                                                    $militaryString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).' ('.number_format($unit->pivot->number).')';
-                                                }
-                                                $embed['fields'][] = [
-                                                    'name' => trans('generic.militaries', [], $this->player->lang),
-                                                    'value' => $militaryString
-                                                ];
-                                            }
-                        
-                                            if($showTechnologies)
-                                            {
-                                                $technologyString = "";
-                                                foreach($playerDestination->technologies as $technology)
-                                                {
-                                                    if(!empty($technologyString))
-                                                        $technologyString .= ', ';
-                                                    $technologyString .= trans('research.'.$technology->slug.'.name', [], $this->player->lang).' ('.$technology->pivot->level.')';
-                                                }
-                                                if(empty($technologyString))
-                                                    $technologyString = "Aucune technologie";
-                                                $embed['fields'][] = [
-                                                    'name' => trans('generic.technologies', [], $this->player->lang),
-                                                    'value' => $technologyString
-                                                ];
-                                            }
-                        
-                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
-                                            $userExist->sendMessage('', false, $newEmbed);
-
                                         }
+                
+                                        if($showBuildings)
+                                        {
+                                            $buildingString = "";
+                                            foreach($this->coordinateDestination->colony->buildings as $building)
+                                            {
+                                                if(!empty($buildingString))
+                                                    $buildingString .= ', ';
+                                                $buildingString .= trans('building.'.$building->slug.'.name', [], $this->player->lang).' ('.$building->pivot->level.')';
+                                            }
+                                            if(empty($buildingString))
+                                                $buildingString = 'Aucun bâtiment';
+                                            $embed['fields'][] = [
+                                                'name' => trans('stargate.buildings', [], $this->player->lang),
+                                                'value' => $buildingString
+                                            ];
+                                        }
+                    
+                                        if($showMilitaries)
+                                        {
+                                            $militaryString = config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->military);
+                                            foreach($this->coordinateDestination->colony->units as $unit)
+                                            {
+                                                $militaryString .= ', ';
+                                                $militaryString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).' ('.number_format($unit->pivot->number).')';
+                                            }
+                                            $embed['fields'][] = [
+                                                'name' => trans('generic.militaries', [], $this->player->lang),
+                                                'value' => $militaryString
+                                            ];
+                                        }
+                    
+                                        if($showTechnologies)
+                                        {
+                                            $technologyString = "";
+                                            foreach($playerDestination->technologies as $technology)
+                                            {
+                                                if(!empty($technologyString))
+                                                    $technologyString .= ', ';
+                                                $technologyString .= trans('research.'.$technology->slug.'.name', [], $this->player->lang).' ('.$technology->pivot->level.')';
+                                            }
+                                            if(empty($technologyString))
+                                                $technologyString = "Aucune technologie";
+                                            $embed['fields'][] = [
+                                                'name' => trans('generic.technologies', [], $this->player->lang),
+                                                'value' => $technologyString
+                                            ];
+                                        }
+
+                                        $reminder = new Reminder;
+                                        $reminder->reminder_date = Carbon::now()->add('1s');
+                                        $reminder->embed = json_encode($embed);
+                                        $reminder->player_id = $this->player->id;
+                                        $reminder->save();
+                                        
                                     }
                                     catch(\Exception $e)
                                     {
@@ -1396,12 +1397,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                             ),
                                         ];
 
-                                        $userExist = $this->discord->users->get('id',$this->player->user_id);
-                                        if(!is_null($userExist))
-                                        {
-                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
-                                            $userExist->sendMessage('', false, $newEmbed);
-                                        }
+                                        $reminder = new Reminder;
+                                        $reminder->reminder_date = Carbon::now()->add('1s');
+                                        $reminder->embed = json_encode($embed);
+                                        $reminder->player_id = $this->player->user_id;
+                                        $reminder->save();
 
                                         $embed = [
                                             'author' => [
@@ -1418,12 +1418,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                             ),
                                         ];
 
-                                        $userExist = $this->discord->users->get('id',$this->coordinateDestination->colony->player->user_id);
-                                        if(!is_null($userExist))
-                                        {
-                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
-                                            $userExist->sendMessage('', false, $newEmbed);
-                                        }
+                                        $reminder = new Reminder;
+                                        $reminder->reminder_date = Carbon::now()->add('1s');
+                                        $reminder->embed = json_encode($embed);
+                                        $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                        $reminder->save();
+
                                     }
                                     catch(\Exception $e)
                                     {
