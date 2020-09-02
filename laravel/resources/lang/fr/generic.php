@@ -58,7 +58,7 @@ return [
     "cancelled" => "Annulé",
     "confirmed" => "Confirmé",
     "buildingUnlocked" => "Vos scientifiques viennent de mettre au point le plan d'un nouveau bâtiment: **:name** sur **:planet [:coordinate]**",
-    "researchUnlocked" => "Vos scientifiques ont désormais accès à la technologie: **:name** sur **:planet [:coordinate]**",
+    "researchUnlocked" => "Vos scientifiques ont désormais accès à la technologie: **:name**",
     "captchaLink" => "Pour passer outre la vérification anti-robot, merci de valider le captcha à cette adresse: :link",
     "captchaMessage" => "**Captcha actif**, veuillez vérifier vos messages privés.", 
     "closedList" => "Liste fermée",
