@@ -273,6 +273,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 {
                                     echo 'CONFIRMED'; 
                                     $this->player->activeColony->refresh();
+                                    $this->coordinateDestination->colony->refresh();
 
                                     $receivedString = "";
                                     $tradeObjets = [];
@@ -467,6 +468,9 @@ class Stargate extends CommandHandler implements CommandInterface
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
+                                    $this->player->activeColony->refresh();
+                                    $this->coordinateDestination->colony->refresh();
+
                                     echo 'CONFIRMED'; 
                                     $receivedString = "";
                                     $tradeObjets = [];
