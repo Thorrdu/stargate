@@ -48,7 +48,7 @@ return [
     'notEnoughResources' => 'Ressources manquantes: :missingResources',
     'notEnoughCapacity' => 'Capacité de transport manquante: :missingCapacity',
     'busyBuilding' => 'Bâtiment occupé...',
-    'missingRequirements' => 'Vous ne possédez pas les pré-requis nécéssaires.',
+    'missingRequirements' => 'Vous ne possédez pas les prérequis nécéssaires.',
     'wrongQuantity' => "Veuillez indiquer une quantité valide.",
     'unknownPlayer' => 'Joueur inconnu',
     'missingPerm' => "Permission manquantes...",
