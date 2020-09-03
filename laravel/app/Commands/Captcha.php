@@ -17,10 +17,8 @@ class Captcha extends CommandHandler implements CommandInterface
 
             if($this->player->captcha)
             {
-                $userExist = $this->discord->users->get('id',$this->player->user_id);
-                if(!is_null($userExist))
-                    $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
-                return trans('generic.newCaptchaMessage', [], $this->player->lang);
+                return trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang);
+                //return trans('generic.newCaptchaMessage', [], $this->player->lang);
             }
             else
                 return trans('generic.noCaptcha',[],$this->player->lang);
