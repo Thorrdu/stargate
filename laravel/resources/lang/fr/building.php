@@ -36,7 +36,7 @@ return [
     ],
     'shipyard' => [
         'name' => 'Chantier Spatial',
-        'description' => 'Permet de développer la construction de sondes et vaisseaux spaciaux'
+        'description' => 'Permet de déveloper la construction de sondes et vaisseaux spaciaux'
     ],
     'naqadahreactor' => [
         'name' => 'Reacteur au Naqahdah',
@@ -68,11 +68,11 @@ return [
     ],
     'ironadvancedmine' => [
         'name' => 'Mine de fer avancée',
-        'description' => "Désormais habitués à miner du fer sur cette colonie, vos volons ont dévellopés une manière bien plus éfficace d'extraire le fer de la planete"
+        'description' => "Désormais habitués à miner du fer sur cette colonie, vos colons ont dévellopés une manière bien plus éfficace d'extraire le fer de la planete"
     ],
     'goldadvancedmine' => [
         'name' => "Mine d'or avancée",
-        'description' => "Désormais habitués à miner de l'or sur cette colonie, vos volons ont dévellopés une manière bien plus éfficace d'extraire l'or de la planete"
+        'description' => "Désormais habitués à miner de l'or sur cette colonie, vos colons ont dévellopés une manière bien plus éfficace d'extraire l'or de la planete"
     ],
     'asuranfactory' => [
         'name' => 'Usine Asuran',

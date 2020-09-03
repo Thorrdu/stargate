@@ -19,7 +19,7 @@ return [
         ],
     'ia' => [
         'name' => "Intelligence artificielle",
-        'description' => "Permet de développer une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
+        'description' => "Permet de déveloper une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
         ],
     'blueprint' => [
         'name' => "Plans de vaisseaux",
@@ -47,11 +47,11 @@ return [
         ],
     'ions' => [
         'name' => "Ions",
-        'description' => "Permet le développement d'arme et réacteur à base de particules Ion",
+        'description' => "Permet le dévelopement d'arme et réacteur à base de particules Ion",
         ],
     'plasma' => [
         'name' => "Plasma",
-        'description' => "La maîtrise de la technologie du plasma, créant un laser chauffé à des températures extrême permet le développement d'armes terriblement morteles",
+        'description' => "La maîtrise de la technologie du plasma, créant un laser chauffé à des températures extrême permet le dévelopement d'armes terriblement morteles",
         ],
     'naqahdah' => [
         'name' => "Maîtrise du Naqahdah",
