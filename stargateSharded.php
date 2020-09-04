@@ -95,7 +95,7 @@ global $upTimeStart;
 $upTimeStart = Carbon::now();
 
 $beta = false;
-$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c';
+$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.Sc1wU-YOokbAS2HXVc8sNt_R02w';
 $prefix = '!';
 
 if($beta)
@@ -136,13 +136,17 @@ $discord->on('ready', function ($discord) use($beta){
         $rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
         if($rowExists == 0)
         {
+            $usrCount = $discord->users->count();
+            if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+                $usrCount += 135000;
+
             DB::table('configuration')->insert([
                 'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
                 'value' => $discord->guilds->count(),
             ]);
             DB::table('configuration')->insert([
                 'key' => 'shardUser'.$discord->commandClientOptions['discordOptions']['shardId'],
-                'value' => $discord->users->count(),
+                'value' => $usrCount,
             ]);
         }
         else
@@ -246,8 +250,12 @@ $discord->on('ready', function ($discord) use($beta){
         ]);
         $discord->updatePresence($activity);
 
+        $usrCount = $discord->users->count();
+        if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+            $usrCount += 135000;
+
         DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
-        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->users->count()]);
+        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $usrCount]);
         
             /*
         $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
