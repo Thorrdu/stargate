@@ -534,13 +534,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $reminder = new Reminder;
                                     $reminder->reminder_date = Carbon::now()->add('1s');
                                     $reminder->embed = json_encode($embed);
-                                    $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                    $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                     $reminder->save();
 
                                     $reminder = new Reminder;
                                     $reminder->reminder_date = Carbon::now()->add('1s');
                                     $reminder->reminder = trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
-                                    $reminder->player_id = $this->player->user_id;
+                                    $reminder->player_id = $this->player->id;
                                     $reminder->save();
 
                                     try{
@@ -1400,7 +1400,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $reminder = new Reminder;
                                         $reminder->reminder_date = Carbon::now()->add('1s');
                                         $reminder->embed = json_encode($embed);
-                                        $reminder->player_id = $this->player->user_id;
+                                        $reminder->player_id = $this->player->id;
                                         $reminder->save();
 
                                         $embed = [
@@ -1421,7 +1421,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $reminder = new Reminder;
                                         $reminder->reminder_date = Carbon::now()->add('1s');
                                         $reminder->embed = json_encode($embed);
-                                        $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                        $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                         $reminder->save();
 
                                     }
