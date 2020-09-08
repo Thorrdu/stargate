@@ -104,7 +104,7 @@ return [
     ],
     'top' => [
         'description' => "Indique les meilleurs joueur par catégories.\n1 point = 1k ressources dépensées",
-        'usage' =>  "!top [general/building/research/military/defence]\n!top [general/building/research/military/defence] alliance"
+        'usage' =>  "!top [general/building/research/craft/defence]\n!top [general/building/research/craft/defence] alliance"
     ],
     'uptime' => [
         'description' => "Indique la durée depuis laquelle le bot est en ligne.",

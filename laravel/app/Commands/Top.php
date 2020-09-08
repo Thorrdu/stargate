@@ -215,7 +215,7 @@ class Top extends CommandHandler implements CommandInterface
             $topList = "/";
 
         $topTxt = $this->topType;
-        if($this->topType == 'craft')
+        if($this->topType == 'military')
             $topTxt = 'craft';
         
         $embed = [

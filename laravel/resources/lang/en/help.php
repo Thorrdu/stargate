@@ -103,7 +103,7 @@ return [
     ],
     'top' => [
         'description' => 'Shows the best player for each category.',
-        'usage' => "!top [general/building/research/military/defence]\n!top [general/building/research/military/defence] alliance"
+        'usage' => "!top [general/building/research/craft/defence]\n!top [general/building/research/craft/defence] alliance"
     ],
     'uptime' => [
         'description' => "Display the Stargate uptime.",
