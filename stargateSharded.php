@@ -23,7 +23,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Captcha, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -412,7 +412,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('premium', function ($message, $args) use($discord){
-        $command = new Empire($message,$args,$discord);
+        $command = new Premium($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.premium.description', [], 'fr'),
