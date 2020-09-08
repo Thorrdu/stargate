@@ -39,7 +39,7 @@ class Exploration extends Model
             $this->exploration_result = true;
             $this->exploration_outcome = 'Artifact';
             $this->save();
-            $newArtifact = $this->colonySource->generateArtifact(array('maxEnding'=> 72))->toString();
+            $newArtifact = $this->colonySource->generateArtifact(array('maxEnding'=> 72))->toString($this->player->lang);
 
             return trans('stargate.exploreSucessArtifact', ['coordinates' => $this->coordinateDestination->humanCoordinates(), 'artifact' => $newArtifact], $this->player->lang);
         }

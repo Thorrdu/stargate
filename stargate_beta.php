@@ -160,11 +160,11 @@ $discord->on('ready', function ($discord) use($beta){
                 $newArtifact = "";
                 if($colonyCheckArtifact->player->colonies[0]->id == $colonyCheckArtifact->id)
                 {
-                    $newArtifact = $colonyCheckArtifact->generateArtifact(['forceBonus' => true])->toString();
+                    $newArtifact = $colonyCheckArtifact->generateArtifact(['forceBonus' => true])->toString($colonyCheckArtifact->player->lang);
                 }
                 elseif(rand(0,100) > 50)
                 {
-                    $newArtifact = $colonyCheckArtifact->generateArtifact()->toString();
+                    $newArtifact = $colonyCheckArtifact->generateArtifact()->toString($colonyCheckArtifact->player->lang);
                 }
                 $colonyCheckArtifact->refresh();
                 $colonyCheckArtifact->artifact_check = null;
