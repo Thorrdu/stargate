@@ -834,7 +834,7 @@ class Colony extends Model
                 $alreadyOwned = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','Colony')->count();
                 if($alreadyOwned > 0)
                     return $this->generateArtifact($options);
-                $bonusCoef = 1;
+                $newArtifact->bonus_coef = 1;
                 $maxEnding = null;
             }
 
