@@ -139,6 +139,7 @@ $discord->on('ready', function ($discord) use($beta){
                 }
             }
 
+            $dateNow = Carbon::now();
             $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
             echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
             foreach($explorations as $exploration)
