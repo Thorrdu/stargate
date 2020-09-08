@@ -23,6 +23,7 @@ class CreatePlayersTable extends Migration
             $table->boolean('notification')->default(false);
             $table->boolean('ban')->default(false);
             $table->integer('votes')->default(0);
+            $table->integer('vote_boxes')->lenght(5)->default(0);
             $table->boolean('vote_flag')->default(false);
             $table->timestamp('vote_available')->nullable();
             $table->bigInteger('points_total')->length(25)->unsigned()->default(0);

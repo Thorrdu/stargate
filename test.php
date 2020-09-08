@@ -15,6 +15,7 @@ use App\Player;
 use App\Colony;
 use App\Technology;
 use App\Defence;
+use App\Artifact;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
 
@@ -24,6 +25,45 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+
+function weighted_random_simple($values, $weights){ 
+	$count = count($values); 
+	$i = 0; 
+	$n = 0; 
+	$randWeights = [];
+	foreach($values as $value)
+		$randWeights[] = $weights[$value];
+	$num = mt_rand(0, array_sum($randWeights)); 
+	while($i < $count){
+		$n += $randWeights[$i]; 
+		if($n >= $num){
+			break; 
+		}
+		$i++; 
+	} 
+	return $values[$i]; 
+}
+
+$categoryWeights = [
+	'Production' => 30,
+	'Time' => 20,
+	'Price' => 20,
+	'DefenceLure' => 10,
+	'ColonyMax' => 10
+];
+
+
+$bonusCategories = ['Production', 'Time', 'Price', 'DefenceLure','ColonyMax'];
+
+for($cpt=0;$cpt<100;$cpt++)
+echo PHP_EOL.weighted_random_simple($bonusCategories,$categoryWeights);
+
+
+/*
+$player = Player::find(1);
+$newArtifact = $player->activeColony->generateArtifact(array('maxEnding'=> 72));
+echo $newArtifact->toString();
+*/
 
 /*
 

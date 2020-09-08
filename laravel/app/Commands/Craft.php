@@ -30,6 +30,9 @@ class Craft extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
+            if(!is_null($this->player->vacation))
+                return trans('profile.vacationMode',[],$this->player->lang);
+
             $this->player->activeColony->checkColony();
             $this->player->refresh();
 
@@ -211,7 +214,17 @@ class Craft extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
 
                         $hasEnough = true;
-                        $unitPrices = $unit->getPrice($qty);
+
+                        $coef = 1;
+                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
+                        });
+                        foreach($buildingPriceBonusList as $buildingPriceBonus)
+                        {
+                            $coef *= $buildingPriceBonus->bonus_coef;
+                        }
+
+                        $unitPrices = $unit->getPrice($qty, $coef);
 
                         $missingResString = "";
                         foreach (config('stargate.resources') as $resource)
@@ -318,7 +331,17 @@ class Craft extends CommandHandler implements CommandInterface
             foreach($displayList as $unit)
             {
                 $unitPrice = "";
-                $unitPrices = $unit->getPrice(1);
+
+                $coef = 1;
+                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
+                });
+                foreach($buildingPriceBonusList as $buildingPriceBonus)
+                {
+                    $coef *= $buildingPriceBonus->bonus_coef;
+                }
+
+                $unitPrices = $unit->getPrice(1, $coef);
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($unit->$resource > 0)

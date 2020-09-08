@@ -37,6 +37,9 @@ class Galaxy extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
+            if(!is_null($this->player->vacation))
+                return trans('profile.vacationMode',[],$this->player->lang);
+
             try{
                 $this->galaxy = $this->player->activeColony->coordinates->galaxy;
                 $this->system = $this->player->activeColony->coordinates->system;
@@ -58,10 +61,36 @@ class Galaxy extends CommandHandler implements CommandInterface
                 {
                     $this->systemRestriction = true;
                     $this->galaxyRestriction = true;
+                    $this->systemRestrictionMin = $this->system;
+                    $this->systemRestrictionMax = $this->system;
                 }
-
+                
                 $this->maxGalaxyPage = config('stargate.galaxy.maxGalaxies');
                 $this->maxSystemPage = config('stargate.galaxy.maxSystems');
+
+                if(!empty($this->args) && preg_match('/(([0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,}))/', $this->args[0], $coordinatesMatch))
+                {
+                    if(strstr($coordinatesMatch[0],';'))
+                        $coordinates = explode(';',$coordinatesMatch[0]);
+                    else
+                        $coordinates = explode(':',$coordinatesMatch[0]);
+
+                    $wantedGalaxy = $coordinates[0];
+                    $wantedSystem = $coordinates[1];
+
+                    if($this->systemRestriction || $this->galaxyRestriction 
+                        || $wantedGalaxy > $this->maxGalaxyPage || $wantedGalaxy < 1
+                        || $wantedSystem > $this->maxSystemPage || $wantedSystem > $this->systemRestrictionMax || $wantedSystem < 1 || $wantedSystem < $this->systemRestrictionMin
+                    )
+                        return trans('stargate.unknownCoordinates', [], $this->player->lang);
+                    else
+                    {
+                        $this->galaxy = $wantedGalaxy;
+                        $this->system = $wantedSystem;
+                    }
+                }
+
+
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;

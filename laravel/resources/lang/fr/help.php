@@ -87,7 +87,16 @@ return [
     'profile' => [
         'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
                         ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
-        'usage' => "!profile\n!profile notification [on/off]"
+        'usage' => "!profile\n!profile notification [on/off]\n!profile vacation"
+    ],
+    'premium' => [
+        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **TO BE DEFINED**"
+                        ."\nUne fois acheté, vous pouvez également utiliser ou offrir un premium",
+        'usage' => "!premium\n!premium use\n!premium give @mention"
+    ],
+    'empire' => [
+        'description' => "Vous permet d'afficher une vue d'ensemble de vos colonies, réclamer leur ressources / vérifier la fin de vos building/research/craft/defence en une commande",
+        'usage' => "!empire\n!emp"
     ],
     'start' => [
         'description' => "Créer votre profile Stargate afin de commencer votre aventure.",
@@ -103,7 +112,7 @@ return [
     ],
     'vote' => [
         'description' => "Si vous appréciez Stargate, vous pouvez voter pour ce bot avec le lien derrière cette commande.",
-        'usage' => '!vote'
+        'usage' => "!vote\n!vote use"
     ],
     'daily' => [
         'description' => "Récompense quotidienne",

@@ -12,6 +12,9 @@ class Infos extends CommandHandler implements CommandInterface
     {
         echo PHP_EOL.'Execute Infos';
 
+        if(!is_null($this->player) && $this->player->ban)
+            return trans('generic.banned',[],$this->player->lang);
+
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
         $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
 

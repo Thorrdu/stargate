@@ -4,69 +4,14 @@ include __DIR__.'/vendor/autoload.php';
 
 //Laravel
 require __DIR__.'/laravel/vendor/autoload.php';
-$app = require_once __DIR__.'/laravel/bootstrap/app.php';
+/*
+require __DIR__.'/CustomCommandClient.php';
+require __DIR__.'/Command.php';*/
 
+$app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
     ->handle(Illuminate\Http\Request::capture());
 
-/*
-use App\Player;
-$players = Player::all();
-foreach ($players as $player) {
-    echo 'aaaaaaaabbbbbbbb////';
-    echo $player->name;
-}*/
-
-/*
-
-$embed = [
-            'image' => [
-                'url' => 'http://web.thorr.ovh/point.jpg',
-            ],
-            'thumbnail' => [
-                //'url' => 'http://web.thorr.ovh/point.jpg',
-            ],
-            //'color' => '#0099ff',
-            'author' => [
-                'name' => 'Le joueur',
-                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
-            ],
-            //"title" => "",
-            //"description" => "",
-            'fields' =>array(
-                '0' => array(
-                    'name' => 'Fields',
-                    'value' => 'They can have different fields with small headlines.',
-                    'inline' => true
-                ),
-                '1' => array(
-                    'name' => 'Fields',
-                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                    'inline' => true
-                ),
-                '2' => array(
-                    'name' => 'Fields',
-                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                    'inline' => true
-                ),
-                '3' => array(
-                    'name' => 'Fields',
-                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                    'inline' => false
-                ),
-                '4' => array(
-                    'name' => 'Fields',
-                    'value' => 'You can put [masked links](http://google.com) inside of rich embeds.',
-                    'inline' => false
-                ),
-            ),
-            'footer' => array(
-                'icon_url'  => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png',
-                'text'  => 'Stargate',
-            ),
-        ];
- * 
- */
 
 use App\Building;
 use App\Player;
@@ -75,13 +20,16 @@ use App\Reminder;
 use App\Exploration;
 use App\GateFight;
 use App\Alliance;
+use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Captcha, AllianceCommand, Start, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Captcha, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
 use Discord\DiscordCommandClient;
+//use Discord\CustomCommandClient;
+
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
@@ -95,7 +43,7 @@ global $upTimeStart;
 $upTimeStart = Carbon::now();
 
 $beta = true;
-$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc_Dg.9GJ5Mww-YtAeQZZ-2C9MR3EWn2c';
+$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.Sc1wU-YOokbAS2HXVc8sNt_R02w';
 $prefix = '!';
 
 if($beta)
@@ -125,6 +73,7 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting upp!", PHP_EOL;
 
+    
     echo 'UPDATING PRESENCE'.PHP_EOL;
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
         'name' => "Shard {$discord->commandClientOptions['discordOptions']['shardId']}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
@@ -136,13 +85,17 @@ $discord->on('ready', function ($discord) use($beta){
         $rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
         if($rowExists == 0)
         {
+            $usrCount = $discord->users->count();
+            if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+                $usrCount += 135000;
+
             DB::table('configuration')->insert([
                 'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
                 'value' => $discord->guilds->count(),
             ]);
             DB::table('configuration')->insert([
                 'key' => 'shardUser'.$discord->commandClientOptions['discordOptions']['shardId'],
-                'value' => $discord->users->count(),
+                'value' => $usrCount,
             ]);
         }
         else
@@ -174,6 +127,58 @@ $discord->on('ready', function ($discord) use($beta){
     {
         $discord->loop->addPeriodicTimer(300, function () use ($discord) {
 
+            $playersPremiumExpired = Player::Where([['premium_expiration','<>',''],['premium_expiration','<',date("Y-m-d H:i:s")]])->get();
+            foreach($playersPremiumExpired as $player)
+            {
+                $player->premium_expiration = null;
+                $player->save();
+                foreach($player->colonies as $colony)
+                {
+                    $colony->calcProd(); //reload Prods
+                    $colony->save(); 
+                }
+            }
+
+            $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
+            echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
+            foreach($explorations as $exploration)
+            {  
+                $explorationOutcome = $exploration->outcome();
+                
+                $reminder = new Reminder;
+                $reminder->reminder_date = Carbon::now()->add('1s');
+                $reminder->reminder = $explorationOutcome;
+                $reminder->player_id = $exploration->player->id;
+                $reminder->save();
+            }
+
+            $colonyCheckArtifacts = Colony::Where([['artifact_check','<>',''],['artifact_check','<',date("Y-m-d H:i:s")]])->get();
+            echo PHP_EOL.''.$colonyCheckArtifacts->count().' colonies artifact to check' ;
+            foreach($colonyCheckArtifacts as $colonyCheckArtifact)
+            {
+                $newArtifact = "";
+                if($colonyCheckArtifact->player->colonies[0]->id == $colonyCheckArtifact->id)
+                {
+                    $newArtifact = $colonyCheckArtifact->generateArtifact(['forceBonus' => true])->toString();
+                }
+                elseif(rand(0,100) > 50)
+                {
+                    $newArtifact = $colonyCheckArtifact->generateArtifact()->toString();
+                }
+                $colonyCheckArtifact->refresh();
+                $colonyCheckArtifact->artifact_check = null;
+                $colonyCheckArtifact->save();
+
+                if(!empty($newArtifact))
+                {
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->add(rand(1,5).'m');
+                    $reminder->reminder = trans('colony.artifactDiscovered', ['artifact' => $newArtifact], $colonyCheckArtifact->player->lang);
+                    $reminder->player_id = $colonyCheckArtifact->player->id;
+                    $reminder->save();
+                }
+            }
+
             $topRegen = DB::table('configuration')->Where([['key','top_regen'],['value','<',date("Y-m-d H:i:s")]])->count();
             if($topRegen == 1)
             {
@@ -192,6 +197,25 @@ $discord->on('ready', function ($discord) use($beta){
                 $nextTopRegen = date("Y-m-").($newday).' 00:00:00';
                 $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
             }
+
+            $artifactAutoDeleted = 0;
+            $artifactsToDelete = Artifact::Where([['bonus_end','IS NOT',NULL],['bonus_end','<',date("Y-m-d H:i:s")]])->get();
+            foreach($artifactsToDelete as $artifactDeletion)
+            {
+                if($artifactDeletion->bonus_category == 'Production')
+                {
+                    $colonyToRefresh = $artifactDeletion->colony;
+                    $colonyToRefresh->checkProd();
+                    $artifactDeletion->delete();
+                    $colonyToRefresh->refresh();
+                    $colonyToRefresh->calcProd();
+                    $colonyToRefresh->save();
+                }
+                else
+                    $artifactDeletion->delete();
+                $artifactAutoDeleted++;
+            }
+            echo PHP_EOL.$artifactAutoDeleted.' Artefact deleted';
         });
 
 
@@ -209,7 +233,7 @@ $discord->on('ready', function ($discord) use($beta){
             {
                 $now = Carbon::now();     
                 $fightTime = Carbon::createFromFormat("Y-m-d H:i:s",$activeFight->created_at);
-                if($fightTime->diffInHours($now) > 72){
+                if(abs($fightTime->diffInHours($now)) > 72){
                     $updatingFights = GateFight::Where([['active',true],['player_id_source',$activeFight->player_id_source],['player_id_dest',$activeFight->player_id_dest]])->get();
                     foreach($updatingFights as $updatingFight)
                     {
@@ -246,8 +270,12 @@ $discord->on('ready', function ($discord) use($beta){
         ]);
         $discord->updatePresence($activity);
 
+        $usrCount = $discord->users->count();
+        if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+            $usrCount += 135000;
+
         DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
-        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->users->count()]);
+        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $usrCount]);
         
             /*
         $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
@@ -340,23 +368,8 @@ $discord->on('ready', function ($discord) use($beta){
 
             $reminder->delete();
         }*/
-
-        $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
-        echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
-        foreach($explorations as $exploration)
-        {  
-            $explorationOutcome = $exploration->outcome();
-            
-            $reminder = new Reminder;
-            $reminder->reminder_date = Carbon::now()->add('1s');
-            $reminder->reminder = $explorationOutcome;
-            $reminder->player_id = $exploration->player->id;
-            $reminder->save();
-        }
     });
-
-
-
+   
     $discord->registerCommand('help', function ($message, $args) use($discord){
         $command = new CustomHelp($message,$args,$discord);
         return $command->execute();
@@ -396,6 +409,26 @@ $discord->on('ready', function ($discord) use($beta){
 		'usage' => trans('help.colony.usage', [], 'fr'),
 		'aliases' => array('c','co','col'),
         'cooldown' => 2
+    ]);	
+
+    $discord->registerCommand('premium', function ($message, $args) use($discord){
+        $command = new Empire($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.premium.description', [], 'fr'),
+		'usage' => trans('help.premium.usage', [], 'fr'),
+		'aliases' => array('pre','prem'),
+        'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('empire', function ($message, $args) use($discord){
+        $command = new Empire($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.empire.description', [], 'fr'),
+		'usage' => trans('help.empire.usage', [], 'fr'),
+		'aliases' => array('e','em','emp'),
+        'cooldown' => 30
     ]);	
 
     $discord->registerCommand('craft', function ($message, $args) use($discord){
@@ -617,7 +650,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('ping', function ($message, $args) use($discord){
-        $command = new Ping($message,$args,$discord);
+        $command = new Ping($message,$args, $discord);
         return $command->execute();
     },[
         'description' => trans('help.ping.description', [], 'fr'),

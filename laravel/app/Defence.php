@@ -26,14 +26,13 @@ class Defence extends Model
         return $this->belongsToMany('App\Colony','defence_queues','defence_id','colony_id')->withPivot('defence_end');
     }
 
-    public function getPrice(int $qty)
+    public function getPrice(int $qty, $coef = 1)
     {
         $buildingPrice = [];
         foreach (config('stargate.resources') as $resource)
         {
             if($this->$resource > 0)
-                $buildingPrice[$resource] = $this->$resource * $qty;
-            //eventuel bonus de réduction
+                $buildingPrice[$resource] = $this->$resource * $qty * $coef;
         }
         return $buildingPrice;
     }

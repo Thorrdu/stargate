@@ -34,6 +34,9 @@ class Research extends CommandHandler implements CommandInterface
                 
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
+
+                if(!is_null($this->player->vacation))
+                    return trans('profile.vacationMode',[],$this->player->lang);
                     
                 /*$this->player->checkTechnology();
                 $this->player->refresh();*/
@@ -163,7 +166,17 @@ class Research extends CommandHandler implements CommandInterface
                             }
 
                             $hasEnough = true;
-                            $technologyPrices = $technology->getPrice($wantedLvl);
+
+                            $coef = 1;
+                            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
+                            });
+                            foreach($buildingPriceBonusList as $buildingPriceBonus)
+                            {
+                                $coef *= $buildingPriceBonus->bonus_coef;
+                            }
+                
+                            $technologyPrices = $technology->getPrice($wantedLvl, $coef);
                             $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
                             {
@@ -208,10 +221,10 @@ class Research extends CommandHandler implements CommandInterface
                             if(!$hasRequirements)
                                 return trans('research.notYetDiscovered', [], $this->player->lang);
 
-                            $wantedLevel = 1;
+                            $wantedLvl = 1;
                             $currentLvl = $this->player->hasTechnology($technology);
                             if($currentLvl)
-                                $wantedLevel += $currentLvl;
+                                $wantedLvl += $currentLvl;
                 
                             if(count($this->args) == 2 && (int)$this->args[1] >= 1 && $this->args[1] < 65)
                             {
@@ -220,7 +233,16 @@ class Research extends CommandHandler implements CommandInterface
                             }
 
                             $buildingPrice = "";
-                            $buildingPrices = $technology->getPrice($wantedLevel);
+
+                            $coef = 1;
+                            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
+                            });
+                            foreach($buildingPriceBonusList as $buildingPriceBonus)
+                            {
+                                $coef *= $buildingPriceBonus->bonus_coef;
+                            }
+                            $buildingPrices = $technology->getPrice($wantedLvl, $coef);
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($technology->$resource > 0)
@@ -229,7 +251,7 @@ class Research extends CommandHandler implements CommandInterface
                                 }
                             }
                 
-                            $buildingTime = $technology->getTime($wantedLevel);
+                            $buildingTime = $technology->getTime($wantedLvl);
                             
                             /** Application des bonus */
                             $buildingTime *= $this->player->activeColony->getResearchBonus();
@@ -378,13 +400,23 @@ class Research extends CommandHandler implements CommandInterface
 
         foreach($displayList as $technology)
         {
-            $wantedLevel = 1;
+            $wantedLvl = 1;
             $currentLvl = $this->player->hasTechnology($technology);
             if($currentLvl)
-                $wantedLevel += $currentLvl;
+                $wantedLvl += $currentLvl;
 
             $buildingPrice = "";
-            $buildingPrices = $technology->getPrice($wantedLevel);
+
+            $coef = 1;
+            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
+            });
+            foreach($buildingPriceBonusList as $buildingPriceBonus)
+            {
+                $coef *= $buildingPriceBonus->bonus_coef;
+            }
+
+            $buildingPrices = $technology->getPrice($wantedLvl, $coef);
             foreach (config('stargate.resources') as $resource)
             {
                 if($technology->$resource > 0)
@@ -395,7 +427,7 @@ class Research extends CommandHandler implements CommandInterface
                 }
             }
 
-            $buildingTime = $technology->getTime($wantedLevel);
+            $buildingTime = $technology->getTime($wantedLvl);
             
             /** Application des bonus */
             $buildingTime *= $this->player->activeColony->getResearchBonus();

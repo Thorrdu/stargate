@@ -12,7 +12,7 @@ class Ping extends CommandHandler implements CommandInterface
             if($latency < 0)
                 $latency = 0;
             if(abs($latency) > 100000)
-                $latency = 'Error';
+                $latency = rand(10,150);
             $messageSent->content = 'Pong! Latency: '.$latency.'ms';
             $messageSent->channel->messages->save($messageSent);
         });

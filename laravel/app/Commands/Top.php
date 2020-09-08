@@ -33,6 +33,9 @@ class Top extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
+            if(!is_null($this->player->vacation))
+                return trans('profile.vacationMode',[],$this->player->lang);
+
             try{
                 if(empty($this->args))
                     return trans('top.choice', [], $this->player->lang);
@@ -63,7 +66,7 @@ class Top extends CommandHandler implements CommandInterface
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
                 }  
                 elseif(Str::startsWith('craft', $this->args[0])){
-                    $this->topType = 'craft';
+                    $this->topType = 'military';
                     if($this->topAlliance)
                         $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_military'); 
                     else
@@ -211,12 +214,16 @@ class Top extends CommandHandler implements CommandInterface
         if(empty($topList))
             $topList = "/";
 
+        $topTxt = $this->topType;
+        if($this->topType == 'craft')
+            $topTxt = 'craft';
+        
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
-            "title" => 'Top '.trans('generic.'.$this->topType, [], $this->player->lang),
+            "title" => 'Top '.trans('generic.'.$topTxt, [], $this->player->lang),
             "description" => $topList,
             'fields' => [],
             'footer' => array(

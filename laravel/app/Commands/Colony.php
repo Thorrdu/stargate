@@ -27,6 +27,9 @@ class Colony extends CommandHandler implements CommandInterface
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
+                if(!is_null($this->player->vacation))
+                    return trans('profile.vacationMode',[],$this->player->lang);
+
         
                 if(isset($this->args[0]) && Str::startsWith('list',$this->args[0]))
                 {
@@ -39,7 +42,24 @@ class Colony extends CommandHandler implements CommandInterface
                     }
                     return "\n__".trans('generic.colonies',[],$this->player->lang)."__\n".$coloniesString;
                 }
-                if(count($this->args) >= 2 && Str::startsWith('switch',$this->args[0]))
+                elseif(count($this->args) >= 2 && strlen($this->args[0]) > 2 && Str::startsWith('rename',$this->args[0]))
+                {
+                    if(is_null($this->player->premium_expiration))
+                        return trans('premium.restrictedCommand', [], $this->player->lang);
+
+                    $newColonyName = trim(join(' ', array_slice($this->args, 1)));
+
+                    if(strlen($newColonyName) < 2)
+                        return trans('generic.nameTooShort',[],$this->player->lang);
+
+                    if(strlen($newColonyName) > 25)
+                        return trans('generic.nameTooLong',[],$this->player->lang);
+                    
+                    $this->player->activeColony->name = $newColonyName;
+                    $this->player->activeColony->save();
+                    return trans('colony.colonyNameChanged' , ['name' => $this->player->activeColony->name], $this->player->lang);
+                }
+                elseif(count($this->args) >= 2 && Str::startsWith('switch',$this->args[0]))
                 {
                     if(preg_match('/(([0-9]{1,}:[0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,};[0-9]{1,}))/', $this->args[1], $coordinatesMatch))
                     {
@@ -93,8 +113,47 @@ class Colony extends CommandHandler implements CommandInterface
                                     return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
                                 else
                                 {
-                                    $this->player->removeColony($coordinateSwitch->colony);
-                                    return trans('colony.colonyRemoved', [], $this->player->lang);
+
+                                    $colonyName = $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']';
+                                    $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
+
+                                    $this->maxTime = time()+180;
+                                    $this->message->channel->sendMessage($removeConfirm)->then(function ($messageSent) use($coordinateSwitch){
+                                        
+                                        $this->closed = false;
+                                        $this->paginatorMessage = $messageSent;
+                                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                            });
+                                        });
+        
+                                        $filter = function($messageReaction){
+                                            return $messageReaction->user_id == $this->player->user_id;
+                                        };
+                                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($coordinateSwitch){
+                                            $messageReaction = $collector->first();
+                                            try{
+                                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                                {
+                                                    $this->player->removeColony($coordinateSwitch->colony);
+                                                    $this->paginatorMessage->content = trans('colony.colonyRemoved', [], $this->player->lang);
+                                                    $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                }
+                                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                                {
+                                                    $this->paginatorMessage->content = trans('generic.cancelled', [], $this->player->lang);
+                                                    $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+
+                                                }
+                                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            }
+                                            catch(\Exception $e)
+                                            {
+                                                echo $e->getMessage();
+                                            }
+                                        });
+                                    });
+                                    return;
                                 }
                             }
                             else
@@ -110,8 +169,46 @@ class Colony extends CommandHandler implements CommandInterface
                             return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
                         else
                         {
-                            $this->player->removeColony($this->player->colonies[(int)$this->args[1]-1]);
-                            return trans('colony.colonyRemoved', [], $this->player->lang);
+                            $colonyName = $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']';
+                            $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
+
+                            $this->maxTime = time()+180;
+                            $this->message->channel->sendMessage($removeConfirm)->then(function ($messageSent){
+                                
+                                $this->closed = false;
+                                $this->paginatorMessage = $messageSent;
+                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                    });
+                                });
+
+                                $filter = function($messageReaction){
+                                    return $messageReaction->user_id == $this->player->user_id;
+                                };
+                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                    $messageReaction = $collector->first();
+                                    try{
+                                        if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                        {
+                                            $this->player->removeColony($this->player->colonies[(int)$this->args[1]-1]);
+                                            $this->paginatorMessage->content = trans('colony.colonyRemoved', [], $this->player->lang);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        }
+                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                        {
+                                            $this->paginatorMessage->content = trans('generic.cancelled', [], $this->player->lang);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+
+                                        }
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo $e->getMessage();
+                                    }
+                                });
+                            });
+                            return;
                         }
 
                     }
@@ -129,8 +226,9 @@ class Colony extends CommandHandler implements CommandInterface
                         'name' => $this->player->user_name,
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                     ],
+                    'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
                     "title" => 'Colonie '.$this->player->activeColony->name,
-                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->galaxy.":".$coordinates->system.":".$coordinates->planet,
+                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->humanCoordinates(),
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',
@@ -138,15 +236,12 @@ class Colony extends CommandHandler implements CommandInterface
                 ];
 
                 $resourcesValue = "";
-                $productionValue = '';
                 $storageValue = "";
                 foreach (config('stargate.resources') as $resource)
                 {
                     if(!empty($resourcesValue))
-                    {
                         $resourcesValue .= "\n";
-                        $productionValue .= "\n";
-                    }
+
                     $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->activeColony->$resource)." (".number_format($this->player->activeColony['production_'.$resource])."/h)";
                     $storageValue .= number_format($this->player->activeColony->{'storage_'.$resource}).' '.ucfirst($resource)."\n";
                 }
@@ -154,7 +249,7 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!empty($resourcesValue))
                 {
                     $resourcesValue .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang).": ".number_format($this->player->activeColony->energy_max - round($this->player->activeColony->energy_used)).' / '.number_format($this->player->activeColony->energy_max);
-                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->player->activeColony->military)." (".number_format($this->player->activeColony->production_military)."/h)";
+                    $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format(floor($this->player->activeColony->military))." (".number_format($this->player->activeColony->production_military)."/h)";
                     $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->player->activeColony->E2PZ,2)." (".number_format($this->player->activeColony->production_e2pz)."/w)";
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.production')." ".trans('generic.resources', [], $this->player->lang),
@@ -264,6 +359,21 @@ class Colony extends CommandHandler implements CommandInterface
                     $embed['fields'][] = array(
                                             'name' => config('stargate.emotes.research')." ".trans('generic.technologies', [], $this->player->lang)." ".trans('generic.ships', [], $this->player->lang),
                                             'value' => $technologyCenterValue,
+                                            'inline' => true
+                                        );
+                }
+
+
+                $artifactString = "";
+                foreach($this->player->activeColony->artifacts as $artifact)
+                {                   
+                    $artifactString .= $artifact->toString($this->player->lang)."\n";
+                }
+                if(!empty($artifactString))
+                {
+                    $embed['fields'][] = array(
+                                            'name' => trans('generic.artifacts', [], $this->player->lang),
+                                            'value' => $artifactString,
                                             'inline' => true
                                         );
                 }

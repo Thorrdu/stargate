@@ -15,6 +15,9 @@ class Captcha extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
 
+            if(!is_null($this->player->vacation))
+                return trans('profile.vacationMode',[],$this->player->lang);
+
             if($this->player->captcha)
             {
                 return trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang);

@@ -6,6 +6,8 @@ use App\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Discord\Parts\Embed\Embed;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -27,24 +29,150 @@ class Profile extends CommandHandler implements CommandInterface
                 $this->player = $player;
             }*/
 
-            if(!empty($this->args) && Str::startsWith('notification', $this->args[0]))
+
+            if(!empty($this->args))
             {
-                if(count($this->args) < 2)
-                    return trans('profile.notification.missingParameter',[],$this->player->lang);
-                if(Str::startsWith('on', $this->args[1]))
+                if(Str::startsWith('notification', $this->args[0]))
                 {
-                    $this->player->notification = true;
-                    $this->player->save();
-                    return trans('profile.notification.disabled',[],$this->player->lang);
+                    if(count($this->args) < 2)
+                        return trans('profile.notification.missingParameter',[],$this->player->lang);
+                    if(Str::startsWith('on', $this->args[1]))
+                    {
+                        $this->player->notification = true;
+                        $this->player->save();
+                        return trans('profile.notification.disabled',[],$this->player->lang);
+                    }
+                    elseif(Str::startsWith('off', $this->args[1]))
+                    {
+                        $this->player->notification = false;
+                        $this->player->save();
+                        return trans('profile.notification.enabled',[],$this->player->lang);
+                    }
+                    else
+                        return trans('profile.notification.missingParameter',[],$this->player->lang);
                 }
-                elseif(Str::startsWith('off', $this->args[1]))
+                if(Str::startsWith('vacation', $this->args[0]))
                 {
-                    $this->player->notification = false;
-                    $this->player->save();
-                    return trans('profile.notification.enabled',[],$this->player->lang);
+                    if(is_null($this->player->vacation))
+                    {
+                        $now = Carbon::now();
+                        if(!is_null($this->player->next_vacation) && $this->player->next_vacation < $now)
+                        {
+                            $nextVacation = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->next_vacation);
+                            $nextVacationString = $now->diffForHumans($nextVacation,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                            return trans('profile.nextVacation', ['time' => $nextVacationString], $this->player->lang);
+                        }
+
+                        //proposition vacances
+                        $upgradeMsg = trans('profile.vacationConfirm', [], $this->player->lang);
+
+                        $this->maxTime = time()+180;
+                        $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
+                            
+                            $this->closed = false;
+                            $this->paginatorMessage = $messageSent;
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                });
+                            });
+
+                            $filter = function($messageReaction){
+                                return $messageReaction->user_id == $this->player->user_id;
+                            };
+                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                $messageReaction = $collector->first();
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                    {
+                                        $this->player->vacation = Carbon::now();
+                                        $this->player->save();
+                                        $this->paginatorMessage->content = trans('profile.vacationActivated', [], $this->player->lang);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        return;
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $this->paginatorMessage->content = trans('generic.cancelled', [], $this->player->lang);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo $e->getMessage();
+                                }
+                            });
+                        });
+                    }
+                    else{
+                        $now = Carbon::now();
+                        $vacationUntil = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->vacation)->add('72h');
+
+                        if($vacationUntil < $now)
+                        {
+                            $vacationUntilString = $now->diffForHumans($vacationUntil,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                            return trans('profile.vacationUntil', ['time' => $vacationUntilString], $this->player->lang);
+                        }
+
+                        //proposition désactivation vacances
+                        $upgradeMsg = trans('profile.vacationOverConfirm', [], $this->player->lang);
+
+                        $this->maxTime = time()+180;
+                        $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
+                            
+                            $this->closed = false;
+                            $this->paginatorMessage = $messageSent;
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                });
+                            });
+
+                            $filter = function($messageReaction){
+                                return $messageReaction->user_id == $this->player->user_id;
+                            };
+                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                $messageReaction = $collector->first();
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                    {
+                                        $this->player->next_vacation = Carbon::now()->add('72h');
+                                        $this->player->save();
+                                        $now = Carbon::now();
+                                        foreach($this->player->colonies as $colony)
+                                        {
+                                            $colony->last_claim = $now;
+                                            $colony->save();
+                                        }
+                                        $this->paginatorMessage->content = trans('profile.vacationOver', [], $this->player->lang);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        return;
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $this->paginatorMessage->content = trans('generic.cancelled', [], $this->player->lang);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        $this->closed = true;
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo $e->getMessage();
+                                }
+                            });
+                        });
+
+                    }
+                    return;
                 }
-                else
-                    return trans('profile.notification.missingParameter',[],$this->player->lang);
             }
 
 

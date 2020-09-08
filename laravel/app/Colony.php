@@ -73,6 +73,11 @@ class Colony extends Model
         return $this->belongsToMany('App\Building')->withPivot('level');
     }
 
+    public function artifacts()
+    {
+        return $this->hasMany('App\Artifact');
+    }
+
     public function activeBuilding()
     {
         return $this->hasOne('App\Building','id','active_building_id');
@@ -194,6 +199,14 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->technology_bonus, $technology->pivot->level);
 
+        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Time' && $value->bonus_type == 'Research';
+        });
+        foreach($buildingTimeBonusList as $buildingTimeBonus)
+        {
+            $bonus *= $buildingTimeBonus->bonus_coef;
+        }
+
         return $bonus;
     }
     public function getBuildingBonus()
@@ -211,6 +224,14 @@ class Colony extends Model
         });
         foreach($technologies as $technology)
             $bonus *= pow($technology->building_bonus, $technology->pivot->level);
+
+        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Time' && $value->bonus_type == 'Building';
+        });
+        foreach($buildingTimeBonusList as $buildingTimeBonus)
+        {
+            $bonus *= $buildingTimeBonus->bonus_coef;
+        }
 
         return $bonus;
     }
@@ -231,6 +252,14 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->crafting_bonus, $technology->pivot->level);
 
+        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Time' && $value->bonus_type == 'Craft';
+        });
+        foreach($buildingTimeBonusList as $buildingTimeBonus)
+        {
+            $bonus *= $buildingTimeBonus->bonus_coef;
+        }
+
         return $bonus;
     }
 
@@ -250,6 +279,14 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->defence_bonus, $technology->pivot->level);
 
+        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Time' && $value->bonus_type == 'Defence';
+        });
+        foreach($buildingTimeBonusList as $buildingTimeBonus)
+        {
+            $bonus *= $buildingTimeBonus->bonus_coef;
+        }
+
         return $bonus;
     }
 
@@ -263,7 +300,16 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getCraftingBonus();
 
-        $buildingPrices = $unit->getPrice($qty);
+        $coef = 1;
+        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
+        });
+        foreach($buildingPriceBonusList as $buildingPriceBonus)
+        {
+            $coef *= $buildingPriceBonus->bonus_coef;
+        }
+
+        $buildingPrices = $unit->getPrice($qty, $coef);
         foreach (config('stargate.resources') as $resource)
         {
             if($unit->$resource > 0)
@@ -299,7 +345,16 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getDefencebuildBonus();
 
-        $buildingPrices = $defence->getPrice($qty);
+        $coef = 1;
+        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Price' && $value->bonus_type == 'Defence';
+        });
+        foreach($buildingPriceBonusList as $buildingPriceBonus)
+        {
+            $coef *= $buildingPriceBonus->bonus_coef;
+        }
+
+        $buildingPrices = $defence->getPrice($qty, $coef);
         foreach (config('stargate.resources') as $resource)
         {
             if($defence->$resource > 0)
@@ -346,7 +401,16 @@ class Colony extends Model
         $this->active_building_id = $building->id;
         $this->active_building_end = $buildingEnd;
 
-        $buildingPrices = $building->getPrice($wantedLvl);
+        $coef = 1;
+        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
+        });
+        foreach($buildingPriceBonusList as $buildingPriceBonus)
+        {
+            $coef *= $buildingPriceBonus->bonus_coef;
+        }
+
+        $buildingPrices = $building->getPrice($wantedLvl, $coef);
         foreach (config('stargate.resources') as $resource)
         {
             if($building->$resource > 0)
@@ -548,7 +612,9 @@ class Colony extends Model
             $this->$varName = config('stargate.base_prod.'.$resource);
             foreach($productionBuildings as $productionBuilding)
                 $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
-                //+Bonus éventuels
+            
+            if(!is_null($this->player->premium_expiration))
+                $this->$varName *= 1.25;
         }
 
         $storageBuildings = $this->buildings->filter(function ($value) use($resource){
@@ -568,8 +634,6 @@ class Colony extends Model
         {
             $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
         }
-        //+Bonus éventuels
-
 
         $e2pzBuildings = $this->buildings->filter(function ($value){
             return $value->production_type == 'e2pz' && $value->type == 'Science';
@@ -581,7 +645,15 @@ class Colony extends Model
                 $this->production_e2pz = config('stargate.base_prod.e2pz');
             $this->production_e2pz += $e2pzBuilding->getProductionE2PZ($e2pzBuilding->pivot->level);
         }
-        //+Bonus éventuels
+
+        $productionBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Production';
+        });
+        foreach($productionBonusList as $productionBonus)
+        {
+            $varBonus = 'production_'.$productionBonus->bonus_resource;
+            $this->$varBonus *= $productionBonus->bonus_coef;
+        }
     }
 
     public function checkColony(){
@@ -648,5 +720,144 @@ class Colony extends Model
             echo $e->getMessage();
         }
     }
+
+    public function rndWeightedArtifact($values, $weights){ 
+        $count = count($values); 
+        $i = 0; 
+        $n = 0; 
+        $randWeights = [];
+        foreach($values as $value)
+            $randWeights[] = $weights[$value];
+        $num = mt_rand(0, array_sum($randWeights)); 
+        while($i < $count){
+            $n += $randWeights[$i]; 
+            if($n >= $num){
+                break; 
+            }
+            $i++; 
+        } 
+        return $values[$i]; 
+    }
+
+    public function generateArtifact($options = [])
+    {
+        try{
+            $categoryWeights = [
+                'Production' => 30,
+                'Time' => 20,
+                'Price' => 20,
+                'DefenceLure' => 10,
+                'ColonyMax' => 10
+            ];
+
+            if(isset($options['bonusCategories']))
+                $bonusCategories = $options['bonusCategories'];
+            else
+                $bonusCategories = ['Production', 'Time', 'Price', 'DefenceLure'];
+            
+            if(!isset($options['maxEnding']))
+                $bonusCategories[] = 'ColonyMax';
+
+            if(isset($options['bonusTypes']))
+                $bonusTypes = $options['bonusTypes'];
+            else
+                $bonusTypes = ['Research', 'Building', 'Ship', 'Defence', 'Craft'];
+
+            $bonusResources = ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'];
+
+            $newArtifact = new Artifact;
+            $newArtifact->colony_id = $this->id;
+
+            if(isset($options['forceBonus']))
+                $isBonus = $options['forceBonus'];
+            else
+            {
+                if(rand(0,100) > 75)
+                    $isBonus = false;
+                else
+                    $isBonus = true;
+            }
+
+            $newArtifact->bonus_category = $this->rndWeightedArtifact($bonusCategories,$categoryWeights);
+
+            if(in_array($newArtifact->bonus_category,['Price']))
+            {
+                $newArtifact->bonus_type = $bonusTypes[rand(0,count($bonusTypes)-1)];
+                switch($newArtifact->bonus_type)
+                {
+                    case 'Research':
+                    case 'Building':
+                        $bonusCoef = rand(1,15)/100;
+                    case 'Ship':
+                        $bonusCoef = rand(1,10)/100;
+                    break;
+                    case 'Defence':
+                    case 'Craft':
+                        $bonusCoef = rand(1,20)/100;
+                    break;
+                    default:
+                        $bonusCoef = rand(1,15)/100;
+                    break;
+                }
+                if($isBonus)
+                    $newArtifact->bonus_coef = 1-$bonusCoef;
+                else
+                    $newArtifact->bonus_coef = 1+$bonusCoef;
+            }
+            if(in_array($newArtifact->bonus_category,['Time']))
+            {
+                $newArtifact->bonus_type = $bonusTypes[rand(0,count($bonusTypes)-1)];
+                $bonusCoef = rand(5,25)/100;
+                if($isBonus)
+                    $newArtifact->bonus_coef = 1-$bonusCoef;
+                else
+                    $newArtifact->bonus_coef = 1+$bonusCoef;
+            }
+            elseif(in_array($newArtifact->bonus_category,['DefenceLure']))
+            {
+                if($isBonus)
+                    $newArtifact->bonus_coef = 2;
+                else
+                    $newArtifact->bonus_coef = 0.5;
+            }
+            elseif(in_array($newArtifact->bonus_category,['Production']))
+            {
+                $newArtifact->bonus_resource = $bonusResources[rand(0,count($bonusResources)-1)];
+                $bonusCoef = rand(5,25)/100;
+                if($isBonus)
+                    $newArtifact->bonus_coef = 1+$bonusCoef;
+                else
+                    $newArtifact->bonus_coef = 1-$bonusCoef;
+            }
+            elseif(in_array($newArtifact->bonus_category,['ColonyMax']))
+            {
+                $alreadyOwned = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','Colony')->count();
+                if($alreadyOwned > 0)
+                    return $this->generateArtifact($options);
+                $bonusCoef = 1;
+                $maxEnding = null;
+            }
+
+            $minEnding = 1;
+            if(isset($options['minEnding']))
+                $minEnding = $options['minEnding'];
+            if(isset($options['maxEnding']))
+                $newArtifact->bonus_end = Carbon::now()->add(rand($minEnding,$options['maxEnding'])."h");
+            
+            $newArtifact->save();
+            if($newArtifact->bonus_category == 'Production')
+            {
+                $this->refresh();
+                $this->calcProd();
+                $this->save();
+            }
+            return $newArtifact;
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+
 
 }

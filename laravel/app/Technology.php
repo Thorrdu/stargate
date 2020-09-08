@@ -21,17 +21,15 @@ class Technology extends Model
         return $this->belongsToMany('App\Technology','technology_technologies','technology_id','required_technology_id')->withPivot('level');
     }
 
-    public function getPrice(int $level)
+    public function getPrice(int $level, $coef = 1)
     {
         $level--; //Du au coeficient
         $buildingPrice = [];
         foreach (config('stargate.resources') as $resource)
         {
             if($this->$resource > 0)
-                $buildingPrice[$resource] = $this->$resource * pow($this->upgrade_coefficient, $level);
+                $buildingPrice[$resource] = $this->$resource * pow($this->upgrade_coefficient, $level) * $coef;
                 //$buildingPrice[$resource] = $this->coefCalc($this->$resource,$this->upgrade_coefficient,$level);
-
-
         }
         return $buildingPrice;
     }

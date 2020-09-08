@@ -43,6 +43,9 @@ class Stargate extends CommandHandler implements CommandInterface
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
+                if(!is_null($this->player->vacation))
+                    return trans('profile.vacationMode',[],$this->player->lang);
+
                 $researchCenter = Building::find(7);
                 $centerLevel = $this->player->activeColony->hasBuilding($researchCenter);
                 if(!$centerLevel || $centerLevel < 5)
@@ -108,8 +111,6 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $this->coordinateDestination = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                 }
-                
-
 
                 if(is_null($this->coordinateDestination))
                     return trans('stargate.unknownCoordinates', [], $this->player->lang);
@@ -120,6 +121,9 @@ class Stargate extends CommandHandler implements CommandInterface
                     $centerLevel = $this->coordinateDestination->colony->hasBuilding($researchCenter);
                     if(!$centerLevel || $centerLevel < 4)
                         return trans('stargate.failedDialing', [], $this->player->lang);
+
+                    if(!is_null($this->coordinateDestination->colony->player->vacation))
+                        return trans('profile.playerVacation', [], $this->player->lang);
                 }
 
                 if(!Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->user_id != 125641223544373248)
@@ -534,13 +538,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $reminder = new Reminder;
                                     $reminder->reminder_date = Carbon::now()->add('1s');
                                     $reminder->embed = json_encode($embed);
-                                    $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                    $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                     $reminder->save();
 
                                     $reminder = new Reminder;
                                     $reminder->reminder_date = Carbon::now()->add('1s');
                                     $reminder->reminder = trans('stargate.tradeSent',['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $receivedString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
-                                    $reminder->player_id = $this->player->user_id;
+                                    $reminder->player_id = $this->player->id;
                                     $reminder->save();
 
                                     try{
@@ -661,6 +665,10 @@ class Stargate extends CommandHandler implements CommandInterface
                     elseif($malpNumber == 0)
                         return trans('generic.notEnoughResources', ['missingResources' => $malp->name.': 1'], $this->player->lang);
 
+                    $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
+                    if($raidCapability['result'] == false)
+                        return $raidCapability['message'];
+
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
                     $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
@@ -685,6 +693,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                 {
                                     try
                                     {
+
+                                        $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
+                                        if($raidCapability['result'] == false)
+                                            $messageReaction->message->channel->sendMessage($raidCapability['message']);
+
                                         $this->player->activeColony->refresh();
 
                                         $current = Carbon::now();
@@ -820,6 +833,16 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                             if(count($this->coordinateDestination->colony->defences) > 0)
                                             {
+
+                                                $coef = 1;
+                                                $defenceLureList = $this->coordinateDestination->colony->artifacts->filter(function ($value){
+                                                    return $value->bonus_category == 'DefenceLure';
+                                                });
+                                                foreach($defenceLureList as $defenceLure)
+                                                {
+                                                    $coef *= $defenceLure->bonus_coef;
+                                                }                                    
+
                                                 $defenceString = '';
                                                 foreach($this->coordinateDestination->colony->defences as $defence)
                                                 {
@@ -827,7 +850,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 }
                                                 $embed['fields'][] = array(
                                                                         'name' => trans('stargate.defences', [], $this->player->lang),
-                                                                        'value' => $defenceString,
+                                                                        'value' => ceil($defenceString*$coef),
                                                                         'inline' => true
                                                                     );
                                             }
@@ -924,7 +947,16 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->player->activeColony->military < 1000)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
-                    if($this->player->colonies->count() < config('stargate.maxColonies'))
+                    $maxColonies = config('stargate.maxColonies');
+                    $colonyMaxBonusList = $this->coordinateDestination->colony->artifacts->filter(function ($value){
+                        return $value->bonus_category == 'ColonyMax';
+                    });
+                    foreach($colonyMaxBonusList as $colonyMaxBonus)
+                    {
+                        $maxColonies += $colonyMaxBonus->bonus_coef;
+                    }                                    
+
+                    if($this->player->colonies->count() < $maxColonies)
                     {
                         $this->player->activeColony->military -= 1000;
                         $this->player->activeColony->E2PZ -= $travelCost;
@@ -971,35 +1003,9 @@ class Stargate extends CommandHandler implements CommandInterface
                     $lastHourly = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->last_hourly);
                     if($lastHourly->diffInHours($now) >= 2)
                     */
-                    $activeFights = GateFight::Where([['active', true],['colony_id_source',$this->player->activeColony->id],['colony_id_dest',$this->coordinateDestination->colony->id]])->orderBy('created_at', 'asc')->get();
-                    if($activeFights->count() > 0)
-                    {
-                        $now = Carbon::now();
-                         
-                        $firstAttack = GateFight::Where([['active',true],['player_id_source',$this->player->id],['player_id_dest',$activeFights[0]->player_id_dest]])->orderBy('created_at', 'asc')->first();
-                        $firstAttackTime = Carbon::createFromFormat("Y-m-d H:i:s",$firstAttack->created_at);
-                        if($activeFights->count() >= 2 && $firstAttackTime->diffInHours($now) < 72){
-                            $timeUntilAttack = $now->diffForHumans($firstAttackTime->addHours(72),[
-                                'parts' => 3,
-                                'short' => true, // short syntax as per current locale
-                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);
-                            return trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang);
-                        }
-
-
-                        $lastFight = Carbon::createFromFormat("Y-m-d H:i:s",$activeFights[$activeFights->count()-1]->created_at);
-                        if($lastFight->diffInHours($now) < 24){
-                            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
-                                'parts' => 3,
-                                'short' => true, // short syntax as per current locale
-                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);
-                            return trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang);
-                        }
-
-
-                    }
+                    $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
+                    if($raidCapability['result'] == false)
+                        return $raidCapability['message'];
 
                     $capacityNeeded = 0;
                     $attackConfirmPower = "";
@@ -1101,6 +1107,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     try{
+
+                                        $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
+                                        if($raidCapability['result'] == false)
+                                            $messageReaction->message->channel->sendMessage($raidCapability['message']);
+
                                         $this->player->activeColony->refresh();
                                         foreach($this->attackUnits as $attackUnit)
                                         {
@@ -1400,7 +1411,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $reminder = new Reminder;
                                         $reminder->reminder_date = Carbon::now()->add('1s');
                                         $reminder->embed = json_encode($embed);
-                                        $reminder->player_id = $this->player->user_id;
+                                        $reminder->player_id = $this->player->id;
                                         $reminder->save();
 
                                         $embed = [
@@ -1421,7 +1432,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $reminder = new Reminder;
                                         $reminder->reminder_date = Carbon::now()->add('1s');
                                         $reminder->embed = json_encode($embed);
-                                        $reminder->player_id = $this->coordinateDestination->colony->player->user_id;
+                                        $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                         $reminder->save();
 
                                     }
@@ -1463,5 +1474,56 @@ class Stargate extends CommandHandler implements CommandInterface
             return abs($source->system - $destination->system)*0.03;
         else
             return 0.02;
+    }
+
+    public function canAttack($colonySource,$colonyDest)
+    {
+        $now = Carbon::now();
+
+        $atkNbr = GateFight::Where([['active',true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id]])->count();
+        if($atkNbr > 0)
+        {
+            $atkColony = GateFight::Where([['active', true],['colony_id_source',$colonySource->id],['colony_id_dest',$colonyDest->id]])->count();
+            if($atkNbr >= 6 || $atkColony >= 2)
+            {
+                $firstAttack = GateFight::Where([['active',true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id]])->orderBy('created_at', 'asc')->first();
+                $firstAttackTime = Carbon::createFromFormat("Y-m-d H:i:s",$firstAttack->created_at);
+                $timeUntilAttack = $now->diffForHumans($firstAttackTime->addHours(72),[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);
+                return array('result' => false, 'message' =>trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
+            }
+        }
+
+        $last24h = GateFight::Where([['active', true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_date', '>=', Carbon::now()->sub('24h')]])->get();
+        if($last24h->count() >= 3)
+        {
+            $now = Carbon::now();
+            $firstFight = Carbon::createFromFormat("Y-m-d H:i:s",$last24h[0]->created_at);
+            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);
+            return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
+        }
+
+        $activeFights = GateFight::Where([['active', true],['colony_id_source',$colonySource->id],['colony_id_dest',$colonyDest->id]])->orderBy('created_at', 'asc')->get();
+        if($activeFights->count() > 0)
+        {
+            $now = Carbon::now();
+            $lastFight = Carbon::createFromFormat("Y-m-d H:i:s",$activeFights[$activeFights->count()-1]->created_at);
+            if($lastFight->diffInHours($now) < 24){
+                $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
+                    'parts' => 3,
+                    'short' => true, // short syntax as per current locale
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                ]);
+                return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
+            }
+        }
+        return array('result' => true);
     }
 }

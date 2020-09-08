@@ -24,7 +24,7 @@ class Exploration extends Model
     {
         $randomEvent = rand(1,100);
 
-        if($randomEvent <= 30)
+        if($randomEvent <= 15)
         {
             $this->exploration_result = false;
             $this->save();
@@ -33,6 +33,15 @@ class Exploration extends Model
             $this->colonySource->save();
 
             return trans('stargate.exploreFailed', ['coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
+        }
+        elseif($randomEvent <= 30)
+        {
+            $this->exploration_result = true;
+            $this->exploration_outcome = 'Artifact';
+            $this->save();
+            $newArtifact = $this->colonySource->generateArtifact(array('maxEnding'=> 72))->toString();
+
+            return trans('stargate.exploreSucessArtifact', ['coordinates' => $this->coordinateDestination->humanCoordinates(), 'artifact' => $newArtifact], $this->player->lang);
         }
         elseif($randomEvent <= 38)
         {

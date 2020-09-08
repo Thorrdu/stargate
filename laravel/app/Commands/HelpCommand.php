@@ -32,9 +32,6 @@ class HelpCommand extends CommandHandler implements CommandInterface
             if($this->player->ban)
                 return trans('generic.banned',[],$this->lang);
 
-            if($this->player->captcha)
-                return trans('generic.captchaMessage',[],$this->lang);
-
             $this->lang = $this->player->lang;
         }
         else

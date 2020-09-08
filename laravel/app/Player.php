@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Coordinate;
 use App\Trades;
+use App\Artifact;
 use App\GateFight;
 
 class Player extends Model
@@ -72,6 +73,8 @@ class Player extends Model
             $newColony->player_id = $this->id;
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
             $newColony->last_claim = date("Y-m-d H:i:s");  
+            $newColony->artifact_check = Carbon::now()->add(rand(1,72).'h');
+            $newColony->image = rand(1,34).'.png';
 
             if($choosedCoordinate == null)
             {
@@ -141,6 +144,14 @@ class Player extends Model
         $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
         foreach($gateFigthts as $gateFight)
             $gateFight->delete();
+
+        $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
+        foreach($spyLogs as $spyLog)
+            $spyLog->delete();
+
+        $artifacts = Artifact::where('colony_id', $colony->id)->get();
+        foreach($artifacts as $artifact)
+            $artifact->delete();
         
         if($this->active_colony_id == $colony->id)
         {
@@ -193,7 +204,16 @@ class Player extends Model
         $this->active_technology_end = $buildingEnd;
         $this->save();
 
-        $buildingPrices = $technology->getPrice($wantedLvl);
+        $coef = 1;
+        $buildingPriceBonusList = $this->activeColony->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
+        });
+        foreach($buildingPriceBonusList as $buildingPriceBonus)
+        {
+            $coef *= $buildingPriceBonus->bonus_coef;
+        }
+
+        $buildingPrices = $technology->getPrice($wantedLvl, $coef);
         foreach (config('stargate.resources') as $resource)
         {
             if($technology->$resource > 0)

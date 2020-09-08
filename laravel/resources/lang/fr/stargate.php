@@ -16,15 +16,17 @@ return [
     "alreadyExploring" => "Une mission d'exploration est déjà en cours.",
     "alreadyExplored" => "Vous avez déjà exploré cette planète.",
     "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
-    "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéréssantes.\n".
+    "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéressantes.\n".
                                 "Ils ont ramenés avec eux: :resources",
     "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
-    "exploreFailed" => "Vos scientifiques n'ont rien trouvé d'intéréssant en explorant la planète [:coordinates].",
-    "exploreSucessBuildingTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
+    "exploreFailed" => "Vos explorateurs n'ont rien trouvé d'intéressant en explorant la planète [:coordinates].",
+    "exploreSucessArtifact" => "Vos explorateurs ont rapporté un artefact de la planète [:coordinates]:\n".
+                                ":artifact",
+    "exploreSucessBuildingTip" => "Vos explorateurs ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
                                   "Le bâtiment **:name** requiert:\n:requirements",
-    "exploreSucessTechnologyTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
+    "exploreSucessTechnologyTip" => "Vos explorateurs ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
                                     "La technologie **:name** requiert:\n:requirements",
-    "exploreSucessCraftTip" => "Vos scientifiques ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
+    "exploreSucessCraftTip" => "Vos explorateurs ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
                                "Le craft **:name** requiert:\n:requirements",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".

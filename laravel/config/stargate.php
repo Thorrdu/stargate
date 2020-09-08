@@ -30,5 +30,6 @@ return [
     'maxColonies' => 5,
     'maxHourly' => 24,
     'gateFight' => ['StrongWeak' => 0],
-    'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 10000]
+    'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 10000],
+    'guilds' => []
 ];

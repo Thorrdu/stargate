@@ -86,7 +86,16 @@ return [
     'profile' => [
         'description' => "Display information about your profile such as lang, vote number, ..."
                         ."\nAlso allows to manage your notification at the end of building/research",
-        'usage' => "!profile\n!profile notification [on/off]"
+        'usage' => "!profile\n!profile notification [on/off]\n!profile vacation"
+    ],
+    'premium' => [
+        'description' => "If you want to support the bot, you can buy a premium through this link: **TO BE DEFINED**"
+                        ."\nYou can also use or give a premium once you bought it.",
+        'usage' => "!premium\n!premium use\n!premium give @mention"
+    ],
+    'empire' => [
+        'description' => "Allow you to see an overview of your colonies and to claim resources / check building/research/craft/defence ending with one command",
+        'usage' => "!empire\n!emp"
     ],
     'start' => [
         'description' => "The first commande to start your Stargate adventure. Use it to create your player profile",
@@ -102,7 +111,7 @@ return [
     ],
     'vote' => [
         'description' => "If you appreciate Stargate, your can vote for him with the link behind this command every 12h.",
-        'usage' => '!vote'
+        'usage' => "!vote\n!vote use"
     ],
     'daily' => [
         'description' => "Daily reward",

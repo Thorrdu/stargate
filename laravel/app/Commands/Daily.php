@@ -20,6 +20,9 @@ class Daily extends CommandHandler implements CommandInterface
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
+                if(!is_null($this->player->vacation))
+                    return trans('profile.vacationMode',[],$this->player->lang);
+
                 $dailyOK = false;
                 if(!is_null($this->player->last_daily))
                 {
