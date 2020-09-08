@@ -36,7 +36,7 @@ class Premium extends CommandHandler implements CommandInterface
                     {
                         $this->player->premium--;
 
-                        if(is_null($this->player->premium_expiration))
+                        if(!is_null($this->player->premium_expiration))
                             $this->player->premium_expiration = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->premium_expiration)->add('1y');
                         else
                             $this->player->premium_expiration = Carbon::now()->add('1y');
