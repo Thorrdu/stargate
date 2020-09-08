@@ -5,6 +5,6 @@ return [
                     "Vous avez actuellement **:voteBoxes** vote boxes. Pour en ouvrir une, utilisez `!vote use`",
     'voteTimer' => "Vous avez déjà voté pour Stargate, merci! Vous pourrez à nouveau voter dans **:time**.\n".
                     "Vous avez actuellement **:voteBoxes** vote boxes. Pour en ouvrir une, utilisez `!vote use`",
-    'thankyou' => "Merci d'avoir voté pour Stargate! (Vos votes sont pris en compte pour de futures récompenses)",
+    'thankyou' => "Merci d'avoir voté pour Stargate!  (Vous pouvez récupérer votre récompense via `!vote use`)",
     'voteBoxOpening' => "Ouverture d'une vote box...\n:artifact",
 ];
