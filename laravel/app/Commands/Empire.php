@@ -128,7 +128,7 @@ class Empire extends CommandHandler implements CommandInterface
 
                     $embed['fields'][] = array(
                         'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
-                        'value' => $colonyString,
+                        'value' => $colonyString."\n\n",
                         'inline' => true
                     );
 
