@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '0.5.2 (Early Access)',
+    'version' => '0.6 (Early Access)',
     'resources' => ['iron','gold','quartz','naqahdah'],          
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
     'emotes' => [
