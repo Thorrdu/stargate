@@ -412,7 +412,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
 
     $discord->registerCommand('premium', function ($message, $args) use($discord){
-        $command = new Empire($message,$args,$discord);
+        $command = new Premium($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.premium.description', [], 'fr'),
