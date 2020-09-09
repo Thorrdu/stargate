@@ -317,6 +317,8 @@ $discord->on('ready', function ($discord) use($beta){
                     $userExist->sendMessage($reminder->reminder);
                 $reminder->delete();
             }
+            elseif($reminder->player->npc == 1)
+                $reminder->delete();
         }
         /*
         $playerIdRemind = 0;
