@@ -846,11 +846,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $defenceString = '';
                                                 foreach($this->coordinateDestination->colony->defences as $defence)
                                                 {
-                                                    $defenceString .= number_format($defence->pivot->number).' '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang)."\n";
+                                                    $defenceString .= number_format($defence->pivot->number*$coef).' '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang)."\n";
                                                 }
                                                 $embed['fields'][] = array(
                                                                         'name' => trans('stargate.defences', [], $this->player->lang),
-                                                                        'value' => ceil($defenceString*$coef),
+                                                                        'value' => ceil($defenceString),
                                                                         'inline' => true
                                                                     );
                                             }
