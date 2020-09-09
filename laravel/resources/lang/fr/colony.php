@@ -12,7 +12,7 @@ return [
     'defenceDivided' => 'Défenses visibles divisées par 2',
     'defenceDoubled' => 'Défenses visibles doublées',
     'colonyMaxBonus' => 'Colonies max',
-    "artifactDiscovered" => "En explorant les allentour de votre colonie, vos colons on découvert un site ancien et ont par mégarde activé un mécanisme. Artefact activé: :artifact",
+    "artifactDiscovered" => "En explorant les alentours de votre colonie, vos colons on découvert un site ancien et ont par mégarde activé un mécanisme. Artefact activé: :artifact",
     'colonyNameChanged' => 'Votre colonie s\'appelle désormais: **:name**',
     'removeRequest' => 'Voulez vous vraiment abandonner la colonie **:name** ?',
 ];
