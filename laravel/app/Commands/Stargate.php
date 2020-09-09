@@ -1497,7 +1497,7 @@ class Stargate extends CommandHandler implements CommandInterface
             }
         }
 
-        $last24h = GateFight::Where([['active', true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_date', '>=', Carbon::now()->sub('24h')]])->get();
+        $last24h = GateFight::Where([['active', true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->get();
         if($last24h->count() >= 3)
         {
             $now = Carbon::now();
