@@ -200,7 +200,7 @@ $discord->on('ready', function ($discord) use($beta){
             }
 
             $artifactAutoDeleted = 0;
-            $artifactsToDelete = Artifact::Where([['bonus_end','IS NOT',NULL],['bonus_end','<',date("Y-m-d H:i:s")]])->get();
+            $artifactsToDelete = Artifact::Where([['bonus_end','<>',''],['bonus_end','<',date("Y-m-d H:i:s")]])->get();
             foreach($artifactsToDelete as $artifactDeletion)
             {
                 if($artifactDeletion->bonus_category == 'Production')

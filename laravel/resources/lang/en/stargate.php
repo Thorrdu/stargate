@@ -44,7 +44,7 @@ return [
                       "Resources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
-                      "Sending status: **En attente**",
+                      "Sending status: **Awaiting**",
     'unknownResource' => "Unknown resource: :resource",
     "spyConfirmation" => "Send a spy mission on :planetDest [:coordinateDestination] (:player) ?\nCost: :consumption",
     "spySending" => "You sent a spy mission on :planetDest [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",

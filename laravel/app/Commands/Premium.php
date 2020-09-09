@@ -72,7 +72,7 @@ class Premium extends CommandHandler implements CommandInterface
                             $this->playerGiven = Player::where('user_id', $playerMatch[0])->first();
                             if(!is_null($this->playerGiven))
                             {
-                                $upgradeMsg = trans('premium.giveConfirmaton', [], $this->player->lang);
+                                $upgradeMsg = trans('premium.giveConfirmaton', ['player' => $this->playerGiven->user_name], $this->player->lang);
 
                                 $this->maxTime = time()+180;
                                 $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
