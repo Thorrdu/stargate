@@ -9,6 +9,7 @@ return [
                             "**spy** (`!stargate spy [coordonées]`)\n".
                             "**attack** (`!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]`)\n",
     "unknownCoordinates" => "Coordonées inconnues",
+    "unReacheableCoordinates" => 'Coordonées hors de portée',
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...\n\n".
                             "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
                             "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",

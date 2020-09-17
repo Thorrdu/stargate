@@ -24,7 +24,6 @@ class Galaxy extends CommandHandler implements CommandInterface
     public $listner;
     public $closed;
 
-
     public function execute()
     {
         if(!is_null($this->player))
@@ -78,11 +77,11 @@ class Galaxy extends CommandHandler implements CommandInterface
                     $wantedGalaxy = $coordinates[0];
                     $wantedSystem = $coordinates[1];
 
-                    if($this->systemRestriction || $this->galaxyRestriction 
+                    if($this->systemRestriction || ($this->galaxyRestriction && $wantedGalaxy != $this->galaxy)
                         || $wantedGalaxy > $this->maxGalaxyPage || $wantedGalaxy < 1
                         || $wantedSystem > $this->maxSystemPage || $wantedSystem > $this->systemRestrictionMax || $wantedSystem < 1 || $wantedSystem < $this->systemRestrictionMin
                     )
-                        return trans('stargate.unknownCoordinates', [], $this->player->lang);
+                        return trans('stargate.unReacheableCoordinates', [], $this->player->lang);
                     else
                     {
                         $this->galaxy = $wantedGalaxy;

@@ -9,6 +9,7 @@ return [
                           "**spy** (`!stargate spy [coordinates]`) \n".
                           "**attack** (`!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]`)\n",
     "unknownCoordinates" => "Unknown Coordinates",
+    "unReacheableCoordinates" => 'Unreachable Coordinates',
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...\n\n".
                             "**Lvl 5 - Research Center** required to use the gate to contact other planets.\n".
                             "However, at Lvl 4 you'll be able to receive gate dialing",
