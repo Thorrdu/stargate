@@ -149,8 +149,8 @@ class Empire extends CommandHandler implements CommandInterface
                 $totalDailyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd*24)."/d";
 
                 $totalE2pzProd = ${'e2pzTotalProduction'};
-                $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60))."/h";
-                $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440)."/d";
+                $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60),2)."/h";
+                $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
 
 
 

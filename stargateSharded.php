@@ -288,7 +288,7 @@ $discord->on('ready', function ($discord) use($beta){
 
 
 
-    $discord->loop->addPeriodicTimer(rand(50,60), function () use ($discord) {
+    $discord->loop->addPeriodicTimer(rand(40,60), function () use ($discord) {
         
         /*echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
         $game = $discord->factory(Game::class, [
@@ -304,21 +304,24 @@ $discord->on('ready', function ($discord) use($beta){
 
         foreach($reminders as $reminder)
         {  
-            $userExist = $discord->users->get('id',$reminder->player->user_id);
-            if(!is_null($userExist))
+            if($reminder->player->npc == 1)
+                $reminder->delete();
+            else
             {
-                if(!is_null($reminder->embed))
+                $userExist = $discord->users->get('id',$reminder->player->user_id);
+                if(!is_null($userExist))
                 {
-                    $reminderEmbed = json_decode($reminder->embed,true);
-                    $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
-                    $userExist->sendMessage('', false, $newEmbed);
+                    if(!is_null($reminder->embed))
+                    {
+                        $reminderEmbed = json_decode($reminder->embed,true);
+                        $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
+                        $userExist->sendMessage('', false, $newEmbed);
+                    }
+                    else
+                        $userExist->sendMessage($reminder->reminder);
+                    $reminder->delete();
                 }
-                else
-                    $userExist->sendMessage($reminder->reminder);
-                $reminder->delete();
             }
-            elseif($reminder->player->npc == 1)
-                $reminder->delete();
         }
         /*
         $playerIdRemind = 0;
