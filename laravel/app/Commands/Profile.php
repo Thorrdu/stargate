@@ -56,7 +56,7 @@ class Profile extends CommandHandler implements CommandInterface
                     if(is_null($this->player->vacation))
                     {
                         $now = Carbon::now();
-                        if(!is_null($this->player->next_vacation) && $this->player->next_vacation < $now)
+                        if(!is_null($this->player->next_vacation) && $this->player->next_vacation > $now)
                         {
                             $nextVacation = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->next_vacation);
                             $nextVacationString = $now->diffForHumans($nextVacation,[
@@ -112,7 +112,7 @@ class Profile extends CommandHandler implements CommandInterface
                         $now = Carbon::now();
                         $vacationUntil = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->vacation)->add('72h');
                         
-                        if($vacationUntil < $now)
+                        if($vacationUntil > $now)
                         {
                             $vacationUntilString = $now->diffForHumans($vacationUntil,[
                                 'parts' => 3,
