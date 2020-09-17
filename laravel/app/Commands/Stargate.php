@@ -230,7 +230,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
 
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
-                                        return trans('stargate.tradeStorageTooLow', ['resource' => $resource], $this->player->lang);
+                                        return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
                                 }
                             }
                             if(!$resFound)
@@ -429,7 +429,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
                                     
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
-                                        return trans('stargate.tradeStorageTooLow', ['resource' => $resource], $this->player->lang);
+                                        return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
                                 }
                             }
                             if(!$resFound)
