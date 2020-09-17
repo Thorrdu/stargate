@@ -111,7 +111,7 @@ class Profile extends CommandHandler implements CommandInterface
                     else{
                         $now = Carbon::now();
                         $vacationUntil = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->vacation)->add('72h');
-
+                        
                         if($vacationUntil < $now)
                         {
                             $vacationUntilString = $now->diffForHumans($vacationUntil,[
@@ -144,6 +144,7 @@ class Profile extends CommandHandler implements CommandInterface
                                     if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                     {
                                         $this->player->next_vacation = Carbon::now()->add('72h');
+                                        $this->player->vacation = null;
                                         $this->player->save();
                                         $now = Carbon::now();
                                         foreach($this->player->colonies as $colony)
