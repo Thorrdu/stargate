@@ -1,9 +1,11 @@
 <?php
 //PROFILE EN
 return [
-    "missingParameter" => "Missing or wrong parameter. try `!profile notification on/off`",
-    "disabled" => "Building/Research notification **ON**",
-    "enabled" => "Building/Research notification **OFF**",
+    "notification" => [
+        "missingParameter" => "Missing or wrong parameter. try `!profile notification on/off`",
+        "disabled" => "Building/Research notification **ON**",
+        "enabled" => "Building/Research notification **OFF**",
+    ],
     'nextVacation' => 'You came back from **vacation mode** too recently. You\'ll be able to activate it again in **:time**.',
     'vacationUntil' => 'You activated **vacation mode** too recently. You\'ll be able to desactivate it in **:time**.',
     'vacationConfirm' => 'Do you want to activate **vacation mode** ?'.
