@@ -91,4 +91,5 @@ return [
     "tradeNpcImpossible" => "Trade impossible avec un NPC",
     'spyCancelled' => "Mission d'espionnage annulée",
     'colonizeCancel' => 'Mission de colonisation annulée',
+    'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource'
 ];

@@ -761,7 +761,7 @@ class Colony extends Model
             if(isset($options['bonusTypes']))
                 $bonusTypes = $options['bonusTypes'];
             else
-                $bonusTypes = ['Research', 'Building', 'Ship', 'Defence', 'Craft'];
+                $bonusTypes = ['Research', 'Building', /*'Ship',*/ 'Defence', 'Craft'];
 
             $bonusResources = ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'];
 

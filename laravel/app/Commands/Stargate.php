@@ -229,6 +229,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $capacityNeeded += $qty;
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
 
+                                    if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
+                                        return trans('stargate.tradeStorageTooLow', ['resource' => $resource], $this->player->lang);
                                 }
                             }
                             if(!$resFound)
