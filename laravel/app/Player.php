@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Coordinate;
 use App\Trades;
 use App\Artifact;
+use App\Exploration;
 use App\GateFight;
 
 class Player extends Model
@@ -148,6 +149,10 @@ class Player extends Model
         $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
         foreach($spyLogs as $spyLog)
             $spyLog->delete();
+
+        $explorationLogs = Exploration::where('colony_source_id', $colony->id)->get();
+        foreach($explorationLogs as $explorationLog)
+            $explorationLog->delete();
 
         $artifacts = Artifact::where('colony_id', $colony->id)->get();
         foreach($artifacts as $artifact)
