@@ -5,6 +5,7 @@ return [
     'technologyUnderResearch' => 'Technology under research',
     "craftQueue" => "Craft queue",
     "defenceQueue" => "Defence queue",
+    "shipQueue" => "Ship Queue",
     "UnknownColony" => "Unknown colony",
     'cannotRemoveHomePlanet' => 'You cannot abandon your homeworld...',
     'colonyRemoved' => 'Colonie abandonned...',

@@ -521,7 +521,7 @@ class Colony extends CommandHandler implements CommandInterface
                     }
 
                     $embed['fields'][] = array(
-                        'name' => trans('shipyard.ShipQueue', [], $this->player->lang),
+                        'name' => trans('colony.shipQueue', [], $this->player->lang),
                         'value' => $queueString,
                         'inline' => true
                     );
