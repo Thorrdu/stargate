@@ -32,7 +32,7 @@ class Galaxy extends CommandHandler implements CommandInterface
 
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
-                    
+
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -63,7 +63,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                     $this->systemRestrictionMin = $this->system;
                     $this->systemRestrictionMax = $this->system;
                 }
-                
+
                 $this->maxGalaxyPage = config('stargate.galaxy.maxGalaxies');
                 $this->maxSystemPage = config('stargate.galaxy.maxSystems');
 
@@ -93,16 +93,16 @@ class Galaxy extends CommandHandler implements CommandInterface
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
-                    
+
                     if(!$this->systemRestriction)
                     {
                         if(!$this->galaxyRestriction)
                         {
                             $this->paginatorMessage->react('⏮️')->then(function(){
                                 $this->paginatorMessage->react('⏭️')->then(function(){
-                                    $this->paginatorMessage->react('⏪')->then(function(){ 
-                                        $this->paginatorMessage->react('◀️')->then(function(){ 
-                                            $this->paginatorMessage->react('▶️')->then(function(){ 
+                                    $this->paginatorMessage->react('⏪')->then(function(){
+                                        $this->paginatorMessage->react('◀️')->then(function(){
+                                            $this->paginatorMessage->react('▶️')->then(function(){
                                                 $this->paginatorMessage->react('⏩')->then(function(){
                                                     $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                                 });
@@ -114,9 +114,9 @@ class Galaxy extends CommandHandler implements CommandInterface
                         }
                         else
                         {
-                            $this->paginatorMessage->react('⏪')->then(function(){ 
-                                $this->paginatorMessage->react('◀️')->then(function(){ 
-                                    $this->paginatorMessage->react('▶️')->then(function(){ 
+                            $this->paginatorMessage->react('⏪')->then(function(){
+                                $this->paginatorMessage->react('◀️')->then(function(){
+                                    $this->paginatorMessage->react('▶️')->then(function(){
                                         $this->paginatorMessage->react('⏩')->then(function(){
                                             $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                         });
@@ -132,7 +132,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                     $filter = function($messageReaction){
                         if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                             return false;
-                        
+
                         if($messageReaction->user_id == $this->player->user_id)
                         {
                             try{
@@ -160,7 +160,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                                     $this->system = 1;
                                     if($this->systemRestrictionMin > 1)
                                         $this->system = $this->systemRestrictionMin;
-    
+
                                     $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
                                     $messageReaction->message->addEmbed($newEmbed);
                                 }
@@ -216,17 +216,36 @@ class Galaxy extends CommandHandler implements CommandInterface
     {
         try{
             $coordinates = Coordinate::where([['galaxy', $this->galaxy],['system', $this->system]])->get();
-            
+
+            $spy = Technology::where('slug', 'spy')->first();
+            $counterSpy = Technology::where('slug', 'counterspy')->first();
+
+            $spyLvl = $this->player->hasTechnology($spy);
+            if(!$spyLvl)
+                $spyLvl = 0;
+
             $coordinateList = "";
             foreach($coordinates as $coordinate)
             {
                 if(!is_null($coordinate->colony))
-                {                    
+                {
                     $colonyPlayer = $coordinate->colony->player;
+                    $colonyPlayerName = $colonyPlayer->user_name;
+
+                    if(!($colonyPlayer->alliance_id != null && $this->player->alliance_id != null && $this->player->alliance_id == $colonyPlayer->alliance_id))
+                    {
+                        $counterSpyLvl = $colonyPlayer->hasTechnology($counterSpy);
+                        if(!$counterSpyLvl)
+                            $counterSpyLvl = 0;
+
+                        if(($counterSpyLvl - $spyLvl) >= 2)
+                            $colonyPlayerName = trans('galaxy.hiddenPlayer', [], $this->player->name);
+                    }
+
                     if($colonyPlayer->npc)
-                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." [NPC] ".$colonyPlayer->user_name."\n";
+                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." [NPC] ".$colonyPlayerName."\n";
                     else
-                        $coordinateList .= $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." ".$colonyPlayer->user_name."\n";
+                        $coordinateList .= $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." ".$colonyPlayerName."\n";
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";

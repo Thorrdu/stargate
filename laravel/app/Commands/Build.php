@@ -22,7 +22,7 @@ class Build extends CommandHandler implements CommandInterface
     public $listner;
     public $buildingList;
     public $closed;
-    
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -43,8 +43,8 @@ class Build extends CommandHandler implements CommandInterface
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Build';
-                    $this->buildingList = Building::all();      
-                    
+                    $this->buildingList = Building::all();
+
                     $this->closed = false;
                     $this->page = 1;
                     $this->maxPage = ceil($this->buildingList->count()/5);
@@ -52,9 +52,9 @@ class Build extends CommandHandler implements CommandInterface
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
 
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
@@ -65,7 +65,7 @@ class Build extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -114,41 +114,93 @@ class Build extends CommandHandler implements CommandInterface
                         $this->paginatorMessage->createReactionCollector($filter);
                     });
                 }
+                elseif(Str::startsWith('cancel', $this->args[0]))
+                {
+                    //if aucune construction en cours, return
+                    if(is_null($this->player->activeColony->active_building_end) || is_null($this->player->activeColony->active_building_remove))
+                    {
+                        return trans('building.noActiveBuilding',[],$this->player->lang);
+                    }
+                    else
+                    {
+                        $cancelledBuilding = $this->player->activeColony->activeBuilding;
+
+                        $wantedLvl = 1;
+                        $currentLvl = $this->player->activeColony->hasBuilding($cancelledBuilding);
+                        if($currentLvl)
+                            $wantedLvl += $currentLvl;
+
+                        $coef = 1;
+                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
+                        });
+                        foreach($buildingPriceBonusList as $buildingPriceBonus)
+                            $coef *= $buildingPriceBonus->bonus_coef;
+
+                        $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
+                        foreach(config('stargate.resources') as $resource)
+                        {
+                            if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
+                            {
+                                $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.8);
+                                if($this->player->activeColony->{'storage_'.$resource} <= $newResource)
+                                    $newResource = $this->player->activeColony->{'storage_'.$resource};
+                                $this->player->activeColony->$resource = $newResource;
+                            }
+                        }
+                        $this->player->activeColony->active_building_id = null;
+                        $this->player->activeColony->active_building_end = null;
+                        $this->player->activeColony->save();
+
+                        return trans('building.buildingCanceled',[],$this->player->lang);
+                    }
+                }
                 else
                 {
                     $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))
                     {
-                        if(count($this->args) == 2 && Str::startsWith('confirm', $this->args[1]))
+                        if(count($this->args) == 2 && (Str::startsWith('confirm', $this->args[1]) || Str::startsWith('remove', $this->args[1])))
                         {
-                            //Requirement
-                            $hasRequirements = true;
-                            foreach($building->requiredTechnologies as $requiredTechnology)
+                            $removal = false;
+                            if(Str::startsWith('remove', $this->args[1]))
+                                $removal = true;
+
+                            if(!$removal)
                             {
-                                $currentLvl = $this->player->hasTechnology($requiredTechnology);
-                                if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
-                                    $hasRequirements = false;
+                                //Requirement
+                                $hasRequirements = true;
+                                foreach($building->requiredTechnologies as $requiredTechnology)
+                                {
+                                    $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                                    if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                                        $hasRequirements = false;
+                                }
+                                foreach($building->requiredBuildings as $requiredBuilding)
+                                {
+                                    $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                                    if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                                        $hasRequirements = false;
+                                }
+                                if(!$hasRequirements)
+                                    return trans('generic.missingRequirements', [], $this->player->lang);
                             }
-                            foreach($building->requiredBuildings as $requiredBuilding)
-                            {
-                                $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
-                                if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
-                                    $hasRequirements = false;
-                            }
-                            if(!$hasRequirements)
-                                return trans('generic.missingRequirements', [], $this->player->lang);
 
                             $wantedLvl = 1;
                             $currentLvl = $this->player->activeColony->hasBuilding($building);
-                            if($currentLvl)
+                            if($currentLvl && !$removal)
                                 $wantedLvl += $currentLvl;
+                            elseif($currentLvl && $removal)
+                                $wantedLvl = $currentLvl;
 
                             //if construction en cours, return
                             if(!is_null($this->player->activeColony->active_building_end))
                             {
                                 $wantedLvl = 1;
                                 $currentLvl = $this->player->activeColony->hasBuilding($this->player->activeColony->activeBuilding);
-                                if($currentLvl)
+                                if($this->player->activeColony->active_building_remove)
+                                    $wantedLvl = $currentLvl-1;
+                                elseif($currentLvl)
                                     $wantedLvl += $currentLvl;
 
                                 $now = Carbon::now();
@@ -162,45 +214,48 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
                             }
 
-                            if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
+                            if(!$removal)
                             {
-                                return trans('building.buildingMaxed', [], $this->player->lang);
-                            }
-
-                            if(($this->player->activeColony->space_max - $this->player->activeColony->space_used) <= 0)
-                                return trans('building.missingSpace', [], $this->player->lang);
-                            
-                            $hasEnough = true;
-
-                            $coef = 1;
-                            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                                return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                            });
-                            foreach($buildingPriceBonusList as $buildingPriceBonus)
-                            {
-                                $coef *= $buildingPriceBonus->bonus_coef;
-                            }
-
-                            $buildingPrices = $building->getPrice($wantedLvl, $coef);
-                            $missingResString = "";
-                            foreach (config('stargate.resources') as $resource)
-                            {
-                                if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->activeColony->$resource)
+                                if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
                                 {
-                                    $hasEnough = false;
-                                    $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->player->activeColony->$resource));
+                                    return trans('building.buildingMaxed', [], $this->player->lang);
                                 }
-                            }
-                            if(!$hasEnough)
-                                return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                            if($building->energy_base > 0)
-                            {
-                                $energyPrice = $building->getEnergy($wantedLvl);
-                                $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
-                                $missingEnergy = $energyPrice - $energyLeft;
-                                if($missingEnergy > 0)
-                                    return trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
+                                if(($this->player->activeColony->space_max - $this->player->activeColony->space_used) <= 0 && $building->id != 20)
+                                    return trans('building.missingSpace', [], $this->player->lang);
+
+                                $hasEnough = true;
+
+                                $coef = 1;
+                                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
+                                });
+                                foreach($buildingPriceBonusList as $buildingPriceBonus)
+                                {
+                                    $coef *= $buildingPriceBonus->bonus_coef;
+                                }
+
+                                $buildingPrices = $building->getPrice($wantedLvl, $coef);
+                                $missingResString = "";
+                                foreach (config('stargate.resources') as $resource)
+                                {
+                                    if($building->$resource > 0 && $buildingPrices[$resource] > $this->player->activeColony->$resource)
+                                    {
+                                        $hasEnough = false;
+                                        $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->player->activeColony->$resource));
+                                    }
+                                }
+                                if(!$hasEnough)
+                                    return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+
+                                if($building->energy_base > 0)
+                                {
+                                    $energyPrice = $building->getEnergy($wantedLvl);
+                                    $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
+                                    $missingEnergy = $energyPrice - $energyLeft;
+                                    if($missingEnergy > 0)
+                                        return trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
+                                }
                             }
 
                             if( !is_null($this->player->active_technology_id) && $building->id == 7)
@@ -213,13 +268,17 @@ class Build extends CommandHandler implements CommandInterface
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $now = Carbon::now();
-                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startBuilding($building));
+                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startBuilding($building,$wantedLvl,$removal));
                             $buildingTime = $now->diffForHumans($endingDate,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
-                            return trans('building.buildingStarted', ['name' => trans('building.'.$building->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
+
+                            if($removal)
+                                return trans('building.buildingRemovalStarted', ['name' => trans('building.'.$building->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
+                            else
+                                return trans('building.buildingStarted', ['name' => trans('building.'.$building->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
                         {
@@ -245,7 +304,7 @@ class Build extends CommandHandler implements CommandInterface
                             $currentLvl = $this->player->activeColony->hasBuilding($building);
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
-                
+
                             if(count($this->args) == 2 && (int)$this->args[1] >= 1 && $this->args[1] < 65)
                             {
                                 $wantedLvl = (int)$this->args[1];
@@ -269,7 +328,7 @@ class Build extends CommandHandler implements CommandInterface
                                 {
                                     $coef *= $buildingPriceBonus->bonus_coef;
                                 }
-    
+
                                 $buildingPrices = $building->getPrice($wantedLvl, $coef);
                                 foreach (config('stargate.resources') as $resource)
                                 {
@@ -283,7 +342,7 @@ class Build extends CommandHandler implements CommandInterface
                                     $energyRequired = $building->getEnergy($wantedLvl);
                                     $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
                                 }
-                    
+
                                 $buildingTime = $building->getTime($wantedLvl);
                                 /** Application des bonus */
                                 $buildingTime *= $this->player->activeColony->getBuildingBonus();
@@ -293,10 +352,10 @@ class Build extends CommandHandler implements CommandInterface
                                     'parts' => 3,
                                     'short' => true, // short syntax as per current locale
                                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                                ]);     
+                                ]);
                             }
-   
-                
+
+
                             $displayedLvl = 0;
                             if($currentLvl)
                                 $displayedLvl = $currentLvl;
@@ -378,7 +437,7 @@ class Build extends CommandHandler implements CommandInterface
                                 $bonusString = "/";
                             if(empty($consoString))
                                 $consoString = "/";
-                                
+
                             $embed = [
                                 'author' => [
                                     'name' => $this->player->user_name,
@@ -445,7 +504,7 @@ class Build extends CommandHandler implements CommandInterface
     public function getPage()
     {
         $displayList = $this->buildingList->skip(5*($this->page -1))->take(5);
-        
+
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
@@ -501,7 +560,7 @@ class Build extends CommandHandler implements CommandInterface
                     $energyRequired = $building->getEnergy($wantedLvl);
                     $buildingPrice .= " ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
                 }
-                
+
                 $buildingTime = $building->getTime($wantedLvl);
 
                 /** Application des bonus */
@@ -513,7 +572,7 @@ class Build extends CommandHandler implements CommandInterface
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);      
+                ]);
             }
 
 
@@ -540,6 +599,31 @@ class Build extends CommandHandler implements CommandInterface
                 $embed['fields'][] = array(
                     'name' => $building->id.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang).' - Lvl '.$displayedLvl,
                     'value' => "\nSlug: `".$building->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$buildingTime."\n".trans('generic.price', [], $this->player->lang).": ".$buildingPrice,
+                    'inline' => true
+                );
+            }
+            elseif(in_array($building->id,array(8,9,19)))
+            {
+                $requirementString = '';
+                foreach($building->requiredTechnologies as $requiredTechnology)
+                {
+                    $techLevel = $this->player->hasTechnology($requiredTechnology);
+                    if(!$techLevel)
+                        $techLevel = 0;
+
+                    $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                }
+                foreach($building->requiredBuildings as $requiredBuilding)
+                {
+                    $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                    if(!$buildLvl)
+                        $buildLvl = 0;
+                    $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                }
+
+                $embed['fields'][] = array(
+                    'name' => trans('building.hiddenBuilding', [], $this->player->lang),
+                    'value' => $requirementString,
                     'inline' => true
                 );
             }

@@ -36,7 +36,7 @@ class TopUpdater
                     foreach($colony->defences as $defence)
                         $defencePoints += TopUpdater::priceMerging($defence->getPrice($defence->pivot->number));
                 }
-                                
+
                 $player->points_military = round($militaryPoint/1000);
                 $player->points_defence = round($defencePoints/1000);
                 $player->points_building = round($buildingPoints/1000);
@@ -71,20 +71,12 @@ class TopUpdater
             $alliance->old_points_research = $alliance->points_research;
             $alliance->old_points_total = $alliance->points_total;
 
-            $alliance->points_military = 0;
-            $alliance->points_defence = 0;
-            $alliance->points_building = 0;
-            $alliance->points_research = 0;
-            $alliance->points_total = 0;
+            $alliance->points_military = $alliance->members->avg('points_military');
+            $alliance->points_defence = $alliance->members->avg('points_defence');
+            $alliance->points_building = $alliance->members->avg('points_building');
+            $alliance->points_research = $alliance->members->avg('points_research');
+            $alliance->points_total = $alliance->members->avg('points_total');
 
-            foreach($alliance->members as $member)
-            {
-                $alliance->points_military += $member->points_military;
-                $alliance->points_defence += $member->points_defence;
-                $alliance->points_building += $member->points_building;
-                $alliance->points_research += $member->points_research;
-                $alliance->points_total += $member->points_total;
-            }           
             $alliance->last_top_update = date("Y-m-d H:i:s");
             $alliance->save();
         }
@@ -92,7 +84,7 @@ class TopUpdater
         {
             echo $e->getMessage();
         }
-        
+
     }
 
     public static function priceMerging($prices){

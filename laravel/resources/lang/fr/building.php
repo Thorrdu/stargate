@@ -17,7 +17,7 @@ return [
         'name' => 'Mine de quartz',
         'description' => "Mine rudimentaire permettant d'extraire de quartz"
     ],
-    'naqahdahmine' => [
+    'naqahdahextractor' => [
         'name' => 'Extracteur de naqahdah',
         'description' => 'Extracteur permettant de récupérer du Naqahdah dans les couches inférieures de la planète'
     ],
@@ -82,10 +82,12 @@ return [
         'name' => 'Terraformeur',
         'description' => "Par procédé de terraformation, cette usine modifie l'aspect de votre planète pour agrandir l'espace constructible"
     ],
-    
+
     'hiddenBuilding' => '-- Bâtiment caché --',
     'unDiscovered' => 'Non découvert',
     'unknownBuilding' => 'Bâtiment inconnu...',
+    'noActiveBuilding' => 'Aucun bâtiment en cours de construction...',
+    'buildingCanceled' => 'Construction annulée, la majorité des ressources ont pu être récupérées. 20% des ressources ont été perdues.',
     'howTo' => "Construisez avec `!build :id confirm` ou `!build :slug confirm`\n\n:description",
     'buildingList' => 'Liste des bâtiments',
     'genericHowTo' => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
@@ -94,7 +96,8 @@ return [
     'alreadyBuilding' => 'Un bâtiment est déjà en construction. **Lvl :level :name** sera terminé dans **:time**',
     'missingSpace' => 'Espace insufisant pour construire un nouveau bâtiment.',
     'buildingStarted' => 'Construction commencée, **Lvl :level :name ** sera terminé dans **:time**',
+    'buildingRemovalStarted' => 'Destruction commencée, **:name ** sera terminé dans **:time**',
     'dmBuildIsOver' => 'Un bâtiment vient de se terminer...',
     'buildingMaxed' => 'Ce bâtiment est déjà au niveau maximum...',
-
+    'buildingRemoved' => 'La destruction de **:name** s\'est terminée sur :colony',
 ];

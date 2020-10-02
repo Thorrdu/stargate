@@ -14,7 +14,7 @@ return [
                             "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
                             "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
     "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonées.",
-    "alreadyExploring" => "Une mission d'exploration est déjà en cours.",
+    "maxExplorationReached" => "Trop de missions d'exploration déjà en cours.",
     "alreadyExplored" => "Vous avez déjà exploré cette planète.",
     "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
     "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéressantes.\n".
@@ -35,7 +35,7 @@ return [
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
     "tradeSent" => "Vous avez envoyé les ressources suivantes depuis :planetSource [:coordinateSource] sur :planetDest [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
     "tradeMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".
-                      "Destination: :planetDest [:coordinateDestination] (:player)\n".
+                      "Destination: :planetDest [:coordinateDestination]\n".
                       "Ressources:\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
@@ -47,9 +47,9 @@ return [
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
     'unknownResource' => "Ressource inconnue: :resource",
-    "spyConfirmation" => "Envoyer une sonde espionner :planetDest [:coordinateDestination] (:player) ?\nCoût: :consumption",
-    "spySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] (:player) !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
-    "messageSpied" => "Votre colonie :planetName [:coordinate] été visé par une mission d'espionnage en provenance de :planetSource [:sourceCoordinates] (:player).",
+    "spyConfirmation" => "Envoyer une sonde espionner :planetDest [:coordinateDestination] ?\nCoût: :consumption",
+    "spySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\n\nUn rapport vous sera envoyé sous peu.",
+    "messageSpied" => "Votre colonie :planetName [:coordinate] été visée par une mission d'espionnage en provenance de :planetSource [:sourceCoordinates].",
     "emptyReportTitle" => "Rapport incomplet",
     "technologyTooLow" => "Aucune donnée n'a pu être récupérée , votre niveau d'espionnage est trop faible.",
     "spyReportDescription" => "Rapport d'espionnage de la planète :planetDest [:coordinateDestination] (:player)",
@@ -61,10 +61,10 @@ return [
     "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie ou `!colony remove [Number]` pour en abandonner une.\n(Liste visible via `!colony list`).",
     "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
     "neverExploredWorld" => "Monde inhabité.",
-    "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] (:player) depuis :planetNameSource [:coordinateSource]\n".
+    "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] depuis :planetNameSource [:coordinateSource]\n".
                             "Troupes:\n:militaryUnits".
                             "\nCoût: :consumption",
-    "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination] (:player).\nUn rapport arrivera sous peu.",
+    "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination].\nUn rapport arrivera sous peu.",
     "attackCancelled" => "Attaque annulée",
     "attackerWinReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
                             "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
@@ -91,5 +91,6 @@ return [
     "tradeNpcImpossible" => "Trade impossible avec un NPC",
     'spyCancelled' => "Mission d'espionnage annulée",
     'colonizeCancel' => 'Mission de colonisation annulée',
-    'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource'
+    'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource',
+    'alreadySpied' => 'Vous avez espionné cette colonie trop récement. Vous pourrez à nouveau envoyer une sonde dans **:time**',
 ];

@@ -466,6 +466,31 @@ class Research extends CommandHandler implements CommandInterface
                     'inline' => true
                 );
             }
+            elseif(in_array($technology->id,array(1,4)))
+            {
+                $requirementString = '';
+                foreach($technology->requiredTechnologies as $requiredTechnology)
+                {
+                    $techLevel = $this->player->hasTechnology($requiredTechnology);
+                    if(!$techLevel)
+                        $techLevel = 0;
+
+                    $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                }
+                foreach($technology->requiredBuildings as $requiredBuilding)
+                {
+                    $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                    if(!$buildLvl)
+                        $buildLvl = 0;
+                    $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                }
+                        
+                $embed['fields'][] = array(
+                    'name' => trans('research.hiddenTechnology', [], $this->player->lang),
+                    'value' => $requirementString,
+                    'inline' => true
+                );
+            }
             else
             {
                 $embed['fields'][] = array(

@@ -43,7 +43,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Defence';
-                    $this->defenceList = Defence::all();      
+                    $this->defenceList = Defence::all();
 
                     $this->closed = false;
                     $this->page = 1;
@@ -51,20 +51,20 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
                                 });
                             });
                         });
-    
+
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -119,27 +119,27 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     if($this->player->activeColony->defenceQueues->count() == 0)
                         return trans('defence.emptyQueue', [], $this->player->lang);
                     $this->defenceQueue = $this->player->activeColony->defenceQueues;
-    
+
                     $this->closed = false;
                     $this->page = 1;
                     $this->maxPage = ceil($this->defenceQueue->count()/5);
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getQueue())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
                                 });
                             });
                         });
-    
+
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -153,25 +153,25 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                     elseif($messageReaction->emoji->name == '⏪')
                                     {
                                         $this->page = 1;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                     {
                                         $this->page--;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                                     {
                                         $this->page++;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '⏩')
                                     {
                                         $this->page = $this->maxPage;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
@@ -209,7 +209,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                         }
                         if(!$hasRequirements)
                             return trans('generic.missingRequirements', [], $this->player->lang);
-                        
+
                         if(count($this->args) >= 2 && (int)$this->args[1] > 0)
                             $qty = (int)$this->args[1];
                         else
@@ -251,7 +251,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
                         return trans('defence.buildingStarted', ['name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
-                    
+
                     }
                     else
                         return trans('defence.unknownDefence', [], $this->player->lang);
@@ -273,7 +273,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
         try
         {
             $displayList = $this->defenceQueue->skip(5*($this->page -1))->take(5);
-            
+
             $defenceQueueString = "";
             foreach($displayList as $queuedDefence)
             {
@@ -282,9 +282,9 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);      
+                ]);
 
-                $defenceQueueString .= "1x ".trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$defenceTime."\n"; 
+                $defenceQueueString .= "1x ".trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$defenceTime."\n";
             }
 
             $embed = [
@@ -302,7 +302,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             ];
 
             return $embed;
-        } 
+        }
         catch(\Exception $e)
         {
             echo $e->getMessage();
@@ -315,7 +315,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
         try{
 
             $displayList = $this->defenceList->skip(5*($this->page -1))->take(5);
-            
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -329,6 +329,10 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
                 ),
             ];
+            $armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
+            $armamentLvl = $this->player->hasTechnology($armamentTec);
+            $hullTec = Technology::Where('slug', 'LIKE', 'hull')->first();
+            $hullLvl = $this->player->hasTechnology($hullTec);
 
             foreach($displayList as $defence)
             {
@@ -364,7 +368,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);      
+                ]);
 
                 $hasRequirements = true;
                 foreach($defence->requiredTechnologies as $requiredTechnology)
@@ -378,17 +382,18 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                     if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
                         $hasRequirements = false;
-                }                    
+                }
                 if($hasRequirements == true)
                 {
                     $firePower = $defence->fire_power;
-                    $armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
-                    $armamentLvl = $this->player->hasTechnology($armamentTec);
                     if($armamentLvl)
                         $firePower *= pow(1.1,$armamentLvl);
+                    $hull = $defence->hull;
+                    if($hullLvl)
+                        $hull *= pow(1.1,$hullLvl);
                     $firePowerString = trans('defence.firePower', ['firepower' => number_format($firePower)], $this->player->lang);
-                    
-                    $hullString = trans('defence.hull', ['hull' => number_format($defence->hull)], $this->player->lang);
+                    $hullString = trans('defence.hull', ['hull' => number_format($hull)], $this->player->lang);
+
                     $embed['fields'][] = array(
                         'name' => $defence->id.' - '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
                         'value' => trans('defence.'.$defence->slug.'.description', [], $this->player->lang)."\nSlug: `".$defence->slug."`\n - ".
@@ -399,9 +404,33 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                 }
                 else
                 {
+                    /*
                     $embed['fields'][] = array(
                         'name' => trans('defence.hidden', [], $this->player->lang),
                         'value' => trans('defence.unDiscovered', [], $this->player->lang),
+                        'inline' => true
+                    );*/
+
+                    $requirementString = '';
+                    foreach($defence->requiredTechnologies as $requiredTechnology)
+                    {
+                        $techLevel = $this->player->hasTechnology($requiredTechnology);
+                        if(!$techLevel)
+                            $techLevel = 0;
+
+                        $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                    }
+                    foreach($defence->requiredBuildings as $requiredBuilding)
+                    {
+                        $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                        if(!$buildLvl)
+                            $buildLvl = 0;
+                        $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                    }
+
+                    $embed['fields'][] = array(
+                        'name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
+                        'value' => "\n".$requirementString,
                         'inline' => true
                     );
                 }
@@ -410,7 +439,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             return $embed;
 
             }
-            
+
         catch(\Exception $e)
         {
             echo $e->getMessage();

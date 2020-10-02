@@ -60,7 +60,7 @@ class DefenceSeeder extends Seeder
         ]);
 
 
-        
+
         DB::table('defences')->insert([
             'id' => 3,
             'name' => "Canon ECM",
@@ -98,6 +98,62 @@ class DefenceSeeder extends Seeder
             'level' => 6
         ]);
 
-        
+
+
+
+        DB::table('defences')->insert([
+            'id' => 4,
+            'name' => "Ion Satelite",
+            'slug' => 'ionsatellite',
+            'iron' => 40000,
+            'gold' => 35000,
+            'quartz' => 10000,
+            'naqahdah' => 0,
+            'base_time' => 9000,
+            'fire_power' => 1450,
+            'hull' => 1100,
+        ]);
+        //Centre de defense 9
+        DB::table('defence_buildings')->insert([
+            'defence_id' => 4,
+            'required_building_id' => 15,
+            'level' => 9
+        ]);
+        //Ion 5
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 4,
+            'required_technology_id' => 12,
+            'level' => 5
+        ]);
+
+
+
+        DB::table('defences')->insert([
+            'id' => 5,
+            'name' => "Plasma turret",
+            'slug' => 'plasmaturret',
+            'iron' => 200000,
+            'gold' => 50000,
+            'quartz' => 100000,
+            'naqahdah' => 75000,
+            'base_time' => 27000,
+            'fire_power' => 15000,
+            'hull' => 5000,
+        ]);
+        //Centre de defense 12
+        DB::table('defence_buildings')->insert([
+            'defence_id' => 5,
+            'required_building_id' => 15,
+            'level' => 12
+        ]);
+        //Plasma 7
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 5,
+            'required_technology_id' => 13,
+            'level' => 7
+        ]);
+
+
+
     }
 }

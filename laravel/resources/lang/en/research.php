@@ -3,7 +3,7 @@
 return [
     'communication' => [
         'name' => "IT and Communication",
-        'description' => "Equipped with a powerful computer and communication system, your colonists are more efficient in their tasks",
+        'description' => "Equipped with a powerful computer and communication system, your colonists are more efficient in their tasks.\nAlso provide another exploration slot every 4 lvl.",
         ],
     'spy' => [
         'name' => "Spying",

@@ -21,7 +21,7 @@ class Defence extends Model
         return $this->belongsToMany('App\Technology','defence_technologies','defence_id','required_technology_id')->withPivot('level');
     }
 
-    public function craftQueues()
+    public function defenceQueues()
     {
         return $this->belongsToMany('App\Colony','defence_queues','defence_id','colony_id')->withPivot('defence_end');
     }

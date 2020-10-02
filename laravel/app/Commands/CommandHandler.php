@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
 use App\Player;
-use Discord\DiscordCommandClient as Discord; 
+use Discord\DiscordCommandClient as Discord;
 use Illuminate\Support\Str;
 
 class CommandHandler
@@ -27,7 +27,7 @@ class CommandHandler
         }
     }
 
-    
+
     //CLI VERSION
     public function __construct1(array $args) {
         $this->message = null; //Factory message?
@@ -125,17 +125,38 @@ class CommandHandler
                 $log->command_raw = $this->message->content;
                 if($this->player->captcha)
                     $log->captcha_flag = true;
-                
+
                 if(is_null($this->message->nonce) && $this->discord)
                 {
-                    $log->command_flag = true;
-                    $this->player->captcha = true;
-                    $this->player->captcha_key = Str::random(10);
-                    $this->player->save();
+                    $flagCount = 0;
+                    $lastCommands = CommandLog::Where('player_id', $this->player)->orderBy('created_at', 'desc')->limit(4)->get();
 
-                    $userExist = $this->discord->users->get('id',$this->player->user_id);
-                    if(!is_null($userExist))
-                        $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
+                    foreach($lastCommands as $lastCommand)
+                    {
+                        if($lastCommand[0]->command_flag == 1)
+                            $flagCount++;
+                    }
+                    if($flagCount >= 5)
+                    {
+                        $this->player->ban = true;
+                        $this->player->save();
+                        $userExist = $this->discord->users->get('id', $this->player->user_id);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
+                    }
+                    elseif($lastCommand[0]->command_flag == 1)
+                    {
+                        $log->command_flag = true;
+                        $this->player->captcha = true;
+                        $this->player->captcha_key = Str::random(10);
+                        $this->player->save();
+
+                        $userExist = $this->discord->users->get('id',$this->player->user_id);
+                        if(!is_null($userExist))
+                            $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
+                    }
+
+                    //$lastCommand = CommandLog::Where('player_id', $this->player)->latest('created_at')->first();
                 }
                 $log->save();
             }

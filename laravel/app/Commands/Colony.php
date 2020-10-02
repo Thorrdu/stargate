@@ -30,7 +30,8 @@ class Colony extends CommandHandler implements CommandInterface
                 if(!is_null($this->player->vacation))
                     return trans('profile.vacationMode',[],$this->player->lang);
 
-        
+                $this->player->checkFleets();
+
                 if(isset($this->args[0]) && Str::startsWith('list',$this->args[0]))
                 {
                     $coloniesString = "";
@@ -54,7 +55,7 @@ class Colony extends CommandHandler implements CommandInterface
 
                     if(strlen($newColonyName) > 25)
                         return trans('generic.nameTooLong',[],$this->player->lang);
-                    
+
                     $this->player->activeColony->name = $newColonyName;
                     $this->player->activeColony->save();
                     return trans('colony.colonyNameChanged' , ['name' => $this->player->activeColony->name], $this->player->lang);
@@ -68,7 +69,7 @@ class Colony extends CommandHandler implements CommandInterface
                             $coordinates = explode(';',$coordinatesMatch[0]);
                         else
                             $coordinates = explode(':',$coordinatesMatch[0]);
-                        
+
                         $coordinateSwitch = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                         if(!is_null($coordinateSwitch))
                         {
@@ -92,7 +93,7 @@ class Colony extends CommandHandler implements CommandInterface
                     }
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
-                }         
+                }
 
                 if(count($this->args) >= 2 && Str::startsWith('remove',$this->args[0]))
                 {
@@ -103,7 +104,7 @@ class Colony extends CommandHandler implements CommandInterface
                             $coordinates = explode(';',$coordinatesMatch[0]);
                         else
                             $coordinates = explode(':',$coordinatesMatch[0]);
-                        
+
                         $coordinateSwitch = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                         if(!is_null($coordinateSwitch))
                         {
@@ -119,14 +120,14 @@ class Colony extends CommandHandler implements CommandInterface
 
                                     $this->maxTime = time()+180;
                                     $this->message->channel->sendMessage($removeConfirm)->then(function ($messageSent) use($coordinateSwitch){
-                                        
+
                                         $this->closed = false;
                                         $this->paginatorMessage = $messageSent;
-                                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                             });
                                         });
-        
+
                                         $filter = function($messageReaction){
                                             return $messageReaction->user_id == $this->player->user_id;
                                         };
@@ -174,11 +175,11 @@ class Colony extends CommandHandler implements CommandInterface
 
                             $this->maxTime = time()+180;
                             $this->message->channel->sendMessage($removeConfirm)->then(function ($messageSent){
-                                
+
                                 $this->closed = false;
                                 $this->paginatorMessage = $messageSent;
-                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                     });
                                 });
 
@@ -214,8 +215,8 @@ class Colony extends CommandHandler implements CommandInterface
                     }
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
-                }     
-                
+                }
+
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
 
@@ -366,7 +367,7 @@ class Colony extends CommandHandler implements CommandInterface
 
                 $artifactString = "";
                 foreach($this->player->activeColony->artifacts as $artifact)
-                {                   
+                {
                     $artifactString .= $artifact->toString($this->player->lang)."\n";
                 }
                 if(!empty($artifactString))
@@ -388,6 +389,20 @@ class Colony extends CommandHandler implements CommandInterface
                     $embed['fields'][] = array(
                                             'name' => trans('generic.units', [], $this->player->lang),
                                             'value' => $unitsString,
+                                            'inline' => true
+                                        );
+                }
+
+                if(count($this->player->activeColony->ships) > 0)
+                {
+                    $shipString = '';
+                    foreach($this->player->activeColony->ships as $ship)
+                    {
+                        $shipString .= number_format($ship->pivot->number).' '.$ship->name."\n";
+                    }
+                    $embed['fields'][] = array(
+                                            'name' => trans('generic.ships', [], $this->player->lang),
+                                            'value' => $shipString,
                                             'inline' => true
                                         );
                 }
@@ -417,10 +432,15 @@ class Colony extends CommandHandler implements CommandInterface
 
                     $currentLevel = $this->player->activeColony->hasBuilding($this->player->activeColony->activeBuilding);
                     if(!$currentLevel)
-                        $currentLevel = 0;
+                        $wantedLvl = 1;
+                    elseif($this->player->activeColony->active_building_remove)
+                        $wantedLvl = $currentLevel - 1;
+                    else
+                        $wantedLvl = $currentLevel + 1;
+
                     $embed['fields'][] = array(
                         'name' => trans('colony.buildingUnderConstruction', [], $this->player->lang),
-                        'value' => "Lvl ".($currentLevel+1)." - ".trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
+                        'value' => "Lvl ".$wantedLvl." - ".trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
                         'inline' => true
                     );
                 }
@@ -454,7 +474,7 @@ class Colony extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $queueString .= trans('craft.'.$queuedUnit->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";    
+                        $queueString .= trans('craft.'.$queuedUnit->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";
                     }
                     if($this->player->activeColony->craftQueues->count() > 5)
                     {
@@ -475,6 +495,38 @@ class Colony extends CommandHandler implements CommandInterface
                     );
                 }
 
+                if($this->player->activeColony->shipQueues->count() > 0){
+                    $queueString = "";
+                    $queuedShips = $this->player->activeColony->shipQueues()->limit(5)->get();
+                    foreach($queuedShips as $queuedShip)
+                    {
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedShip->pivot->ship_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= $queuedShip->name." - ".$buildingTime."\n";
+                    }
+                    if($this->player->activeColony->shipQueues->count() > 5)
+                    {
+                        $lastQueue = $this->player->activeColony->shipQueues()->where('ship_end','>',Carbon::now())->orderBy('ship_end', 'DESC')->first();
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->ship_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        $queueString .= "... - ".$buildingTime."\n";
+                    }
+
+                    $embed['fields'][] = array(
+                        'name' => trans('colony.ShipQueue', [], $this->player->lang),
+                        'value' => $queueString,
+                        'inline' => true
+                    );
+                }
+
                 if($this->player->activeColony->defenceQueues->count() > 0){
                     $queueString = "";
                     $queuedDefences = $this->player->activeColony->defenceQueues()->limit(5)->get();
@@ -486,7 +538,7 @@ class Colony extends CommandHandler implements CommandInterface
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        $queueString .= trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";    
+                        $queueString .= trans('defence.'.$queuedDefence->slug.'.name', [], $this->player->lang)." - ".$buildingTime."\n";
                     }
                     if($this->player->activeColony->defenceQueues->count() > 5)
                     {
@@ -506,7 +558,7 @@ class Colony extends CommandHandler implements CommandInterface
                         'inline' => true
                     );
                 }
-                
+
                 $this->message->channel->sendMessage('', false, $embed);
 
             }
@@ -514,7 +566,7 @@ class Colony extends CommandHandler implements CommandInterface
             {
                 return $e->getMessage();
             }
-        }       
+        }
         else
             return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;

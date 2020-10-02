@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
         DB::table('buildings')->insert([
             'id' => 5,
             'name' => 'Extracteur de naqahdah',
-            'slug' => Str::slug('naqahdahmine'),
+            'slug' => Str::slug('naqahdahextractor'),
             'description' => 'Extracteur de naqahdah',
             'type' => 'Production',
             'iron' => 500,
@@ -340,7 +340,7 @@ class DatabaseSeeder extends Seeder
             'upgrade_coefficient' => 2,
             'time_base' => 1800,
             'time_coefficient' => 1.5
-        ]);       
+        ]);
         //Mine de naqahdah
         DB::table('building_buildings')->insert([
             'building_id' => 14,
@@ -372,7 +372,7 @@ class DatabaseSeeder extends Seeder
             'level' => 3
         ]);
 
-        
+
         DB::table('technologies')->insert([
             'id' => 1,
             'name' => 'Informatique et Communication',
@@ -484,9 +484,9 @@ class DatabaseSeeder extends Seeder
             'slug' => Str::slug('ia'),
             'description' => "Permet de déveloper une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
             'type' => 'Labo',
-            'iron' => 4000,
+            'iron' => 8000,
             'gold' => 0,
-            'quartz' => 4000,
+            'quartz' => 8000,
             'naqahdah' => 0,
             'display_order' => 5,
             'upgrade_coefficient' => 2,
@@ -511,7 +511,7 @@ class DatabaseSeeder extends Seeder
 
 
         DB::table('technologies')->insert([
-            'id' => 6, 
+            'id' => 6,
             'name' => 'Plans de vaisseaux',
             'slug' => Str::slug('blueprint'),
             'description' => "Permet la conception de vaisseaux spaciaux.",
@@ -533,7 +533,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 7, 
+            'id' => 7,
             'name' => 'Armement',
             'slug' => Str::slug('Armament'),
             'description' => "Permet la conception d'armes.",
@@ -556,7 +556,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 8, 
+            'id' => 8,
             'name' => 'Coque',
             'slug' => Str::slug('hull'),
             'description' => "Permet la conception de coques de vaisseaux.",
@@ -587,7 +587,7 @@ class DatabaseSeeder extends Seeder
 
 
         DB::table('technologies')->insert([
-            'id' => 9, 
+            'id' => 9,
             'name' => 'Bouclier',
             'slug' => Str::slug('shield'),
             'description' => "Permet la conception de boucliers.",
@@ -616,7 +616,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 10, 
+            'id' => 10,
             'name' => 'Combustion',
             'slug' => Str::slug('afterburner'),
             'description' => "Permet la conception de moteurs conventionels.",
@@ -643,7 +643,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 9,
             'level' => 1
         ]);
-        //- Energie : Niveau 1 
+        //- Energie : Niveau 1
         DB::table('technology_technologies')->insert([
             'technology_id' => 10,
             'required_technology_id' => 4,
@@ -654,7 +654,7 @@ class DatabaseSeeder extends Seeder
             'id' => 16,
             'name' => 'Centre de commandement', //département de nanorobotique
             'slug' => Str::slug('commandcenter'),
-            'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.", 
+            'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.",
             //et moins 30% les vaisseaux
             'type' => 'Military',
             'iron' => 900000,
@@ -775,7 +775,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 4
         ]);
-        
+
         DB::table('buildings')->insert([
             'id' => 20,
             'name' => 'Terraformeur',
@@ -852,7 +852,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 11, 
+            'id' => 11,
             'name' => 'Laser',
             'slug' => Str::slug('laser'),
             'description' => "Rayon laser à concentration élevée lors de l'accumulation de grandes quantités d'énergie.",
@@ -866,7 +866,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 600,
             'time_coefficient' => 2
         ]);
-        //Centre de Recherche Niveau 2 
+        //Centre de Recherche Niveau 2
         DB::table('technology_buildings')->insert([
             'technology_id' => 11,
             'required_building_id' => 7,
@@ -880,7 +880,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 12, 
+            'id' => 12,
             'name' => 'Ions',
             'slug' => Str::slug('ions'),
             'description' => "Ion Desc",
@@ -914,7 +914,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 13, 
+            'id' => 13,
             'name' => 'Plasma',
             'slug' => Str::slug('plasma'),
             'description' => "Plasma Desc",
@@ -953,9 +953,9 @@ class DatabaseSeeder extends Seeder
             'level' => 8
         ]);
 
-        
+
         DB::table('technologies')->insert([
-            'id' => 14, 
+            'id' => 14,
             'name' => 'Maîtrise du Naqahdah', //Hydrogene
             'slug' => Str::slug('naqahdah'),
             'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant.",
@@ -976,10 +976,10 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 10
         ]);
-        
+
 
         DB::table('technologies')->insert([
-            'id' => 15, 
+            'id' => 15,
             'name' => 'Vitesse subluminique', // Impulsion
             'slug' => Str::slug('subluminal'),
             'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
@@ -1013,9 +1013,8 @@ class DatabaseSeeder extends Seeder
             'level' => 3
         ]);
 
-
         DB::table('technologies')->insert([
-            'id' => 16, 
+            'id' => 16,
             'name' => 'Antimatière', // Antimatière
             'slug' => Str::slug('antimatter'),
             'description' => "Capaciuté à maîtriser l'antimatière.",
@@ -1056,7 +1055,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('technologies')->insert([
-            'id' => 17, 
+            'id' => 17,
             'name' => 'Hyper Espace', // Antimatière
             'slug' => Str::slug('hyperspace'),
             'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage.",
@@ -1150,7 +1149,7 @@ class DatabaseSeeder extends Seeder
             'required_technology_id' => 10,
             'level' => 6
         ]);
-        //Antimatière 4
+        //Antimatière 6
         DB::table('unit_technologies')->insert([
             'unit_id' => 2,
             'required_technology_id' => 16,

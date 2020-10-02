@@ -31,6 +31,11 @@ class Player extends Model
         return $this->hasMany('App\Colony');
     }
 
+    public function ships()
+    {
+        return $this->hasMany('App\Ship');
+    }
+
     public function explorations()
     {
         return $this->hasMany('App\Exploration');
@@ -66,6 +71,16 @@ class Player extends Model
         return $this->belongsTo('App\AllianceRole','role_id','id');
     }
 
+    public function incomingFleets()
+    {
+        return $this->hasMany('App\Fleet','player_destination_id','id')->where([['returning', false],['fleets.ended', false]]);
+    }
+
+    public function activeFleets()
+    {
+        return $this->hasMany('App\Fleet','player_source_id','id')->where('fleets.ended','false');
+    }
+
     public function addColony(Coordinate $choosedCoordinate = null)
     {
         try{
@@ -73,7 +88,7 @@ class Player extends Model
             $newColony->colony_type = 1;
             $newColony->player_id = $this->id;
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
-            $newColony->last_claim = date("Y-m-d H:i:s");  
+            $newColony->last_claim = date("Y-m-d H:i:s");
             $newColony->artifact_check = Carbon::now()->add(rand(1,72).'h');
             $newColony->image = rand(1,34).'.png';
 
@@ -157,7 +172,7 @@ class Player extends Model
         $artifacts = Artifact::where('colony_id', $colony->id)->get();
         foreach($artifacts as $artifact)
             $artifact->delete();
-        
+
         if($this->active_colony_id == $colony->id)
         {
             $this->active_colony_id = $this->colonies[0]->id;
@@ -258,7 +273,7 @@ class Player extends Model
     public function technologyIsDone(Technology $technology)
     {
         try{
-            $technologyExists = $this->technologies->filter(function ($value) use($technology){               
+            $technologyExists = $this->technologies->filter(function ($value) use($technology){
                 return $value->id == $technology->id;
             });
             if($technologyExists->count() > 0)
@@ -288,9 +303,9 @@ class Player extends Model
             echo $e->getMessage();
         }
     }
-    
+
     public function isWeakOrStrong(Player $player2)
-    {    
+    {
         if($this->points_total > config('stargate.gateFight.StrongWeak') && $player2->points_total > config('stargate.gateFight.StrongWeak'))
             return '';
         elseif($player2->points_total > ($this->points_total*2))
@@ -301,12 +316,52 @@ class Player extends Model
             return '';
     }
     public function isRaidable(Player $player2)
-    {  
+    {
         if($this->points_total > config('stargate.gateFight.StrongWeak') && $player2->points_total > config('stargate.gateFight.StrongWeak'))
             return true;
         elseif($player2->points_total > ($this->points_total*2) || $player2->points_total < ($this->points_total/2))
             return false;
         else
             return true;
+    }
+
+    public function getShipSpeedBonus()
+    {
+        $bonus = 1;
+
+        $technologies = $this->technologies->filter(function ($value){
+            return !is_null($value->ship_speed_bonus) && $value->ship_speed_bonus > 0;
+        });
+        foreach($technologies as $technology)
+        {
+            $bonus *= pow(2-$technology->ship_speed_bonus, $technology->pivot->level);
+        }
+
+        return $bonus;
+    }
+
+    public function checkFleets()
+    {
+        $checkedFleet = 0;
+        foreach($this->activeFleets as $activeFleet)
+        {
+            $arrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$activeFleet->arrival_date);
+            if($arrivalDate->isPast()){
+                $activeFleet->outcome();
+                $checkedFleet++;
+            }
+        }
+        foreach($this->incomingFleets as $incomingFleet)
+        {
+            $arrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$incomingFleet->arrival_date);
+            if($arrivalDate->isPast()){
+                $incomingFleet->outcome();
+                $checkedFleet++;
+            }
+        }
+        if($checkedFleet > 0){
+            $this->load('activeFleets');
+            $this->load('incomingFleets');
+        }
     }
 }

@@ -34,6 +34,6 @@ class DbConfig extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('configuration');
     }
 }

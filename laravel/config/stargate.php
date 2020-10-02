@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'version' => '0.6.1 (Early Access)',
-    'resources' => ['iron','gold','quartz','naqahdah'],          
+    'version' => '0.7 (Early Access)',
+    'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
     'emotes' => [
         'fr' => '🇫🇷',

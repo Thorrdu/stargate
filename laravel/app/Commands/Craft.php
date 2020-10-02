@@ -41,7 +41,7 @@ class Craft extends CommandHandler implements CommandInterface
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Craft';
-                    $this->craftList = Unit::all();      
+                    $this->craftList = Unit::all();
 
                     $this->closed = false;
                     $this->page = 1;
@@ -49,20 +49,20 @@ class Craft extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
                                 });
                             });
                         });
-    
+
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -117,27 +117,27 @@ class Craft extends CommandHandler implements CommandInterface
                     if($this->player->activeColony->craftQueues->count() == 0)
                         return trans('craft.emptyQueue', [], $this->player->lang);
                     $this->craftQueue = $this->player->activeColony->craftQueues;
-    
+
                     $this->closed = false;
                     $this->page = 1;
                     $this->maxPage = ceil($this->craftQueue->count()/5);
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getQueue())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
                                 });
                             });
                         });
-    
+
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -151,25 +151,25 @@ class Craft extends CommandHandler implements CommandInterface
                                     elseif($messageReaction->emoji->name == '⏪')
                                     {
                                         $this->page = 1;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                     {
                                         $this->page--;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                                     {
                                         $this->page++;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '⏩')
                                     {
                                         $this->page = $this->maxPage;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
@@ -207,7 +207,7 @@ class Craft extends CommandHandler implements CommandInterface
                         }
                         if(!$hasRequirements)
                             return trans('generic.missingRequirements', [], $this->player->lang);
-                        
+
                         if(count($this->args) >= 2 && (int)$this->args[1] > 0)
                             $qty = (int)$this->args[1];
                         else
@@ -249,7 +249,7 @@ class Craft extends CommandHandler implements CommandInterface
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
                         return trans('craft.buildingStarted', ['name' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
-                    
+
                     }
                     else
                         return trans('craft.unknownCraft', [], $this->player->lang);
@@ -271,7 +271,7 @@ class Craft extends CommandHandler implements CommandInterface
         try
         {
             $displayList = $this->craftQueue->skip(5*($this->page -1))->take(5);
-            
+
             $craftQueueString = "";
             foreach($displayList as $queuedCraft)
             {
@@ -280,9 +280,9 @@ class Craft extends CommandHandler implements CommandInterface
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);      
+                ]);
 
-                $craftQueueString .= "1x ".trans('craft.'.$queuedCraft->slug.'.name', [], $this->player->lang)." - ".$craftTime."\n"; 
+                $craftQueueString .= "1x ".trans('craft.'.$queuedCraft->slug.'.name', [], $this->player->lang)." - ".$craftTime."\n";
             }
 
             $embed = [
@@ -300,7 +300,7 @@ class Craft extends CommandHandler implements CommandInterface
             ];
 
             return $embed;
-        } 
+        }
         catch(\Exception $e)
         {
             echo $e->getMessage();
@@ -313,7 +313,7 @@ class Craft extends CommandHandler implements CommandInterface
         try{
 
             $displayList = $this->craftList->skip(5*($this->page -1))->take(5);
-            
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
@@ -362,7 +362,7 @@ class Craft extends CommandHandler implements CommandInterface
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);      
+                ]);
 
                 $hasRequirements = true;
                 foreach($unit->requiredTechnologies as $requiredTechnology)
@@ -390,9 +390,26 @@ class Craft extends CommandHandler implements CommandInterface
                 }
                 else
                 {
+                    $requirementString = '';
+                    foreach($unit->requiredTechnologies as $requiredTechnology)
+                    {
+                        $techLevel = $this->player->hasTechnology($requiredTechnology);
+                        if(!$techLevel)
+                            $techLevel = 0;
+
+                        $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                    }
+                    foreach($unit->requiredBuildings as $requiredBuilding)
+                    {
+                        $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                        if(!$buildLvl)
+                            $buildLvl = 0;
+                        $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                    }
+
                     $embed['fields'][] = array(
-                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
-                        'value' => "\nSlug: `".$unit->slug."\n".$capacityString.trans('craft.unDiscovered', [], $this->player->lang),
+                        'name' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
+                        'value' => "Slug: `".$unit->slug."`\n".$requirementString,
                         'inline' => true
                     );
                 }
@@ -401,7 +418,7 @@ class Craft extends CommandHandler implements CommandInterface
             return $embed;
 
             }
-            
+
         catch(\Exception $e)
         {
             echo $e->getMessage();

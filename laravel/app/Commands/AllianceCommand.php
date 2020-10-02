@@ -30,7 +30,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Alliance';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
-                    
+
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -50,7 +50,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 $recrutementStatusString = trans('generic.yes', [], $this->player->lang);
                             else
                                 $recrutementStatusString = trans('generic.no', [], $this->player->lang);
-                
+
                             $totalAlliances = DB::table('alliances')->count();
                             $generalPosition = DB::table('alliances')->where([['id', '!=', 1],['points_total', '>' , $alliance->points_total]])->count() + 1;
                             $buildingPosition = DB::table('alliances')->where([['id', '!=', 1],['points_building', '>' , $alliance->points_building]])->count() + 1;
@@ -86,7 +86,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                     'text'  => 'Stargate',
                                 ),
                             ];
-                    
+
                             $membersString = "";
                             foreach($alliance->members as $member)
                             {
@@ -105,29 +105,29 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                     elseif(Str::startsWith('list', $this->args[0]))
                     {
                         echo PHP_EOL.'Execute alliance list';
-                        $this->allianceList = Alliance::all();//with('members')->orderBy('members','desc');      
-                        
+                        $this->allianceList = Alliance::all();//with('members')->orderBy('members','desc');
+
                         $this->page = 1;
                         $this->maxPage = ceil($this->allianceList->count()/5);
                         $this->maxTime = time()+180;
                         $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                             $this->paginatorMessage = $messageSent;
-    
+
                             $this->closed = false;
-                            $this->paginatorMessage->react('⏪')->then(function(){ 
-                                $this->paginatorMessage->react('◀️')->then(function(){ 
-                                    $this->paginatorMessage->react('▶️')->then(function(){ 
+                            $this->paginatorMessage->react('⏪')->then(function(){
+                                $this->paginatorMessage->react('◀️')->then(function(){
+                                    $this->paginatorMessage->react('▶️')->then(function(){
                                         $this->paginatorMessage->react('⏩')->then(function(){
                                             $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                         });
                                     });
                                 });
                             });
-    
+
                             $filter = function($messageReaction){
                                 if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                     return false;
-                                
+
                                 if($messageReaction->user_id == $this->player->user_id)
                                 {
                                     try{
@@ -261,7 +261,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
 
                             $this->player->alliance_id = $alliance->id;
                             $this->player->role_id = $role->id;
-                            $this->player->user_name = '['.$alliance->tag.'] '.$this->player->user_name; 
+                            $this->player->user_name = '['.$alliance->tag.'] '.$this->player->user_name;
                             $this->player->save();
 
                             return trans('alliance.allianceCreated', ['tag' => $alliance->tag, 'allianceName' => $alliance->name], $this->player->lang);
@@ -274,7 +274,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                         {
                             if($this->player->alliance->leader_id != $this->player->id)
                                 return trans('generic.missingPermission',[],$this->player->lang);
-                            
+
                                 $allianceId = $this->player->alliance->id;
                                 $allianceName = $this->player->alliance->name;
 
@@ -292,7 +292,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                             $allianceName = $this->player->alliance->name;
                             $this->player->alliance_id = null;
                             $this->player->role_id = null;
-                            $this->player->user_name = $this->player->untagged_user_name; 
+                            $this->player->user_name = $this->player->untagged_user_name;
                             $this->player->save();
                             return trans('alliance.allianceLeft',['allianceName' => $allianceName], $this->player->lang);
                         }
@@ -300,7 +300,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                         {
                             $alliance = $this->player->alliance;
                             $upgradePrice = $this->getUpgradePrice($alliance->player_limit);
-                            
+
                             $upgradePriceString = "";
                             foreach($upgradePrice as $resource => $quantity)
                                 $upgradePriceString .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($quantity)."\n";
@@ -309,11 +309,11 @@ class AllianceCommand extends CommandHandler implements CommandInterface
 
                             $this->maxTime = time()+180;
                             $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
-                                
+
                                 $this->closed = false;
                                 $this->paginatorMessage = $messageSent;
-                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                     });
                                 });
 
@@ -401,7 +401,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                         $recruitRightString = trans('generic.yes', [], $this->player->lang);
                                     else
                                         $recruitRightString = trans('generic.no', [], $this->player->lang);
-                                    
+
                                     if($role->right_kick == 1)
                                         $kickRightString = trans('generic.yes', [], $this->player->lang);
                                     else
@@ -411,7 +411,6 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                         $promoteRightString = trans('generic.yes', [], $this->player->lang);
                                     else
                                         $promoteRightString = trans('generic.no', [], $this->player->lang);
-
 
                                     $embed['fields'][] = array(
                                         'name' => $role->name,
@@ -425,7 +424,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
 
                                 $newEmbed = $this->discord->factory(Embed::class,$embed);
                                 $this->message->channel->sendMessage('', false, $newEmbed);
-                        
+
                             }
                             else
                             {
@@ -437,13 +436,6 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                     return trans("alliance.unknownRole", [], $this->player->lang);
                                 elseif(Str::startsWith('set', $this->args[2]))
                                 {
-                                    /*
-                                    settable (use name or id to set)
-                                        $table->string('name', 50);
-                                        $table->boolean('right_recruit')->default(false);
-                                        $table->boolean('right_kick')->default(false);
-                                        $table->boolean('right_promote')->default(false);
-                                    */
                                     if(Str::startsWith('name', $this->args[3]))
                                     {
                                         $newRoleName = trim(join(' ', array_slice($this->args, 4)));
@@ -451,7 +443,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                             return trans('generic.nameTooShort', [], $this->player->lang);
                                         if(strlen($newRoleName) > 30)
                                             return trans('generic.nameTooLong', [], $this->player->lang);
-                                    
+
                                         $oldRoleName = $roleEdit->name;
                                         $roleEdit->name = $newRoleName;
                                         $messageString = trans("alliance.roleNameChanged", ['oldRole' => $oldRoleName, 'newRole' => $newRoleName], $this->player->lang);
@@ -497,7 +489,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                     }
                                     else
                                         return trans('generic.missingArgs',[],$this->player->lang);
-                                    
+
                                     $roleEdit->save();
                                     return $messageString;
 
@@ -511,7 +503,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
 
                             if(count($this->args) < 3)
                                 return trans('generic.missingArgs',[],$this->player->lang);
-                                
+
                             $alliance = $this->player->alliance;
                             if(Str::startsWith('internal_description', $this->args[1]))
                             {
@@ -521,7 +513,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 if(strlen($newDesc) < 5)
                                     return trans('generic.descriptionTooShort', ['minLenght' => 5], $this->player->lang);
 
-                                $alliance->internal_description = $newDesc; 
+                                $alliance->internal_description = $newDesc;
                                 $messageString = trans("alliance.internalDescriptionChanged", [], $this->player->lang);
                             }
                             elseif(Str::startsWith('external_description', $this->args[1]))
@@ -615,18 +607,18 @@ class AllianceCommand extends CommandHandler implements CommandInterface
 
                                         $this->maxTime = time()+180;
                                         $this->message->channel->sendMessage($inviteMsg)->then(function ($messageSent) use($memberEdit,$allianceCheck){
-                                            
+
                                             $this->closed = false;
                                             $this->paginatorMessage = $messageSent;
-                                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                                 });
                                             });
-                        
+
                                             $filter = function($messageReaction) use($memberEdit,$allianceCheck){
                                                 if($messageReaction->user_id != $memberEdit->user_id || $this->closed == true)
                                                     return false;
-                                                
+
                                                 if($messageReaction->user_id == $memberEdit->user_id)
                                                 {
                                                     try{
@@ -640,10 +632,10 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                                                 $this->closed = true;
                                                                 return;
                                                             }
-    
+
                                                             $newRole = AllianceRole::where([["alliance_id", $this->player->alliance->id], ['right_level', 1]])->first();
                                                             DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => $this->player->alliance->id,'role_id' => $newRole->id, 'user_name' => '['.$this->player->alliance->tag.'] '.$memberEdit->user_name]);
-                                                            
+
                                                             $this->paginatorMessage->content = trans('alliance.inviteAccepted', ['name'=>$memberEdit->user_name, 'allianceName'=>$allianceCheck->name], $this->player->lang);
                                                             $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                             $this->closed = true;
@@ -681,6 +673,8 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                                 DB::table('players')->where('id', $memberEdit->id)->update(['role_id' => $newRole->id]);
                                                 return trans('alliance.memberPromoted',['name' => $memberEdit->untagged_user_name, 'newRole' => $newRole->name],$this->player->lang);
                                             }
+                                            else
+                                                return trans('alliance.onlyOneLeader', [],$this->player->lang);
                                         }
                                         elseif(Str::startsWith('demote', $this->args[0]))
                                         {
@@ -693,6 +687,8 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                                 DB::table('players')->where('id', $memberEdit->id)->update(['role_id' => $newRole->id]);
                                                 return trans('alliance.memberDemoted',['name' => $memberEdit->untagged_user_name, 'newRole' => $newRole->name],$this->player->lang);
                                             }
+                                            else
+                                                return trans('alliance.alreadyBottomRank', [],$this->player->lang);
                                         }
                                         elseif(Str::startsWith('kick', $this->args[0]))
                                         {
@@ -719,7 +715,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                     echo $e->getMessage();
                     return $e->getMessage();
                 }
-                
+
 
             }
             else
@@ -735,7 +731,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
     public function getPage()
     {
         $displayList = $this->allianceList->skip(5*($this->page -1))->take(5);
-        
+
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
@@ -765,7 +761,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                 'name' => '['.$alliance->tag.'] '.$alliance->name,
                 'value' => "__".trans('alliance.leader', [], $this->player->lang)."__: ".$alliance->leader->untagged_user_name."\n"
                 ."__".trans('alliance.membersCount', [], $this->player->lang)."__: ".number_format($alliance->members->count())."\n"
-                ."__".trans('alliance.recruitementStatus', [], $this->player->lang)."__: ".$recrutementStatusString."\n"           
+                ."__".trans('alliance.recruitementStatus', [], $this->player->lang)."__: ".$recrutementStatusString."\n"
                 ."__".trans('alliance.externalDescription', [], $this->player->lang)."__: \n".$externalDesc."\n",
                 'inline' => false
             );
@@ -782,7 +778,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
         foreach (config('stargate.resources') as $resource)
         {
             $upgradePrice[$resource] = $upgradeBasePrice;
-        }     
+        }
         return $upgradePrice;
     }
 }

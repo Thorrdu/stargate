@@ -17,7 +17,7 @@ return [
         'name' => 'Quartz mine',
         'description' => 'Basic mine to extract Quartz'
     ],
-    'naqahdahmine' => [
+    'naqahdahextractor' => [
         'name' => 'Naqahdah extractor',
         'description' => 'Extractor alowing to recover Naqadah from lower layers of the planet'
     ],
@@ -84,6 +84,8 @@ return [
     ],
     'hiddenBuilding' => '-- Hidden building --',
     'unDiscovered' => 'Undiscovered',
+    'noActiveBuilding' => 'No building under construction...',
+    'buildingCanceled' => 'Building canceled, the majority of resources have been rewovered. 20% of the invested resources have been lost.',
     'unknownBuilding' => 'Unknown building...',
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
     'buildingList' => "Building's list",
@@ -93,6 +95,8 @@ return [
     'alreadyBuilding' => 'A building is already under construction. **Lvl :level :name** will be done in **:time**',
     'missingSpace' => 'Insufficient space to start this building.',
     'buildingStarted' => 'Building started, **Lvl :level :name**. It will be done in **:time**',
+    'buildingRemovalStarted' => 'Destruction started, **:name **. It will be done in **:time**',
     'dmBuildIsOver' => 'A building has just been completed...',
     'buildingMaxed' => 'This Building is already maxed...',
+    'buildingRemoved' => 'The removal of **:name** has been done on :colony',
 ];

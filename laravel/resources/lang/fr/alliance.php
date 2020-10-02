@@ -66,4 +66,6 @@ return [
     'membersLimitReached' => "Limite de membres atteinte.\nUtilisez `!alliance upgrade` pour acheter de nouveaux slots.",
     'upgradeSuccess' => "Félicitation, l'alliance peut désormais acceuillir **:newLimit** membres.",
     'upgradeMessage' => "Souhaitez vous augmenter la limite de membres pour un coût de:\n:cost",
+    'alreadyBottomRank' => 'Ce joueur est déjà au rang le plus bas.',
+    'onlyOneLeader' => 'Il ne peut y avoir qu\'un leader.'
 ];

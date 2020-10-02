@@ -5,7 +5,9 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Events\Event;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Boolean;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class Colony extends Model
@@ -25,11 +27,11 @@ class Colony extends Model
         parent::boot();
         static::updating(function($colony) {
            // dd($colony);
-           
+
         });
 
         static::updated(function($colony) {
-            echo PHP_EOL.' COLONY EVENT UPDATED HORS OBSERVER';    
+            echo PHP_EOL.' COLONY EVENT UPDATED HORS OBSERVER';
          });
 
 
@@ -93,6 +95,11 @@ class Colony extends Model
         return $this->belongsToMany('App\Unit','craft_queues','colony_id','unit_id')->withPivot('craft_end');
     }
 
+    public function shipQueues()
+    {
+        return $this->belongsToMany('App\Ship','ship_queues','colony_id','ship_id')->withPivot('ship_end');
+    }
+
     public function units()
     {
         return $this->belongsToMany('App\Unit')->withPivot('number');
@@ -106,6 +113,11 @@ class Colony extends Model
     public function defences()
     {
         return $this->belongsToMany('App\Defence')->withPivot('number');
+    }
+
+    public function ships()
+    {
+        return $this->belongsToMany('App\Ship')->withPivot('number');
     }
 
     public function hasBuilding(Building $building)
@@ -182,7 +194,42 @@ class Colony extends Model
         }
     }
 
-    
+    public function hasShip(String $shipName)
+    {
+        try{
+            $shipExists = $this->ships->filter(function ($value) use($shipName){
+                return Str::startsWith($value->slug, $shipName);
+            });
+            if($shipExists->count() > 0)
+                return $shipExists->first();
+            else
+                return false;
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function hasShipById(Int $shipId)
+    {
+        try{
+            $shipExists = $this->ships->filter(function ($value) use($shipId){
+                return Str::startsWith($value->id, $shipId);
+            });
+            if($shipExists->count() > 0)
+                return $shipExists->first();
+            else
+                return false;
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
     public function getResearchBonus()
     {
         $bonus = 1;
@@ -209,6 +256,7 @@ class Colony extends Model
 
         return $bonus;
     }
+
     public function getBuildingBonus()
     {
         $bonus = 1;
@@ -281,6 +329,33 @@ class Colony extends Model
 
         $buildingTimeBonusList = $this->artifacts->filter(function ($value){
             return $value->bonus_category == 'Time' && $value->bonus_type == 'Defence';
+        });
+        foreach($buildingTimeBonusList as $buildingTimeBonus)
+        {
+            $bonus *= $buildingTimeBonus->bonus_coef;
+        }
+
+        return $bonus;
+    }
+
+    public function getShipbuildBonus()
+    {
+        $bonus = 1;
+
+        $buildings = $this->buildings->filter(function ($value){
+            return !is_null($value->ship_bonus);
+        });
+        foreach($buildings as $building)
+            $bonus *= pow($building->ship_bonus, $building->pivot->level);
+
+        $technologies = $this->player->technologies->filter(function ($value){
+            return !is_null($value->ship_bonus);
+        });
+        foreach($technologies as $technology)
+            $bonus *= pow($technology->ship_bonus, $technology->pivot->level);
+
+        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Time' && $value->bonus_type == 'Ship';
         });
         foreach($buildingTimeBonusList as $buildingTimeBonus)
         {
@@ -382,13 +457,55 @@ class Colony extends Model
     }
 
 
-    public function startBuilding(Building $building)
+    public function startShip(Ship $ship, int $qty)
     {
         $current = Carbon::now();
-        $wantedLvl = 1;
-        $currentLevel = $this->hasBuilding($building);
-        if($currentLevel)
-            $wantedLvl += $currentLevel;
+
+        $buildingTime = $ship->base_time;
+
+        /** Application des bonus */
+        $buildingTime *= $this->getShipbuildBonus();
+
+        $coef = 1;
+        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+            return $value->bonus_category == 'Price' && $value->bonus_type == 'Ship';
+        });
+        foreach($buildingPriceBonusList as $buildingPriceBonus)
+        {
+            $coef *= $buildingPriceBonus->bonus_coef;
+        }
+
+        $buildingPrices = $ship->getPrice($qty, $coef);
+        foreach (config('stargate.resources') as $resource)
+        {
+            if($ship->$resource > 0)
+                $this->$resource -= $buildingPrices[$resource];
+            if($this->resource < 0)
+                $this->resource = 0;
+        }
+
+        if($this->shipQueues->count() > 0)
+        {
+            $lastQueue = $this->shipQueues->last();
+            $lastQueueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->ship_end);
+            if(!$lastQueueCarbon->isPast())
+                $current = $lastQueueCarbon;
+        }
+
+        for($cptQueue = 0; $cptQueue < $qty ; $cptQueue++ )
+        {
+            $buildingEnd = $current->addSeconds($buildingTime);
+            $this->shipQueues()->attach([$ship->id => ['ship_end' => $buildingEnd]]);
+        }
+
+        $this->save();
+        return $buildingEnd;
+    }
+
+
+    public function startBuilding(Building $building,Int $wantedLvl, Bool $removal)
+    {
+        $current = Carbon::now();
 
         //Temps de base
         $buildingTime = $building->getTime($wantedLvl);
@@ -396,35 +513,46 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getBuildingBonus();
 
+        if($removal)
+        {
+            $buildingTime /= 2;
+            $this->active_building_remove = true;
+        }
+        else
+        {
+            $coef = 1;
+            $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+                return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
+            });
+            foreach($buildingPriceBonusList as $buildingPriceBonus)
+            {
+                $coef *= $buildingPriceBonus->bonus_coef;
+            }
+
+            $buildingPrices = $building->getPrice($wantedLvl, $coef);
+            foreach (config('stargate.resources') as $resource)
+            {
+                if($building->$resource > 0)
+                    $this->$resource -= $buildingPrices[$resource];
+                if($this->$resource < 0)
+                    $this->$resource = 0;
+            }
+        }
+
         $buildingEnd = $current->addSeconds($buildingTime);
 
         $this->active_building_id = $building->id;
         $this->active_building_end = $buildingEnd;
-
-        $coef = 1;
-        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
-        });
-        foreach($buildingPriceBonusList as $buildingPriceBonus)
-        {
-            $coef *= $buildingPriceBonus->bonus_coef;
-        }
-
-        $buildingPrices = $building->getPrice($wantedLvl, $coef);
-        foreach (config('stargate.resources') as $resource)
-        {
-            if($building->$resource > 0)
-                $this->$resource -= $buildingPrices[$resource];
-            if($this->$resource < 0)
-                $this->$resource = 0;
-        }
 
         if($this->player->notification)
         {
             try{
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-                $reminder->reminder = $this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$wantedLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
+                if($removal)
+                    $reminder->reminder = trans("building.buildingRemoved", ['colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
+                else
+                    $reminder->reminder = $this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$wantedLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
                 $reminder->player_id = $this->player->id;
                 $reminder->save();
             }
@@ -464,7 +592,7 @@ class Colony extends Model
 
                 foreach($endedCrafts as $endedCraft)
                 {
-                    $unitExists = $this->units->filter(function ($value) use($endedCraft){               
+                    $unitExists = $this->units->filter(function ($value) use($endedCraft){
                         return $value->id == $endedCraft->id;
                     });
                     if($unitExists->count() > 0)
@@ -472,16 +600,16 @@ class Colony extends Model
                         $unitToUpdate = $unitExists->first();
                         $unitToUpdate->pivot->number++;
                         $unitToUpdate->pivot->save();
-                        $this->load('units'); 
+                        $this->load('units');
                     }
                     else
                     {
                         $this->units()->attach([$endedCraft->id => ['number' => 1]]);
-                        $this->load('units'); 
+                        $this->load('units');
                     }
                 }
                 DB::table('craft_queues')->where([['craft_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
-                $this->load('craftQueues'); 
+                $this->load('craftQueues');
 
             }
         }
@@ -504,7 +632,7 @@ class Colony extends Model
 
                 foreach($endedDefences as $endedDefence)
                 {
-                    $defenceExists = $this->defences->filter(function ($value) use($endedDefence){               
+                    $defenceExists = $this->defences->filter(function ($value) use($endedDefence){
                         return $value->id == $endedDefence->id;
                     });
                     if($defenceExists->count() > 0)
@@ -512,16 +640,16 @@ class Colony extends Model
                         $defenceToUpdate = $defenceExists->first();
                         $defenceToUpdate->pivot->number++;
                         $defenceToUpdate->pivot->save();
-                        $this->load('defences'); 
+                        $this->load('defences');
                     }
                     else
                     {
                         $this->defences()->attach([$endedDefence->id => ['number' => 1]]);
-                        $this->load('defences'); 
+                        $this->load('defences');
                     }
                 }
                 DB::table('defence_queues')->where([['defence_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
-                $this->load('defenceQueues'); 
+                $this->load('defenceQueues');
 
             }
         }
@@ -531,7 +659,48 @@ class Colony extends Model
             return $e->getMessage();
         }
     }
-    
+
+    public function checkShipQueues()
+    {
+        try{
+            echo PHP_EOL.'CHECK_SHIP_QUEUES';
+            if($this->shipQueues->count() > 0)
+            {
+                $endedShips = $this->shipQueues->filter(function ($value){
+                    return Carbon::createFromFormat("Y-m-d H:i:s",$value->pivot->ship_end)->isPast();
+                });
+
+                foreach($endedShips as $endedShip)
+                {
+                    $shipExists = $this->ships->filter(function ($value) use($endedShip){
+                        return $value->id == $endedShip->id;
+                    });
+                    if($shipExists->count() > 0)
+                    {
+                        $shipToUpdate = $shipExists->first();
+                        $shipToUpdate->pivot->number++;
+                        $shipToUpdate->pivot->save();
+                        $this->load('ships');
+                    }
+                    else
+                    {
+                        $this->ships()->attach([$endedShip->id => ['number' => 1]]);
+                        $this->load('ships');
+                    }
+                }
+                DB::table('ship_queues')->where([['ship_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
+                $this->load('shipQueues');
+
+            }
+        }
+        catch(\Exception $e)
+        {
+            echo $e->getMessage();
+            return $e->getMessage();
+        }
+    }
+
+
 
     public function checkProd()
     {
@@ -582,7 +751,7 @@ class Colony extends Model
         $this->energy_max = 0;
         foreach($energyBuildings as $energyBuilding)
             $this->energy_max += floor($energyBuilding->getProductionEnergy($energyBuilding->pivot->level));
-        
+
         $technologiesEnergyBonus = $this->player->technologies->filter(function ($value){
             return !is_null($value->energy_bonus);
         });
@@ -612,7 +781,7 @@ class Colony extends Model
             $this->$varName = config('stargate.base_prod.'.$resource);
             foreach($productionBuildings as $productionBuilding)
                 $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
-            
+
             if(!is_null($this->player->premium_expiration))
                 $this->$varName *= 1.25;
         }
@@ -662,58 +831,76 @@ class Colony extends Model
         $this->checkBuilding();
         $this->checkCraftQueues();
         $this->checkDefenceQueues();
-
+        $this->checkShipQueues();
     }
 
     public function buildingIsDone(Building $building)
     {
         try{
-
-            $buildingExist = $this->buildings->filter(function ($value) use($building){               
+            $buildingExist = $this->buildings->filter(function ($value) use($building){
                 return $value->id == $building->id;
             });
-            if($buildingExist->count() > 0)
+            if($this->active_building_remove)
             {
-                $buildingToUpgrade = $buildingExist->first();
-                $buildingToUpgrade->pivot->level++;
-                $buildingToUpgrade->pivot->save();
+                $buildingToRemove = $buildingExist->first();
+                if($buildingToRemove->pivot->level == 1)
+                    $this->buildings()->detach($building->id);
+                else
+                {
+                    $buildingToRemove->pivot->level = $buildingToRemove->pivot->level - 1;
+                    $buildingToRemove->pivot->save();
+                }
+                $this->space_used--;
+                $this->active_building_remove = false;
+
+                $coef = 1;
+                $buildingPriceBonusList = $this->artifacts->filter(function ($value){
+                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
+                });
+                foreach($buildingPriceBonusList as $buildingPriceBonus)
+                {
+                    $coef *= $buildingPriceBonus->bonus_coef;
+                }
+
+                $wantedLvl = 1;
+                $currentLvl = $this->player->activeColony->hasBuilding($building);
+                if($currentLvl)
+                    $wantedLvl = $currentLvl;
+
+                $buildingPrices = $building->getPrice($wantedLvl, $coef);
+                foreach (config('stargate.resources') as $resource)
+                {
+                    if($building->$resource > 0)
+                    {
+                        $newResource = $this->$resource + ceil($buildingPrices[$resource]*0.5);
+                        if($this->{'storage_'.$resource} <= $newResource)
+                            $newResource = $this->{'storage_'.$resource};
+                        $this->$resource = $newResource;
+                    }
+                }
             }
             else
             {
-                $this->buildings()->attach([$building->id => ['level' => 1]]);
-                $this->load('buildings');
-            }
+                if($buildingExist->count() > 0)
+                {
+                    $buildingToUpgrade = $buildingExist->first();
+                    $buildingToUpgrade->pivot->level++;
+                    $buildingToUpgrade->pivot->save();
+                }
+                else
+                {
+                    $this->buildings()->attach([$building->id => ['level' => 1]]);
+                    $this->load('buildings');
+                }
 
-            if($building->id == 20) //terraformeur
-                $this->space_max += 30;
-
-            $this->active_building_id = null;
-            $this->active_building_end = null;
-            $this->space_used++;
-            $this->calcProd();
-            $this->save();
-            
-            //$this->save();
-            /*
-            $buildingExist = ColonyBuilding::where(['colony_id' => $this->id, 'building_id' => $building->id])->first();
-            if($buildingExist)
-            {
-                $buildingExist->level = $buildingExist->level + 1;
-                $buildingExist->save();
-            }
-            else
-            {
-                $newBuilding = new ColonyBuilding();
-                $newBuilding->colony_id = $this->id;
-                $newBuilding->building_id = $building->id;
-                $newBuilding->save();
-                $this->buildings->push($newBuilding);
+                if($building->id == 20) //terraformeur
+                    $this->space_max += 30;
+                $this->space_used++;
             }
             $this->active_building_id = null;
             $this->active_building_end = null;
             $this->calcProd();
             $this->save();
-            */
         }
         catch(\Exception $e)
         {
@@ -721,22 +908,22 @@ class Colony extends Model
         }
     }
 
-    public function rndWeightedArtifact($values, $weights){ 
-        $count = count($values); 
-        $i = 0; 
-        $n = 0; 
+    public function rndWeightedArtifact($values, $weights){
+        $count = count($values);
+        $i = 0;
+        $n = 0;
         $randWeights = [];
         foreach($values as $value)
             $randWeights[] = $weights[$value];
-        $num = mt_rand(0, array_sum($randWeights)); 
+        $num = mt_rand(0, array_sum($randWeights));
         while($i < $count){
-            $n += $randWeights[$i]; 
+            $n += $randWeights[$i];
             if($n >= $num){
-                break; 
+                break;
             }
-            $i++; 
-        } 
-        return $values[$i]; 
+            $i++;
+        }
+        return $values[$i];
     }
 
     public function generateArtifact($options = [])
@@ -754,14 +941,14 @@ class Colony extends Model
                 $bonusCategories = $options['bonusCategories'];
             else
                 $bonusCategories = ['Production', 'Time', 'Price', 'DefenceLure'];
-            
+
             if(!isset($options['maxEnding']))
                 $bonusCategories[] = 'ColonyMax';
 
             if(isset($options['bonusTypes']))
                 $bonusTypes = $options['bonusTypes'];
             else
-                $bonusTypes = ['Research', 'Building', /*'Ship',*/ 'Defence', 'Craft'];
+                $bonusTypes = ['Research', 'Building', 'Ship', 'Defence', 'Craft'];
 
             $bonusResources = ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'];
 
@@ -843,7 +1030,7 @@ class Colony extends Model
                 $minEnding = $options['minEnding'];
             if(isset($options['maxEnding']))
                 $newArtifact->bonus_end = Carbon::now()->add(rand($minEnding,$options['maxEnding'])."h");
-            
+
             $newArtifact->save();
             if($newArtifact->bonus_category == 'Production')
             {

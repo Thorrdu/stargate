@@ -2,12 +2,14 @@
 
 namespace App\Commands;
 
+use App\GateFight;
 use App\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Discord\Parts\Channel\Message;
 
 class Profile extends CommandHandler implements CommandInterface
 {
@@ -18,7 +20,7 @@ class Profile extends CommandHandler implements CommandInterface
             echo PHP_EOL.'Execute profile';
             if($this->player->ban)
                 return trans('generic.banned', [], $this->player->lang);
-                    
+
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -67,16 +69,33 @@ class Profile extends CommandHandler implements CommandInterface
                             return trans('profile.nextVacation', ['time' => $nextVacationString], $this->player->lang);
                         }
 
+                        $fightLast2Hours = GateFight::Where([['active', true],['player_id_source',$this->player->id],['created_at', '>=', Carbon::now()->sub('2h')]])->orderBy('created_at','DESC')->get();
+                        if($fightLast2Hours->count() > 0)
+                        {
+                            $nextVacation = Carbon::createFromFormat("Y-m-d H:i:s",$fightLast2Hours)->add('2h');
+                            $nextVacationString = $now->diffForHumans($nextVacation,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                            return trans('profile.youFightedRecently', ['time' => $nextVacationString], $this->player->lang);
+                        }
+
+                        if($this->player->activeFleets->count() > 0)
+                        {
+                            return trans('profile.activeFleets', [], $this->player->lang);
+                        }
+
                         //proposition vacances
                         $upgradeMsg = trans('profile.vacationConfirm', [], $this->player->lang);
 
                         $this->maxTime = time()+180;
                         $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
-                            
+
                             $this->closed = false;
                             $this->paginatorMessage = $messageSent;
-                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                 });
                             });
 
@@ -111,7 +130,7 @@ class Profile extends CommandHandler implements CommandInterface
                     else{
                         $now = Carbon::now();
                         $vacationUntil = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->vacation)->add('72h');
-                        
+
                         if($vacationUntil > $now)
                         {
                             $vacationUntilString = $now->diffForHumans($vacationUntil,[
@@ -127,11 +146,11 @@ class Profile extends CommandHandler implements CommandInterface
 
                         $this->maxTime = time()+180;
                         $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
-                            
+
                             $this->closed = false;
                             $this->paginatorMessage = $messageSent;
-                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                 });
                             });
 

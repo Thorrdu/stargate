@@ -25,7 +25,7 @@ class CreateUnitsTable extends Migration
             $table->bigInteger('gold')->length(25)->unsigned()->nullable();
             $table->bigInteger('quartz')->length(25)->unsigned()->nullable();
             $table->bigInteger('naqahdah')->length(25)->unsigned()->nullable();
-            $table->integer('base_time')->lenght(5)->unsigned()->nullable();
+            $table->integer('base_time')->lenght(10)->unsigned()->nullable();
             $table->timestamps();
         });
     }

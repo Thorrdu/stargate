@@ -39,7 +39,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Stargate';
                 if($this->player->ban)
                     return trans('generic.banned', [], $this->player->lang);
-                    
+
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -68,7 +68,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->message->channel->sendMessage('', false, $newEmbed);
                     return;
                 }
-                
+
                 if(count($this->args) < 2)
                 {
                     $embed = [
@@ -89,7 +89,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->message->channel->sendMessage('', false, $newEmbed);
                     return;
                 }
-                
+
 
 
                 if(!preg_match('/(([0-9]{1,}:[0-9]{1,}:[0-9]{1,})|([0-9]{1,};[0-9]{1,};[0-9]{1,}))/', $this->args[1], $coordinatesMatch))
@@ -98,7 +98,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('colony.UnknownColony', [], $this->player->lang);
                     elseif(!Str::startsWith('move',$this->args[0]))
                         return trans('stargate.unknownCoordinates', [], $this->player->lang);
-                    
+
                     $this->coordinateDestination = $this->player->colonies[$this->args[1]-1]->coordinates;
                 }
                 else
@@ -117,6 +117,14 @@ class Stargate extends CommandHandler implements CommandInterface
 
                 if(!is_null($this->coordinateDestination->colony) && $this->player->user_id != 125641223544373248)
                 {
+
+                    /*
+                    TODO
+
+                    Ajout du check port enterrée
+
+                    **/
+
                     $researchCenter = Building::find(7);
                     $centerLevel = $this->coordinateDestination->colony->hasBuilding($researchCenter);
                     if(!$centerLevel || $centerLevel < 4)
@@ -138,7 +146,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 //Check Consommation E2PZ
                 $travelCost = $this->getConsumption($this->player->activeColony->coordinates,$this->coordinateDestination);
                 if($this->player->activeColony->E2PZ < $travelCost)
-                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost-$this->player->activeColony->E2PZ,3)], $this->player->lang);
+                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost-$this->player->activeColony->E2PZ,2)], $this->player->lang);
 
                 if(Str::startsWith('explore',$this->args[0]))
                 {
@@ -148,20 +156,27 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->player->activeColony->military < 1000)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
+                    $currentExplo = Exploration::where([['player_id', $this->player->id],['exploration_result', null]])->count();
+                    if($currentExplo > 0)
+                    {
+                        $communication = Technology::find(1);
+                        $comLvl = $this->player->hasTechnology($communication);
+                        if(!$comLvl)
+                            $comLvl = 0;
+
+                        if(ceil($comLvl/4) <= $currentExplo)
+                            return trans('stargate.maxExplorationReached', [], $this->player->lang);
+                    }
+
                     if($this->player->explorations->count() > 0)
                     {
-                        $lastExploration = $this->player->explorations->last();
-                        $lastExplorationCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastExploration->exploration_end);
-                        if(!$lastExplorationCarbon->isPast())
-                            return trans('stargate.alreadyExploring', [], $this->player->lang);
-
                         $alreadyExplored = $this->player->explorations->filter(function ($value) {
                             return $value->coordinateDestination->id == $this->coordinateDestination->id;
                         });
                         if($alreadyExplored->count() > 0)
                             return trans('stargate.alreadyExplored', [], $this->player->lang);
                     }
-                    
+
                     $this->player->activeColony->military -= 1000;
                     $this->player->activeColony->E2PZ -= $travelCost;
                     $this->player->activeColony->save();
@@ -172,7 +187,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $exploration->coordinate_destination_id = $this->coordinateDestination->id;
                     $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
                     $exploration->save();
-                    
+
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
@@ -195,7 +210,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 if(Str::startsWith('move',$this->args[0]))
                 {
                     if(count($this->args) < 4)
-                        return trans('generic.missingArgs', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';
+                        return trans('generic.missingArgs', [], $this->player->lang).' / !s move [Coordinates] Ress1 Qty1';
 
                     $availableResources = config('stargate.resources');
                     $availableResources[] = 'E2PZ';
@@ -258,17 +273,17 @@ class Stargate extends CommandHandler implements CommandInterface
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
-                        
+
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                             });
                         });
-    
+
 
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
@@ -278,7 +293,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
-                                    echo 'CONFIRMED'; 
+                                    echo 'CONFIRMED';
                                     $this->player->activeColony->refresh();
                                     $this->coordinateDestination->colony->refresh();
 
@@ -301,15 +316,17 @@ class Stargate extends CommandHandler implements CommandInterface
                                             elseif($ownedUnits < $qty)
                                             {
                                                 $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty-$ownedUnits)], $this->player->lang));
-                                                
+
                                                 $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                                 $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                 return;
                                             }
                                             $receivedString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
-                                        }        
-                                        elseif($this->player->activeColony->$tradeResource < $qty)
+                                        }
+                                        elseif($this->player->activeColony->$tradeResource < $qty || ($tradeResource == 'E2PZ' && $this->player->activeColony->$tradeResource < ($qty+$travelCost)))
                                         {
+                                            if($tradeResource == 'E2PZ')
+                                                $qty += $travelCost;
                                             $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(ceil($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
                                             $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                             $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
@@ -319,8 +336,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $tradeObjets[] = ['resource' => $tradeResource,'quantity'=>$qty];
                                             $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
-                                        }                           
-                                    }     
+                                        }
+                                    }
 
                                     try{
                                         foreach($tradeObjets as $tradeObject)
@@ -329,8 +346,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                             if(isset($tradeObject['unit_id']))
                                             {
                                                 $tradeUnit = Unit::find($tradeObject['unit_id']);
-                                                   
-                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($tradeUnit){               
+
+                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($tradeUnit){
                                                     return $value->id == $tradeUnit->id;
                                                 });
                                                 if($unitExists->count() > 0)
@@ -343,7 +360,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 {
                                                     $this->coordinateDestination->colony->units()->attach([$tradeObject['unit_id'] => ['number' => $tradeObject['quantity']]]);
                                                 }
-                                                $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeUnit){               
+                                                $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeUnit){
                                                     return $value->id == $tradeUnit->id;
                                                 });
                                                 $unitTodown = $unitExists->first();
@@ -371,7 +388,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    echo 'CANCELLED'; 
+                                    echo 'CANCELLED';
                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                     $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                 }
@@ -384,13 +401,12 @@ class Stargate extends CommandHandler implements CommandInterface
                         });
                     });
 
-
                     return;
                 }
 
                 if(Str::startsWith('trade',$this->args[0]))
                 {
-                    if(is_null($this->coordinateDestination->colony))
+                    if($this->coordinateDestination->colony->player->npc)
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
                     if(count($this->args) < 4)
@@ -427,7 +443,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     if(!in_array($resource,array('military','E2PZ')))
                                         $capacityNeeded += $qty;
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
-                                    
+
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
                                         return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
                                 }
@@ -457,17 +473,17 @@ class Stargate extends CommandHandler implements CommandInterface
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planetDest' => $this->coordinateDestination->colony->name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
-                        
+
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                             });
                         });
-    
+
 
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
@@ -480,7 +496,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $this->player->activeColony->refresh();
                                     $this->coordinateDestination->colony->refresh();
 
-                                    echo 'CONFIRMED'; 
+                                    echo 'CONFIRMED';
                                     $receivedString = "";
                                     $tradeObjets = [];
                                     foreach($this->tradeResources as $tradeResource => $qty)
@@ -505,11 +521,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 return;
                                             }
                                             $receivedString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
-                                        }        
-                                        elseif($this->player->activeColony->$tradeResource < $qty)
+                                        }
+                                        elseif($this->player->activeColony->$tradeResource < $qty || ($tradeResource == 'E2PZ' && $this->player->activeColony->$tradeResource < ($qty+$travelCost)))
                                         {
+                                            if($tradeResource == 'E2PZ')
+                                                $qty += $travelCost;
 
-                                            
                                             $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(round($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
                                             $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                             $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
@@ -519,8 +536,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $tradeObjets[] = ['resource' => $tradeResource,'quantity'=>$qty];
                                             $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
-                                        }                           
-                                    }     
+                                        }
+                                    }
 
                                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
@@ -578,7 +595,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                             $tradePlayer = 1;
                                         }
 
-
                                         foreach($tradeObjets as $tradeObject)
                                         {
                                             $tradeResource = new TradeResource;
@@ -589,8 +605,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                             {
                                                 $tradeResource->unit_id = $tradeObject['unit_id'];
                                                 $tradeResource->load('unit');
-                                                
-                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($tradeResource){               
+
+                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($tradeResource){
                                                     return $value->id == $tradeResource->unit->id;
                                                 });
                                                 if($unitExists->count() > 0)
@@ -603,7 +619,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 {
                                                     $this->coordinateDestination->colony->units()->attach([$tradeResource->unit_id => ['number' => $tradeResource->quantity]]);
                                                 }
-                                                $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeResource){               
+                                                $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeResource){
                                                     return $value->id == $tradeResource->unit->id;
                                                 });
                                                 $unitTodown = $unitExists->first();
@@ -637,7 +653,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    echo 'CANCELLED'; 
+                                    echo 'CANCELLED';
                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                     $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                 }
@@ -662,6 +678,18 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
+                    $spyLast2Hours = SpyLog::Where([['source_player_id',$this->player->id],['colony_destination_id',$this->coordinateDestination->colony->id],['created_at', '>=', Carbon::now()->sub('2h')]])->orderBy('created_at','DESC')->get();
+                    if($spyLast2Hours->count() > 0)
+                    {
+                        $nextSpy = Carbon::createFromFormat("Y-m-d H:i:s",$spyLast2Hours->first()->created_at)->add('2h');
+                        $nextVacationString = Carbon::now()->diffForHumans($nextSpy,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        return trans('stargate.alreadySpied', ['time' => $nextVacationString], $this->player->lang);
+                    }
+
                     $malp = Unit::where('slug', 'malp')->first();
                     $malpNumber = $this->player->activeColony->hasCraft($malp);
                     if(!$malpNumber)
@@ -675,14 +703,14 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
-                        
+
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                             });
                         });
 
@@ -714,7 +742,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $this->player->activeColony->E2PZ -= $travelCost;
                                         $this->player->activeColony->save();
 
-                                        $malpExists = $this->player->activeColony->units->filter(function ($value){               
+                                        $malpExists = $this->player->activeColony->units->filter(function ($value){
                                             return $value->slug == 'malp';
                                         });
                                         if($malpExists->count() > 0)
@@ -726,7 +754,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                        $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
+                                        $spyConfirmedMessage = trans('stargate.spySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3).' '.$malp->name.': 1'], $this->player->lang);
 
                                         $embed = [
                                             'author' => [
@@ -747,7 +775,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $reminder = new Reminder;
                                         $reminder->reminder_date = Carbon::now()->add('1s');
-                                        $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates, 'player' => $this->player->user_name], $this->player->lang);
+                                        $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $this->coordinateDestination->colony->name, 'coordinate' => $destCoordinates, 'planetSource' => $this->player->activeColony->name, 'sourceCoordinates' => $sourceCoordinates], $this->player->lang);
                                         $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                         $reminder->save();
 
@@ -760,16 +788,16 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $spy = Technology::where('slug', 'spy')->first();
                                         $counterSpy = Technology::where('slug', 'counterspy')->first();
-                    
+
                                         $playerDestination = $this->coordinateDestination->colony->player;
                                         $spyLvl = $this->player->hasTechnology($spy);
                                         $counterSpyLvl = $playerDestination->hasTechnology($counterSpy);
-                    
+
                                         if(!$spyLvl)
                                             $spyLvl = 0;
                                         if(!$counterSpyLvl)
                                             $counterSpyLvl = 0;
-                    
+
                                         $embed = [
                                             'author' => [
                                                 'name' => $this->player->user_name,
@@ -784,9 +812,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'text'  => 'Stargate',
                                             ),
                                         ];
-                    
+
                                         $showResources = $showFleet = $showdefences = $showBuildings = $showMilitaries = $showTechnologies = false;
-                    
+
                                         if($spyLvl < $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 4)
                                         {
                                             $embed['fields'][] = [
@@ -809,35 +837,47 @@ class Stargate extends CommandHandler implements CommandInterface
                                             if(($spyLvl-$counterSpyLvl) >= 4)
                                                 $showTechnologies = true;
                                         }
-                    
+
                                         if($showResources)
                                         {
                                             $resourceString = "";
                                             foreach(config('stargate.resources') as $resource){
                                                 $resourceString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($this->coordinateDestination->colony->$resource).' ';
                                             }
-                                            //$resourceString .= config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->E2PZ);
-                    
+
                                             $embed['fields'][] = [
                                                 'name' => trans('generic.resources', [], $this->player->lang),
                                                 'value' => $resourceString
                                             ];
                                         }
-                    
+
                                         if($showFleet)
                                         {
-                                            $embed['fields'][] = [
-                                                'name' => trans('stargate.fleet', [], $this->player->lang),
-                                                'value' => trans('stargate.emptyFleet', [], $this->player->lang)
-                                            ];
+                                            if(count($this->coordinateDestination->colony->ships) > 0)
+                                            {
+                                                $fleetString = '';
+                                                foreach($this->coordinateDestination->colony->ships as $ship)
+                                                {
+                                                    $fleetString .= number_format($ship->pivot->number).' '.$ship->name."\n";
+                                                }
+                                                $embed['fields'][] = array(
+                                                                        'name' => trans('stargate.fleet', [], $this->player->lang),
+                                                                        'value' => $fleetString,
+                                                                    );
+                                            }
+                                            else
+                                            {
+                                                $embed['fields'][] = [
+                                                    'name' => trans('stargate.fleet', [], $this->player->lang),
+                                                    'value' => trans('stargate.emptyFleet', [], $this->player->lang)
+                                                ];
+                                            }
                                         }
-                    
+
                                         if($showdefences)
                                         {
-
                                             if(count($this->coordinateDestination->colony->defences) > 0)
                                             {
-
                                                 $coef = 1;
                                                 $defenceLureList = $this->coordinateDestination->colony->artifacts->filter(function ($value){
                                                     return $value->bonus_category == 'DefenceLure';
@@ -845,7 +885,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 foreach($defenceLureList as $defenceLure)
                                                 {
                                                     $coef *= $defenceLure->bonus_coef;
-                                                }                                    
+                                                }
 
                                                 $defenceString = '';
                                                 foreach($this->coordinateDestination->colony->defences as $defence)
@@ -854,8 +894,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 }
                                                 $embed['fields'][] = array(
                                                                         'name' => trans('stargate.defences', [], $this->player->lang),
-                                                                        'value' => ceil($defenceString),
-                                                                        'inline' => true
+                                                                        'value' => $defenceString,
                                                                     );
                                             }
                                             else
@@ -866,7 +905,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 ];
                                             }
                                         }
-                
+
                                         if($showBuildings)
                                         {
                                             $buildingString = "";
@@ -883,7 +922,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'value' => $buildingString
                                             ];
                                         }
-                    
+
                                         if($showMilitaries)
                                         {
                                             $militaryString = config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($this->coordinateDestination->colony->military);
@@ -897,7 +936,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 'value' => $militaryString
                                             ];
                                         }
-                    
+
                                         if($showTechnologies)
                                         {
                                             $technologyString = "";
@@ -920,7 +959,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $reminder->embed = json_encode($embed);
                                         $reminder->player_id = $this->player->id;
                                         $reminder->save();
-                                        
+
                                     }
                                     catch(\Exception $e)
                                     {
@@ -958,7 +997,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     foreach($colonyMaxBonusList as $colonyMaxBonus)
                     {
                         $maxColonies += $colonyMaxBonus->bonus_coef;
-                    }                                    
+                    }
 
                     if($this->player->colonies->count() < $maxColonies)
                     {
@@ -1053,7 +1092,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         return trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.$qty], $this->player->lang);
                                     elseif($unitOwned < $qty)
                                         return trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.($qty-$unitOwned)], $this->player->lang);
-                                    
+
                                 }
                             }
                         }
@@ -1065,10 +1104,10 @@ class Stargate extends CommandHandler implements CommandInterface
                         if($this->attackMilitaries < 100)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.round(100-$this->attackMilitaries,2)], $this->player->lang);
                     }
-                    
+
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $attackConfirmation = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'planetName' => $this->coordinateDestination->colony->name, 'coordinateDestination' => $destCoordinates,'planetNameSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $attackConfirmation = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'planetName' => $this->coordinateDestination->colony->name, 'coordinateDestination' => $destCoordinates,'planetNameSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $embed = [
                         'author' => [
@@ -1088,10 +1127,10 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($travelCost){
-                        
+
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                             });
                         });
 
@@ -1149,7 +1188,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                        $attackSentMessage = trans('stargate.attackSent', ['planet' => $this->coordinateDestination->colony->name,'coordinateDestination' => $destCoordinates, 'player' => $this->coordinateDestination->colony->player->user_name], $this->player->lang);
+                                        $attackSentMessage = trans('stargate.attackSent', ['planet' => $this->coordinateDestination->colony->name,'coordinateDestination' => $destCoordinates], $this->player->lang);
 
                                         $embed = [
                                             'author' => [
@@ -1177,15 +1216,15 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $armamentLvl = $this->coordinateDestination->colony->player->hasTechnology($armamentTec);
                                         if($armamentLvl)
                                             $defencesAttackPoint *= pow(1.1,$armamentLvl);
-                                    
+
                                         $defenceMilitary = floor($this->coordinateDestination->colony->military);
                                         if($defenceMilitary < 1)
                                             $defenceMilitary = 1;
                                         $defenceValue = $defenceMilitary + $defencesAttackPoint*20;
-                                        
+
                                         /*Pertes
                                         (Nb Mili Défenseur)² / (Nb Mili Attaquant) */
-                                        $attackerLoosing = floor(pow($defenceValue,2) / $this->attackMilitaries);                                       
+                                        $attackerLoosing = floor(pow($defenceValue,2) / $this->attackMilitaries);
                                         $attackerLooseString = "";
                                         $attackerWinString = "";
                                         $defenderLooseString = "";
@@ -1200,7 +1239,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             //LOST
                                             $winState = false;
-                                            $defenderLostMilitaries = floor(pow($this->attackMilitaries,2) / $defenceValue);                                     
+                                            $defenderLostMilitaries = floor(pow($this->attackMilitaries,2) / $defenceValue);
                                             $stolenMilitaries = ceil($this->attackMilitaries/5);
 
                                             if($defenderLostMilitaries <= $this->coordinateDestination->colony->military)
@@ -1217,14 +1256,14 @@ class Stargate extends CommandHandler implements CommandInterface
                                             $defenderLooseString .= config('stargate.emotes.military')." ".trans('generic.military', [], $this->coordinateDestination->colony->player->lang).': '.number_format($defenderLostMilitaries)."\n";
 
                                             $this->player->activeColony->military -= $this->attackMilitaries;
-                                            
+
                                             foreach($this->attackUnits as $attackUnit)
                                             {
                                                 $uniQtyStolen = ceil($attackUnit['qty']/5);
                                                 $defenderWinString .= $attackUnit['unit']->name.': '.number_format($uniQtyStolen)."\n";
                                                 $attackerLooseString .= $attackUnit['unit']->name.': '.number_format($attackUnit['qty'])."\n";
 
-                                                $unitAttackerExists = $this->player->activeColony->units->filter(function ($value) use($attackUnit){               
+                                                $unitAttackerExists = $this->player->activeColony->units->filter(function ($value) use($attackUnit){
                                                     return $value->id == $attackUnit['unit']->id;
                                                 });
                                                 if($unitAttackerExists->count() > 0)
@@ -1234,7 +1273,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $unitToUpdate->pivot->save();
                                                 }
 
-                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($attackUnit){               
+                                                $unitExists = $this->coordinateDestination->colony->units->filter(function ($value) use($attackUnit){
                                                     return $value->id == $attackUnit['unit']->id;
                                                 });
                                                 if($unitExists->count() > 0)
@@ -1279,8 +1318,8 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                             $totalCapacity = 0;
                                             foreach($this->attackUnits as $attackUnit)
-                                            {      
-                                                if(!is_null($attackUnit['unit']->capacity))                                          
+                                            {
+                                                if(!is_null($attackUnit['unit']->capacity))
                                                     $totalCapacity += $attackUnit['unit']->capacity * $attackUnit['qty'];
                                             }
 
@@ -1305,7 +1344,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                         $claimed = $maxClaimable;
                                                     else
                                                         $claimed = $totalCapacity*$ratio;
-                                                    
+
                                                     if($claimed > 0)
                                                     {
                                                         $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
@@ -1318,13 +1357,14 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                             }
                                             /*
-                                            //La moitié des def en moins
+                                            //70% de la def restante
                                              */
                                             foreach($this->coordinateDestination->colony->defences as $defence)
                                             {
-                                                $lostDefenceQty = ceil($defence->pivot->number/2);
+                                                $lostDefenceQty = ceil($defence->pivot->number*0.3);
+                                                $newDefenceQty = floor($defence->pivot->number*0.7);
                                                 $defenderLooseString .= trans('defence.'.$defence->slug.'.name', [], $this->coordinateDestination->colony->player->lang).': '.number_format($lostDefenceQty)."\n";
-                                                $defence->pivot->number = $lostDefenceQty;
+                                                $defence->pivot->number = $newDefenceQty;
                                                 $defence->pivot->save();
                                             }
                                         }
@@ -1470,7 +1510,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
     public function getConsumption(Coordinate $source,Coordinate $destination)
     {
-        //0.03 * system 
+        //0.03 * system
         //3 * galaxy
         if($source->galaxy != $destination->galaxy)
             return abs($source->galaxy - $destination->galaxy)*2;
@@ -1506,7 +1546,7 @@ class Stargate extends CommandHandler implements CommandInterface
         {
             $now = Carbon::now();
             $firstFight = Carbon::createFromFormat("Y-m-d H:i:s",$last24h[0]->created_at);
-            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
+            $timeUntilAttack = $now->diffForHumans($firstFight->addHours(24),[
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE

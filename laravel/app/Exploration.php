@@ -24,7 +24,7 @@ class Exploration extends Model
     {
         $randomEvent = rand(1,100);
 
-        if($randomEvent <= 15)
+        if($randomEvent <= 14)
         {
             $this->exploration_result = false;
             $this->save();
@@ -58,7 +58,7 @@ class Exploration extends Model
                 $requirementString .= "Lvl ".$requiredTechnology->pivot->level." - ".trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)."\n";
             foreach($randomBuilding->requiredBuildings as $requiredBuilding)
                 $requirementString .= "Lvl ".$requiredBuilding->pivot->level." - ".trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)."\n";
-                    
+
             $this->exploration_result = true;
             $this->exploration_outcome = 'Tip';
             $this->save();
@@ -93,28 +93,7 @@ class Exploration extends Model
 
             return trans('stargate.exploreSucessTechnologyTip', ['name' => trans('research.'.$randomTechnology->slug.'.name', [], $this->player->lang), 'requirements' => $requirementString, 'coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang);
         }
-        elseif($randomEvent <= 54)
-        {
-            //Craft
-            $units = Unit::all();
-            $randomUnit = $units->random();
-
-            $requirementString = "";
-            foreach($randomUnit->requiredTechnologies as $requiredTechnology)
-                $requirementString .= "Lvl ".$requiredTechnology->pivot->level." - ".trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)."\n";
-            foreach($randomUnit->requiredBuildings as $requiredBuilding)
-                $requirementString .= "Lvl ".$requiredBuilding->pivot->level." - ".trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)."\n";
-                
-            $this->exploration_result = true;
-            $this->exploration_outcome = 'Tip';
-            $this->save();
-
-            $this->colonySource->military += 1000;
-            $this->colonySource->save();
-
-            return trans('stargate.exploreSucessCraftTip', ['name' => trans('craft.'.$randomUnit->slug.'.name', [], $this->player->lang), 'requirements' => $requirementString, 'coordinates' => $this->coordinateDestination->humanCoordinates()], $this->player->lang);
-        }
-        elseif($randomEvent <= 62)
+        elseif($randomEvent <= 60)
         {
             //Craft aléatoire
             $randomUnit = Unit::all()->random();
@@ -127,7 +106,7 @@ class Exploration extends Model
             $this->outcome_quantity = $resValue;
             $this->save();
 
-            $unitExists = $this->colonySource->units->filter(function ($value) use($randomUnit){               
+            $unitExists = $this->colonySource->units->filter(function ($value) use($randomUnit){
                 return $value->id == $randomUnit->id;
             });
             if($unitExists->count() > 0)
@@ -176,9 +155,9 @@ class Exploration extends Model
             $varProd = 'production_'.$resType;
 
             if($resType == 'E2PZ')
-                $resValue = rand(1,5);
+                $resValue = rand(2,6);
             else
-                $resValue = $this->colonySource->$varProd * rand(1,6);
+                $resValue = $this->colonySource->$varProd * rand(2,7);
             $resourceString = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue);
 
             $this->exploration_result = true;

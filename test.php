@@ -10,6 +10,7 @@ $app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
     ->handle(Illuminate\Http\Request::capture());
 
+use App\Alliance;
 use App\Building;
 use App\Player;
 use App\Colony;
@@ -26,6 +27,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
+
+
+$player = Player::find(1);
+
+echo $player->activeFleets->count();
+
+/*
 function weighted_random_simple($values, $weights){ 
 	$count = count($values); 
 	$i = 0; 
@@ -57,7 +65,7 @@ $bonusCategories = ['Production', 'Time', 'Price', 'DefenceLure','ColonyMax'];
 
 for($cpt=0;$cpt<100;$cpt++)
 echo PHP_EOL.weighted_random_simple($bonusCategories,$categoryWeights);
-
+*/
 
 /*
 $player = Player::find(1);

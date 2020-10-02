@@ -69,7 +69,7 @@ class PlayerObserver
                         {
                             $reminder = new Reminder;
                             $reminder->reminder_date = Carbon::now();
-                            $reminder->reminder = trans('generic.buildingUnlocked', ['name' => trans('building.'.$building->slug.'.name', [], $player->lang)], $player->lang);
+                            $reminder->reminder = trans('generic.buildingUnlocked', ['name' => trans('building.'.$building->slug.'.name', [], $player->lang), 'planet' => $player->activeColony->name, 'coordinate' => $player->activeColony->coordinates->humanCoordinates()], $player->lang);
                             $reminder->player_id = $player->id;
                             $reminder->save();
                         }

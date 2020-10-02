@@ -13,7 +13,7 @@ return [
     ],
     'build' => [
         'description' => "List available buildings, Show building details or build/upgrade some building.",
-        'usage' => "!build\n!build [id/slug]\n!build [id/slug] confirm"
+        'usage' => "!build\n!build [id/slug]\n!build [id/slug] confirm\n!build [id/slug] remove\n!build cancel"
     ],
     'research' => [
         'description' => "List available technologies, Show research details start/upgrade some research.",
@@ -62,6 +62,23 @@ return [
                     "!stargate move [coordinates] [Res1] [Qty1]\n".
                     "!stargate spy [coordinates]\n".
                     "!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]\n"
+    ],
+    'shipyard' => [
+        'description' => "Allows you to build spaceships",
+        'usage' => "!shipyard [Slug] [Quantity]\n".
+                    "!shipyard queue\n"
+    ],
+    'fleet' => [
+        'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",
+        'usage' =>  "!fleet \n".
+                    "!fleet fleet [id] return\n".
+                    //"**explore** (`!fleet explore [coordonées]`)\n".
+                    //"**colonize** (`!fleet colonize [coordonées]`)\n".
+                    "!fleet base [colony] [Ressource] [Qté]\n".
+                    "!fleet transport [colony/coordinates] [Ressource] [Qté]\n".
+                    //"**spy** (`!fleet spy [coordonées]`)\n".
+                    //"**attack** (`!fleet attack [coordonées] military [Qté] [Unit] [Qté]`)\n"
+                    "Optional parameter: speed [10-100]"
     ],
     'infos' => [
         'description' => 'Display information on Stargate Bot such as Author, support server invite, ....',

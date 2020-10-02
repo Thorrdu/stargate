@@ -4,17 +4,17 @@ return [
     "askBaseParameter" => "Available Actions:\n".
                           "**explore** (`!stargate explore [coordinates]`)\n".
                           "**colonize** (`!stargate colonize [coordinates]`)\n".
-                          "**move** (`!stargate move [colonyNumber] [Res1] [Qty1]`)\n".
-                          "**trade** (`!stargate trade [coordinates] [Res1] [Qty1]`)\n".
+                          "**move** (`!stargate move [colonyNumber] [Resource] [Qty]`)\n".
+                          "**trade** (`!stargate trade [coordinates] [Resource] [Qty]`)\n".
                           "**spy** (`!stargate spy [coordinates]`) \n".
-                          "**attack** (`!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]`)\n",
+                          "**attack** (`!stargate attack [coordinates] military [Qty] [Unit] [Qty]`)\n",
     "unknownCoordinates" => "Unknown Coordinates",
     "unReacheableCoordinates" => 'Unreachable Coordinates',
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...\n\n".
                             "**Lvl 5 - Research Center** required to use the gate to contact other planets.\n".
                             "However, at Lvl 4 you'll be able to receive gate dialing",
     "failedDialing" => "The dialing to this planet failed. There is no gate to contact on those coordinates.",
-    "alreadyExploring" => "An exploration mission is already ongoing.",
+    "maxExplorationReached" => "Too many exploration missions are already ongoing.",
     "alreadyExplored" => "You already explored this planet.",
     "explorationSent" => "The exploration team is arrived on the planet [:coordinates].\nA report will be send at the end of the mission.",
     "exploreSucessResources" => "During the exploration of the planet [:coordinates], the team has found a warehouse with interesting resources.\n".
@@ -29,13 +29,13 @@ return [
                                     "The technology **:name** requires:\n:requirements",
     "exploreSucessCraftTip" => "Your explorers have found the following information during the exploration of the planet [:coordinates]:\n".
                                "The craft **:name** requires:\n:requirements",
-    "exploreCriticalFailed" => "The tam sent to the planet [:coordinates] has not gave any life sign...",
+    "exploreCriticalFailed" => "The team sent to the planet [:coordinates] has not gave any life sign...",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
                        "External activation detected on :planetDest [:coordinateDestination] incoming from :planetSource [:coordinateSource] (:player)\n\n".
                        "The following resources have been delivred:\n:resources",
     "tradeSent" => "You sent the following resources from :planetSource [:coordinateSource] to :planetDest [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
     "tradeMessage" => "__Sending resources from :planetSource [:coordinateSource]__\n".
-                      "Destination: :planet [:coordinateDestination] (:player)\n".
+                      "Destination: :planet [:coordinateDestination]\n".
                       "Resources:\n".
                       ":resources\n".
                       "Cost: :consumption\n\n".
@@ -47,9 +47,9 @@ return [
                       "Coût: :consumption\n\n".
                       "Sending status: **Awaiting**",
     'unknownResource' => "Unknown resource: :resource",
-    "spyConfirmation" => "Send a spy mission on :planetDest [:coordinateDestination] (:player) ?\nCost: :consumption",
-    "spySending" => "You sent a spy mission on :planetDest [:coordinateDestination] (:player) !\nCost: :consumption\n\nA report will be delivred soon.",
-    "messageSpied" => "Your colony :planetName [:coordinate] targeted by a spy mission comming from :planetSource [:sourceCoordinates] (:player).",
+    "spyConfirmation" => "Send a spy mission on :planetDest [:coordinateDestination] ?\nCost: :consumption",
+    "spySending" => "You sent a spy mission on :planetDest [:coordinateDestination] !\nCost: :consumption\n\nA report will be delivred soon.",
+    "messageSpied" => "Your colony :planetName [:coordinate] targeted by a spy mission comming from :planetSource [:sourceCoordinates].",
     "emptyReportTitle" => "Partial report",
     "technologyTooLow" => "No date has been recovered, due to Spy technology too low",
     "spyReportDescription" => "Spy report from :planetDest [:coordinateDestination] (:player)",
@@ -61,10 +61,10 @@ return [
     "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies or `!colony remove [Number]` to remove one.\n(The list can be seen with `!colony list`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
     "neverExploredWorld" => "Empty planet.",
-    "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] (:player) from :planetNameSource [:coordinateSource]\n".
+    "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] from :planetNameSource [:coordinateSource]\n".
                             "Troops:\n:militaryUnits".
                             "\nCost: :consumption",
-    "attackSent" => "Your troops have been send on :planet [:coordinateDestination] (:player).\nA report will arrive soon.",
+    "attackSent" => "Your troops have been send on :planet [:coordinateDestination].\nA report will arrive soon.",
     "attackCancelled" => "Attack cancelled",
     "attackerWinReport" => "Attack through Stargate [:destination] (:player)\n\n".
                             "Your troops emerged victorious from the fight against **:player** on planet **:planetDest [:destination]**\n\n".
@@ -91,5 +91,6 @@ return [
     "tradeNpcImpossible" => "Impossible to trade with an NPC",
     'spyCancelled' => "Spy cancelled",
     'colonizeCancel' => 'Colonize Cancelled',
-    'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource'
+    'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource',
+    'alreadySpied' => 'You spied this colony too recently. You\'ll be able to spy this colony again in **:time**',
 ];

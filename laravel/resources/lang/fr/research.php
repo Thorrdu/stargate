@@ -3,7 +3,7 @@
 return [
     'communication' => [
         'name' => "Informatique et Communication",
-        'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches",
+        'description' => "Doté d'un système informatique et de communication performants, vos colons sont plus efficaces dans leurs tâches.\nPermet également d'envoyer une mission d'exploration de plus tous les 4 niveaux.",
         ],
     'spy' => [
         'name' => "Espionnage",

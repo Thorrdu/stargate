@@ -23,7 +23,8 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand};
+use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, ShipYard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Fleet;
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -42,6 +43,7 @@ use Discord\Parts\User\Activity;
 global $upTimeStart;
 $upTimeStart = Carbon::now();
 
+global $beta;
 $beta = false;
 $token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.Sc1wU-YOokbAS2HXVc8sNt_R02w';
 $prefix = '!';
@@ -86,7 +88,7 @@ $discord->on('ready', function ($discord) use($beta){
         if($rowExists == 0)
         {
             $usrCount = $discord->users->count();
-            if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+            if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
                 $usrCount += 135000;
 
             DB::table('configuration')->insert([
@@ -109,22 +111,31 @@ $discord->on('ready', function ($discord) use($beta){
         echo $e->getMessage();
     }
     
-    $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
+    $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
 
 	// Listen for messages.
-	$discord->on('message', function ($message) {
+	/*$discord->on('message', function ($message) {
         if($message->author->user->bot == true)
             return;
         if($message->guild_id != 735390211130916904 && $message->guild_id != 735390211130916904)
             return;
 		echo "{$message->author->user->username }: {$message->content}",PHP_EOL;
-    });
-
+    });*/
 
     if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
     {
+        $discord->loop->addPeriodicTimer(45, function () use ($discord) {
+            $dateNow = Carbon::now();
+            $endedFleets = Fleet::where([['arrival_date', '<', $dateNow->format("Y-m-d H:i:s")], ['ended', false]])->get();
+            echo PHP_EOL."CHECK FLEETS: ".$endedFleets->count();
+            foreach($endedFleets as $endedFleet)
+            {  
+                $endedFleet->outcome();
+            }
+        });
+
         $discord->loop->addPeriodicTimer(300, function () use ($discord) {
 
             $playersPremiumExpired = Player::Where([['premium_expiration','<>',''],['premium_expiration','<',date("Y-m-d H:i:s")]])->get();
@@ -174,7 +185,7 @@ $discord->on('ready', function ($discord) use($beta){
                 {
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->add(rand(1,5).'m');
-                    $reminder->reminder = trans('colony.artifactDiscovered', ['artifact' => $newArtifact], $colonyCheckArtifact->player->lang);
+                    $reminder->reminder = trans('colony.artifactDiscovered', ['artifact' => $newArtifact, 'planet' => $colonyCheckArtifact->name, 'coordinate' => $colonyCheckArtifact->coordinates->humanCoordinates()], $colonyCheckArtifact->player->lang);
                     $reminder->player_id = $colonyCheckArtifact->player->id;
                     $reminder->save();
                 }
@@ -224,7 +235,7 @@ $discord->on('ready', function ($discord) use($beta){
 
             echo PHP_EOL.'New Limit Calc';
 
-            $newLimit = round(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total'));
+            $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
             Config::set('stargate.gateFight.StrongWeak', $newLimit);
             echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
     
@@ -247,7 +258,7 @@ $discord->on('ready', function ($discord) use($beta){
         });
     }
 
-    $discord->loop->addPeriodicTimer(30, function () use ($discord) {   
+    $discord->loop->addPeriodicTimer(30, function () use ($discord,$beta) {   
 
         $playersVoted = Player::Where('vote_flag',true)->get();
         foreach($playersVoted as $playerVoted)
@@ -272,7 +283,7 @@ $discord->on('ready', function ($discord) use($beta){
         $discord->updatePresence($activity);
 
         $usrCount = $discord->users->count();
-        if($discord->commandClientOptions['discordOptions']['shardId'] == 0)
+        if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
             $usrCount += 135000;
 
         DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
@@ -474,6 +485,26 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
 		'aliases' => array('s','st','sta','star'),
+        'cooldown' => 5
+    ]);
+
+    $discord->registerCommand('fleet', function ($message, $args) use($discord){
+        $command = new FleetCommand($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.fleet.description', [], 'fr'),
+		'usage' => trans('help.fleet.usage', [], 'fr'),
+		'aliases' => array('fleet','f'),
+        'cooldown' => 5
+    ]);	
+    
+    $discord->registerCommand('shipyard', function ($message, $args) use($discord){
+        $command = new ShipYard($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.shipyard.description', [], 'fr'),
+		'usage' => trans('help.shipyard.usage', [], 'fr'),
+		'aliases' => array('sh','ship'),
         'cooldown' => 5
     ]);	
 
