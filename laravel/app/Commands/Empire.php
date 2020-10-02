@@ -199,13 +199,13 @@ class Empire extends CommandHandler implements CommandInterface
                             $defenseString .= $defense->pivot->number.' '.$defense->name."\n";
 
                         if(empty($defenseString))
-                            $defenseString = trans('stargate.emptydefences');
+                            $defenseString = trans('stargate.emptydefences', [], $this->player->lang);
 
                         foreach($colony->ships as $ship)
                             $fleetString .= $ship->pivot->number.' '.$ship->name."\n";
 
                         if(empty($fleetString))
-                            $fleetString = trans('stargate.emptyFleet');
+                            $fleetString = trans('stargate.emptyFleet', [], $this->player->lang);
 
                         $embed['fields'][] = array(
                             'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
@@ -238,7 +238,7 @@ class Empire extends CommandHandler implements CommandInterface
                             $artifactString .= $artifact->toString($this->player->lang)."\n";
 
                         if(empty($artifactString))
-                            $artifactString = trans('generic.NoArtifact');
+                            $artifactString = trans('generic.NoArtifact', [], $this->player->lang);
 
                         $embed['fields'][] = array(
                             'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
@@ -247,7 +247,8 @@ class Empire extends CommandHandler implements CommandInterface
                         );
                     }
                 }
-                $this->message->channel->sendMessage('', false, $embed);
+                if(isset($embed))
+                    $this->message->channel->sendMessage('', false, $embed);
             }
             catch(\Exception $e)
             {

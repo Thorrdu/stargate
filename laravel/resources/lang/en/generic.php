@@ -61,7 +61,7 @@ return [
     'missingPerm' => "Missing perm...",
     'coordinates' => "Coordinates",
     "buildingSpace" => "Building space",
-    'NoArtifact' => 'No artifact',
+    'noArtifact' => 'No artifact',
     "awaiting" => "Awaiting",
     "cancelled" => "Cancelled",
     "confirmed" => "Confirmed",

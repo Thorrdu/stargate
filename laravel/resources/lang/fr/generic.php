@@ -61,7 +61,7 @@ return [
     'missingPerm' => "Permission manquantes...",
     'coordinates' => "Coordonées",
     "buildingSpace" => "Espace constructible",
-    'NoArtifact' => 'Aucun artefact',
+    'noArtifact' => 'Aucun artefact',
     "awaiting" => "En attente",
     "cancelled" => "Annulé",
     "confirmed" => "Confirmé",
