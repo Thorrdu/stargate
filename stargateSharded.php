@@ -23,7 +23,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, ShipYard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Utility\TopUpdater;
  
@@ -499,7 +499,7 @@ $discord->on('ready', function ($discord) use($beta){
     ]);	
     
     $discord->registerCommand('shipyard', function ($message, $args) use($discord){
-        $command = new ShipYard($message,$args,$discord);
+        $command = new Shipyard($message,$args,$discord);
         return $command->execute();
     },[
         'description' => trans('help.shipyard.description', [], 'fr'),
