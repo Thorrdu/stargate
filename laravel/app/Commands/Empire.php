@@ -238,7 +238,7 @@ class Empire extends CommandHandler implements CommandInterface
                             $artifactString .= $artifact->toString($this->player->lang)."\n";
 
                         if(empty($artifactString))
-                            $artifactString = trans('generic.NoArtifact', [], $this->player->lang);
+                            $artifactString = trans('generic.noArtifact', [], $this->player->lang);
 
                         $embed['fields'][] = array(
                             'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
