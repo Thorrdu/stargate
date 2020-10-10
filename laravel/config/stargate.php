@@ -28,7 +28,7 @@ return [
     'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
     'maxProdTime' => 720, //12h
-    'maxColonies' => 5,
+    'maxColonies' => 6,
     'maxHourly' => 24,
     'gateFight' => ['StrongWeak' => 0],
     'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 10000],
