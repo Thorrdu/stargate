@@ -31,19 +31,19 @@ class Research extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Research';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
-                
+
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
                 if(!is_null($this->player->vacation))
                     return trans('profile.vacationMode',[],$this->player->lang);
-                    
+
                 /*$this->player->checkTechnology();
                 $this->player->refresh();*/
 
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
-                
+
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     $this->researchList = Technology::all();
@@ -54,20 +54,20 @@ class Research extends CommandHandler implements CommandInterface
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react('⏪')->then(function(){ 
-                            $this->paginatorMessage->react('◀️')->then(function(){ 
-                                $this->paginatorMessage->react('▶️')->then(function(){ 
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
                                     $this->paginatorMessage->react('⏩')->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                     });
                                 });
                             });
                         });
-    
+
                         $filter = function($messageReaction){
                             if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                                 return false;
-                            
+
                             if($messageReaction->user_id == $this->player->user_id)
                             {
                                 try{
@@ -175,7 +175,7 @@ class Research extends CommandHandler implements CommandInterface
                             {
                                 $coef *= $buildingPriceBonus->bonus_coef;
                             }
-                
+
                             $technologyPrices = $technology->getPrice($wantedLvl, $coef);
                             $missingResString = "";
                             foreach (config('stargate.resources') as $resource)
@@ -199,7 +199,7 @@ class Research extends CommandHandler implements CommandInterface
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);      
+                            ]);
                             return trans('research.researchStarted', ['name' => trans('research.'.$technology->slug.'.name', [], $this->player->lang), 'level' => $wantedLvl, 'time' => $buildingTime], $this->player->lang);
                         }
                         else
@@ -225,7 +225,7 @@ class Research extends CommandHandler implements CommandInterface
                             $currentLvl = $this->player->hasTechnology($technology);
                             if($currentLvl)
                                 $wantedLvl += $currentLvl;
-                
+
                             if(count($this->args) == 2 && (int)$this->args[1] >= 1 && $this->args[1] < 65)
                             {
                                 $wantedLvl = (int)$this->args[1];
@@ -250,19 +250,19 @@ class Research extends CommandHandler implements CommandInterface
                                     $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
                                 }
                             }
-                
+
                             $buildingTime = $technology->getTime($wantedLvl);
-                            
+
                             /** Application des bonus */
-                            $buildingTime *= $this->player->activeColony->getResearchBonus();
-                
+                            $buildingTime *= $this->player->activeColony->getResearchBonus($technology->id);
+
                             $now = Carbon::now();
                             $buildingEnd = $now->copy()->addSeconds($buildingTime);
                             $buildingTime = $now->diffForHumans($buildingEnd,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);                      
+                            ]);
                             $displayedLvl = 0;
                             if($currentLvl)
                                 $displayedLvl = $currentLvl;
@@ -428,9 +428,9 @@ class Research extends CommandHandler implements CommandInterface
             }
 
             $buildingTime = $technology->getTime($wantedLvl);
-            
+
             /** Application des bonus */
-            $buildingTime *= $this->player->activeColony->getResearchBonus();
+            $buildingTime *= $this->player->activeColony->getResearchBonus($technology->id);
 
             $now = Carbon::now();
             $buildingEnd = $now->copy()->addSeconds($buildingTime);
@@ -438,12 +438,12 @@ class Research extends CommandHandler implements CommandInterface
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
-            ]);   
+            ]);
 
             $displayedLvl = 0;
             if($currentLvl)
                 $displayedLvl = $currentLvl;
-                
+
             $hasRequirements = true;
             foreach($technology->requiredTechnologies as $requiredTechnology)
             {
@@ -466,7 +466,7 @@ class Research extends CommandHandler implements CommandInterface
                     'inline' => true
                 );
             }
-            elseif(in_array($technology->id,array(1,4)))
+            else
             {
                 $requirementString = '';
                 foreach($technology->requiredTechnologies as $requiredTechnology)
@@ -484,18 +484,10 @@ class Research extends CommandHandler implements CommandInterface
                         $buildLvl = 0;
                     $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
                 }
-                        
+
                 $embed['fields'][] = array(
                     'name' => trans('research.hiddenTechnology', [], $this->player->lang),
                     'value' => $requirementString,
-                    'inline' => true
-                );
-            }
-            else
-            {
-                $embed['fields'][] = array(
-                    'name' => trans('research.hiddenTechnology', [], $this->player->lang),
-                    'value' => trans('research.unDiscovered', [], $this->player->lang),
                     'inline' => true
                 );
             }

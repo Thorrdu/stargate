@@ -191,7 +191,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1200,
             'time_coefficient' => 1.7
         ]);
-        //Extracteur naqadah 5
+        //Extracteur naqahdah 5
         DB::table('building_buildings')->insert([
             'building_id' => 8,
             'required_building_id' => 6,
@@ -227,7 +227,7 @@ class DatabaseSeeder extends Seeder
         DB::table('buildings')->insert([
             'id' => 10,
             'name' => 'Reacteur au Naqahdah',
-            'slug' => Str::slug('naqadahreactor'),
+            'slug' => Str::slug('naqahdahreactor'),
             'description' => "Centrale permettant de générer d'énormes quantités d'énergie en consommant du Naqahdah.",
             'type' => 'Energy',
             'iron' => 5200,
@@ -665,7 +665,7 @@ class DatabaseSeeder extends Seeder
             'display_order' => 4,
             'upgrade_coefficient' => 1.9,
             'time_base' => 86400,
-            'time_coefficient' => 1.7,
+            'time_coefficient' => 1.9,
             'building_bonus' => 0.5,
             'technology_bonus' => 0.5,
             'ship_bonus' => 0.7,
@@ -836,9 +836,9 @@ class DatabaseSeeder extends Seeder
             */
 
         /*
-        Reacteur au naqadah
+        Reacteur au naqahdah
         */
-        //Extracteur naqadah 5
+        //Extracteur naqahdah 5
         DB::table('building_buildings')->insert([
             'building_id' => 10,
             'required_building_id' => 5,

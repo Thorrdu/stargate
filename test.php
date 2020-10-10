@@ -17,10 +17,11 @@ use App\Colony;
 use App\Technology;
 use App\Defence;
 use App\Artifact;
+use App\Utility\FuncUtility;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
-
-
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -29,9 +30,22 @@ use Illuminate\Support\Facades\Config;
 
 
 
-$player = Player::find(1);
 
-echo $player->activeFleets->count();
+$building = Building::find(16);
+
+for($cpt=1;$cpt<5;$cpt++)
+{
+	$time = $building->getTime($cpt);
+
+	$now = Carbon::now();
+	$buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",Carbon::now()->add($time.'s'));
+	$buildingTime = $now->diffForHumans($buildingEnd,[
+		'parts' => 3,
+		'short' => true, // short syntax as per current locale
+		'syntax' => CarbonInterface::DIFF_ABSOLUTE
+	]);
+	echo "\n".$cpt.' - '.$buildingTime;
+}
 
 /*
 function weighted_random_simple($values, $weights){ 

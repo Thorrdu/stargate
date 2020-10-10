@@ -429,7 +429,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     }
 
                     $embed['fields'][] = array(
-                        'name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
+                        'name' => $defence->id.' - '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
                         'value' => "\n".$requirementString,
                         'inline' => true
                     );

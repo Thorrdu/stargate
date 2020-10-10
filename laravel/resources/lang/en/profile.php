@@ -19,4 +19,5 @@ return [
     'playerVacation' => 'Action impossible, player in **vacation mode**.',
     'youFightedRecently' => 'Vous avez combattu trop récement. Vous pourrez activer le mode vacance dans **:time**',
     'activeFleets' => 'Vous avez des vaisseaux en vol. Vous pourrez activer le mode vacance une fois qu\'ils seront à quai.',
+    'busyPlayer' => 'Des constructions ou recherche sont en cours sur vos colonies. Vous ne pouvez activer le mode vacance qu\'une fois vos colonies au repos.',
 ];

@@ -230,7 +230,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                 if(!is_null($coordinate->colony))
                 {
                     $colonyPlayer = $coordinate->colony->player;
-                    $colonyPlayerName = $colonyPlayer->user_name;
+                    $colonyPlayerName = '';
 
                     if(!($colonyPlayer->alliance_id != null && $this->player->alliance_id != null && $this->player->alliance_id == $colonyPlayer->alliance_id))
                     {
@@ -239,13 +239,15 @@ class Galaxy extends CommandHandler implements CommandInterface
                             $counterSpyLvl = 0;
 
                         if(($counterSpyLvl - $spyLvl) >= 2)
-                            $colonyPlayerName = trans('galaxy.hiddenPlayer', [], $this->player->name);
+                            $colonyPlayerName = $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer).' '.$coordinate->planet.trans('galaxy.hiddenPlayer', [], $this->player->name);
                     }
 
-                    if($colonyPlayer->npc)
-                        $coordinateList .= $coordinate->planet." - ".$coordinate->colony->name." [NPC] ".$colonyPlayerName."\n";
-                    else
-                        $coordinateList .= $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." ".$colonyPlayerName."\n";
+                    if(empty($colonyPlayerName) && !$colonyPlayer->npc)
+                        $colonyPlayerName = $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer)." ".$coordinate->colony->name." ".$colonyPlayer->user_name;
+                    elseif($colonyPlayer->npc)
+                        $colonyPlayerName = $coordinate->planet." - [NPC] ".$coordinate->colony->name." ".$colonyPlayer->user_name;
+
+                    $coordinateList .= $colonyPlayerName."\n";
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";

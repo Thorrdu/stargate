@@ -8,22 +8,12 @@ class Trade extends Model
 {
     public function playerSource()
     {
-        return $this->belongsTo('App\Player','id','source_player_id');
+        return $this->belongsTo('App\Player','player_id_source','id');
     }
 
     public function playerDest()
     {
-        return $this->belongsTo('App\Player','id','dest_player_id');
-    }
-
-    public function colonySource()
-    {
-        return $this->belongsTo('App\Colony','id','colony__source_id');
-    }
-
-    public function colonyDest()
-    {
-        return $this->belongsTo('App\Colony','id','colony_destination_id');
+        return $this->belongsTo('App\Player','player_id_dest','id');
     }
 
     public function tradeResources()
@@ -39,5 +29,21 @@ class Trade extends Model
         {
             $this->{'trade_value_player'.$tradeResource->player} += $tradeResource->trade_value;
         }
+    }
+
+    public function getFairness()
+    {
+        if($this->playerSource->points_total > $this->playerDest->points_total && ($this->trade_value_player2/$this->trade_value_player1) > 1.25)
+        {
+            //Si player 1 est plus fort et à donné plus de 15% en plus que player 2
+            return false;
+        }
+        elseif($this->playerSource->points_total < $this->playerDest->points_total && ($this->trade_value_player1/$this->trade_value_player2) > 1.25)
+        {
+            //Si player 2 est plus fort et à donné plus de 15% en plus que player 1
+            return false;
+        }
+        return true;
+
     }
 }

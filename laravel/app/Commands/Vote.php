@@ -22,10 +22,17 @@ class Vote extends CommandHandler implements CommandInterface
             if($this->player->vote_boxes > 0)
             {
                 try{
-                    $this->player->vote_boxes--;
-                    $this->player->save();
-                    $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 6, 'maxEnding' => 6])->toString($this->player->lang);
-                    return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
+
+                    if($this->player->activeColony->artifacts->count() < 10)
+                    {
+                        $this->player->vote_boxes--;
+                        $this->player->save();
+                        $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 6, 'maxEnding' => 6])->toString($this->player->lang);
+                        return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
+                    }
+                    else
+                        return trans('vote.tooManyArtifacts', [], $this->player->lang);
+
                 }
                 catch(\Exception $e)
                 {
@@ -52,7 +59,7 @@ class Vote extends CommandHandler implements CommandInterface
                     return trans('vote.voteTimer', ['time' => $nextVote,'voteBoxes' => $this->player->vote_boxes], $this->player->lang);
                 }
             }
-    
+
             if(!is_null($this->player))
                 return trans('vote.voteMessage',['link'=>'https://top.gg/bot/730815388400615455/vote','voteBoxes' => $this->player->vote_boxes], $this->player->lang);
             else

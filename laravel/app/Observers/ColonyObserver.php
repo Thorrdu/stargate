@@ -25,90 +25,25 @@ class ColonyObserver
     /**
      * Handle the colony "updated" event.
      *
-     * @param  \App\Colony  $colony 
+     * @param  \App\Colony  $colony
      * @return void
      */
     public function updating(Colony $colony)
     {
-        echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
-
+        //echo PHP_EOL.'COLONY OBERSER EVENT UPDATED';
+        /*
         try{
             if(is_null($colony->active_building_id) && $colony->isDirty('active_building_id'))
             {
-                echo PHP_EOL.'player OBSRVER check requirements';
+                //echo PHP_EOL.'player OBSRVER check requirements';
                 //$colony->cast / $colony->original
-                $endedBuilding = Building::find($colony->getOriginal('active_building_id'));
-                $buildingsIds = [];
-                $buildingEndedLvl = $colony->hasBuilding($endedBuilding);
-                $buildingsIdsRaw = DB::table('building_buildings')->select('building_id')->where([['required_building_id',$endedBuilding->id],['level',$buildingEndedLvl]])->get()->toArray();
-                foreach($buildingsIdsRaw as $raw)
-                    $buildingsIds[] = $raw->building_id;
-                $buildings = Building::whereIn('id',$buildingsIds)->get();
-            
-                foreach($buildings as $building)
-                {               
-                    $hasRequirements = true;
-                    foreach($building->requiredTechnologies as $requiredTechnology)
-                    {
-                        $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
-                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
-                            $hasRequirements = false;
-                    }
-                    foreach($building->requiredBuildings as $requiredBuilding)
-                    {
-                        $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
-                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
-                            $hasRequirements = false;
-                    }
-                    if($hasRequirements)
-                    {
-                        $reminder = new Reminder;
-                        $reminder->reminder_date = Carbon::now();
-                        $reminder->reminder = trans('generic.buildingUnlocked', ['name' => trans('building.'.$building->slug.'.name', [], $colony->player->lang), 'planet' => $colony->name, 'coordinate' => $colony->coordinates->humanCoordinates()], $colony->player->lang);
-                        $reminder->player_id = $colony->player->id;
-                        $reminder->save();
-                    }
-                }
-                
-                $techIds = [];
-                $techIdsRaw = DB::table('technology_buildings')->select('technology_id')->where([['required_building_id',$endedBuilding->id],['level',$buildingEndedLvl]])->get()->toArray();
-                foreach($techIdsRaw as $raw)
-                    $techIds[] = $raw->technology_id;
-            
-                $technologies = Technology::whereIn('id',$techIds)->get();
-                foreach($technologies as $technology)
-                {
-                    $hasRequirements = true;
-                    foreach($technology->requiredTechnologies as $requiredTechnology)
-                    {
-                        $currentLvlOwned = $colony->player->hasTechnology($requiredTechnology);
-                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
-                            $hasRequirements = false;
-                    }
-                    foreach($technology->requiredBuildings as $requiredBuilding)
-                    {
-                        $currentLvlOwned = $colony->hasBuilding($requiredBuilding);
-                        if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
-                            $hasRequirements = false;
-                    }
-                    if($hasRequirements)
-                    {
-                        $reminder = new Reminder;
-                        $reminder->reminder_date = Carbon::now();
-                        $reminder->reminder = trans('generic.researchUnlocked', ['name' => trans('research.'.$technology->slug.'.name', [], $colony->player->lang)], $colony->player->lang);
-                        $reminder->player_id = $colony->player->id;
-                        $reminder->save();
-                    }
-                }
-                //$colony->unsetEventDispatcher();
-                //$colony->calcProd();
-                echo PHP_EOL.'player OBSRVER TOP UPDATED';
+                //Notifications supprimées en 0.7.1
             }
         }
         catch(\Exception $e)
         {
             echo $e->getMessage();
-        }
+        }*/
     }
 
     public function retrieved(Colony $colony)

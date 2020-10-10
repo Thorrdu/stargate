@@ -7,7 +7,8 @@ return [
                             "**move** (`!stargate move [NuméroDeColonie] [Res1] [Qté1]`)\n".
                             "**trade** (`!stargate trade [coordonées] [Res1] [Qté1]`)\n".
                             "**spy** (`!stargate spy [coordonées]`)\n".
-                            "**attack** (`!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]`)\n",
+                            "**attack** (`!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]`)\n".
+                            "**bury** (`!stargate bury`)\n",
     "unknownCoordinates" => "Coordonées inconnues",
     "unReacheableCoordinates" => 'Coordonées hors de portée',
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...\n\n".
@@ -18,9 +19,10 @@ return [
     "alreadyExplored" => "Vous avez déjà exploré cette planète.",
     "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
     "exploreSucessResources" => "En explorant la planète [:coordinates], l'équipe est tombée sur un entrepôt contenant des ressources intéressantes.\n".
-                                "Ils ont ramenés avec eux: :resources",
-    "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. essayez l'espionnage.",
+                                "Ils ont ramenés avec eux:\n :resources",
+    "explorePlayerImpossible" => "Il n'est pas possible d'explorer la planète d'un autre joueur. Essayez l'espionnage.",
     "exploreFailed" => "Vos explorateurs n'ont rien trouvé d'intéressant en explorant la planète [:coordinates].",
+    "exploreFailed2" => "Votre équipe d'explorateurs a repéré une activité hostile sur la planète [:coordinates] au cours de leur exploration. Impossible de récupérer d'avantage d'informations.",
     "exploreSucessArtifact" => "Vos explorateurs ont rapporté un artefact de la planète [:coordinates]:\n".
                                 ":artifact",
     "exploreSucessBuildingTip" => "Vos explorateurs ont trouvé l'information suivante en explorant la planète [:coordinates]:\n".
@@ -75,13 +77,15 @@ return [
                             "Bilan des pertes:\n:loostTroops\n",
     "defenderWinReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
-                            "Fort heureusement, vos troupes ont peu contenir l'attaque et repousser l'envahisseur.\n\n".
+                            "Fort heureusement, vos troupes ont pu contenir l'attaque et repousser l'envahisseur.\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
+                            "Estimation des troupes ennemies:\n:estimatedAttackTroops\n".
                             "Bilan des gains:\n:raidReward",
     "defenderLostReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
-                            "Bilan des pertes:\n:loostTroops\n",
+                            "Bilan des pertes:\n:loostTroops\n".
+                            "Estimation des troupes ennemies:\n:estimatedAttackTroops\n",
     "noCasuality" => "Aucune perte à déplorer",
     "playerOwned" => "Appartient à un joueur",
     "samePlayerAction" => "Vous ne pouvez effectuer cette action sur vous même...",
@@ -93,4 +97,14 @@ return [
     'colonizeCancel' => 'Mission de colonisation annulée',
     'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource',
     'alreadySpied' => 'Vous avez espionné cette colonie trop récement. Vous pourrez à nouveau envoyer une sonde dans **:time**',
+    'digingStarted' => 'Vous avez commencé les travaux d\'excavation de votre Stargate, elle sera de nouveau opérationelle dans **48h**.',
+    'burialStarted' => 'Vous avez commencé l\'inhumation de votre Stargate. Elle sera complètement inopérante dans **24h**.\nCependant, tant qu\'elle ne sera pas complètement ensevelie, des activations extérieures sont encore possible.',
+    'digUpConfirm' => 'Souhaitez-vous déterrer votre Stargate ? Cette action prendra **48h**.',
+    'burryConfirm' => "Souhaitez-vous enterrer votre Stargate ? Cette action prendra **24h**.\nAttention, dès que le processus aura commencé, vous ne pourrez plus l'utiliser mais des activations exétieures peuvent encore survenir durant l'inhumation.",
+    'digingActive' => 'Des travaux d\'excavation sont actuellement en cours. Stargate opérationelle dans: **:time**',
+    'buryingActive' => 'Des travaux d\'inhumation sont actuellement en cours. Stargate inopérante dans: **:time**',
+    'buriedStargate' => 'Stargate inopérante.',
+    'playerTradeBan' => 'Ce joueur est banni du système de trade.',
+    'trade_ban' => 'Vous êtes banni du système de trade. Vérifiez vos trades via `!trade`',
+    "probeSpySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\nVotre sonde arrivera dans: **:fleetDuration**\n\n",
 ];

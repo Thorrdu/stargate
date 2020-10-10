@@ -2,9 +2,12 @@
 
 namespace App;
 
+use App\Utility\FuncUtility;
+use App\Utility\PlayerUtility;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Fleet extends Model
 {
@@ -216,7 +219,7 @@ class Fleet extends Model
                             {
                                 $tradeLog = $tradeLogCheck;
                                 $tradePlayer = '';
-                                if($this->sourcePlayer->id == $tradeLog->player_id_dest)
+                                if($this->sourcePlayer->id == $tradeLog->player_id_source)
                                     $tradePlayer = 1;
                                 else
                                     $tradePlayer = 2;
@@ -321,9 +324,9 @@ class Fleet extends Model
 
                 break;
                 case 'attack':
-                    $win = $this->resolveFight();
+                    $winState = $this->resolveFight();
 
-                    if($win)
+                    if($winState)
                     {
                         $this->arrival_date = $now->addSeconds($newArrivalDate);
                         $this->returning = true;
@@ -334,21 +337,11 @@ class Fleet extends Model
                     }
                 break;
                 case 'spy':
-                    $spySuccess = true;
-
-                    if($spySuccess)
-                    {
-                        $this->arrival_date = $now->addSeconds($newArrivalDate);
-                        $this->returning = true;
-                    }
-                    else
-                    {
+                        PlayerUtility::spy($this->sourceColony, $this->destinationColony);
                         $this->ended = true;
-                    }
+                        $this->save();
                 break;
             }
-
-
         }
     }
 
@@ -387,5 +380,304 @@ class Fleet extends Model
             $resourcesString .= trans('generic.empty', [], $lang)."\n";
 
         return $resourcesString;
+    }
+
+    public function resolveFight()
+    {
+        //AutoWin
+        if($this->destinationColony->defences->count() == 0 && $this->destinationColony->ships->count() == 0)
+            return 'win';
+
+        $attackerFireCoef = $defenderFireCoef = 1;
+        $attackerShieldCoef = $defenderShieldCoef = 1;
+        $attackerHullCoef = $defenderHullCoef = 1;
+
+        $fleetTechnologies = Technology::Where('slug', 'LIKE', 'hull')->orWhere('slug', 'LIKE', 'shield')->orWhere('slug', 'LIKE', 'armament')->get();
+        foreach($fleetTechnologies as $fleetTech)
+        {
+            $attackerTechLevel = $this->sourcePlayer->hasTechnology($fleetTech);
+            if($attackerTechLevel)
+            {
+                switch($fleetTech->slug)
+                {
+                    case 'armament':
+                        $attackerFireCoef *= pow(1.1,$attackerTechLevel);
+                    break;
+                    case 'shield':
+                        $attackerShieldCoef *= pow(1.1,$attackerTechLevel);
+                    break;
+                    case 'hull':
+                        $attackerHullCoef *= pow(1.1,$attackerTechLevel);
+                    break;
+                    default:
+                    break;
+                }
+            }
+            $defenderTechLevel = $this->sourcePlayer->hasTechnology($fleetTech);
+            if($defenderTechLevel)
+            {
+                switch($fleetTech->slug)
+                {
+                    case 'armament':
+                        $defenderFireCoef *= pow(1.1,$defenderTechLevel);
+                    break;
+                    case 'shield':
+                        $defenderShieldCoef *= pow(1.1,$defenderTechLevel);
+                    break;
+                    case 'hull':
+                        $defenderHullCoef *= pow(1.1,$defenderTechLevel);
+                    break;
+                    default:
+                    break;
+                }
+            }
+        }
+
+        $defenceForces = array();
+        foreach($this->destinationColony->ships as $ship)
+        {
+            $defenceForces[] = array(
+                'type' => 'ship',
+                'item' => $ship,
+                'quantity' => $ship->pivot->number,
+                'fire_power' => $ship->fire_power * $defenderFireCoef,
+                'shield' => $ship->shield * $defenderShieldCoef,
+                'hull' => $ship->hull * $defenderHullCoef,
+                'shield_left' => $ship->shield * $defenderShieldCoef,
+                'hull_left' => $ship->hull * $defenderHullCoef
+            );
+        }
+
+        foreach($this->destinationColony->defences as $defence)
+        {
+            $defenceForces[] = array(
+                'type' => 'defence',
+                'item' => $defence,
+                'quantity' => $defence->pivot->number,
+                'fire_power' => $defence->fire_power * $defenderFireCoef,
+                'shield' => 0,
+                'hull' => $defence->hull * $defenderHullCoef,
+                'shield_left' => 0,
+                'hull_left' => $defence->hull * $defenderHullCoef
+            );
+        }
+
+        $attackForces = array();
+        foreach($this->ships as $ship)
+        {
+            $attackForces[] = array(
+                'type' => 'ship',
+                'item' => $ship,
+                'quantity' => $ship->pivot->number,
+                'fire_power' => $ship->fire_power * $attackerFireCoef,
+                'shield' => $ship->shield * $attackerShieldCoef,
+                'hull' => $ship->hull * $attackerHullCoef,
+                'shield_left' => $ship->shield * $attackerShieldCoef,
+                'hull_left' => $ship->hull * $attackerHullCoef
+            );
+        }
+
+        $defenceLostForces = array();
+        $attackLostForces = array();
+
+        //Le combat
+
+        /**
+         *
+            Si la flotte attaquante possède plus de 3 fois la puissance de feu de celle du défenseur, et cela à n'importe quel moment du combat, (dès la première passe ou à la dixième passe si la puissance de feu du défenseur chûte durant le combat), la flotte du défenseur passe en mode défensif : chaque vaisseau se comportera comme une défense, et attaquera en premier les vaisseaux attaquants ayant le moins de puissance de feu.
+            Les missiles d'interceptions (défense) attaqueront en premier les vaisseaux ayant le moins de défense (en ajoutant coque et bouclier), notamment les vaisseaux dits "riposteurs" ou les « cargos ».
+        */
+
+        /**
+         *
+            A chaque fin de passe les boucliers récupèrent un certain pourcentage de leur puissance en fonction de ce qu'ils ont perdu pendant cette passe.
+
+            Ce pourcentage part de 100% (passe 1) et perd 10% par passe.
+         */
+
+        /**
+            14 passes max
+            Pille 60%
+         */
+
+        /**
+
+            A l’issu du combat, les vaisseaux et 5% des défenses spatiales détruites se transforment en ruines représentant 75% des ressources en fer, or et cristal utilisés lors de leurs constructions (l’hydrogène est donc totalement perdu). Les CDR sont visibles dans les capteurs interstellaires et récupérables par l’ensemble des joueurs même ceux n’ayant pas participé au combat.
+            Ces ruines peuvent être récupérées grâce à des vaisseaux ruines.
+
+            Si vous apercevez un CDR en vous promenant dans les capteurs, il suffit de cliquer sur l’image le représentant. Vos VR les plus rapides de votre planète sur laquelle vous vous trouvez à ce moment partiront recycler ces ruines directement, le jeu calcule automatiquement le nombre de VR nécessaires pour recycler le CDR et n’enverra donc que le stricte nécessaire, si vous voulez en envoyer plus, il faut le faire manuellement. Un clic permet d’envoyer un modèle de VR, si vos VR les plus récents ne suffisent pas à tout recycler, il faut re-cliquer sur l’image et vos modèles plus anciens partiront, l’ordre d’envoi est le suivant : VR3, VR2, VR1, prototypes.
+
+            Le Champ de Ruines ainsi Créer, se Matérialisera Instantanément en Orbite comme ceci :
+            - 40% du CDR se trouvera au-dessus de la planète où le combat à eut lieu.
+            - 10% sur la planète située immédiatement au-dessus dans les capteurs.
+            - 20% sur la planète située immédiatement au-dessus de cette dernière.
+            - 20% sur la planète située immédiatement en-dessous dans les capteurs de la planète d’origine.
+            - 10% sur la planète située immédiatement en-dessous.
+
+
+            Pour que les vaisseaux du défenseur puissent fonctionner à 100 %, il faut que leurs équipages (soldats) soient au complet. Les soldats doivent se trouver sur la même planète que les vaisseaux.
+            S’il n’y a pas assez de soldats pour faire fonctionner à 100 % les vaisseaux, ces derniers participent tout de même au combat mais ne bénéficient alors pas des bonus offerts par les technologies débloquées par le joueur.
+            Cela ne concerne que le défenseur car l’attaquant est obligé d’avoir son équipage au complet s’il veut lancer une attaque.
+
+            =>Si pas assez de crew, ship détruit?
+         */
+
+        //Ecrire recap firepower/shield/hull avec totaux
+
+        /**
+         *
+         array_orderby
+
+         $sorting_insructions = [
+            ['column'=>'first_name', 'order'=>'asc'],
+            ['column'=>'date_of_birth', 'order'=>'desc'],
+        ];
+        for ($i = count($sorting_insructions) - 1; $i >= 0 ; $i--) {
+
+            extract($sorting_insructions[i]);
+
+            if ( $order === 'asc') {
+                $collection = $collection->sortBy( $column );
+            } else {
+                $collection = $collection->sortByDesc( $column );
+            }
+
+        }
+
+
+         $array = collect($array)->sortBy('count')->reverse()->toArray();
+
+
+
+        $attackForces = array_values(Arr::sort($attackForces, function ($value) {
+            return (0-$value['fire_power']);
+        }));
+         */
+
+        /**
+
+        La flotte de l’attaquant va attaquer l’entité du défenseur (vaisseau ou défense) qui a la puissance de feu la plus grande donc la ligne 1 jusqu’à sa destruction complète puis il attaquer la ligne 2 puis 3...
+
+        La flotte du défenseur va attaquer le type de vaisseau de l'attaquant qui a la puissance de feu la plus grande et donc à partir de la ligne 1 puis il attaquera la ligne 2 puis 3...
+
+        */
+
+        $attackForces = FuncUtility::array_orderby($attackForces, 'fire_power', SORT_ASC, 'shield', SORT_ASC, 'hull', SORT_ASC);
+        //ATTENTION, les vaisseaux de la défenses, eux, attaquent ce qui a le plus gros dps
+        //trouver un moyen ?
+
+        $defenceForces = FuncUtility::array_orderby($defenceForces, 'type', SORT_ASC, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC);
+        $lostAttackForces[] = array();
+
+        for( $phase = 1 ; $phase <= 10 ; $phase++ )
+        {
+            if(empty($attackForces))
+                return 'loose';
+            if(empty($defenceForces))
+                return 'win';
+
+            $fleetDamage = array_sum(array_column($attackForces, 'fire_power'));
+            $defenceDamage = array_sum(array_column($defenceForces, 'fire_power'));
+
+            if(($fleetDamage/3) > $defenceDamage)
+            {
+                $attackForces = FuncUtility::array_orderby($attackForces, 'fire_power', SORT_ASC, 'shield', SORT_ASC, 'hull', SORT_ASC);
+                /**
+                 * https://forum.origins-return.fr/index.php?/topic/241854-le-combat-spatial/
+                Si à un moment du combat (de la 1ere à la 14ème passe), la flotte du défenseur (vaisseaux seulement) possède une attaque plus de 3 fois inférieur à celle de l’attaquant, alors elle passera en mode défensif et attaquera le vaisseau de l’attaquant avec le moins de pdf (en cas d’égalité entre plusieurs modèles, celui parmi ces derniers qui possède le moins de bouclier, puis celui qui a le moins de coque).
+                Donc dans l'exemple ci-dessus : la ligne 6 puis 5 puis 4...
+
+                Les défenses terrestres et spatiales (voir guide les défenses) attaqueront le vaisseau de l’attaquant avec le moins de pdf (en cas d’égalité entre plusieurs modèles, celui parmi ces derniers qui possède le moins de bouclier, puis celui qui avec le moins de coque).
+                Donc en reprenant l'exemple : la ligne 6 puis 5 puis 4...
+
+                Les missiles attaqueront le vaisseau de l’attaquant avec le moins de pouvoir défensif (addition bouclier + coque). Donc ici, la ligne 5 puis 6 puis 3 puis 2 puis 4 puis 1.
+                  */
+            }
+
+            //Dégats du défenseur
+            $AttackShieldAbsorbed = 0;
+            $defenceDamageLeft = $defenceDamage;
+            for($shipCount = 0; $shipCount<count($attackForces); $shipCount++)
+            {
+                //Au moins 1 vaisseau détruit
+                if($defenceDamage >= ($attackForces[$shipCount]['shield_left'] + $attackForces[$shipCount]['hull_left']))
+                {
+                    /**
+                     *
+                     * Est-ce que plusieurs vaisseaux détruits ?
+                     *
+                     */
+                    $nbrShipDestroyed = floor($defenceDamageLeft/($attackForces[$shipCount]['shield'] + $attackForces[$shipCount]['hull']));
+                    if($nbrShipDestroyed > 0)
+                    {
+                        $defenceDamageLeft -= ($attackForces[$shipCount]['shield'] + $attackForces[$shipCount]['hull']) * $nbrShipDestroyed;
+
+                        //Si ship déjà présent => incrémenter
+                        //si pas présent
+                        $lostIndex = array_search($attackForces[$shipCount]['item'],$lostAttackForces);
+                        if($lostIndex) //Si ship déjà présent => incrémenter
+                            $lostAttackForces[$lostIndex]['quantity'] += $nbrShipDestroyed+1;
+                        else{
+                            $lostAttackForces[] = $attackForces[$shipCount];
+                            $lostAttackForces[count($lostAttackForces)-1]['quantity'] = $nbrShipDestroyed+1;
+                        }
+
+                        //Si au moins un autre vaisseau survit, on remet hull et shield max
+                        $attackForces[$shipCount]['shield_left'] = $attackForces[$shipCount]['shield'];
+                        $attackForces[$shipCount]['hull_left'] = $attackForces[$shipCount]['hull'];
+                    }
+
+                    if($attackForces[$shipCount]['quantity'] <= $nbrShipDestroyed)
+                    {
+                        //Tous les vaisseaux de la ligne détruits
+                        unset($attackForces[$shipCount]);
+                        array_values($attackForces[$shipCount]);
+                    }
+                    else
+                    {
+
+                        /**
+                         *
+                         * Est-ce que vaisseau endomagé avec ce qui reste?
+                         *
+                         */
+                        if($defenceDamageLeft >= $attackForces[$shipCount]['shield_left'])
+                        {
+                            $defenceDamageLeft -= $attackForces[$shipCount]['shield_left'];
+                            $AttackShieldAbsorbed += $attackForces[$shipCount]['shield_left'];
+                            $attackForces[$shipCount]['shield_left'] = 0;
+                            $attackForces[$shipCount]['hull_left'] -= $defenceDamageLeft;
+                        }
+                        else
+                        {
+                            $AttackShieldAbsorbed += $defenceDamageLeft;
+                            $attackForces[$shipCount]['shield_left'] -= $defenceDamageLeft;
+                        }
+                        $defenceDamageLeft = 0;
+                    }
+                }
+                else
+                {
+                    if($defenceDamageLeft >= $attackForces[$shipCount]['shield_left'])
+                    {
+                        $AttackShieldAbsorbed += $attackForces[$shipCount]['shield_left'];
+                        $defenceDamageLeft -= $attackForces[$shipCount]['shield_left'];
+                        $attackForces[$shipCount]['shield_left'] = 0;
+                        $attackForces[$shipCount]['hull_left'] -= $defenceDamageLeft;
+                    }
+                    else
+                    {
+                        $AttackShieldAbsorbed += $defenceDamageLeft;;
+                        $attackForces[$shipCount]['shield_left'] -= $defenceDamageLeft;
+                    }
+                    $defenceDamageLeft = 0;
+                }
+
+                if($defenceDamageLeft == 0)
+                    break;
+            }
+
+
+        }
     }
 }

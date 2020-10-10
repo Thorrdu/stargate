@@ -22,6 +22,17 @@ return [
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
+    "fleetAttackMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
+                        "Destination: :planetDest [:coordinateDestination]\n".
+                        "Mission: **:mission**\n".
+                        "**Fleet**\n".
+                        ":fleet\n".
+                        "Capacity: :freightCapacity\n".
+                        "Crew: :crew \n".
+                        "Speed: :speed (:maxSpeed%)\n".
+                        "Fuel: :fuel\n".
+                        "Flight duration: :duration\n".
+                        "Sending status: **Awaiting**",
     'missionReturn' => "Fleet arrival on **:planetDest [:coordinateDestination]**\n"
                         ."Origin: **:planetSource [:coordinateSource]**\n\n"
                         ."__Fleet__\n"

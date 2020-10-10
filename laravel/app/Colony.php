@@ -230,7 +230,7 @@ class Colony extends Model
         }
     }
 
-    public function getResearchBonus()
+    public function getResearchBonus($researchId = 0)
     {
         $bonus = 1;
 
@@ -244,7 +244,10 @@ class Colony extends Model
             return !is_null($value->technology_bonus);
         });
         foreach($technologies as $technology)
-            $bonus *= pow($technology->technology_bonus, $technology->pivot->level);
+        {
+            if($researchId != $technology->id)
+                $bonus *= pow($technology->technology_bonus, $technology->pivot->level);
+        }
 
         $buildingTimeBonusList = $this->artifacts->filter(function ($value){
             return $value->bonus_category == 'Time' && $value->bonus_type == 'Research';
@@ -257,7 +260,7 @@ class Colony extends Model
         return $bonus;
     }
 
-    public function getBuildingBonus()
+    public function getBuildingBonus($buildingId = 0)
     {
         $bonus = 1;
 
@@ -265,7 +268,10 @@ class Colony extends Model
             return !is_null($value->building_bonus);
         });
         foreach($buildings as $building)
-            $bonus *= pow($building->building_bonus, $building->pivot->level);
+        {
+            if($buildingId != $building->id)
+                $bonus *= pow($building->building_bonus, $building->pivot->level);
+        }
 
         $technologies = $this->player->technologies->filter(function ($value){
             return !is_null($value->building_bonus);
@@ -511,7 +517,7 @@ class Colony extends Model
         $buildingTime = $building->getTime($wantedLvl);
 
         /** Application des bonus */
-        $buildingTime *= $this->getBuildingBonus();
+        $buildingTime *= $this->getBuildingBonus($building->id);
 
         if($removal)
         {
@@ -569,7 +575,6 @@ class Colony extends Model
 
     public function checkBuilding()
     {
-        echo PHP_EOL.'CHECK_BUILDING';
         if(!is_null($this->active_building_end))
         {
             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->active_building_end);
@@ -583,7 +588,6 @@ class Colony extends Model
     public function checkCraftQueues()
     {
         try{
-            echo PHP_EOL.'CHECK_CRAFTS_QUEUES';
             if($this->craftQueues->count() > 0)
             {
                 $endedCrafts = $this->craftQueues->filter(function ($value){
@@ -623,7 +627,6 @@ class Colony extends Model
     public function checkDefenceQueues()
     {
         try{
-            echo PHP_EOL.'CHECK_DEFENCE_QUEUES';
             if($this->defenceQueues->count() > 0)
             {
                 $endedDefences = $this->defenceQueues->filter(function ($value){
@@ -663,7 +666,6 @@ class Colony extends Model
     public function checkShipQueues()
     {
         try{
-            echo PHP_EOL.'CHECK_SHIP_QUEUES';
             if($this->shipQueues->count() > 0)
             {
                 $endedShips = $this->shipQueues->filter(function ($value){
@@ -704,7 +706,6 @@ class Colony extends Model
 
     public function checkProd()
     {
-        echo PHP_EOL.'CHECK_PROD'.PHP_EOL;
         if(!is_null($this->last_claim))
         {
             $current = Carbon::now();
@@ -743,7 +744,6 @@ class Colony extends Model
 
     public function calcProd()
     {
-        echo PHP_EOL.'CALC_PROD'.PHP_EOL;
 
         $energyBuildings = $this->buildings->filter(function ($value){
             return $value->type == 'Energy';
@@ -766,7 +766,7 @@ class Colony extends Model
 
         foreach($this->buildings as $building)
         {
-            if($building->slug == 'naqadahreactor')
+            if($building->slug == 'naqahdahreactor')
                 $this->consumption_naqahdah += floor($building->getConsumption($building->pivot->level));
             else
                 $this->energy_used += floor($building->getEnergy($building->pivot->level));

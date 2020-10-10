@@ -7,7 +7,8 @@ return [
                           "**move** (`!stargate move [colonyNumber] [Resource] [Qty]`)\n".
                           "**trade** (`!stargate trade [coordinates] [Resource] [Qty]`)\n".
                           "**spy** (`!stargate spy [coordinates]`) \n".
-                          "**attack** (`!stargate attack [coordinates] military [Qty] [Unit] [Qty]`)\n",
+                          "**attack** (`!stargate attack [coordinates] military [Qty] [Unit] [Qty]`)\n".
+                          "**bury** (`!stargate bury`)\n",
     "unknownCoordinates" => "Unknown Coordinates",
     "unReacheableCoordinates" => 'Unreachable Coordinates',
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...\n\n".
@@ -18,9 +19,10 @@ return [
     "alreadyExplored" => "You already explored this planet.",
     "explorationSent" => "The exploration team is arrived on the planet [:coordinates].\nA report will be send at the end of the mission.",
     "exploreSucessResources" => "During the exploration of the planet [:coordinates], the team has found a warehouse with interesting resources.\n".
-    "They brought back with them: :resources",
+                                "They brought back with them:\n :resources",
     "explorePlayerImpossible" => "It's not possible to explore another player's planet. try spy.",
     "exploreFailed" => "Your explorers have not found anything interesting during the exploration of the planet [:coordinates].",
+    "exploreFailed2" => "Your exploration team has detected an hostile presence on the planet [:coordinates] it was exploring. Impossible to gather more information.",
     "exploreSucessArtifact" => "Your explorer have brough back an artifact from the planet [:coordinates]:\n".
                                 ":artifact",
     "exploreSucessBuildingTip" => "Your explorers have found the following information during the exploration of the planet [:coordinates]:\n".
@@ -93,4 +95,13 @@ return [
     'colonizeCancel' => 'Colonize Cancelled',
     'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource',
     'alreadySpied' => 'You spied this colony too recently. You\'ll be able to spy this colony again in **:time**',
+    'digingStarted' => 'You stargate diging up, your stargate will be fully operational again in **48h**.',
+    'burialStarted' => 'You stargate your stargate burial. Your stargate will be fully inoperant in **24h**.\nHowever, external activation can still occur until the process is complete.',
+    'digUpConfirm' => 'Do you want to dig up your Stargate ? This action will take **48h**.',
+    'burryConfirm' => 'Do you want to bury your Stargate? This action will take **24h**.\nWarning, As soon as the process starts, your Stargatr will be out of service but external activation can occur until the process is complete.',
+    'digingActive' => 'You are already diging up. Stargate operational in: **:time**',
+    'buryingActive' => 'You are already burying your Stargate. Out of service in: **:time**',
+    'buriedStargate' => 'Stargate out of service.',
+    'playerTradeBan' => 'Ce joueur est banni du système de trade.',
+    'trade_ban' => 'Vous êtes banni du système de trade. Si ce n\'est déjà fait, vous pouvez demander un sursis de 12h pour régulariser le trade. Voir `!trade [ID]`',
 ];

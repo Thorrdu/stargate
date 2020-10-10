@@ -43,45 +43,52 @@ class Top extends CommandHandler implements CommandInterface
                 $this->topAlliance = false;
                 if(count($this->args) > 1 && Str::startsWith('alliance', $this->args[1]))
                     $this->topAlliance = true;
-            
+
                 if(Str::startsWith('general', $this->args[0])){
                     $this->topType = 'general';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_total'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_total');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total'); 
-                }     
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total');
+                }
                 elseif(Str::startsWith('building', $this->args[0])){
                     $this->topType = 'building';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_building'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_building');
                     else
                         $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
-                }      
+                }
                 elseif(Str::startsWith('research', $this->args[0])){
                     $this->topType = 'research';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_research'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_research');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');   
-                }  
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');
+                }
                 elseif(Str::startsWith('craft', $this->args[0])){
+                    $this->topType = 'craft';
+                    if($this->topAlliance)
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_craft');
+                    else
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_craft');
+                }
+                elseif(Str::startsWith('military', $this->args[0])){
                     $this->topType = 'military';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_military'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_military');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');   
-                }   
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');
+                }
                 elseif(Str::startsWith('defence', $this->args[0])){
                     $this->topType = 'defence';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_defence'); 
+                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_defence');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');   
-                }   
+                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');
+                }
                 else
                     return trans('top.choice', [], $this->player->lang);
-                  
+
                 $this->closed = false;
                 $this->page = 1;
                 $this->perPage = 10;
@@ -89,9 +96,9 @@ class Top extends CommandHandler implements CommandInterface
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
-                    $this->paginatorMessage->react('⏪')->then(function(){ 
-                        $this->paginatorMessage->react('◀️')->then(function(){ 
-                            $this->paginatorMessage->react('▶️')->then(function(){ 
+                    $this->paginatorMessage->react('⏪')->then(function(){
+                        $this->paginatorMessage->react('◀️')->then(function(){
+                            $this->paginatorMessage->react('▶️')->then(function(){
                                 $this->paginatorMessage->react('⏩')->then(function(){
                                     $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                 });
@@ -102,7 +109,7 @@ class Top extends CommandHandler implements CommandInterface
                     $filter = function($messageReaction){
                         if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                             return false;
-                        
+
                         if($messageReaction->user_id == $this->player->user_id)
                         {
                             try{
@@ -170,7 +177,7 @@ class Top extends CommandHandler implements CommandInterface
             $varName = 'points_total';
         else
             $varName = 'points_'.$this->topType;
-        
+
         $counter = (($this->page-1)*$this->perPage)+1;
 
         $topList = "";
@@ -206,7 +213,7 @@ class Top extends CommandHandler implements CommandInterface
                     $topList .= ' (+'.number_format(abs($listItem->$varName - $listItem->{'old_'.$varName})).')';
                 elseif($listItem->{'old_'.$varName} > $listItem->$varName)
                     $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';
-            
+
                 $topList .= "\n";
             }
             $counter++;
@@ -214,16 +221,12 @@ class Top extends CommandHandler implements CommandInterface
         if(empty($topList))
             $topList = "/";
 
-        $topTxt = $this->topType;
-        if($this->topType == 'military')
-            $topTxt = 'craft';
-        
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
-            "title" => 'Top '.trans('generic.'.$topTxt, [], $this->player->lang),
+            "title" => 'Top '.trans('generic.'.$this->topType, [], $this->player->lang),
             "description" => $topList,
             'fields' => [],
             'footer' => array(

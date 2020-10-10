@@ -7,4 +7,5 @@ return [
                     "You have **:voteBoxes** vote boxes. to open one, use `!vote use`",
     'thankyou' => "You just voted for Stargate, thank you! (You can use your reward via `!vote use`)",
     'voteBoxOpening' => "Vote box opening...\n:artifact",
+    'tooManyArtifacts' => "Already too many artifacts on this colony.",
 ];

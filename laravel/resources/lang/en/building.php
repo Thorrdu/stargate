@@ -19,7 +19,7 @@ return [
     ],
     'naqahdahextractor' => [
         'name' => 'Naqahdah extractor',
-        'description' => 'Extractor alowing to recover Naqadah from lower layers of the planet'
+        'description' => 'Extractor alowing to recover naqahdah from lower layers of the planet'
     ],
     'robotfactory' => [
         'name' => 'Robot factory',
@@ -38,7 +38,7 @@ return [
         'name' => 'Shipyard',
         'description' => 'Allows to develop the building of probes and space ships'
     ],
-    'naqadahreactor' => [
+    'naqahdahreactor' => [
         'name' => 'Naqahdah reactor',
         'description' => 'Reactor that allows to generate huge amount of energy but consume some Naqahdah'
     ],
@@ -55,7 +55,7 @@ return [
         'description' => 'Multiply your Quartz storage capacity by 1.8/lvl'
     ],
     'naqahdahstorage' => [
-        'name' => 'Naqadah storage',
+        'name' => 'naqahdah storage',
         'description' => 'Multiply your Naqahdah storage capacity by 1.8/lvl'
     ],
     'defence' => [
@@ -87,6 +87,7 @@ return [
     'noActiveBuilding' => 'No building under construction...',
     'buildingCanceled' => 'Building canceled, the majority of resources have been rewovered. 20% of the invested resources have been lost.',
     'unknownBuilding' => 'Unknown building...',
+    'asuranRestriction' => 'This building is only available on your home planet.',
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
     'buildingList' => "Building's list",
     'genericHowTo' => "To display some building detail: `!build [ID/Slug]`\nTo start a building: `!build [ID/Slug] confirm`\n",

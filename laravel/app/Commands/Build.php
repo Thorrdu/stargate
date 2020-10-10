@@ -43,7 +43,10 @@ class Build extends CommandHandler implements CommandInterface
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Build';
-                    $this->buildingList = Building::all();
+                    if($this->player->activeColony->id == $this->player->colonies[0]->id)
+                        $this->buildingList = Building::all();
+                    else
+                        $this->buildingList = Building::where('id', '!=', 19)->get(); //Pas l usine Asuran
 
                     $this->closed = false;
                     $this->page = 1;
@@ -160,6 +163,9 @@ class Build extends CommandHandler implements CommandInterface
                     $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))
                     {
+                        if($building->id == 19 && $this->player->activeColony->id != $this->player->colonies[0]->id)
+                            return trans('building.asuranRestriction', [], $this->player->lang);
+
                         if(count($this->args) == 2 && (Str::startsWith('confirm', $this->args[1]) || Str::startsWith('remove', $this->args[1])))
                         {
                             $removal = false;
@@ -337,7 +343,7 @@ class Build extends CommandHandler implements CommandInterface
                                         $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
                                     }
                                 }
-                                if($building->energy_base > 0 && $building->slug != 'naqadahreactor')
+                                if($building->energy_base > 0 && $building->slug != 'naqahdahreactor')
                                 {
                                     $energyRequired = $building->getEnergy($wantedLvl);
                                     $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
@@ -345,7 +351,7 @@ class Build extends CommandHandler implements CommandInterface
 
                                 $buildingTime = $building->getTime($wantedLvl);
                                 /** Application des bonus */
-                                $buildingTime *= $this->player->activeColony->getBuildingBonus();
+                                $buildingTime *= $this->player->activeColony->getBuildingBonus($building->id);
                                 $now = Carbon::now();
                                 $buildingEnd = $now->copy()->addSeconds($buildingTime);
                                 $buildingTime = $now->diffForHumans($buildingEnd,[
@@ -418,7 +424,7 @@ class Build extends CommandHandler implements CommandInterface
                                 }
                             }
 
-                            if($building->slug == 'naqadahreactor')
+                            if($building->slug == 'naqahdahreactor')
                             {
                                 if($currentLvl)
                                     $consoString .= "Lvl ".$currentLvl." - ".config('stargate.emotes.naqahdah')." ".number_format($building->getConsumption($currentLvl))."\n";
@@ -564,7 +570,7 @@ class Build extends CommandHandler implements CommandInterface
                 $buildingTime = $building->getTime($wantedLvl);
 
                 /** Application des bonus */
-                $buildingTime *= $this->player->activeColony->getBuildingBonus();
+                $buildingTime *= $this->player->activeColony->getBuildingBonus($building->id);
 
                 $now = Carbon::now();
                 $buildingEnd = $now->copy()->addSeconds($buildingTime);
@@ -574,7 +580,6 @@ class Build extends CommandHandler implements CommandInterface
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE
                 ]);
             }
-
 
             $displayedLvl = 0;
             if($currentLvl)
@@ -602,7 +607,7 @@ class Build extends CommandHandler implements CommandInterface
                     'inline' => true
                 );
             }
-            elseif(in_array($building->id,array(8,9,19)))
+            else
             {
                 $requirementString = '';
                 foreach($building->requiredTechnologies as $requiredTechnology)
@@ -624,14 +629,6 @@ class Build extends CommandHandler implements CommandInterface
                 $embed['fields'][] = array(
                     'name' => trans('building.hiddenBuilding', [], $this->player->lang),
                     'value' => $requirementString,
-                    'inline' => true
-                );
-            }
-            else
-            {
-                $embed['fields'][] = array(
-                    'name' => trans('building.hiddenBuilding', [], $this->player->lang),
-                    'value' => trans('building.unDiscovered', [], $this->player->lang),
                     'inline' => true
                 );
             }

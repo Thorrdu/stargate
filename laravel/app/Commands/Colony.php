@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use App\Coordinate;
+use App\Fleet;
 
 class Colony extends CommandHandler implements CommandInterface
 {
@@ -115,8 +116,14 @@ class Colony extends CommandHandler implements CommandInterface
                                 else
                                 {
 
+                                    $activeFleets = Fleet::where([['colony_source_id' => $coordinateSwitch->colony->id],['ended', false]])->orWhere([['colony_destination_id' => $coordinateSwitch->colony->id],['ended', false]])->count();
+                                    if($activeFleets > 0)
+                                        return trans('colony.activeFleetError', [], $this->player->lang);
+
+
                                     $colonyName = $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']';
                                     $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
+
 
                                     $this->maxTime = time()+180;
                                     $this->message->channel->sendMessage($removeConfirm)->then(function ($messageSent) use($coordinateSwitch){

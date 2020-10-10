@@ -61,7 +61,8 @@ return [
                     "!stargate move [colonyNumber] [Res1] [Qty1]\n".
                     "!stargate move [coordinates] [Res1] [Qty1]\n".
                     "!stargate spy [coordinates]\n".
-                    "!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]\n"
+                    "!stargate attack [coordinates] military [Qty] [Unit1] [Qty1]\n".
+                    "!stargate bury\n"
     ],
     'shipyard' => [
         'description' => "Allows you to build spaceships",
@@ -121,6 +122,13 @@ return [
     'top' => [
         'description' => 'Shows the best player for each category.',
         'usage' => "!top [general/building/research/craft/defence]\n!top [general/building/research/craft/defence] alliance"
+    ],
+    'trade'=> [
+        'description' => "List all your active trades.\nDisplay a specific trade details with `!trade [id]´\nClose a trade before the end with `!trade [id] close´\nAsk for a time extention with `!trade [id] extend´",
+        'usage' =>  "!trade list\n".
+                    "!trade [ID]\n".
+                    "!trade [ID] close\n".
+                    "!trade [ID] extend\n"
     ],
     'uptime' => [
         'description' => "Display the Stargate uptime.",

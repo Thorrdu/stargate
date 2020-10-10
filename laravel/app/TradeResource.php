@@ -14,7 +14,7 @@ class TradeResource extends Model
     public function unit()
     {
         return $this->belongsTo('App\Unit');
-    } 
+    }
 
     public function setValue()
     {
@@ -35,7 +35,7 @@ class TradeResource extends Model
                             $this->trade_value += $price;
                         break;
                         case 'quartz':
-                        case 'naqadah':
+                        case 'naqahdah':
                             $this->trade_value += $price;
                         break;
                     }
@@ -52,7 +52,7 @@ class TradeResource extends Model
                     $this->trade_value = $this->quantity * 1.5;
                 break;
                 case 'quartz':
-                case 'naqadah':
+                case 'naqahdah':
                     $this->trade_value = $this->quantity * 3;
                 break;
                 case 'military':

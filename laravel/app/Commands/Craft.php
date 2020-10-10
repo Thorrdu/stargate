@@ -408,7 +408,7 @@ class Craft extends CommandHandler implements CommandInterface
                     }
 
                     $embed['fields'][] = array(
-                        'name' => trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
+                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
                         'value' => "Slug: `".$unit->slug."`\n".$requirementString,
                         'inline' => true
                     );

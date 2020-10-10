@@ -16,4 +16,5 @@ return [
     "artifactDiscovered" => "En explorant les alentours de votre colonie :planet [:coordinate], vos colons on découvert un site ancien et ont par mégarde activé un mécanisme. Artefact activé: :artifact",
     'colonyNameChanged' => 'Votre colonie s\'appelle désormais: **:name**',
     'removeRequest' => 'Voulez vous vraiment abandonner la colonie **:name** ?',
+    'activeFleetError' => 'Vous ne pouvez abandonner cette colonie. Une flotte active est toujours liée à cette colonie. Merci de réessayer plus tard.',
 ];

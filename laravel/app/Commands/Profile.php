@@ -86,6 +86,19 @@ class Profile extends CommandHandler implements CommandInterface
                             return trans('profile.activeFleets', [], $this->player->lang);
                         }
 
+                        if($this->player->active_technology_id != null)
+                            return trans('profile.busyPlayer', [], $this->player->lang);
+                        foreach($this->player->colonies as $colony)
+                        {
+                            if($colony->active_building_id != null || $colony->craftQueues->count() > 0 || $colony->defenceQueues->count() > 0 || $colony->shipQueues->count() > 0)
+                                return trans('profile.busyPlayer', [], $this->player->lang);
+                        }
+
+                        if($this->player->activeFleets->count() > 0)
+                        {
+                            return trans('profile.busyPlayer', [], $this->player->lang);
+                        }
+
                         //proposition vacances
                         $upgradeMsg = trans('profile.vacationConfirm', [], $this->player->lang);
 

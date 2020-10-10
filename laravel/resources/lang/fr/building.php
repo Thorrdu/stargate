@@ -38,7 +38,7 @@ return [
         'name' => 'Chantier Spatial',
         'description' => 'Permet de déveloper la construction de sondes et vaisseaux spaciaux'
     ],
-    'naqadahreactor' => [
+    'naqahdahreactor' => [
         'name' => 'Reacteur au Naqahdah',
         'description' => "Centrale permettant de générer d'énormes quantités d'énergie en consommant du Naqahdah."
     ],
@@ -55,8 +55,8 @@ return [
         'description' => 'Permet de multiplier la capacité de stockage en Quartz par 1.8 / LVL'
     ],
     'naqahdahstorage' => [
-        'name' => 'Entrepôt de Naqadah',
-        'description' => 'Permet de multiplier la capacité de stockage en Naqadah par 1.8 / LVL'
+        'name' => 'Entrepôt de naqahdah',
+        'description' => 'Permet de multiplier la capacité de stockage en naqahdah par 1.8 / LVL'
     ],
     'defence' => [
         'name' => 'Centre de défense',
@@ -86,6 +86,7 @@ return [
     'hiddenBuilding' => '-- Bâtiment caché --',
     'unDiscovered' => 'Non découvert',
     'unknownBuilding' => 'Bâtiment inconnu...',
+    'asuranRestriction' => 'Ce bâtiment n\'est disponbile que sur votre planète mère.',
     'noActiveBuilding' => 'Aucun bâtiment en cours de construction...',
     'buildingCanceled' => 'Construction annulée, la majorité des ressources ont pu être récupérées. 20% des ressources ont été perdues.',
     'howTo' => "Construisez avec `!build :id confirm` ou `!build :slug confirm`\n\n:description",

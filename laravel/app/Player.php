@@ -28,7 +28,7 @@ class Player extends Model
 
     public function colonies()
     {
-        return $this->hasMany('App\Colony');
+        return $this->hasMany('App\Colony')->orderBy('colonies.id','ASC');
     }
 
     public function ships()
@@ -147,41 +147,60 @@ class Player extends Model
 
     public function removeColony(Colony $colony)
     {
-        $colony->buildings()->detach();
-        $colony->units()->detach();
+        try{
+            $colony->buildings()->detach();
+            $colony->units()->detach();
+            $colony->defences()->detach();
+            $colony->ships()->detach();
+            $colony->craftQueues()->detach();
+            $colony->shipQueues()->detach();
+            $colony->defenceQueues()->detach();
 
-        $trades = Trade::where('colony_source_id', $colony->coordinates->id)->orWhere('colony_destination_id', $colony->coordinates->id)->get();
-        foreach($trades as $trade)
-        {
-            foreach($trades->tradeResources as $tradeResource)
-                $tradeResource->delete();
-            $trade->delete();
+            $trades = Trade::where('colony_source_id', $colony->coordinates->id)->orWhere('colony_destination_id', $colony->coordinates->id)->get();
+            foreach($trades as $trade)
+            {
+                foreach($trades->tradeResources as $tradeResource)
+                    $tradeResource->delete();
+                $trade->delete();
+            }
+            $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
+            foreach($gateFigthts as $gateFight)
+                $gateFight->delete();
+
+            $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
+            foreach($spyLogs as $spyLog)
+                $spyLog->delete();
+
+            $fleets = Fleet::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
+            foreach($fleets as $fleet)
+            {
+                $fleet->ships()->detach();
+                $fleet->delete();
+            }
+
+            $explorationLogs = Exploration::where('colony_source_id', $colony->id)->get();
+            foreach($explorationLogs as $explorationLog)
+                $explorationLog->delete();
+
+            $artifacts = Artifact::where('colony_id', $colony->id)->get();
+            foreach($artifacts as $artifact)
+                $artifact->delete();
+
+            if($this->activeColony->id == $colony->id)
+            {
+                $this->active_colony_id = $this->colonies[0]->id;
+                $this->save();
+            }
+            $coordinates = $colony->coordinates;
+            $coordinates->colony_id = null;
+            $coordinates->save();
+            $colony->coordinates = null;
+            $colony->delete();
         }
-        $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
-        foreach($gateFigthts as $gateFight)
-            $gateFight->delete();
-
-        $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
-        foreach($spyLogs as $spyLog)
-            $spyLog->delete();
-
-        $explorationLogs = Exploration::where('colony_source_id', $colony->id)->get();
-        foreach($explorationLogs as $explorationLog)
-            $explorationLog->delete();
-
-        $artifacts = Artifact::where('colony_id', $colony->id)->get();
-        foreach($artifacts as $artifact)
-            $artifact->delete();
-
-        if($this->active_colony_id == $colony->id)
+        catch(\Exception $e)
         {
-            $this->active_colony_id = $this->colonies[0]->id;
-            $this->save();
+            echo $e->getMessage();
         }
-        $coordinates = $colony->coordinates;
-        $coordinates->colony_id = null;
-        $coordinates->save();
-        $colony->delete();
     }
 
     public function hasTechnology(Technology $technology)
@@ -216,7 +235,7 @@ class Player extends Model
         $buildingTime = $technology->getTime($wantedLvl);
 
         /** Application des bonus */
-        $buildingTime *= $this->activeColony->getResearchBonus();
+        $buildingTime *= $this->activeColony->getResearchBonus($technology->id);
 
         $buildingEnd = $current->addSeconds($buildingTime);
 
@@ -259,7 +278,6 @@ class Player extends Model
 
     public function checkTechnology()
     {
-        echo PHP_EOL.'CHECK_TECHNOLOGY';
         if(!is_null($this->active_technology_end))
         {
             $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->active_technology_end);

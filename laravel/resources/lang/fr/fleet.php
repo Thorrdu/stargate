@@ -22,6 +22,17 @@ return [
                         "Carburant: :fuel\n".
                         "Durée de vol: :duration\n".
                         "Statut de l'envoi: **En attente**",
+    "fleetAttackMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
+                        "Destination: :planetDest [:coordinateDestination]\n".
+                        "Mission: **:mission**\n".
+                        "**Flotte**\n".
+                        ":fleet\n".
+                        "Capacité: :freightCapacity\n".
+                        "Equipage: :crew \n".
+                        "Vitesse: :speed (:maxSpeed%)\n".
+                        "Carburant: :fuel\n".
+                        "Durée de vol: :duration\n".
+                        "Statut de l'envoi: **En attente**",
     'missionReturn' => "Arrivée d'une flotte sur **:planetDest [:coordinateDestination]**\n"
                         ."Origine: **:planetSource [:coordinateSource]**\n\n"
                         ."__Flotte__\n"

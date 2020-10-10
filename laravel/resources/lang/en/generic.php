@@ -10,6 +10,8 @@ return [
     'colony' => 'Colony',
     'colonies' => 'Colonies',
     'energy' => 'Energy',
+    'craft' => 'Craft',
+    'crafts' => 'Crafts',
     'military' => 'Militaire',
     'militaries' => 'Militaires',
     'defence' => 'Defence',
@@ -68,7 +70,7 @@ return [
     "buildingUnlocked" => "Your scientists finalized the plan for a new building: **:name** on **:planet [:coordinate]**",
     "researchUnlocked" => "Your scientists have now access to the technology: **:name**",
     "captchaLink" => "To pass the anti-cheat security please validate the captcha at the adress: :link",
-    "captchaMessage" => "**Active captcha**, please check your private messages.",
+    "captchaMessage" => "**Active captcha**, please check your private messages or recover the link with `!captcha`",
     "noCaptcha" => "You don't have to use this for the moment...",
     "newCaptchaMessage" => "A new link has been sent in DM.",
     "closedList" => "Closed list",
@@ -84,4 +86,5 @@ return [
     'active' => 'ACTIVE',
     'inactive' => 'INACTIVE',
     'empty' => 'Empty',
+    'closed' => 'Ended'
 ];
