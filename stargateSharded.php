@@ -161,6 +161,12 @@ $discord->on('ready', function ($discord) use($beta){
                 }
             }
 
+            $playersTechnologyEnded = Player::Where('active_building_end','<',date("Y-m-d H:i:s"))->get();
+            foreach($playersTechnologyEnded as $playerTechnologyEnded)
+            {
+                $playerTechnologyEnded->checkTechnology();
+            }
+
             $dateNow = Carbon::now();
             $explorations = Exploration::where([['exploration_end', '<', $dateNow->format("Y-m-d H:i:s")],['exploration_result', null]])->get();
             echo PHP_EOL."CHECK EXPLORATIONS: ".$explorations->count();
@@ -258,7 +264,7 @@ $discord->on('ready', function ($discord) use($beta){
                 $tradeTime = Carbon::createFromFormat("Y-m-d H:i:s",$expiredTrade->created_at);
                 if($expiredTrade->getFairness())
                 {
-                    if($expiredTrade->playerDest->trade_ban && $expiredTrade->playerSource->trade_ban)
+                    if(($expiredTrade->playerDest->trade_ban || $expiredTrade->playerSource->trade_ban))
                     {
                         //trade_ban Unban
                         $expiredTrade->playerSource->trade_ban = false;
@@ -278,25 +284,47 @@ $discord->on('ready', function ($discord) use($beta){
                         $expiredTrade->save();
 
                         /**
-                         * 
                          * Envoi du warn
-                         * 
-                         */
+                         */    
+                        
+                        $reminderSource = new Reminder;
+                        $reminderSource->reminder_date = Carbon::now()->add('1s');
+                        $reminderSource->reminder = trans('trade.warn', ['tradeID' => $expiredTrade->id], $expiredTrade->playerSource->lang);
+                        $reminderSource->player_id = $expiredTrade->playerSource->id;
+                        $reminderSource->save();
+
+                        $reminderDest = $reminderSource->replicate();
+                        $reminderDest->reminder = trans('trade.warn', ['tradeID' => $expiredTrade->id], $expiredTrade->playerDest->lang);
+                        $reminderDest->player_id = $expiredTrade->playerDest->id;
+                        $reminderDest->save();
 
                     }
                     elseif(abs($tradeTime->diffInHours($now)) >= 72)
                     {
-                        //trade_ban
-                        $expiredTrade->playerSource->trade_ban = true;
-                        $expiredTrade->playerSource->save();
-                        $expiredTrade->playerDest->trade_ban = true;
-                        $expiredTrade->playerDest->save();
+                        if(!$expiredTrade->extended && (!$expiredTrade->playerSource->trade_ban || !$expiredTrade->playerDest->trade_ban))
+                        {
+                            //trade_ban
+                            $expiredTrade->playerSource->trade_ban = true;
+                            $expiredTrade->playerSource->save();
+                            $expiredTrade->playerDest->trade_ban = true;
+                            $expiredTrade->playerDest->save();
 
-                        /**
-                         * 
-                         * Envoi du ban
-                         * 
-                         */
+                            /**
+                             * Envoi du ban
+                             */
+                            $reminderSource = new Reminder;
+                            $reminderSource->reminder_date = Carbon::now()->add('1s');
+                            $reminderSource->reminder = trans('trade.ban', ['tradeID' => $expiredTrade->id], $expiredTrade->playerSource->lang);
+                            $reminderSource->player_id = $expiredTrade->playerSource->id;
+                            $reminderSource->save();
+
+                            $reminderDest = $reminderSource->replicate();
+                            $reminderDest->reminder = trans('trade.ban', ['tradeID' => $expiredTrade->id], $expiredTrade->playerDest->lang);
+                            $reminderDest->player_id = $expiredTrade->playerDest->id;
+                            $reminderDest->save();
+                        }
+
+
                     }
                 }
             }
