@@ -284,11 +284,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                             if(Str::startsWith('speed',$this->args[$cptRes]))
                             {
-                                if($qty > 100)
-                                    $qty = 100;
-                                if($qty < 10)
-                                    $qty = 10;
-                                $this->fleetSpeed = (int)$this->args[$cptRes+1];
+                                if((int)$this->args[$cptRes+1] >= 10 && (int)$this->args[$cptRes+1] <= 100)
+                                    $this->fleetSpeed = (int)$this->args[$cptRes+1];
+                                else
+                                    $this->fleetSpeed = 100;
                             }
                             else
                             {
