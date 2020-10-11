@@ -37,6 +37,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public $fleetMaxSpeed;
     public $fleetSpeed;
     public $usedCapacity;
+    public $fleetSpeedBonus;
 
     public function execute()
     {
@@ -54,6 +55,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     return trans('profile.vacationMode',[],$this->player->lang);
 
                 $this->player->checkFleets();
+                $this->fleetSpeedBonus = $this->player->getShipSpeedBonus();
 
                 $comTechnology = Technology::find(9); // Shipyard
                 $currentComTechLvl = $this->player->hasTechnology($comTechnology);
@@ -269,7 +271,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $availableResources[] = 'military';
                     $this->transportString = '';
                     $this->usedCapacity = 0;
-                    $this->fleetMaxSpeed = 10;
+                    $this->fleetMaxSpeed = 100;
                     $this->fleetSpeed = 100;
                     $this->fleetShips = array();
 
@@ -324,8 +326,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                                     $this->fleet->crew += $ship->crew*$qty;
                                     $this->fleet->capacity += $ship->capacity*$qty;
-                                    if($this->fleetMaxSpeed > $ship->speed)
-                                        $this->fleetMaxSpeed = $ship->speed;
+                                    $shipSpeed = $ship->speed * $this->fleetSpeedBonus;
+                                    if($this->fleetMaxSpeed > $shipSpeed)
+                                        $this->fleetMaxSpeed = $shipSpeed;
 
                                     $this->travelCost += $this->baseTravelCost * $ship->speed * $qty;
 

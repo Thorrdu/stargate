@@ -51,7 +51,6 @@ class Fleet extends Model
             $travelTime = 420 + $planetDifference * 30;
 
         $travelTime /= $speed;
-        $travelTime *= $coordinateSource->colony->player->getShipSpeedBonus();
 
         return $travelTime;
     }
