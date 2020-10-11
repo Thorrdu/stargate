@@ -328,7 +328,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     $this->fleet->capacity += $ship->capacity*$qty;
                                     $shipSpeed = $ship->speed * $this->fleetSpeedBonus;
                                     if($this->fleetMaxSpeed > $shipSpeed)
-                                        $this->fleetMaxSpeed = $shipSpeed;
+                                        $this->fleetMaxSpeed = round($shipSpeed,2);
 
                                     $this->travelCost += $this->baseTravelCost * $ship->speed * $qty;
 
