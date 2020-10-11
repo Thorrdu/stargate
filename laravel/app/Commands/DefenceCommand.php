@@ -103,7 +103,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                                 return true;
                             }
@@ -178,7 +178,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                                 return true;
                             }
@@ -259,8 +259,8 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
-                return $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else
@@ -305,8 +305,8 @@ class DefenceCommand extends CommandHandler implements CommandInterface
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -442,8 +442,8 @@ class DefenceCommand extends CommandHandler implements CommandInterface
 
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 

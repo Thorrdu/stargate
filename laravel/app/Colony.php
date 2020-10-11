@@ -168,7 +168,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             return false;
         }
     }
@@ -189,7 +189,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             return false;
         }
     }
@@ -207,7 +207,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             return false;
         }
     }
@@ -225,7 +225,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             return false;
         }
     }
@@ -564,7 +564,7 @@ class Colony extends Model
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
             //$this->player->reminders()->attach($reminder->id);
         }
@@ -619,8 +619,8 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -658,8 +658,8 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -697,8 +697,8 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -904,7 +904,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -1042,7 +1042,7 @@ class Colony extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 

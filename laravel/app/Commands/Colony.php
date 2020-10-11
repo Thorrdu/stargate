@@ -157,7 +157,7 @@ class Colony extends CommandHandler implements CommandInterface
                                             }
                                             catch(\Exception $e)
                                             {
-                                                echo $e->getMessage();
+                                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                             }
                                         });
                                     });
@@ -212,7 +212,7 @@ class Colony extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                 });
                             });
@@ -571,7 +571,7 @@ class Colony extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else

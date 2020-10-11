@@ -37,7 +37,7 @@ class Ban extends CommandHandler implements CommandInterface
 
                         }catch(\Exception $e)
                         {
-                            echo $e->getMessage();
+                            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                         }
                         return trans('ban.banApplied', ['name' => $playerToBan->user_name], $this->player->lang);
                     }

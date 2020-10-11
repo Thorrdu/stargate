@@ -52,10 +52,10 @@ class Hourly extends CommandHandler implements CommandInterface
                 }
                 else
                     $hourlyOk = true;
-                
+
                 if($hourlyOk)
                 {
-                    $randomRes = rand(1,100);                   
+                    $randomRes = rand(1,100);
                     if($randomRes < 45)
                         $resType = 'iron';
                     elseif($randomRes < 70)
@@ -64,14 +64,14 @@ class Hourly extends CommandHandler implements CommandInterface
                         $resType = 'quartz';
                     else
                         $resType = 'naqahdah';
-        
+
                     $varProd = 'production_'.$resType;
 
                     $multiplier = 1;
                     $this->player->hr_combo++;
                     if($comboReset)
                         $this->player->hr_combo = 1;
-                    
+
                     if($this->player->hr_combo > config('stargate.maxHourly'))
                     {
                         $displayMultiplier = config('stargate.maxHourly') * 10;
@@ -83,7 +83,7 @@ class Hourly extends CommandHandler implements CommandInterface
                         $multiplier = 1+($displayMultiplier / 100);
                     }
 
-                    
+
                     if($this->player->hr_combo > $this->player->hr_max_combo)
                         $this->player->hr_max_combo = $this->player->hr_combo;
 
@@ -124,8 +124,8 @@ class Hourly extends CommandHandler implements CommandInterface
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 }

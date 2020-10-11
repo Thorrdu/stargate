@@ -431,7 +431,7 @@ $discord->on('ready', function ($discord) use($beta){
             return $command->execute();
         }catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     },[
         'description' => trans('help.daily.description', [], 'fr'),
@@ -446,7 +446,7 @@ $discord->on('ready', function ($discord) use($beta){
             return $command->execute();
         }catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
         echo 'bb';
     },[
@@ -522,7 +522,7 @@ $discord->on('ready', function ($discord) use($beta){
         }
         catch(\Exception $e)
         {
-            return $e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }   
     },[
         'description' => trans('help.uptime.description', [], 'fr'),
@@ -564,7 +564,7 @@ $discord->on('ready', function ($discord) use($beta){
         $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
             echo PHP_EOL.'Bot is ready';
         }, function ($e) {
-        echo $e->getMessage();
+        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         });*/
     }
 

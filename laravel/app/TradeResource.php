@@ -66,7 +66,7 @@ class TradeResource extends Model
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 }

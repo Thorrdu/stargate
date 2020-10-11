@@ -98,7 +98,7 @@ return [
     'digingStarted' => 'You stargate diging up, your stargate will be fully operational again in **48h**.',
     'burialStarted' => 'You stargate your stargate burial. Your stargate will be fully inoperant in **24h**.\nHowever, external activation can still occur until the process is complete.',
     'digUpConfirm' => 'Do you want to dig up your Stargate ? This action will take **48h**.',
-    'burryConfirm' => 'Do you want to bury your Stargate? This action will take **24h**.\nWarning, As soon as the process starts, your Stargatr will be out of service but external activation can occur until the process is complete.',
+    'burryConfirm' => "Do you want to bury your Stargate? This action will take **24h**.\nWarning, As soon as the process starts, your Stargatr will be out of service but external activation can occur until the process is complete.",
     'digingActive' => 'You are already diging up. Stargate operational in: **:time**',
     'buryingActive' => 'You are already burying your Stargate. Out of service in: **:time**',
     'buriedStargate' => 'Stargate out of service.',

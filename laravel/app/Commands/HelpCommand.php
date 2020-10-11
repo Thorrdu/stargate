@@ -24,7 +24,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
     public $prefix;
     public $lang;
     public $closed;
-    
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -38,7 +38,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
         {
             $this->lang = 'en';
         }
-        
+
         try{
             $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
 
@@ -52,9 +52,9 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 $this->maxTime = time()+180;
                 $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
-                    $this->paginatorMessage->react('⏪')->then(function(){ 
-                        $this->paginatorMessage->react('◀️')->then(function(){ 
-                            $this->paginatorMessage->react('▶️')->then(function(){ 
+                    $this->paginatorMessage->react('⏪')->then(function(){
+                        $this->paginatorMessage->react('◀️')->then(function(){
+                            $this->paginatorMessage->react('▶️')->then(function(){
                                 $this->paginatorMessage->react('⏩')->then(function(){
                                     $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                 });
@@ -65,7 +65,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     $filter = function($messageReaction){
                         if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
                             return false;
-                        
+
                         if($messageReaction->user_id == $this->player->user_id)
                         {
                             try{
@@ -104,7 +104,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                             return true;
                         }
@@ -120,11 +120,11 @@ class HelpCommand extends CommandHandler implements CommandInterface
 
                 $commandString = implode(' ', $this->args);
                 $command = $this->discord->getCommand($commandString);
-    
+
                 if (is_null($command)) {
                     return "The command {$commandString} does not exist...";
                 }
-    
+
                 $help = $command->getHelp($this->prefix);
                 $help['command'] = str_replace(array('!','-'),'',$help['command']);
 
@@ -140,7 +140,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         'text'  => $this->discord->commandClientOptions['name'],
                     ),
                 ];
-    
+
                 if(!empty($help['usage']))
                 {
                     $embed['fields'][] = array(
@@ -149,7 +149,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         'inline' => true
                     );
                 }
-    
+
                 if(!empty($this->discord->aliases))
                 {
                     $aliasesString = "";
@@ -170,16 +170,16 @@ class HelpCommand extends CommandHandler implements CommandInterface
 
                 $newEmbed = $this->discord->factory(Embed::class,$embed);
                 $this->message->channel->sendMessage('', false, $newEmbed);
-    
+
                 return;
             }
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
-        
+
 
         return false;
     }
@@ -220,7 +220,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
         return $embed;
     }

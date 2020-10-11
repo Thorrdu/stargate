@@ -110,7 +110,7 @@ $discord->on('ready', function ($discord) use($beta){
     }
     catch(\Exception $e)
     {
-        echo $e->getMessage();
+        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
     }
     
     $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
@@ -161,7 +161,7 @@ $discord->on('ready', function ($discord) use($beta){
                 }
             }
 
-            $playersTechnologyEnded = Player::Where('active_building_end','<',date("Y-m-d H:i:s"))->get();
+            $playersTechnologyEnded = Player::Where('active_technology_end','<',date("Y-m-d H:i:s"))->get();
             foreach($playersTechnologyEnded as $playerTechnologyEnded)
             {
                 $playerTechnologyEnded->checkTechnology();
@@ -673,7 +673,7 @@ $discord->on('ready', function ($discord) use($beta){
             return $command->execute();
         }catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     },[
         'description' => trans('help.daily.description', [], 'fr'),
@@ -688,7 +688,7 @@ $discord->on('ready', function ($discord) use($beta){
             return $command->execute();
         }catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     },[
         'description' => trans('help.hourly.description', [], 'fr'),
@@ -754,7 +754,7 @@ $discord->on('ready', function ($discord) use($beta){
         }
         catch(\Exception $e)
         {
-            return $e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }   
     },[
         'description' => trans('help.uptime.description', [], 'fr'),
@@ -805,7 +805,7 @@ $discord->on('ready', function ($discord) use($beta){
         $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
             echo PHP_EOL.'Bot is ready';
         }, function ($e) {
-        echo $e->getMessage();
+        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         });*/
     }
 

@@ -140,7 +140,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
                                     else
                                     {
-                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('12h');
+                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('24h');
                                         $burialMessage = trans('stargate.burialStarted', [], $this->player->lang);
                                         $imgBury = 'http://bot.thorr.ovh/stargate/laravel/public/images/buryStargate.png';
                                     }
@@ -174,7 +174,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -466,7 +466,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
 
                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
@@ -482,7 +482,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -492,6 +492,9 @@ class Stargate extends CommandHandler implements CommandInterface
 
                 if(Str::startsWith('trade',$this->args[0]))
                 {
+                    if(is_null($this->coordinateDestination->colony))
+                        return trans('stargate.neverExploredWorld', [], $this->player->lang);
+
                     if($this->coordinateDestination->colony->player->npc)
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
@@ -755,9 +758,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $tradeResource = new TradeResource;
                                                     $tradeResource->player = $tradePlayer;
                                                     $tradeResource->trade_id = $tradeLog->id;
-                                                    $tradeResource->resource = $tradeObject['resource'];
+                                                    if(isset($tradeObject['resource']))
+                                                        $tradeResource->resource = $tradeObject['resource'];
                                                     $tradeResource->quantity = $tradeObject['quantity'];
-                                                    $tradeResource->unit_id = $tradeObject['unit_id'];
+                                                    if(isset($tradeObject['unit_id']))
+                                                        $tradeResource->unit_id = $tradeObject['unit_id'];
                                                     $tradeResource->load('unit');
                                                 }
 
@@ -778,7 +783,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
                                     $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
@@ -793,7 +798,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -906,7 +911,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -919,7 +924,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -1428,7 +1433,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
 
                                     $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
@@ -1438,7 +1443,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -1447,7 +1452,7 @@ class Stargate extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else

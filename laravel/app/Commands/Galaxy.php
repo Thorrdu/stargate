@@ -189,7 +189,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                             return true;
                         }
@@ -203,8 +203,8 @@ class Galaxy extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
-                return $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else
@@ -269,8 +269,8 @@ class Galaxy extends CommandHandler implements CommandInterface
             }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 }

@@ -15,7 +15,7 @@ class Reminder extends CommandHandler implements CommandInterface
         {
             if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
-                    
+
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -45,7 +45,7 @@ class Reminder extends CommandHandler implements CommandInterface
 
             if(count($this->args) < 2)
                 return trans('reminder.wrongParameter', [], $this->player->lang);
-            
+
             if(Str::startsWith('remove', $this->args[0]))
             {
                 try{
@@ -63,7 +63,7 @@ class Reminder extends CommandHandler implements CommandInterface
                 }
                 catch(\Exception $e)
                 {
-                    return $e->getMessage();
+                    return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                     return trans('reminder.wrongParameter', [], $this->player->lang);
                 }
             }

@@ -252,7 +252,7 @@ class Empire extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else

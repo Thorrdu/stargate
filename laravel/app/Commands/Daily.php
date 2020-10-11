@@ -16,7 +16,7 @@ class Daily extends CommandHandler implements CommandInterface
                 echo PHP_EOL.'Execute Daily';
                 if($this->player->ban)
                     return trans('generic.banned',[],$this->player->lang);
-                    
+
                 if($this->player->captcha)
                     return trans('generic.captchaMessage',[],$this->player->lang);
 
@@ -46,11 +46,11 @@ class Daily extends CommandHandler implements CommandInterface
                 }
                 else
                     $dailyOK = true;
-                
+
 
                 if($dailyOK)
                 {
-                    $randomRes = rand(1,100);                   
+                    $randomRes = rand(1,100);
                     if($randomRes < 45)
                         $resType = 'iron';
                     elseif($randomRes < 70)
@@ -59,7 +59,7 @@ class Daily extends CommandHandler implements CommandInterface
                         $resType = 'quartz';
                     else
                         $resType = 'naqahdah';
-        
+
                     $varProd = 'production_'.$resType;
                     $resValue = $this->player->activeColony->$varProd * rand(2,4);
                     $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue);
@@ -90,7 +90,7 @@ class Daily extends CommandHandler implements CommandInterface
         catch(\Exception $e)
         {
 
-            return $e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 }

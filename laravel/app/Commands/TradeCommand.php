@@ -45,7 +45,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
 
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
-                    $this->tradeList = Trade::where([["player_id_source", $this->player->id], ["active", true]])->orWhere("player_id_dest", $this->player->id)->get();
+                    $this->tradeList = Trade::where([["player_id_source", $this->player->id], ["active", true]])->orWhere([["player_id_dest", $this->player->id], ["active", true]])->get();
 
                     if($this->tradeList->count() == 0)
                     {
@@ -111,7 +111,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                                 return true;
                             }
@@ -202,7 +202,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                         }
                         else
                         {
-                            $tradeEnding = $now->diffForHumans($tradeCreation->add('72h'),[
+                            $tradeEnding = $now->diffForHumans($closingDate,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
@@ -263,8 +263,8 @@ class TradeCommand extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
-                return $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else

@@ -73,7 +73,7 @@ class TopUpdater
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
     }
@@ -102,7 +102,7 @@ class TopUpdater
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
 
     }

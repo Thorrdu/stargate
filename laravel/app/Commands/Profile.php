@@ -135,7 +135,7 @@ class Profile extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                             });
                         });
@@ -198,7 +198,7 @@ class Profile extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                             });
                         });
@@ -251,7 +251,7 @@ class Profile extends CommandHandler implements CommandInterface
             $this->message->channel->sendMessage('', false, $newEmbed);
             }catch(\Exception $e)
             {
-                echo $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
             return ;
         }

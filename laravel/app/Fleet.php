@@ -133,7 +133,7 @@ class Fleet extends Model
                                                 'planetSource' => $sourceColony->name,
                                                 'coordinateSource' => $sourceCoordinates,
                                                 'fleet' => $this->shipsToString(),
-                                                'resources' => $this->resourcesToString()
+                                                'resources' => $this->resourcesToString($this->sourcePlayer->lang)
                                                 ], $destinationColony->player->lang);
 
             $embed = [
@@ -196,7 +196,7 @@ class Fleet extends Model
                                                                     'planetSource' => $this->sourceColony->name,
                                                                     'coordinateSource' => $sourceCoordinates,
                                                                     'fleet' => $this->shipsToString(),
-                                                                    'resources' => $this->resourcesToString(),
+                                                                    'resources' => $this->resourcesToString($this->sourcePlayer->lang),
                                                                     'duration' => $fleetDuration
                                                                     ], $this->destinationColony->player->lang);
 
@@ -207,7 +207,7 @@ class Fleet extends Model
                                                                         'planetDest' => $this->destinationColony->name,
                                                                         'planetSource' => $this->sourceColony->name,
                                                                         'coordinateSource' => $sourceCoordinates,
-                                                                        'resources' => $this->resourcesToString()
+                                                                        'resources' => $this->resourcesToString($this->destinationPlayer->lang)
                                                                         ], $this->destinationColony->player->lang);
 
 
@@ -239,7 +239,7 @@ class Fleet extends Model
                         }
                         catch(\Exception $e)
                         {
-                            echo $e->getMessage();
+                            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                         }
                     }
 

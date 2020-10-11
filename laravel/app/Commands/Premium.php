@@ -19,7 +19,7 @@ class Premium extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
-            try{     
+            try{
 
                 if($this->player->ban)
                 return trans('generic.banned',[],$this->player->lang);
@@ -45,16 +45,16 @@ class Premium extends CommandHandler implements CommandInterface
                         foreach($this->player->colonies as $colony)
                         {
                             $colony->calcProd(); //reload Prods
-                            $colony->save(); 
+                            $colony->save();
                         }
 
                         $now = Carbon::now();
                         $premiumExpiration = $now->diffForHumans($this->player->premium_expiration,[
                             'parts' => 3,
-                            'short' => true, 
+                            'short' => true,
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                        ]);  
-            
+                        ]);
+
                         return trans('premium.activated', ['expiration' => $premiumExpiration], $this->player->lang);
                     }
                     else
@@ -76,13 +76,13 @@ class Premium extends CommandHandler implements CommandInterface
 
                                 $this->maxTime = time()+180;
                                 $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
-                                    
+
                                     $this->paginatorMessage = $messageSent;
-                                    $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){ 
-                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){ 
+                                    $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                                         });
                                     });
-    
+
                                     $filter = function($messageReaction){
                                         return $messageReaction->user_id == $this->player->user_id;
                                     };
@@ -113,7 +113,7 @@ class Premium extends CommandHandler implements CommandInterface
                                         }
                                         catch(\Exception $e)
                                         {
-                                            echo $e->getMessage();
+                                            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                         }
                                     });
                                 });
@@ -130,15 +130,15 @@ class Premium extends CommandHandler implements CommandInterface
                 else
                 {
 
-                    $premiumMessage = "";    
+                    $premiumMessage = "";
                     if(!is_null($this->player->premium_expiration))
                     {
                         $now = Carbon::now();
-    
+
                         $premiumExpirationDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->premium_expiration);
                         $premiumExpiration = $now->diffForHumans($premiumExpirationDate,[
                             'parts' => 3,
-                            'short' => true, 
+                            'short' => true,
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
                         $premiumMessage .= trans("premium.premiumStatus", ['premiumStatus' => trans("generic.active", [], $this->player->lang)], $this->player->lang);
@@ -146,20 +146,20 @@ class Premium extends CommandHandler implements CommandInterface
                     }
                     else
                         $premiumMessage .= trans("premium.premiumStatus", ['premiumStatus' => trans("generic.inactive", [], $this->player->lang)], $this->player->lang);
-                    
+
                     $premiumMessage .= "\n".trans("premium.havingPremium", ['premium' => $this->player->premium ], $this->player->lang);
                     if($this->player->premium > 0)
                         $premiumMessage .= "\n".trans("premium.howTo", [], $this->player->lang);
-    
+
                     return $premiumMessage;
                 }
 
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
-        }       
+        }
         else
             return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;

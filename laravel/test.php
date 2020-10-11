@@ -48,7 +48,7 @@ try{
 }
 catch(\Exception $e)
 {
-	echo $e->getMessage();
+	echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
 }*/
 
 
@@ -75,7 +75,7 @@ try{
 }
 catch(\Exception $e)
 {
-	echo $e->getMessage();
+	echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
 }
 $date = new DateTime();
 $timeZone = $date->getTimezone();
@@ -95,12 +95,12 @@ try{
 }
 catch(\Exception $e)
 {
-	$errorMessage = $e->getMessage();
+	$errorMessage = 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
 	if(strstr($errorMessage,"No query results"))
 		echo "Joueur non créé";
 	else
 		echo $errorMessage;
-	//var_dump('aaa '.$e->getMessage());
+	//var_dump('aaa '.'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage());
 }*/
 
 /*

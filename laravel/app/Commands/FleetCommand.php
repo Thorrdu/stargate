@@ -386,6 +386,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     else
                         $this->fleet->mission = 'base';
 
+
+                    if(is_null($this->coordinateDestination->colony))
+                        return trans('stargate.neverExploredWorld', [], $this->player->lang);
+
                     if($this->coordinateDestination->colony->player->npc)
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
@@ -504,7 +508,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                     echo '<br/>fffffff';
                                 }
@@ -518,7 +522,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -648,7 +652,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -661,7 +665,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -770,7 +774,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     }
                                     catch(\Exception $e)
                                     {
-                                        echo $e->getMessage();
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
                                     echo '<br/>fffffff';
                                 }
@@ -784,7 +788,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             }
                             catch(\Exception $e)
                             {
-                                echo $e->getMessage();
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                             }
                         });
                     });
@@ -845,7 +849,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else

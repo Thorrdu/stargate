@@ -101,7 +101,7 @@ class Craft extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                                 return true;
                             }
@@ -176,7 +176,7 @@ class Craft extends CommandHandler implements CommandInterface
                                 }
                                 catch(\Exception $e)
                                 {
-                                    echo $e->getMessage();
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                 }
                                 return true;
                             }
@@ -257,8 +257,8 @@ class Craft extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
-                return $e->getMessage();
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         else
@@ -303,8 +303,8 @@ class Craft extends CommandHandler implements CommandInterface
         }
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -421,8 +421,8 @@ class Craft extends CommandHandler implements CommandInterface
 
         catch(\Exception $e)
         {
-            echo $e->getMessage();
-            return $e->getMessage();
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 

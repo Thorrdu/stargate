@@ -70,7 +70,7 @@ class Start extends CommandHandler implements CommandInterface
             }
             catch(\Exception $e)
             {
-                return $e->getMessage();
+                return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
             }
         }
         elseif($this->player->ban)
@@ -190,7 +190,7 @@ class Start extends CommandHandler implements CommandInterface
         }
         catch(\Exception $e)
         {
-            return $e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 }
