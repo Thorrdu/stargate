@@ -17,6 +17,7 @@ use App\Colony;
 use App\Technology;
 use App\Defence;
 use App\Artifact;
+use App\Fleet;
 use App\Utility\FuncUtility;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
@@ -28,12 +29,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
+foreach(Player::find(1)->artifacts as $artifact)
+	echo 'a';
+/*
+$fleet = Fleet::find(3);
+$fleet->resolveFight();
+die();*/
 
+$building = Building::find(2);
 
-
-$building = Building::find(16);
-
-for($cpt=1;$cpt<5;$cpt++)
+for($cpt=1;$cpt<=20;$cpt++)
 {
 	$time = $building->getTime($cpt);
 

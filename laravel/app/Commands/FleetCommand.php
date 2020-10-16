@@ -38,6 +38,8 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public $fleetSpeed;
     public $usedCapacity;
     public $fleetSpeedBonus;
+    public $fleetHistory;
+    public $fightPages;
 
     public function execute()
     {
@@ -64,6 +66,110 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     return trans('fleet.missingComTech', [], $this->player->lang);
                 }
 
+                if(isset($this->args[0]) && Str::startsWith('history',$this->args[0]))
+                {
+                    if(isset($this->args[1]) && (int)$this->args[1] > 0)
+                    {
+                        $fleet = Fleet::find((int)$this->args[1]);
+                        if(!is_null($fleet) && ($fleet->mission == 'attack' && !is_null($fleet->gateFight)) && ($fleet->player_source_id == $this->player->id || $fleet->player_destination_id == $this->player->id))
+                        {
+                            //Specific history
+                            switch($fleet->mission)
+                            {
+                                case 'attack':
+                                    $this->displayFight($fleet);
+                                break;
+                                case 'base':
+                                case 'transport':
+                                case 'spy':
+                                default:
+                                    return trans('fleet.unknownFleet', [], $this->player->lang);
+                                break;
+                            }
+                            return;
+                        }
+                        else
+                            return trans('fleet.unknownFleet', [], $this->player->lang);
+                    }
+
+                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')->take(100)->get();
+                    if($endedFleets->count() == 0)
+                    {
+                        return trans('fleet.emptyHistory', [], $this->player->lang);
+                    }
+                    $this->fleetHistory = $endedFleets;
+
+                    $this->closed = false;
+                    $this->page = 1;
+                    $this->maxPage = ceil($this->fleetHistory->count()/10);
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
+                                    $this->paginatorMessage->react('⏩')->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                    });
+                                });
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏪')
+                                    {
+                                        $this->page = 1;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    {
+                                        $this->page--;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    {
+                                        $this->page++;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏩')
+                                    {
+                                        $this->page = $this->maxPage;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
+                    return;
+                }
+
                 if(count($this->args) < 2)
                 {
                     /**
@@ -79,14 +185,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         if($activeFleet->returning)
                         {
                             $fleetStatus = trans('fleet.returningStatus', [], $this->player->lang);
-                            $sourceColony = $activeFleet->sourceColony;
+                            $sourceColony = $activeFleet->destinationColony;
+                            $destinationColony = $activeFleet->sourceColony;
                             $destinationColony = $activeFleet->destinationColony;
                         }
                         else
                         {
                             $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
-                            $sourceColony = $activeFleet->destinationColony;
-                            $destinationColony = $activeFleet->sourceColony;
+                            $sourceColony = $activeFleet->sourceColony;
+                            $destinationColony = $activeFleet->destinationColony;
+
                         }
 
                         $arrivalDateCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$activeFleet->arrival_date);
@@ -155,14 +263,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->message->channel->sendMessage('', false, $newEmbed);
                     return;
                 }
-                elseif(!Str::startsWith('base',$this->args[0]) && !Str::startsWith('transport',$this->args[0])
-                && !Str::startsWith('colonize',$this->args[0]) && !Str::startsWith('order',$this->args[0]))
+                elseif(!Str::startsWith('base',$this->args[0]) && !Str::startsWith('transport',$this->args[0]) && !Str::startsWith('attack',$this->args[0])
+                && !Str::startsWith('spy',$this->args[0]) && !Str::startsWith('order',$this->args[0]))
                 {
                     return trans('fleet.wrongParameter', [], $this->player->lang);
                 }
 
-                if(Str::startsWith('colonize',$this->args[0]) || Str::startsWith('attack',$this->args[0]))
-                    return 'Not yet implemented';
+                /*if(Str::startsWith('colonize',$this->args[0]))
+                    return 'Not yet implemented';*/
 
                 if(Str::startsWith('order',$this->args[0]))
                 {
@@ -177,7 +285,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     else
                         return trans('fleet.unknownFleet', [], $this->player->lang);
 
-                    if(isset($this->args[2]) && Str::startsWith('return',$this->args[2]))
+                    if(isset($this->args[2]) && Str::startsWith('returning',$this->args[2]))
                     {
                         if($fleetControl->returning)
                             return trans('fleet.alreadyReturning', [], $this->player->lang);
@@ -189,6 +297,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         $fleetControl->arrival_date = Carbon::now()->addSeconds($newArrivalDate);
                         $fleetControl->returning = true;
                         $fleetControl->save();
+
+                        if($fleetControl->mission == 'attack')
+                            GateFight::where('fleet_id',$fleetControl->id)->delete();
 
                         $now = Carbon::now();
                         $fleetDuration = $now->diffForHumans($fleetControl->arrival_date,[
@@ -210,7 +321,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 {
                     if((Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])) && !((int)$this->args[1] > 0 && (int)$this->args[1] <= $this->player->colonies->count()))
                         return trans('colony.UnknownColony', [], $this->player->lang);
-                    elseif(!Str::startsWith('base',$this->args[0]))
+                    elseif(!(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])))
                         return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
                     $this->coordinateDestination = $this->player->colonies[$this->args[1]-1]->coordinates;
@@ -226,6 +337,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->coordinateDestination = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                 }
 
+                if(is_null($this->coordinateDestination->colony))
+                    return trans('stargate.neverExploredWorld', [], $this->player->lang);
+
                 if(is_null($this->coordinateDestination))
                     return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
@@ -236,7 +350,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 }
 
                 //&& $this->player->user_id != 125641223544373248
-                if(!(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id )
+                if(!(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->id != 1 )
                     return trans('stargate.samePlayerAction', [], $this->player->lang);
 
                 if(Str::startsWith('base',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
@@ -356,7 +470,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         return trans('generic.notEnoughResources', ['missingResources' => trans('shipyard.crew', ['crew' => number_format(ceil($this->fleet->crew - $this->player->activeColony->military))], $this->player->lang)], $this->player->lang);
 
                     $this->usedCapacity += $this->travelCost;
-                    $this->usedCapacity += $this->fleet->crew;
                     //check fret capacity
                     if($this->fleet->capacity < $this->usedCapacity)
                         return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
@@ -387,10 +500,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     }
                     else
                         $this->fleet->mission = 'base';
-
-
-                    if(is_null($this->coordinateDestination->colony))
-                        return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
                     if($this->coordinateDestination->colony->player->npc)
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
@@ -535,9 +644,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                 if(Str::startsWith('spy',$this->args[0]))
                 {
-                    if(is_null($this->coordinateDestination->colony))
-                        return trans('stargate.neverExploredWorld', [], $this->player->lang);
-
                     if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
@@ -584,10 +690,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 {
                                     try
                                     {
-                                        $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
-                                        if($raidCapability['result'] == false)
-                                            $messageReaction->message->channel->sendMessage($raidCapability['message']);
-
                                         $this->player->activeColony->refresh();
 
                                         $current = Carbon::now();
@@ -678,9 +780,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     if(count($this->args) < 4)
                         return trans('generic.missingArgs', [], $this->player->lang).' / !fleet attack [Coordinates] [Ship1] [Qty1]';
 
-                    if(is_null($this->coordinateDestination->colony))
-                        return trans('stargate.neverExploredWorld', [], $this->player->lang);
-
                     if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
 
@@ -769,6 +868,17 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $shipCheck->pivot->save();
                                             //$this->activeColony->ships()->updateExistingPivot($fleetShip['id'], array('number' => 1), false);
                                         }
+
+                                        $attackLog = new GateFight;
+                                        $attackLog->type = 'fleet';
+                                        $attackLog->player_id_source = $this->player->id;
+                                        $attackLog->colony_id_source = $this->player->activeColony->id;
+                                        $attackLog->player_id_dest = $this->coordinateDestination->colony->player->id;
+                                        $attackLog->colony_id_dest = $this->coordinateDestination->colony->id;
+                                        $attackLog->fleet_id = $this->fleet->id;
+                                        $attackLog->created_at = $this->fleet->arrival_date;
+                                        $attackLog->save();
+
                                         echo '<br/>dddddd';
 
                                         $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
@@ -876,50 +986,200 @@ class FleetCommand extends CommandHandler implements CommandInterface
     {
         $now = Carbon::now();
 
-        $atkNbr = GateFight::Where([['active',true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id]])->count();
-        if($atkNbr > 0)
-        {
-            $atkColony = GateFight::Where([['active', true],['colony_id_source',$colonySource->id],['colony_id_dest',$colonyDest->id]])->count();
-            if($atkNbr >= 6 || $atkColony >= 2)
-            {
-                $firstAttack = GateFight::Where([['active',true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id]])->orderBy('created_at', 'asc')->first();
-                $firstAttackTime = Carbon::createFromFormat("Y-m-d H:i:s",$firstAttack->created_at);
-                $timeUntilAttack = $now->diffForHumans($firstAttackTime->addHours(72),[
-                    'parts' => 3,
-                    'short' => true, // short syntax as per current locale
-                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);
-                return array('result' => false, 'message' =>trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
-            }
-        }
+        $last96to120h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('120h')],['created_at', '<', Carbon::now()->sub('96h')]])->count();
+        $last72to96h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('96h')],['created_at', '<', Carbon::now()->sub('72h')]])->count();
+        $last48to72h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('72h')],['created_at', '<', Carbon::now()->sub('48h')]])->count();
+        $last24to48h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('48h')],['created_at', '<', Carbon::now()->sub('24h')]])->count();
+        $last0to24h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->count();
 
-        $last24h = GateFight::Where([['active', true],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->get();
-        if($last24h->count() >= 3)
+        //par 24h
+        /**
+         * Si en paix
+         * 3 attaques par 24h dont 2 par la porte
+         * 1 attaque par planète par la porte sur 24h
+         *
+         * pause de 72h si 2 cycles d attaques sur 72h
+         *
+         * Si en guerre
+         * Attaques par vaisseaux illimitées
+         * Attaques par la porte: 1 par colonie par 24h
+         */
+
+        if(($last48to72h >= 0 && $last72to96h > 0) || ($last48to72h >= 0 && $last96to120h > 0))
+            $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('72h')],['created_at', '<', Carbon::now()->sub('48h')]])->orderBy('created_at','DESC')->limit(1)->first();
+        elseif(($last24to48h >= 0 && $last48to72h > 0) || ($last24to48h >= 0 && $last72to96h > 0))
+            $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('48h')],['created_at', '<', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->limit(1)->first();
+        elseif(($last0to24h >= 3 && $last24to48h > 0)  || ($last0to24h >= 3 && $last48to72h > 0) || ($last0to24h >= 3 && $last72to96h > 0))
+            $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->limit(1)->first();
+        else
+            $lastFight = null;
+
+        if($lastFight != null)
         {
             $now = Carbon::now();
-            $firstFight = Carbon::createFromFormat("Y-m-d H:i:s",$last24h[0]->created_at);
-            $timeUntilAttack = $now->diffForHumans($firstFight->addHours(24),[
+            $convertedDate = Carbon::createFromFormat("Y-m-d H:i:s",$lastFight->created_at);
+            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(72),[
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
             ]);
             return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
         }
-
-        $activeFights = GateFight::Where([['active', true],['colony_id_source',$colonySource->id],['colony_id_dest',$colonyDest->id]])->orderBy('created_at', 'asc')->get();
-        if($activeFights->count() > 0)
+        elseif($last0to24h >= 3)
         {
+            $firstOf24h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','ASC')->limit(1)->first();
             $now = Carbon::now();
-            $lastFight = Carbon::createFromFormat("Y-m-d H:i:s",$activeFights[$activeFights->count()-1]->created_at);
-            if($lastFight->diffInHours($now) < 24){
-                $timeUntilAttack = $now->diffForHumans($lastFight->addHours(24),[
-                    'parts' => 3,
-                    'short' => true, // short syntax as per current locale
-                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                ]);
-                return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
-            }
+            $convertedDate = Carbon::createFromFormat("Y-m-d H:i:s",$firstOf24h->created_at);
+            $timeUntilAttack = $now->diffForHumans($convertedDate->addHours(24),[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);
+            return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
         }
         return array('result' => true);
+    }
+
+    public function getPage()
+    {
+        $displayList = $this->fleetHistory->skip(10*($this->page -1))->take(10);
+
+        $fleetList = '';
+        $fleetList .= "ID - DATE - MISSION - PLAYERS\n";
+        foreach($displayList as $fleetElem)
+        {
+            $fleetDate = $fleetElem->created_at;
+            if($fleetElem->mission == 'attack')
+                $fleetDate = $fleetElem->gateFight->created_at;
+
+            if($fleetElem->sourcePlayer->id == $this->player->id)
+                $dest = $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')';
+            else
+                $dest = $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->sourcePlayer->user_name.')';
+
+            $fleetList .= trans('fleet.historyLine', [
+                'fleetId' => $fleetElem->id,
+                'date' => $fleetDate,
+                'mission' => ucfirst($fleetElem->mission),
+                'destination' => $dest
+            ], $this->player->lang)."\n";
+        }
+
+        $embed = [
+            'author' => [
+                'name' => $this->player->user_name,
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+            ],
+            "title" => trans('fleet.fleetHistory', [], $this->player->lang),
+            "description" => trans('fleet.historyHowTo', [], $this->player->lang)."\n".$fleetList,
+            'fields' => [],
+            'footer' => array(
+                'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
+            ),
+        ];
+
+        return $embed;
+    }
+
+    public function displayFight(Fleet $fleet)
+    {
+        try{
+            $fightMessage = $fleet->gateFight->{'report_'.$this->player->lang};
+            if(strlen($fightMessage) < 1800)
+            {
+                $this->message->channel->sendMessage($fightMessage);
+            }
+            else
+            {
+                $this->fightPages = [];
+
+                if($this->player->lang == 'fr')
+                {
+                    $this->fightPages = explode('__Passe n',$fightMessage);
+                    $lastSteps = explode('__Rapport de',$this->fightPages[count($this->fightPages)-1]);
+                    $this->fightPages[count($this->fightPages)-1] = $lastSteps[0];
+                    $this->fightPages[] = $lastSteps[1];
+                    foreach($this->fightPages as $key => $value){
+                        if($key > 0 && $key != count($this->fightPages)-1)
+                            $this->fightPages[$key] = '__Passe n'.$value;
+                        elseif($key = count($this->fightPages)-1)
+                            $this->fightPages[$key] = '__Rapport de'.$value;
+                    }
+                }
+                elseif($this->player->lang == 'en')
+                {
+                    $this->fightPages = explode('__Pass n',$fightMessage);
+                    $lastSteps = explode('__Battle summary',$this->fightPages[count($this->fightPages)-1]);
+                    $this->fightPages[count($this->fightPages)-1] = $lastSteps[0];
+                    $this->fightPages[] = $lastSteps[1];
+                    foreach($this->fightPages as $key => $value){
+                        if($key > 0 && $key != count($this->fightPages)-1)
+                            $this->fightPages[$key] = '__Pass n'.$value;
+                        elseif($key = count($this->fightPages)-1)
+                            $this->fightPages[$key] = '__Battle summary'.$value;
+                    }
+                }
+                $this->closed = false;
+                $this->page = 1;
+                $this->maxPage = count($this->fightPages);
+                $this->maxTime = time()+180;
+                $this->message->channel->sendMessage($this->fightPages[count($this->fightPages)-1])->then(function ($messageSent){
+                    $this->paginatorMessage = $messageSent;
+
+                    $this->paginatorMessage->react('⏪')->then(function(){
+                        $this->paginatorMessage->react('◀️')->then(function(){
+                            $this->paginatorMessage->react('▶️')->then(function(){
+                                $this->paginatorMessage->react('⏩')->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                });
+                            });
+                        });
+                    });
+
+                    $filter = function($messageReaction){
+                        if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                            return false;
+
+                        if($messageReaction->user_id == $this->player->user_id)
+                        {
+                            try{
+                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                    $this->closed = true;
+                                    return;
+                                }
+                                elseif($messageReaction->emoji->name == '⏪')
+                                    $this->page = 1;
+                                elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    $this->page--;
+                                elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    $this->page++;
+                                elseif($messageReaction->emoji->name == '⏩')
+                                    $this->page = $this->maxPage;
+
+                                $this->paginatorMessage->content = $this->fightPages[($this->page -1)];
+                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                            }
+                            catch(\Exception $e)
+                            {
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                            }
+                            return true;
+                        }
+                        else
+                            return false;
+                    };
+                    $this->paginatorMessage->createReactionCollector($filter);
+                });
+            }
+        }
+        catch(\Exception $e)
+        {
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+        }
     }
 }

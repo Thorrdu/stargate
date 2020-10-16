@@ -31,7 +31,10 @@ class Fleet extends Model
         return $this->belongsTo('App\Player','player_destination_id','id');
     }
 
-
+    public function gateFight()
+    {
+        return $this->hasOne('App\GateFight');
+    }
 
     public function getFleetTime(Coordinate $coordinateSource, Coordinate $coordionateDest, $speed)
     {
@@ -64,24 +67,6 @@ class Fleet extends Model
         if($this->returning || $this->mission == 'base')
         {
 
-            /*
-            Retour de flotte de la planète [4:28:4]
-            Une flotte est rentrée sur la planète Asgard [5:25:3],
-            elle était partie sur la planète Colonie [4:28:4] du joueur Thorrdu.
-
-            Elle était composée de :
-
-            - vitevite : 1
-
-            Elle a ramené :
-
-            - Fer : 1
-            - Hydrogène : 482
-            - Militaires : 2
-
-            */
-
-            //Si vicoire fight, image de victoire
             if($this->returning){
                 $sourceColony = $this->destinationColony;
                 $destinationColony = $this->sourceColony;
@@ -324,15 +309,16 @@ class Fleet extends Model
                 break;
                 case 'attack':
                     $winState = $this->resolveFight();
-
                     if($winState)
                     {
                         $this->arrival_date = $now->addSeconds($newArrivalDate);
                         $this->returning = true;
+                        $this->save();
                     }
                     else
                     {
                         $this->ended = true;
+                        $this->save();
                     }
                 break;
                 case 'spy':
@@ -440,6 +426,7 @@ class Fleet extends Model
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
                 'fire_power' => $ship->fire_power * $defenderFireCoef,
+                'total_fire_power' => $ship->fire_power * $defenderFireCoef * $ship->pivot->number,
                 'shield' => $ship->shield * $defenderShieldCoef,
                 'hull' => $ship->hull * $defenderHullCoef,
                 'shield_left' => $ship->shield * $defenderShieldCoef,
@@ -454,6 +441,7 @@ class Fleet extends Model
                 'item' => $defence,
                 'quantity' => $defence->pivot->number,
                 'fire_power' => $defence->fire_power * $defenderFireCoef,
+                'total_fire_power' => $defence->fire_power * $defenderFireCoef * $defence->pivot->number,
                 'shield' => 0,
                 'hull' => $defence->hull * $defenderHullCoef,
                 'shield_left' => 0,
@@ -469,6 +457,7 @@ class Fleet extends Model
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
                 'fire_power' => $ship->fire_power * $attackerFireCoef,
+                'total_fire_power' => $ship->fire_power * $attackerFireCoef * $ship->pivot->number,
                 'shield' => $ship->shield * $attackerShieldCoef,
                 'hull' => $ship->hull * $attackerHullCoef,
                 'shield_left' => $ship->shield * $attackerShieldCoef,
@@ -476,14 +465,12 @@ class Fleet extends Model
             );
         }
 
-        $defenceLostForces = array();
-        $attackLostForces = array();
 
         //Le combat
 
         /**
          *
-            Si la flotte attaquante possède plus de 3 fois la puissance de feu de celle du défenseur, et cela à n'importe quel moment du combat, (dès la première passe ou à la dixième passe si la puissance de feu du défenseur chûte durant le combat), la flotte du défenseur passe en mode défensif : chaque vaisseau se comportera comme une défense, et attaquera en premier les vaisseaux attaquants ayant le moins de puissance de feu.
+            Si la flotte attaquante possède plus de 3 fois l\'armement de celle du défenseur, et cela à n'importe quel moment du combat, (dès la première passe ou à la dixième passe si l\'armement du défenseur chûte durant le combat), la flotte du défenseur passe en mode défensif : chaque vaisseau se comportera comme une défense, et attaquera en premier les vaisseaux attaquants ayant le moins de puissance de feu.
             Les missiles d'interceptions (défense) attaqueront en premier les vaisseaux ayant le moins de défense (en ajoutant coque et bouclier), notamment les vaisseaux dits "riposteurs" ou les « cargos ».
         */
 
@@ -492,11 +479,6 @@ class Fleet extends Model
             A chaque fin de passe les boucliers récupèrent un certain pourcentage de leur puissance en fonction de ce qu'ils ont perdu pendant cette passe.
 
             Ce pourcentage part de 100% (passe 1) et perd 10% par passe.
-         */
-
-        /**
-            14 passes max
-            Pille 60%
          */
 
         /**
@@ -521,44 +503,16 @@ class Fleet extends Model
             =>Si pas assez de crew, ship détruit?
          */
 
-        //Ecrire recap firepower/shield/hull avec totaux
-
-        /**
-         *
-         array_orderby
-
-         $sorting_insructions = [
-            ['column'=>'first_name', 'order'=>'asc'],
-            ['column'=>'date_of_birth', 'order'=>'desc'],
-        ];
-        for ($i = count($sorting_insructions) - 1; $i >= 0 ; $i--) {
-
-            extract($sorting_insructions[i]);
-
-            if ( $order === 'asc') {
-                $collection = $collection->sortBy( $column );
-            } else {
-                $collection = $collection->sortByDesc( $column );
-            }
-
-        }
-
-
-         $array = collect($array)->sortBy('count')->reverse()->toArray();
-
-
-
-        $attackForces = array_values(Arr::sort($attackForces, function ($value) {
-            return (0-$value['fire_power']);
-        }));
-         */
 
         /**
 
-        La flotte de l’attaquant va attaquer l’entité du défenseur (vaisseau ou défense) qui a la puissance de feu la plus grande donc la ligne 1 jusqu’à sa destruction complète puis il attaquer la ligne 2 puis 3...
+        La flotte de l’attaquant va attaquer l’entité du défenseur (vaisseau ou défense) qui a l\'armement la plus grande donc la ligne 1 jusqu’à sa destruction complète puis il attaquer la ligne 2 puis 3...
 
-        La flotte du défenseur va attaquer le type de vaisseau de l'attaquant qui a la puissance de feu la plus grande et donc à partir de la ligne 1 puis il attaquera la ligne 2 puis 3...
+        La flotte du défenseur va attaquer le type de vaisseau de l'attaquant qui a l\'armement la plus grande et donc à partir de la ligne 1 puis il attaquera la ligne 2 puis 3...
 
+
+        PREVOIR LE CAS
+        =>Si aucun gagnant au bout de la x ieme phase
         */
 
         $attackForces = FuncUtility::array_orderby($attackForces, 'fire_power', SORT_ASC, 'shield', SORT_ASC, 'hull', SORT_ASC);
@@ -566,20 +520,54 @@ class Fleet extends Model
         //trouver un moyen ?
 
         $defenceForces = FuncUtility::array_orderby($defenceForces, 'type', SORT_ASC, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC);
-        $lostAttackForces[] = array();
 
-        for( $phase = 1 ; $phase <= 10 ; $phase++ )
+        $winState = false;
+
+
+        $fleetReportFR = trans('fleet.battleSummary', [
+            'playerSource' => $this->sourcePlayer->user_name,
+            'playerDest' => $this->destinationPlayer->user_name,
+            'colonySource' => $this->sourceColony->name,
+            'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+            'colonyDest' => $this->destinationColony->name,
+            'coordinateDest' => $this->destinationColony->coordinates->humanCoordinates(),
+            'attackForces' => $this->summarizeForces($attackForces,'fr'),
+            'defenceForces' => $this->summarizeForces($defenceForces,'fr')
+        ], 'fr');
+
+        $fleetReportEN = trans('fleet.battleSummary', [
+            'playerSource' => $this->sourcePlayer->user_name,
+            'playerDest' => $this->destinationPlayer->user_name,
+            'colonySource' => $this->sourceColony->name,
+            'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+            'colonyDest' => $this->destinationColony->name,
+            'coordinateDest' => $this->destinationColony->coordinates->humanCoordinates(),
+            'attackForces' => $this->summarizeForces($attackForces,'en'),
+            'defenceForces' => $this->summarizeForces($defenceForces,'en')
+        ], 'en');
+
+        $globalLostAttackForces = $globalLostDefenceForces = 0;
+        $defenceFleetDefenceMode = false;
+
+        for( $phase = 1 ; $phase <= 14 ; $phase++ )
         {
             if(empty($attackForces))
-                return 'loose';
-            if(empty($defenceForces))
-                return 'win';
-
-            $fleetDamage = array_sum(array_column($attackForces, 'fire_power'));
-            $defenceDamage = array_sum(array_column($defenceForces, 'fire_power'));
-
-            if(($fleetDamage/3) > $defenceDamage)
             {
+                $winState = false;
+                break;
+            }
+            if(empty($defenceForces))
+            {
+                $winState = true;
+                break;
+            }
+
+            $fleetDamage = floor(array_sum(array_column($attackForces, 'total_fire_power')));
+            $defenceDamage = floor(array_sum(array_column($defenceForces, 'total_fire_power')));
+
+            if(!$defenceFleetDefenceMode && ($fleetDamage/3) > $defenceDamage)
+            {
+                $defenceFleetDefenceMode = true;
                 $attackForces = FuncUtility::array_orderby($attackForces, 'fire_power', SORT_ASC, 'shield', SORT_ASC, 'hull', SORT_ASC);
                 /**
                  * https://forum.origins-return.fr/index.php?/topic/241854-le-combat-spatial/
@@ -592,91 +580,506 @@ class Fleet extends Model
                 Les missiles attaqueront le vaisseau de l’attaquant avec le moins de pouvoir défensif (addition bouclier + coque). Donc ici, la ligne 5 puis 6 puis 3 puis 2 puis 4 puis 1.
                   */
             }
-
             //Dégats du défenseur
-            $AttackShieldAbsorbed = 0;
+            $attackShieldAbsorbed = 0;
             $defenceDamageLeft = $defenceDamage;
-            for($shipCount = 0; $shipCount<count($attackForces); $shipCount++)
+            $lostAttackForces = [];
+            foreach($attackForces as $key => $forceUnit)
             {
+                //Regen shield
+                if($forceUnit['shield_left'] < $forceUnit['shield'] && $phase > 1 && $phase < 12)
+                    $forceUnit['shield_left'] += (($forceUnit['shield_left']-$forceUnit['shield']) * 0.1) * 12-$phase;
                 //Au moins 1 vaisseau détruit
-                if($defenceDamage >= ($attackForces[$shipCount]['shield_left'] + $attackForces[$shipCount]['hull_left']))
+                if($defenceDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
                 {
                     /**
                      *
                      * Est-ce que plusieurs vaisseaux détruits ?
                      *
                      */
-                    $nbrShipDestroyed = floor($defenceDamageLeft/($attackForces[$shipCount]['shield'] + $attackForces[$shipCount]['hull']));
-                    if($nbrShipDestroyed > 0)
+                    $defenceDamageLeft -= ($forceUnit['shield_left'] + $forceUnit['hull_left']);
+                    $attackShieldAbsorbed += $forceUnit['shield_left'];
+                    $nbrShipDestroyed = 1+floor($defenceDamageLeft/($forceUnit['shield'] + $forceUnit['hull']));
+                    if($nbrShipDestroyed > 1 && $forceUnit['quantity'] > 1)
                     {
-                        $defenceDamageLeft -= ($attackForces[$shipCount]['shield'] + $attackForces[$shipCount]['hull']) * $nbrShipDestroyed;
+                        if($nbrShipDestroyed > $forceUnit['quantity'])
+                            $nbrShipDestroyed = $forceUnit['quantity'];
 
-                        //Si ship déjà présent => incrémenter
-                        //si pas présent
-                        $lostIndex = array_search($attackForces[$shipCount]['item'],$lostAttackForces);
-                        if($lostIndex) //Si ship déjà présent => incrémenter
-                            $lostAttackForces[$lostIndex]['quantity'] += $nbrShipDestroyed+1;
-                        else{
-                            $lostAttackForces[] = $attackForces[$shipCount];
-                            $lostAttackForces[count($lostAttackForces)-1]['quantity'] = $nbrShipDestroyed+1;
-                        }
+                        $attackForces[$key]['quantity'] -= $nbrShipDestroyed;
+                        $globalLostAttackForces += $nbrShipDestroyed;
+                        $defenceDamageLeft -= ($forceUnit['shield'] + $forceUnit['hull']) * ($nbrShipDestroyed-1);
+
+                        $lostAttackForces[] = $forceUnit;
+                        $lostAttackForces[count($lostAttackForces)-1]['quantity'] = $nbrShipDestroyed;
+
+                        $attackShieldAbsorbed += $forceUnit['shield'] * ($nbrShipDestroyed-1);
 
                         //Si au moins un autre vaisseau survit, on remet hull et shield max
-                        $attackForces[$shipCount]['shield_left'] = $attackForces[$shipCount]['shield'];
-                        $attackForces[$shipCount]['hull_left'] = $attackForces[$shipCount]['hull'];
-                    }
-
-                    if($attackForces[$shipCount]['quantity'] <= $nbrShipDestroyed)
-                    {
-                        //Tous les vaisseaux de la ligne détruits
-                        unset($attackForces[$shipCount]);
-                        array_values($attackForces[$shipCount]);
+                        $attackForces[$key]['shield_left'] = $forceUnit['shield'];
+                        $attackForces[$key]['hull_left'] = $forceUnit['hull'];
                     }
                     else
                     {
+                        $nbrShipDestroyed = 1;
+                        $attackForces[$key]['quantity'] -= 1;
+                        $globalLostAttackForces ++;
+                        $lostAttackForces[] = $forceUnit;
+                        $lostAttackForces[count($lostAttackForces)-1]['quantity'] = 1;
+                        $attackForces[$key]['shield_left'] = $forceUnit['shield'];
+                        $attackForces[$key]['hull_left'] = $forceUnit['hull'];
+                    }
+                    $attackForces[$key]['total_fire_power'] = $attackForces[$key]['quantity'] * $attackForces[$key]['fire_power'];
 
+                    if($attackForces[$key]['quantity'] <= 0)
+                    {
+                        //Tous les vaisseaux de la ligne détruits
+                        $this->ships()->detach($forceUnit['item']->id);
+                        unset($attackForces[$key]);
+                    }
+                    else
+                    {
                         /**
                          *
                          * Est-ce que vaisseau endomagé avec ce qui reste?
                          *
                          */
-                        if($defenceDamageLeft >= $attackForces[$shipCount]['shield_left'])
+                        if($defenceDamageLeft >= $forceUnit['shield_left'])
                         {
-                            $defenceDamageLeft -= $attackForces[$shipCount]['shield_left'];
-                            $AttackShieldAbsorbed += $attackForces[$shipCount]['shield_left'];
-                            $attackForces[$shipCount]['shield_left'] = 0;
-                            $attackForces[$shipCount]['hull_left'] -= $defenceDamageLeft;
+                            $defenceDamageLeft -= $forceUnit['shield_left'];
+                            $attackShieldAbsorbed += $forceUnit['shield_left'];
+                            $attackForces[$key]['shield_left'] = 0;
+                            $attackForces[$key]['hull_left'] -= $defenceDamageLeft;
                         }
                         else
                         {
-                            $AttackShieldAbsorbed += $defenceDamageLeft;
-                            $attackForces[$shipCount]['shield_left'] -= $defenceDamageLeft;
+                            $attackShieldAbsorbed += $defenceDamageLeft;
+                            $attackForces[$key]['shield_left'] -= $defenceDamageLeft;
                         }
                         $defenceDamageLeft = 0;
                     }
                 }
                 else
                 {
-                    if($defenceDamageLeft >= $attackForces[$shipCount]['shield_left'])
+                    if($defenceDamageLeft >= $forceUnit['shield_left'])
                     {
-                        $AttackShieldAbsorbed += $attackForces[$shipCount]['shield_left'];
-                        $defenceDamageLeft -= $attackForces[$shipCount]['shield_left'];
-                        $attackForces[$shipCount]['shield_left'] = 0;
-                        $attackForces[$shipCount]['hull_left'] -= $defenceDamageLeft;
+                        $attackShieldAbsorbed += $forceUnit['shield_left'];
+                        $defenceDamageLeft -= $forceUnit['shield_left'];
+                        $attackForces[$key]['shield_left'] = 0;
+                        $attackForces[$key]['hull_left'] -= $defenceDamageLeft;
                     }
                     else
                     {
-                        $AttackShieldAbsorbed += $defenceDamageLeft;;
-                        $attackForces[$shipCount]['shield_left'] -= $defenceDamageLeft;
+                        $attackShieldAbsorbed += $defenceDamageLeft;
+                        $attackForces[$key]['shield_left'] -= $defenceDamageLeft;
                     }
                     $defenceDamageLeft = 0;
                 }
-
+                array_values(array_filter($attackForces));
                 if($defenceDamageLeft == 0)
                     break;
             }
 
 
+            //Dégats de l'attaquant
+            $defenceShieldAbsorbed = 0;
+            $fleetDamageLeft = $fleetDamage;
+            $lostDefenceForces = [];
+            foreach($defenceForces as $key => $forceUnit)
+            {
+                //Regen shield
+                if($forceUnit['shield_left'] < $forceUnit['shield'] && $phase > 1 && $phase < 12)
+                    $forceUnit['shield_left'] += (($forceUnit['shield_left']-$forceUnit['shield']) * 0.1) * 12-$phase;
+
+                //Au moins 1 vaisseau détruit
+                if($fleetDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
+                {
+                    /**
+                     *
+                     * Est-ce que plusieurs vaisseaux détruits ?
+                     *
+                     */
+                    $fleetDamageLeft -= ($forceUnit['shield_left'] + $forceUnit['hull_left']);
+                    $defenceShieldAbsorbed += $forceUnit['shield_left'];
+                    $nbrShipDestroyed = 1+floor($fleetDamageLeft/($forceUnit['shield'] + $forceUnit['hull']));
+                    if($nbrShipDestroyed > 1 && $forceUnit['quantity'] > 1)
+                    {
+                        if($nbrShipDestroyed > $forceUnit['quantity'])
+                            $nbrShipDestroyed = $forceUnit['quantity'];
+
+                        $defenceForces[$key]['quantity'] -= $nbrShipDestroyed;
+                        $globalLostDefenceForces += $nbrShipDestroyed;
+                        $fleetDamageLeft -= ($forceUnit['shield'] + $forceUnit['hull']) * ($nbrShipDestroyed-1);
+
+                        $lostDefenceForces[] = $forceUnit;
+                        $lostDefenceForces[count($lostDefenceForces)-1]['quantity'] = $nbrShipDestroyed;
+
+                        $defenceShieldAbsorbed += $forceUnit['shield'] * ($nbrShipDestroyed-1);
+
+                        //Si au moins un autre vaisseau survit, on remet hull et shield max
+                        $defenceForces[$key]['shield_left'] = $forceUnit['shield'];
+                        $defenceForces[$key]['hull_left'] = $forceUnit['hull'];
+                    }
+                    else
+                    {
+                        $nbrShipDestroyed = 1;
+                        $defenceForces[$key]['quantity'] -= 1;
+                        $globalLostDefenceForces ++;
+                        $lostDefenceForces[] = $forceUnit;
+                        $lostDefenceForces[count($lostDefenceForces)-1]['quantity'] = 1;
+                        $defenceForces[$key]['shield_left'] = $forceUnit['shield'];
+                        $defenceForces[$key]['hull_left'] = $forceUnit['hull'];
+                    }
+                    $defenceForces[$key]['total_fire_power'] = $defenceForces[$key]['quantity'] * $defenceForces[$key]['fire_power'];
+
+
+                    if($defenceForces[$key]['quantity'] <= 0)
+                    {
+                        if($forceUnit['type'] == 'ship')
+                        {
+                            $this->destinationColony->military -= $nbrShipDestroyed * $forceUnit['item']->crew;
+                            $this->destinationColony->ships()->detach($forceUnit['item']->id);
+                        }
+                        elseif($defenceForces[$key]['quantity'] == 1)
+                        {
+                            $this->destinationColony->defences()->detach($forceUnit['item']->id);
+                        }
+                        else
+                        {
+                            $defenceForces[$key]['item']->pivot->number = floor($defenceForces[$key]['item']->pivot->number * 0.95);
+                            $defenceForces[$key]['item']->pivot->save();
+                        }
+                        //Tous les vaisseaux de la ligne détruits
+                        unset($defenceForces[$key]);
+
+                    }
+                    else
+                    {
+                        /**
+                         *
+                         * Est-ce que vaisseau endomagé avec ce qui reste?
+                         *
+                         */
+                        if($fleetDamageLeft >= $forceUnit['shield_left'])
+                        {
+                            $fleetDamageLeft -= $forceUnit['shield_left'];
+                            $defenceShieldAbsorbed += $forceUnit['shield_left'];
+                            $defenceForces[$key]['shield_left'] = 0;
+                            $defenceForces[$key]['hull_left'] -= $fleetDamageLeft;
+                        }
+                        else
+                        {
+                            $defenceShieldAbsorbed += $fleetDamageLeft;
+                            $defenceForces[$key]['shield_left'] -= $fleetDamageLeft;
+                        }
+                        $fleetDamageLeft = 0;
+                    }
+                }
+                else
+                {
+                    if($fleetDamageLeft >= $forceUnit['shield_left'])
+                    {
+                        $defenceShieldAbsorbed += $forceUnit['shield_left'];
+                        $fleetDamageLeft -= $forceUnit['shield_left'];
+                        $defenceForces[$key]['shield_left'] = 0;
+                        $defenceForces[$key]['hull_left'] -= $fleetDamageLeft;
+                    }
+                    else
+                    {
+                        $defenceShieldAbsorbed += $fleetDamageLeft;;
+                        $defenceForces[$key]['shield_left'] -= $fleetDamageLeft;
+                    }
+                    $fleetDamageLeft = 0;
+                }
+                array_values(array_filter($defenceForces));
+                if($fleetDamageLeft == 0)
+                    break;
+            }
+
+            $fleetReportFR .= trans('fleet.passSummary', [
+                'phaseNbr' => $phase,
+                'attackerDamageDone' => number_format($fleetDamage),
+                'defenderAbsorbedDamage' => number_format($defenceShieldAbsorbed),
+                'defenderDamageDone' => number_format($defenceDamage),
+                'attackerAbsorbedDamage' => number_format($attackShieldAbsorbed),
+                'lostAttackerUnits' => $this->summarizeForces($lostAttackForces, 'fr', false),
+                'lostDefenderUnits' => $this->summarizeForces($lostDefenceForces, 'fr', false)
+            ], 'fr');
+
+            $fleetReportEN .= trans('fleet.passSummary', [
+                'phaseNbr' => $phase,
+                'attackerDamageDone' => number_format($fleetDamage),
+                'defenderAbsorbedDamage' => number_format($defenceShieldAbsorbed),
+                'defenderDamageDone' => number_format($defenceDamage),
+                'attackerAbsorbedDamage' => number_format($attackShieldAbsorbed),
+                'lostAttackerUnits' => $this->summarizeForces($lostAttackForces, 'en', false),
+                'lostDefenderUnits' => $this->summarizeForces($lostDefenceForces, 'en', false)
+            ], 'en');
         }
+
+        //final update fleet ships
+        $newCapacity = 0;
+        $newCrew = 0;
+        if(!empty($attackForces))
+        {
+            foreach($attackForces as $forceUnit)
+            {
+                if($forceUnit['quantity'] != $forceUnit['item']->pivot->number)
+                {
+                    $forceUnit['item']->pivot->number = $forceUnit['quantity'];
+                    $forceUnit['item']->pivot->save();
+                }
+                $newCapacity += $forceUnit['item']->pivot->number * $forceUnit['item']->capacity;
+                $newCrew += $forceUnit['item']->pivot->number * $forceUnit['item']->crew;
+            }
+        }
+        $this->capacity = $newCapacity;
+        $this->crew = $newCrew;
+
+        //final update Defence fleet ships
+        if(!empty($defenceForces))
+        {
+            foreach($defenceForces as $forceUnit)
+            {
+                if($forceUnit['quantity'] != $forceUnit['item']->pivot->number)
+                {
+                    if($forceUnit['type'] == 'ship')
+                        $forceUnit['item']->pivot->number = $forceUnit['quantity'];
+                    else
+                        $forceUnit['item']->pivot->number -= ceil(($forceUnit['item']->pivot->number-$forceUnit['quantity'])*0.05);
+                    $forceUnit['item']->pivot->save();
+                }
+            }
+        }
+
+        $attackLog = GateFight::where('fleet_id',$this->id)->get()->first();
+
+        if($winState)
+        {
+            //Pillage avec forces restantes
+            //recalculer capacité
+            $totalResource = 0;
+            $stolenResources = '';
+            foreach(config('stargate.resources') as $resource)
+            {
+                $totalResource += $this->destinationColony->$resource;
+            }
+            $claimAll = false;
+            if($this->capacity >= ($totalResource*0.6))
+                $claimAll = true;
+
+            foreach(config('stargate.resources') as $resource)
+            {
+                if($this->destinationColony->$resource > 1)
+                {
+                    $ratio = $this->destinationColony->$resource / $totalResource;
+                    $maxClaimable = ceil($this->destinationColony->$resource * 0.6);
+
+                    $claimed = 0;
+                    if($claimAll)
+                        $claimed = $maxClaimable;
+                    else
+                        $claimed = floor($this->capacity*$ratio);
+
+                    if($claimed > 0)
+                    {
+                        $stolenResources .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
+                        $this->$resource = $claimed;
+                        $attackLog->$resource = $claimed;
+                        $this->destinationColony->$resource -= $claimed;
+                    }
+                }
+            }
+
+            $battleResultFR = trans('fleet.battleWin', [
+                'lostAttackUnit' => number_format($globalLostAttackForces),
+                'lostDefenceUnit' => number_format($globalLostDefenceForces),
+                'stolenResources' => $stolenResources
+            ], 'fr');
+
+            $battleResultEN = trans('fleet.battleWin', [
+                'lostAttackUnit' => number_format($globalLostAttackForces),
+                'lostDefenceUnit' => number_format($globalLostDefenceForces),
+                'stolenResources' => $stolenResources
+            ], 'en');
+
+            $attackLog->player_id_winner = $this->sourcePlayer->id;
+            $attackLog->report_fr = $fleetReportFR.$battleResultFR;
+            $attackLog->report_en = $fleetReportEN.$battleResultEN;
+            $attackLog->save();
+
+            $this->destinationColony->save();
+            $this->save();
+
+            $winReport = trans('fleet.attackArrived', [
+                'playerDest' => $this->destinationPlayer->user_name,
+                'planetSource' => $this->sourceColony->name,
+                'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+                'planetDest' => $this->destinationColony->name,
+                'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
+                'battleResult' => ${'battleResult'.strtoupper($this->sourcePlayer->lang)},
+                'fleetId' => $this->id
+            ], $this->sourcePlayer->lang);
+
+            $embed = [
+                'author' => [
+                    'name' => $this->sourcePlayer->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                ],
+                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planetAttack.gif'],
+                "title" => "Stargate",
+                "description" => $winReport,
+                'fields' => [
+                ],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->embed = json_encode($embed);
+            $reminder->player_id = $this->sourcePlayer->id;
+            $reminder->save();
+
+            $defenceLostReport = trans('fleet.attacked', [
+                'playerSource' => $this->sourcePlayer->user_name,
+                'planetSource' => $this->sourceColony->name,
+                'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+                'planetDest' => $this->destinationColony->name,
+                'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
+                'battleResult' => ${'battleResult'.strtoupper($this->destinationPlayer->lang)},
+                'fleetId' => $this->id
+            ], $this->destinationPlayer->lang);
+            $embed = [
+                'author' => [
+                    'name' => $this->destinationPlayer->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                ],
+                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planetAttack.gif'],
+                "title" => "Stargate",
+                "description" => $defenceLostReport,
+                'fields' => [
+                ],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->embed = json_encode($embed);
+            $reminder->player_id = $this->destinationPlayer->id;
+            $reminder->save();
+        }
+        else
+        {
+            //Perdu...
+            $battleResultFR = trans('fleet.battleLost', [
+                'lostAttackUnit' => number_format($globalLostAttackForces),
+                'lostDefenceUnit' => number_format($globalLostDefenceForces)
+            ], 'fr');
+
+            $battleResultEN = trans('fleet.battleLost', [
+                'lostAttackUnit' => number_format($globalLostAttackForces),
+                'lostDefenceUnit' => number_format($globalLostDefenceForces)
+            ], 'en');
+
+            $attackLog->player_id_winner = $this->destinationPlayer->id;
+            $attackLog->report_fr = $fleetReportFR.$battleResultFR;
+            $attackLog->report_en = $fleetReportEN.$battleResultEN;
+            $attackLog->save();
+
+            $this->destinationColony->save();
+            $this->save();
+
+            $fleetLostReport = trans('fleet.attackArrived', [
+                'playerDest' => $this->destinationPlayer->user_name,
+                'planetSource' => $this->sourceColony->name,
+                'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+                'planetDest' => $this->destinationColony->name,
+                'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
+                'battleResult' => ${'battleResult'.strtoupper($this->sourcePlayer->lang)}
+            ], $this->sourcePlayer->lang);
+
+            $embed = [
+                'author' => [
+                    'name' => $this->sourcePlayer->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                ],
+                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/shiplost.png'],
+                "title" => "Stargate",
+                "description" => $fleetLostReport,
+                'fields' => [
+                ],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->embed = json_encode($embed);
+            $reminder->player_id = $this->sourcePlayer->id;
+            $reminder->save();
+
+            $defenceSuccessReport = trans('fleet.attacked', [
+                'playerSource' => $this->sourcePlayer->user_name,
+                'planetSource' => $this->sourceColony->name,
+                'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+                'planetDest' => $this->destinationColony->name,
+                'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
+                'battleResult' => ${'battleResult'.strtoupper($this->destinationPlayer->lang)}
+            ], $this->destinationPlayer->lang);
+            $embed = [
+                'author' => [
+                    'name' => $this->destinationPlayer->user_name,
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                ],
+                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/spacedebris.png'],
+                "title" => "Stargate",
+                "description" => $defenceSuccessReport,
+                'fields' => [
+                ],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            $reminder = new Reminder;
+            $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->embed = json_encode($embed);
+            $reminder->player_id = $this->destinationPlayer->id;
+            $reminder->save();
+        }
+
+        return $winState;
+    }
+
+    public function summarizeForces($forces, $lang='fr', $withAttributes = true)
+    {
+        if(empty($forces) && $withAttributes)
+            return trans('stargate.emptyFleet', [], $lang)."\n";
+        elseif(empty($forces) && !$withAttributes)
+            return "/\n";
+
+        $returnString = '';
+        $totalShield = 0;
+        $totalHull = 0;
+        foreach($forces as $forceUnit)
+        {
+            $totalHull += $forceUnit['quantity'] * $forceUnit['hull'];
+            $totalShield += $forceUnit['quantity'] * $forceUnit['shield'];
+
+            if($forceUnit['type'] == 'defence')
+                $returnString .= $forceUnit['quantity'].' x '.trans('defence.'.$forceUnit['item']->slug.'.name', [], $lang);
+            else
+                $returnString .= $forceUnit['quantity'].' x '.$forceUnit['item']->name;
+
+            if($withAttributes)
+                $returnString .= ' ( '.config('stargate.emotes.armament').' '.number_format($forceUnit['fire_power']).', '.config('stargate.emotes.shield').' '.number_format($forceUnit['shield']).', '.config('stargate.emotes.hull').' '.number_format($forceUnit['hull'])." )\n";
+            else
+                $returnString .= "\n";
+        }
+        if($withAttributes)
+            $returnString .= 'Total: '.config('stargate.emotes.armament').' '.number_format(array_sum(array_column($forces, 'total_fire_power'))).', '.config('stargate.emotes.shield').' '.number_format($totalShield).', '.config('stargate.emotes.hull').' '.number_format($totalHull)."\n";
+
+
+        return $returnString;
     }
 }

@@ -72,14 +72,14 @@ return [
     'fleet' => [
         'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",
         'usage' =>  "!fleet \n".
-                    "*!fleet fleet [id] return\n".
+                    "**order** (`!fleet order [id] return`)\n".
                     //"**explore** (`!fleet explore [coordonées]`)\n".
                     //"**colonize** (`!fleet colonize [coordonées]`)\n".
-                    "!fleet base [Colonie/Coordonées] [Ressource] [Qté]\n".
-                    "!fleet transport [Colonie/Coordonées] [Ressource] [Qté]\n".
-                    //"**spy** (`!fleet spy [coordonées]`)\n".
-                    //"**attack** (`!fleet attack [coordonées] military [Qté] [Unit] [Qté]`)\n"
-                    "Paramètre optionel: speed [10-100]"
+                    "**base** (`!fleet base [NuméroDeColonie] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                    "**transport** (`!fleet transport [coordonées] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                    "**spy** (`!fleet spy [coordonées]`)\n".
+                    "**attack** (`!fleet attack [coordonées] [Vaisseau] [Qté]`)\n".
+                    "**history** (`!fleet history`)"
     ],
     'infos' => [
         'description' => 'Affiche les informations sur Stargate Bot.',

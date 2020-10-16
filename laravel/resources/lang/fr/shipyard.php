@@ -12,7 +12,7 @@ return [
     "genericHowTo" => "TEXTE",
     "shipQueue" => "Liste des vaisseaux en cours",
     "emptyQueue" => "Aucun vaisseau en cours",
-    "firePower" => "Puissance de feu: **:firepower**",
+    "firePower" => "Armement: **:firepower**",
     "shield" => "Bouclier: **:shield**",
     "hull" => "Coque: **:hull**",
     "capacity" => "Capacité: **:capacity**",

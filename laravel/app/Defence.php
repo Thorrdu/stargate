@@ -36,4 +36,9 @@ class Defence extends Model
         }
         return $buildingPrice;
     }
+
+    public function toStrting($lang='fr')
+    {
+        return trans('defence.'.$this->slug.'.name', [], $lang).' ('.config('stargate.emotes.armament').' '.number_format($this->fire_power).', '.config('stargate.emotes.shield').' '.number_format($this->shield).', '.config('stargate.emotes.hull').' '.number_format($this->hull).')';
+    }
 }

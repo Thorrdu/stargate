@@ -32,6 +32,10 @@ class TradeBan extends Migration
 
         Schema::table('gate_fights', function (Blueprint $table) {
             $table->enum('type', ['Fleet', 'Gate'])->after('id')->default('Gate');
+            $table->integer('fleet_id')->unsigned()->nullable();
+            $table->foreign('fleet_id')->references('id')->on('fleets');
+            $table->longText('report_fr')->nullable();
+            $table->longText('report_en')->nullable();
         });
     }
 

@@ -23,12 +23,14 @@ class CreateGateFightsTable extends Migration
             $table->foreign('player_id_dest')->references('id')->on('players');
             $table->integer('colony_id_dest')->unsigned()->nullable();
             $table->foreign('colony_id_dest')->references('id')->on('colonies');
-            $table->integer('military_source')->length(25)->unsigned();
-            $table->integer('military_dest')->length(25)->unsigned();
+            $table->bigInteger('military_source')->length(25)->unsigned()->nullable();
+            $table->bigInteger('military_dest')->length(25)->unsigned()->nullable();
+            $table->bigInteger('attacker_lost_value')->length(25)->unsigned()->default(0);
+            $table->bigInteger('defender_lost_value')->length(25)->unsigned()->default(0);
             $table->integer('player_id_winner')->unsigned()->nullable();
             $table->foreign('player_id_winner')->references('id')->on('players');
-            $table->integer('military_outcome')->length(25)->unsigned();
-            $table->integer('military_stolen')->length(25)->unsigned();
+            $table->bigInteger('military_outcome')->length(25)->unsigned()->nullable();
+            $table->bigInteger('military_stolen')->length(25)->unsigned()->nullable();
             $table->bigInteger('iron')->length(25)->unsigned()->nullable();
             $table->bigInteger('gold')->length(25)->unsigned()->nullable();
             $table->bigInteger('quartz')->length(25)->unsigned()->nullable();

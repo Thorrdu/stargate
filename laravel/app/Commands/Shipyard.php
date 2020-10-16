@@ -376,12 +376,12 @@ class Shipyard extends CommandHandler implements CommandInterface
                 else
                     $speedBonus = 1+$speedBonus;
 
-                $firePowerString = trans('shipyard.firePower', ['firepower' => number_format($firePower)], $this->player->lang);
-                $shieldString = trans('shipyard.shield', ['shield' => number_format($shield)], $this->player->lang);
-                $hullString = trans('shipyard.hull', ['hull' => number_format($hull)], $this->player->lang);
-                $capacityString = trans('shipyard.capacity', ['capacity' => number_format($ship->capacity)], $this->player->lang);
-                $crewString = trans('shipyard.crew', ['crew' => number_format($ship->crew)], $this->player->lang);
-                $speedString = trans('shipyard.speed', ['speed' => number_format($ship->speed*$speedBonus,2)], $this->player->lang);
+                $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($firePower)], $this->player->lang);
+                $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($shield)], $this->player->lang);
+                $hullString = trans('shipyard.hull', ['hull' => config('stargate.emotes.hull').' '.number_format($hull)], $this->player->lang);
+                $capacityString = trans('shipyard.capacity', ['capacity' => config('stargate.emotes.freight').' '.number_format($ship->capacity)], $this->player->lang);
+                $crewString = trans('shipyard.crew', ['crew' => config('stargate.emotes.military').' '.number_format($ship->crew)], $this->player->lang);
+                $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.number_format($ship->speed*$speedBonus,2)], $this->player->lang);
 
                 $embed['fields'][] = array(
                     'name' => $ship->name,

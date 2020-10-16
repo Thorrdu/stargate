@@ -5,10 +5,11 @@ return [
                             "**order** (`!fleet order [id] return`)\n".
                             //"**explore** (`!fleet explore [coordonées]`)\n".
                             //"**colonize** (`!fleet colonize [coordonées]`)\n".
-                            "**base** (`!fleet base [NuméroDeColonie] [Ressource] [Qté]`)\n".
-                            "**transport** (`!fleet transport [coordonées] [Ressource] [Qté]`)\n".
-                            //"**spy** (`!fleet spy [coordonées]`)\n".
-                            //"**attack** (`!fleet attack [coordonées] military [Qté] [Unit] [Qté]`)\n"
+                            "**base** (`!fleet base [NuméroDeColonie] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                            "**transport** (`!fleet transport [coordonées] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                            "**spy** (`!fleet spy [coordonées]`)\n".
+                            "**attack** (`!fleet attack [coordonées] [Vaisseau] [Qté]`)\n".
+                            "**history** (`!fleet history`)\n".
                             "Paramètre optionel: speed [10-100]",
     "fleetMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
@@ -33,7 +34,17 @@ return [
                         "Carburant: :fuel\n".
                         "Durée de vol: :duration\n".
                         "Statut de l'envoi: **En attente**",
-    'missionReturn' => "Arrivée d'une flotte sur **:planetDest [:coordinateDestination]**\n"
+    'attackArrived' => "Votre flotte d'attaque est arrivée sur **:planetDest [:coordinateDestination] (:playerDest)**\n"
+    ."Origine: **:planetSource [:coordinateSource]**\n"
+    .":battleResult\n"
+    ."\nRapport complet: `!fleet history :fleetId`",
+
+    'attacked' => "Une flotte d'attaque est arrivée sur votre colonie **:planetDest [:coordinateDestination]**\n"
+    ."Origine: **:planetSource [:coordinateSource] (:playerSource)**\n"
+    .":battleResult\n"
+    ."\nRapport complet: `!fleet history :fleetId`",
+
+    'missionReturn' => "Arrivée d'une de vos flotte sur **:planetDest [:coordinateDestination]**\n"
                         ."Origine: **:planetSource [:coordinateSource]**\n\n"
                         ."__Flotte__\n"
                         .":fleet\n"
@@ -66,4 +77,29 @@ return [
     'notEnoughCapacity' => 'L\'espace de stockage de votre flotte ne peut acceuillir autant de ressources. Espace manquant: :missingCapacity',
     'noShipSelected' => 'Aucun vaisseau sélectionné',
     'missingComTech' => 'Informatique & communication requis',
+    'battleSummary' => "**__Rapport de bataille entre :playerSource et :playerDest__**\n\n".
+                        "Origine: :colonySource [:coordinateSource]\n".
+                        "Lieu de la bataille: :colonyDest [:coordinateDest]\n\n".
+                        "**Forces de l'attaquant (:playerSource)**\n".
+                        ":attackForces\n".
+                        "**Forces du défenseur (:playerDest)**\n".
+                        ":defenceForces\n",
+    'passSummary' => "\n__Passe n°:phaseNbr__\n\n".
+                    "L'attaquant fait un dégât total de :attackerDamageDone (dont :defenderAbsorbedDamage absorbé(s) par les boucliers).\n".
+                    "Le défenseur fait un dégât total de :defenderDamageDone (dont :attackerAbsorbedDamage absorbé(s) par les boucliers).\n\n".
+                    "__Pertes de l'attaquant__\n:lostAttackerUnits\n".
+                    "__Pertes du défenseur__\n:lostDefenderUnits\n",
+    'battleWin' => "\n__Rapport de bataille__\n\n".
+                    "L'attaquant a perdu :lostAttackUnit unité(s)\n".
+                    "Le défenseur a perdu :lostDefenceUnit unité(s)\n\n".
+                    "__Ressources pillées__\n".
+                    ":stolenResources",
+    'battleLost' => "\n__Résultat de la bataille__\n\n".
+                    "L'attaquant a perdu :lostAttackUnit unité(s)\n".
+                    "Le défenseur a perdu :lostDefenceUnit unité(s)\n\n".
+                    "Aucune ressource n'a été pillée",
+    'fleetHistory' => 'Historique des fleets',
+    'historyHowTo' => 'Consultez le détail d\'une fleet avec `!fleet history [ID]`',
+    'historyLine' => ':fleetId - :date - :mission - :destination',
+    'emptyHistory' => 'Aucun historique actuellement...',
 ];

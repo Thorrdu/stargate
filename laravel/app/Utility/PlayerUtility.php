@@ -99,7 +99,7 @@ class PlayerUtility
                     $fleetString = '';
                     foreach($colonyDest->ships as $ship)
                     {
-                        $fleetString .= number_format($ship->pivot->number).' '.$ship->name."\n";
+                        $fleetString .= number_format($ship->pivot->number).' x '.$ship->toStrting($colonySource->player->lang)."\n";
                     }
                     $embed['fields'][] = array(
                                             'name' => trans('stargate.fleet', [], $colonySource->player->lang),

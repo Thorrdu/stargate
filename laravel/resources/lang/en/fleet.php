@@ -5,10 +5,11 @@ return [
                         "**order** (`!fleet order [FleetID] return`)\n".
                         //"**explore** (`!fleet explore [coordinates]`)\n".
                         //"**colonize** (`!fleet colonize [coordinates]`)\n".
-                        "**base** (`!fleet base [colonyNumber] [Ship1] [Qty] [Res1] [Qty]`)\n".
-                        "**transport** (`!fleet transport [coordinates] [Res] [Qty]`)\n".
-                        //"**spy** (`!fleet spy [coordinates]`) \n".
-                        //"**attack** (`!fleet attack [coordinates] military [Qty] [Unit] [Qty]`)\n"
+                        "**base** (`!fleet base [colonyNumber] [Ship] [Qty] [Res1] [Qty]`)\n".
+                        "**transport** (`!fleet transport [coordinates] [Ship] [Qty] [Res] [Qty]`)\n".
+                        "**spy** (`!fleet spy [coordinates]`) \n".
+                        "**attack** (`!fleet attack [coordinates] [Ship] [Qty]`)\n".
+                        "**history** (`!fleet history`)\n".
                         "Optional parameter: speed [10-100]",
     "fleetMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
                         "Destination: Colony :planet [:coordinateDestination]\n".
@@ -33,7 +34,7 @@ return [
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
-    'missionReturn' => "Fleet arrival on **:planetDest [:coordinateDestination]**\n"
+    'missionReturn' => "One of your fleets is arrived on **:planetDest [:coordinateDestination]**\n"
                         ."Origin: **:planetSource [:coordinateSource]**\n\n"
                         ."__Fleet__\n"
                         .":fleet\n"
@@ -66,4 +67,29 @@ return [
     'notEnoughCapacity' => 'The storage capacity of your fleet is too low to transport that much resources. Missing storage: :missingCapacity',
     'noShipSelected' => 'No selected ship',
     'missingComTech' => 'IT and Communication required',
+    'battleSummary' => "**__Battle report between :playerSource et :playerDest__**\n\n".
+                        "Origin: :colonySource [:coordinateSource]\n".
+                        "Battle location: :colonyDest [:coordinateDest]\n\n".
+                        "**Attacker forces (:playerSource)**\n".
+                        ":attackForces\n".
+                        "**Defender forces (:playerDest)**\n".
+                        ":defenceForces\n",
+    'passSummary' => "\n__Pass n°:phaseNbr__\n\n".
+                    "The attacker has done a total damage of :attackerDamageDone (including :defenderAbsorbedDamage absorbed by shields).\n".
+                    "The defender has done a total damage of :defenderDamageDone (including :attackerAbsorbedDamage absorbed by shields).\n\n".
+                    "__Attacker loosing__\n:lostAttackerUnits\n".
+                    "__Defender loosing__\n:lostDefenderUnits\n",
+    'battleWin' => "\n__Battle summary__\n\n".
+                    "The attacker has lost :lostAttackUnit unit(s)\n".
+                    "The defender has lost:lostDefenceUnit unit(s)\n\n".
+                    "__Stolen resources__\n".
+                    ":stolenResources",
+    'battleLost' => "\n__Battle summary__\n\n".
+                    "The attacker has lost :lostAttackUnit unité(s)\n".
+                    "The defender has lost :lostDefenceUnit unité(s)\n\n".
+                    "No resource have been stolen",
+    'fleetHistory' => 'Fleets history',
+    'historyHowTo' => 'Display fleet details with `!fleet history [ID]`',
+    'historyLine' => ':fleetId - :date - :mission - :destination',
+    'emptyHistory' => 'No fleet history...',
 ];

@@ -44,7 +44,7 @@ return [
     "shipPrice" => "Ship price",
     "shipConsumption" => "Ship consumption",
     "shipSpeed" => "Ship speed",
-    "firePower" => "Fire power",
+    "firePower" => "Armament",
     "hull" => "Hull",
     "shield" => "Shield",
     'info' => 'Info',

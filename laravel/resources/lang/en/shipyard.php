@@ -12,7 +12,7 @@ return [
     "genericHowTo" => "TEXT",
     "shipQueue" => "Ship queue",
     "emptyQueue" => "Ship queue is empty",
-    "firePower" => "Fire power: **:firepower**",
+    "firePower" => "Armament: **:firepower**",
     "shield" => "Shield: **:shield**",
     "hull" => "Hull: **:hull**",
     "capacity" => "Capacity: **:capacity**",

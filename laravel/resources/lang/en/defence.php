@@ -31,7 +31,7 @@ return [
     "genericHowTo" => "TEXT",
     "defenceQueue" => "Defence queue",
     "emptyQueue" => "Defence queue is empty",
-    "firePower" => "Fire power: **:firepower**",
+    "firePower" => "Armament: **:firepower**",
     "hull" => "Hull: **:hull**",
 ];
 

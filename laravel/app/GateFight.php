@@ -30,4 +30,9 @@ class GateFight extends Model
     {
         return $this->belongsTo('App\Colony','id','colony_id_dest');
     }
+
+    public function fleet()
+    {
+        return $this->belongsTo('App\Fleet','id','fleet_id');
+    }
 }

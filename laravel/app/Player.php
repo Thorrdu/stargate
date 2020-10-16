@@ -31,6 +31,11 @@ class Player extends Model
         return $this->hasMany('App\Colony')->orderBy('colonies.id','ASC');
     }
 
+    public function artifacts()
+    {
+        return $this->hasManyThrough('App\Artifact', 'App\Colony');
+    }
+
     public function ships()
     {
         return $this->hasMany('App\Ship');

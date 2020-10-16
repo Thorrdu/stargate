@@ -31,6 +31,6 @@ return [
     "genericHowTo" => "TEXTE",
     "defenceQueue" => "Liste des défenses en cours",
     "emptyQueue" => "Aucun défense en cours",
-    "firePower" => "Puissance de feu: **:firepower**",
+    "firePower" => "Armement: **:firepower**",
     "hull" => "Coque: **:hull**",
 ];

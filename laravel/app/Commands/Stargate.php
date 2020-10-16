@@ -858,11 +858,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                 {
                                     try
                                     {
-
-                                        $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
-                                        if($raidCapability['result'] == false)
-                                            $messageReaction->message->channel->sendMessage($raidCapability['message']);
-
                                         $this->player->activeColony->refresh();
 
                                         $current = Carbon::now();
@@ -938,16 +933,19 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->player->activeColony->military < 1000)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
-                    $maxColonies = config('stargate.maxColonies');
-                    $colonyMaxBonusList = $this->player->activeColony->artifacts->filter(function ($value){
+                    $possibleColonies = $maxColonies = config('stargate.maxColonies');
+                    $maxColonies += 2;
+                    $colonyMaxBonusList = $this->player->artifacts->filter(function ($value){
                         return $value->bonus_category == 'ColonyMax';
                     });
                     foreach($colonyMaxBonusList as $colonyMaxBonus)
                     {
-                        $maxColonies += $colonyMaxBonus->bonus_coef;
+                        $possibleColonies += $colonyMaxBonus->bonus_coef;
                     }
+                    if($possibleColonies > $maxColonies)
+                        $possibleColonies = $maxColonies;
 
-                    if($this->player->colonies->count() < $maxColonies)
+                    if($this->player->colonies->count() < $possibleColonies)
                     {
                         $this->player->activeColony->military -= 1000;
                         $this->player->activeColony->E2PZ -= $travelCost;
@@ -1285,22 +1283,25 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                                 foreach(config('stargate.resources') as $resource)
                                                 {
-                                                    $ratio = $this->coordinateDestination->colony->$resource / $totalResource;
-                                                    $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.6);
-
-                                                    $claimed = 0;
-                                                    if($claimAll)
-                                                        $claimed = $maxClaimable;
-                                                    else
-                                                        $claimed = $totalCapacity*$ratio;
-
-                                                    if($claimed > 0)
+                                                    if($this->coordinateDestination->colony->$resource > 1)
                                                     {
-                                                        $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
-                                                        $this->player->activeColony->$resource += $claimed;
-                                                        $this->coordinateDestination->colony->$resource -= $claimed;
-                                                        $defenderLooseString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
-                                                        ${$resource} = $claimed;
+                                                        $ratio = $this->coordinateDestination->colony->$resource / $totalResource;
+                                                        $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.6);
+
+                                                        $claimed = 0;
+                                                        if($claimAll)
+                                                            $claimed = $maxClaimable;
+                                                        else
+                                                            $claimed = floor($totalCapacity*$ratio);
+
+                                                        if($claimed > 0)
+                                                        {
+                                                            $attackerWinString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
+                                                            $this->player->activeColony->$resource += $claimed;
+                                                            $this->coordinateDestination->colony->$resource -= $claimed;
+                                                            $defenderLooseString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
+                                                            ${$resource} = $claimed;
+                                                        }
                                                     }
                                                 }
 
@@ -1480,6 +1481,7 @@ class Stargate extends CommandHandler implements CommandInterface
         $last48to72h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('72h')],['created_at', '<', Carbon::now()->sub('48h')]])->count();
         $last24to48h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('48h')],['created_at', '<', Carbon::now()->sub('24h')]])->count();
         $last0to24h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->count();
+        $last0to24hGate = GateFight::Where([['type' => 'gate'],['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->count();
 
         //par 24h
         /**
@@ -1498,7 +1500,7 @@ class Stargate extends CommandHandler implements CommandInterface
             $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('72h')],['created_at', '<', Carbon::now()->sub('48h')]])->orderBy('created_at','DESC')->limit(1)->first();
         elseif(($last24to48h >= 0 && $last48to72h > 0) || ($last24to48h >= 0 && $last72to96h > 0))
             $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('48h')],['created_at', '<', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->limit(1)->first();
-        elseif(($last0to24h >= 2 && $last24to48h) > 0 || ($last0to24h >= 2 && $last48to72h > 0) || ($last0to24h >= 3 && $last72to96h > 0))
+        elseif(($last0to24h >= 3 && $last24to48h > 0) || ($last0to24h >= 3 && $last48to72h > 0) || ($last0to24h >= 3 && $last72to96h > 0))
             $lastFight = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->limit(1)->first();
         else
             $lastFight = null;
@@ -1514,7 +1516,7 @@ class Stargate extends CommandHandler implements CommandInterface
             ]);
             return array('result' => false, 'message' => trans('stargate.AttackLimit', ['time' => $timeUntilAttack], $this->player->lang));
         }
-        elseif($last0to24h >= 2)
+        elseif($last0to24hGate >= 2 || $last0to24h >= 3)
         {
             $firstOf24h = GateFight::Where([['player_id_source',$colonySource->player->id],['player_id_dest',$colonyDest->player->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','ASC')->limit(1)->first();
             $now = Carbon::now();
@@ -1529,7 +1531,7 @@ class Stargate extends CommandHandler implements CommandInterface
         else
         {
             //CHECK SI FIGHT SUR LA COLO CES DERNIERES 24H
-            $lastColonyFight = GateFight::Where([['player_id_source',$colonySource->player->id],['colony_id_dest',$colonyDest->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->get();
+            $lastColonyFight = GateFight::Where([['type','gate'],['player_id_source',$colonySource->player->id],['colony_id_dest',$colonyDest->id],['created_at', '>=', Carbon::now()->sub('24h')]])->orderBy('created_at','DESC')->get();
             if($lastColonyFight->count() > 0)
             {
                 $now = Carbon::now();

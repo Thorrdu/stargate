@@ -44,7 +44,7 @@ return [
     "shipPrice" => "Prix de vaisseau",
     "shipConsumption" => "Consommation de vaisseau",
     "shipSpeed" => "Vitesse de vaisseau",
-    "firePower" => "Puissance de feu",
+    "firePower" => "Armement",
     "hull" => "Coque",
     "shield" => "Bouclier",
     'info' => 'Info',
