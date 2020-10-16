@@ -588,7 +588,7 @@ class Fleet extends Model
             {
                 //Regen shield
                 if($forceUnit['shield_left'] < $forceUnit['shield'] && $phase > 1 && $phase < 12)
-                    $forceUnit['shield_left'] += (($forceUnit['shield_left']-$forceUnit['shield']) * 0.1) * 12-$phase;
+                    $forceUnit['shield_left'] += (($forceUnit['shield']-$forceUnit['shield_left']) * 0.1) * (12-$phase);
                 //Au moins 1 vaisseau détruit
                 if($defenceDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
                 {
@@ -688,7 +688,7 @@ class Fleet extends Model
             {
                 //Regen shield
                 if($forceUnit['shield_left'] < $forceUnit['shield'] && $phase > 1 && $phase < 12)
-                    $forceUnit['shield_left'] += (($forceUnit['shield_left']-$forceUnit['shield']) * 0.1) * 12-$phase;
+                    $forceUnit['shield_left'] += (($forceUnit['shield']-$forceUnit['shield_left']) * 0.1) * (12-$phase);
 
                 //Au moins 1 vaisseau détruit
                 if($fleetDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
