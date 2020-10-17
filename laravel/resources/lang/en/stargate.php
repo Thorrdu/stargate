@@ -103,5 +103,7 @@ return [
     'buryingActive' => 'You are already burying your Stargate. Out of service in: **:time**',
     'buriedStargate' => 'Stargate out of service.',
     'playerTradeBan' => 'Ce joueur est banni du système de trade.',
+    'sameColony' => 'Destination coordonates are the same as origin...',
+
     'trade_ban' => 'Vous êtes banni du système de trade. Si ce n\'est déjà fait, vous pouvez demander un sursis de 12h pour régulariser le trade. Voir `!trade [ID]`',
 ];
