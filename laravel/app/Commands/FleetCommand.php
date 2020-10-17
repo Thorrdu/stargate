@@ -699,7 +699,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $this->coordinateDestination->load('colony');
                                         }
 
-                                        $this->player->activeColony->E2PZ -= $this->travelCost;
+                                        $this->player->activeColony->naqahdah -= $this->travelCost;
                                         $this->player->activeColony->save();
 
                                         $wraithProbeExists = $this->player->activeColony->units->filter(function ($value){
