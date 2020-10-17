@@ -92,7 +92,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             return trans('fleet.unknownFleet', [], $this->player->lang);
                     }
 
-                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')->take(100)->get();
+                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')
+                                        ->with('gateFight') // bring along details of the friend
+                                        ->join('gate_fights', 'gate_fights.fleet_id', '=', 'fleets.id')
+                                        ->take(100)->get(['fleets.*']);
                     if($endedFleets->count() == 0)
                     {
                         return trans('fleet.emptyHistory', [], $this->player->lang);
@@ -285,7 +288,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     else
                         return trans('fleet.unknownFleet', [], $this->player->lang);
 
-                    if(isset($this->args[2]) && Str::startsWith('returning',$this->args[2]))
+                    if(isset($this->args[2]) && Str::startsWith('retur',$this->args[2]))
                     {
                         if($fleetControl->returning)
                             return trans('fleet.alreadyReturning', [], $this->player->lang);
