@@ -1360,7 +1360,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public function displayFight(Fleet $fleet)
     {
         try{
-            $fightMessage = $fleet->gateFight->{'report_'.strtoupper($this->player->lang)};
+            $fightMessage = $fleet->gateFight->{'report_'.$this->player->lang};
             if(strlen($fightMessage) < 1800)
             {
                 $this->message->channel->sendMessage($fightMessage);
