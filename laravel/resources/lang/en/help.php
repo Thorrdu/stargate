@@ -122,7 +122,7 @@ return [
     ],
     'top' => [
         'description' => 'Shows the best player for each category.',
-        'usage' => "!top [general/building/research/craft/defence]\n!top [general/building/research/craft/defence] alliance"
+        'usage' => "!top [general/building/research/craft/defence/military]\n!top [general/building/research/craft/defence/military] alliance"
     ],
     'trade'=> [
         'description' => "List all your active trades.\nDisplay a specific trade details with `!trade [id]´\nClose a trade before the end with `!trade [id] close´\nAsk for a time extention with `!trade [id] extend´",

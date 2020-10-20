@@ -122,7 +122,7 @@ return [
     ],
     'top' => [
         'description' => "Indique les meilleurs joueur par catégories.\n1 point = 1k ressources dépensées",
-        'usage' =>  "!top [general/building/research/craft/defence]\n!top [general/building/research/craft/defence] alliance"
+        'usage' =>  "!top [general/building/research/craft/defence/military]\n!top [general/building/research/craft/defence/military] alliance"
     ],
     'trade'=> [
         'description' => "Liste les trades actifs.\nAfficher le détail d'un trade via `!trade [id]´\nClôturer un trade en cours avant la date de fin avec `!trade [id] close´\nDemander le prolongemnet d'un trade avec `!trade [id] extend´",

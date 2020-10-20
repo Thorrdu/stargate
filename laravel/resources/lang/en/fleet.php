@@ -108,7 +108,6 @@ return [
                         "Mission: **:mission**\n\n".
                         "**Scavengers**\n".
                         ":fleet\n".
-                        "Crew: :crew \n".
                         "Speed: :speed (:maxSpeed%)\n".
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".

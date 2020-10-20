@@ -79,11 +79,13 @@ return [
                             "An attack has occurred from the planet **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Fortunately, your troops have contained the attack and push back the invader.\n\n".
                             "Losses result:\n:loostTroops\n".
+                            "Estimated ennemies troops:\n:estimatedAttackTroops\n".
                             "Winning result::\n:raidReward",
     "defenderLostReport" => "Attack through Stargate [:destination] (:player)\n\n".
                             "An attack has occurred from the planet **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
-                            "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
-                            "Losses result:\n:loostTroops\n",
+                            "Unfortunately, your troops have not succed to contain the attack.\n\n".
+                            "Losses result:\n:loostTroops\n".
+                            "Estimated ennemies troops:\n:estimatedAttackTroops\n",
     "noCasuality" => "No casualties",
     "playerOwned" => "Already owned by a player",
     "samePlayerAction" => "You can't make this action to yourself...",

@@ -39,7 +39,6 @@ return [
     ."Origine: **:planetSource [:coordinateSource]**\n"
     .":battleResult\n"
     ."\nRapport complet: `!fleet history :fleetId`",
-
     'attacked' => "Une flotte d'attaque est arrivée sur votre colonie **:planetDest [:coordinateDestination]**\n"
     ."Origine: **:planetSource [:coordinateSource] (:playerSource)**\n"
     .":battleResult\n"
