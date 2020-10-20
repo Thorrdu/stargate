@@ -143,8 +143,8 @@ class Shipyard extends CommandHandler implements CommandInterface
                             return trans('generic.nameTooLong',[],$this->player->lang);
 
                         $ship->name = $newShipName;
-                        $ship->slug = Str::slug($newShipName);
-                        if(strlen($ship->slug) < 3)
+                        $ship->slug = Str::of($newShipName)->slug();
+                        if(strlen($ship->slug) > 3)
                         {
                             $ship->save();
                             return trans('shipyard.shipNameChanged' , ['name' => $ship->name, 'slug' => $ship->slug], $this->player->lang);

@@ -12,6 +12,7 @@ return [
     "genericHowTo" => "TEXT",
     "shipQueue" => "Ship queue",
     "emptyQueue" => "Ship queue is empty",
+    "emptyList" => "No ship blueprint available",
     "firePower" => "Armament: **:firepower**",
     "shield" => "Shield: **:shield**",
     "hull" => "Hull: **:hull**",
