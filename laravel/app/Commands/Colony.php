@@ -54,7 +54,7 @@ class Colony extends CommandHandler implements CommandInterface
                     if(strlen($newColonyName) < 2)
                         return trans('generic.nameTooShort',[],$this->player->lang);
 
-                    if(strlen($newColonyName) > 25)
+                    if(strlen($newColonyName) > 35)
                         return trans('generic.nameTooLong',[],$this->player->lang);
 
                     $this->player->activeColony->name = $newColonyName;

@@ -14,12 +14,12 @@ class CreateColonyDefenceTable extends Migration
     public function up()
     {
         Schema::create('colony_defence', function (Blueprint $table) {
-            $table->increments('id');     
+            $table->increments('id');
             $table->integer('colony_id')->unsigned();
             $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('defence_id')->unsigned();
             $table->foreign('defence_id')->references('id')->on('defences');
-            $table->integer('number')->length(25)->default(0);
+            $table->integer('number')->length(25)->unsigned()->default(0);
             $table->timestamps();
         });
     }

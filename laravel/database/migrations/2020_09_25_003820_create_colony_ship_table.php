@@ -14,12 +14,12 @@ class CreateColonyShipTable extends Migration
     public function up()
     {
         Schema::create('colony_ship', function (Blueprint $table) {
-            $table->increments('id');     
+            $table->increments('id');
             $table->integer('colony_id')->unsigned();
             $table->foreign('colony_id')->references('id')->on('colonies');
             $table->integer('ship_id')->unsigned();
             $table->foreign('ship_id')->references('id')->on('ships');
-            $table->integer('number')->length(25)->default(0);
+            $table->integer('number')->length(25)->unsigned()->default(0);
             $table->timestamps();
         });
     }

@@ -75,10 +75,11 @@ return [
                     "**order** (`!fleet order [id] return`)\n".
                     //"**explore** (`!fleet explore [coordonées]`)\n".
                     //"**colonize** (`!fleet colonize [coordonées]`)\n".
-                    "**base** (`!fleet base [NuméroDeColonie] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
-                    "**transport** (`!fleet transport [coordonées] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                    "**base** (`!fleet base [NuméroDeColonie] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
+                    "**transport** (`!fleet transport [coordonées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
                     "**spy** (`!fleet spy [coordonées]`)\n".
-                    "**attack** (`!fleet attack [coordonées] [Vaisseau] [Qté]`)\n".
+                    "**attack** (`!fleet attack [coordonées] [Vaisseaux] [Qté]`)\n".
+                    "**scavenge** (`!fleet scavenge [Recycleurs] [Qté]`)\n".
                     "**history** (`!fleet history`)"
     ],
     'infos' => [

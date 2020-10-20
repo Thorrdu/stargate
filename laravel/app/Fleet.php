@@ -15,6 +15,10 @@ class Fleet extends Model
         return $this->belongsToMany('App\Ship')->withPivot('number');
     }
 
+    public function units(){
+        return $this->belongsToMany('App\Unit')->withPivot('number');
+    }
+
     public function sourceColony(){
         return $this->belongsTo('App\Colony','colony_source_id','id');
     }
@@ -91,7 +95,8 @@ class Fleet extends Model
                         $destinationColony->$availableResource = $destinationColony->{'storage_'.$availableResource};
                 }
                 //crew => colony
-                $destinationColony->military += $this->crew;
+                if(!is_null($this->crew) && $this->crew > 0)
+                    $destinationColony->military += $this->crew;
             }
 
             //vaisseaux -> colony
@@ -112,13 +117,47 @@ class Fleet extends Model
                 }
             }
 
-            $fleetMessage = trans('fleet.missionReturn', ['coordinateDestination' => $destCoordinates,
-                                                'planetDest' => $destinationColony->name,
-                                                'planetSource' => $sourceColony->name,
-                                                'coordinateSource' => $sourceCoordinates,
-                                                'fleet' => $this->shipsToString(),
-                                                'resources' => $this->resourcesToString($this->sourcePlayer->lang)
-                                                ], $destinationColony->player->lang);
+            //units -> colony
+            foreach($this->units as $unit)
+            {
+                $unitExists = $destinationColony->units->filter(function ($value) use($unit){
+                    return $value->id == $unit->id;
+                });
+                if($unitExists->count() > 0)
+                {
+                    $unitToUpdate = $unitExists->first();
+                    $unitToUpdate->pivot->number += $unit->pivot->number;
+                    $unitToUpdate->pivot->save();
+                }
+                else
+                {
+                    $destinationColony->ships()->attach([$unit->id => ['number' => $unit->pivot->number]]);
+                }
+            }
+
+            if($this->mission == 'scavenge')
+            {
+                $scavString = '';
+                foreach($this->units as $unit)
+                    $scavString .= trans('craft.'.$unit->slug.'.name', [], $this->sourcePlayer->lang).': '.number_format($unit->pivot->number)."\n";
+
+                $fleetMessage = trans('fleet.scavengerReturn', ['coordinateDestination' => $destCoordinates,
+                                                    'planetSource' => $sourceColony->name,
+                                                    'coordinateSource' => $sourceCoordinates,
+                                                    'fleet' => $scavString,
+                                                    'resources' => $this->resourcesToString($this->sourcePlayer->lang, false)
+                ], $destinationColony->player->lang);
+            }
+            else
+            {
+                $fleetMessage = trans('fleet.missionReturn', ['coordinateDestination' => $destCoordinates,
+                                                    'planetDest' => $destinationColony->name,
+                                                    'planetSource' => $sourceColony->name,
+                                                    'coordinateSource' => $sourceCoordinates,
+                                                    'fleet' => $this->shipsToString(),
+                                                    'resources' => $this->resourcesToString($this->sourcePlayer->lang)
+                ], $destinationColony->player->lang);
+            }
 
             $embed = [
                 'author' => [
@@ -155,6 +194,68 @@ class Fleet extends Model
 
             switch($this->mission)
             {
+                case 'scavenge':
+                    $this->arrival_date = $now->addSeconds($newArrivalDate);
+                    $this->returning = true;
+
+                    $totalResource = 0;
+                    foreach(config('stargate.resources') as $resource)
+                    {
+                        $totalResource += $this->destinationColony->coordinates->$resource;
+                    }
+
+                    if($totalResource > 0)
+                    {
+                        $scavengedResString = '';
+                        $totalCapacity = 0;
+                        foreach($this->units as $fleetUnit)
+                        {
+                            $totalCapacity += $fleetUnit->capacity * $fleetUnit->pivot->number;
+                        }
+
+                        $claimAll = false;
+                        if($totalCapacity >= $totalResource)
+                            $claimAll = true;
+
+                        foreach(config('stargate.resources') as $resource)
+                        {
+                            $ratio = $this->destinationColony->coordinates->$resource / $totalResource;
+
+                            $claimed = 0;
+                            if($claimAll)
+                                $claimed = $this->destinationColony->coordinates->$resource;
+                            else
+                                $claimed = floor($totalCapacity*$ratio);
+
+                            if($claimed > 0)
+                            {
+                                $scavengedResString .= config('stargate.emotes.'.strtolower($resource)).' '.ucfirst($resource).": ".number_format($claimed)."\n";
+                                $this->destinationColony->coordinates->$resource -= $claimed;
+                                $this->$resource = $claimed;
+                            }
+                        }
+                        $this->destinationColony->coordinates->save();
+                    }
+
+                    $this->save();
+
+                    if(empty($scavengedResString))
+                        $scavengedResString = trans('fleet.emptyResources', [], $this->sourcePlayer->lang);
+
+                    $scavengeMission = trans('fleet.scavengeMission', [
+                        'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
+                        'planetSource' => $this->sourceColony->name,
+                        'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
+                        'resources' => $scavengedResString,
+                    ], $this->destinationColony->player->lang);
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->add('1s');
+                    $reminder->reminder = $scavengeMission;
+                    $reminder->player_id = $this->sourcePlayer->id;
+                    $reminder->save();
+
+                break;
                 case 'colonize':
 
                     $this->arrival_date = $now->addSeconds($newArrivalDate);
@@ -249,6 +350,34 @@ class Fleet extends Model
                             $this->$availableResource = 0;
                         }
                     }
+                    //units -> colony
+                    foreach($this->units as $unit)
+                    {
+                        $unitExists = $this->destinationColony->units->filter(function ($value) use($unit){
+                            return $value->id == $unit->id;
+                        });
+                        if($unitExists->count() > 0)
+                        {
+                            $unitToUpdate = $unitExists->first();
+                            $unitToUpdate->pivot->number += $unit->pivot->number;
+                            $unitToUpdate->pivot->save();
+                        }
+                        else
+                        {
+                            $this->destinationColony->ships()->attach([$unit->id => ['number' => $unit->pivot->number]]);
+                        }
+                        if($this->player_source_id != $this->player_destination_id)
+                        {
+                            $tradeResource = new TradeResource;
+                            $tradeResource->player = $tradePlayer;
+                            $tradeResource->trade_id = $tradeLog->id;
+                            $tradeResource->quantity = $unit->pivot->number;
+                            $tradeResource->unit_id = $unit->id;
+                            $tradeResource->setValue();
+                            $tradeResource->save();
+                        }
+                        $this->units()->detach($unit->id);
+                    }
                     if($this->player_source_id != $this->player_destination_id)
                     {
                         $tradeLog->load('tradeResources');
@@ -339,6 +468,15 @@ class Fleet extends Model
         return $shipCount;
     }
 
+    public function unitCount(){
+        $unitCount = 0;
+        foreach($this->units as $unit)
+        {
+            $unitCount += $unit->pivot->number;
+        }
+        return $unitCount;
+    }
+
     public function shipsToString(){
         $fleetString = '';
         foreach($this->ships as $ship)
@@ -348,7 +486,7 @@ class Fleet extends Model
         return $fleetString;
     }
 
-    public function resourcesToString($lang='fr'){
+    public function resourcesToString($lang='fr',$withUnit = true){
         $resourcesString = '';
 
         $availableResources = config('stargate.resources');
@@ -361,6 +499,12 @@ class Fleet extends Model
                 $resourcesString .= config('stargate.emotes.'.strtolower($availableResource))." ".ucfirst($availableResource).': '.number_format($this->$availableResource)."\n";
             }
         }
+        if($withUnit)
+        {
+            foreach($this->units as $unit)
+                $resourcesString .= trans('craft.'.$unit->slug.'.name', [], $lang).': '.number_format($unit->pivot->number)."\n";
+        }
+
         if(empty($resourcesString))
             $resourcesString .= trans('generic.empty', [], $lang)."\n";
 
@@ -523,7 +667,6 @@ class Fleet extends Model
 
         $winState = false;
 
-
         $fleetReportFR = trans('fleet.battleSummary', [
             'playerSource' => $this->sourcePlayer->user_name,
             'playerDest' => $this->destinationPlayer->user_name,
@@ -548,6 +691,8 @@ class Fleet extends Model
 
         $globalLostAttackForces = $globalLostDefenceForces = 0;
         $defenceFleetDefenceMode = false;
+
+        $ruinfield = ['iron' => 0, 'gold' => 0, 'quartz' => 0];
 
         for( $phase = 1 ; $phase <= 14 ; $phase++ )
         {
@@ -629,6 +774,13 @@ class Fleet extends Model
                         $attackForces[$key]['hull_left'] = $forceUnit['hull'];
                     }
                     $attackForces[$key]['total_fire_power'] = $attackForces[$key]['quantity'] * $attackForces[$key]['fire_power'];
+
+                    $shipPrice = $forceUnit['item']->getPrice($nbrShipDestroyed);
+                    foreach(config('stargate.resources') as $resource)
+                    {
+                        if($resource != 'naqahdah')
+                            $ruinfield[$resource] += floor($shipPrice[$resource]*0.75);
+                    }
 
                     if($attackForces[$key]['quantity'] <= 0)
                     {
@@ -731,6 +883,15 @@ class Fleet extends Model
                     }
                     $defenceForces[$key]['total_fire_power'] = $defenceForces[$key]['quantity'] * $defenceForces[$key]['fire_power'];
 
+                    if($forceUnit['type'] == 'ship')
+                    {
+                        $shipPrice = $forceUnit['item']->getPrice($nbrShipDestroyed);
+                        foreach(config('stargate.resources') as $resource)
+                        {
+                            if($resource != 'naqahdah')
+                                $ruinfield[$resource] += floor($shipPrice[$resource]*0.75);
+                        }
+                    }
 
                     if($defenceForces[$key]['quantity'] <= 0)
                     {
@@ -851,8 +1012,23 @@ class Fleet extends Model
             }
         }
 
-        $attackLog = GateFight::where('fleet_id',$this->id)->get()->first();
+        $ruinFieldString = '';
+        if($ruinfield['iron'] > 0)
+        {
+            foreach(config('stargate.resources') as $resource)
+            {
+                if($resource != 'naqahdah')
+                {
+                    $ruinFieldString .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($ruinfield[$resource]);
+                    $this->destinationColony->coordinates->$resource += $ruinfield[$resource];
+                }
+            }
+            $ruinFieldStringFR = "\n".trans('fleet.ruinFieldGenerated', ['resources' => $ruinFieldString], 'fr');
+            $ruinFieldStringEN = "\n".trans('fleet.ruinFieldGenerated', ['resources' => $ruinFieldString], 'en');
+            $this->destinationColony->coordinates->save();
+        }
 
+        $attackLog = GateFight::where('fleet_id',$this->id)->get()->first();
         if($winState)
         {
             //Pillage avec forces restantes
@@ -894,13 +1070,13 @@ class Fleet extends Model
                 'lostAttackUnit' => number_format($globalLostAttackForces),
                 'lostDefenceUnit' => number_format($globalLostDefenceForces),
                 'stolenResources' => $stolenResources
-            ], 'fr');
+            ], 'fr').$ruinFieldStringFR;
 
             $battleResultEN = trans('fleet.battleWin', [
                 'lostAttackUnit' => number_format($globalLostAttackForces),
                 'lostDefenceUnit' => number_format($globalLostDefenceForces),
                 'stolenResources' => $stolenResources
-            ], 'en');
+            ], 'en').$ruinFieldStringEN;
 
             $attackLog->player_id_winner = $this->sourcePlayer->id;
             $attackLog->report_fr = $fleetReportFR.$battleResultFR;
@@ -975,12 +1151,12 @@ class Fleet extends Model
             $battleResultFR = trans('fleet.battleLost', [
                 'lostAttackUnit' => number_format($globalLostAttackForces),
                 'lostDefenceUnit' => number_format($globalLostDefenceForces)
-            ], 'fr');
+            ], 'fr').$ruinFieldStringEN;
 
             $battleResultEN = trans('fleet.battleLost', [
                 'lostAttackUnit' => number_format($globalLostAttackForces),
                 'lostDefenceUnit' => number_format($globalLostDefenceForces)
-            ], 'en');
+            ], 'en').$ruinFieldStringEN;
 
             $attackLog->player_id_winner = $this->destinationPlayer->id;
             $attackLog->report_fr = $fleetReportFR.$battleResultFR;

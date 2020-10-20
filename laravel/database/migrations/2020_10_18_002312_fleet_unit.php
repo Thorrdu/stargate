@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateColonyUnitTable extends Migration
+class FleetUnit extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateColonyUnitTable extends Migration
      */
     public function up()
     {
-        Schema::create('colony_unit', function (Blueprint $table) {
+        Schema::create('fleet_unit', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('colony_id')->unsigned();
-            $table->foreign('colony_id')->references('id')->on('colonies');
+            $table->integer('fleet_id')->unsigned();
+            $table->foreign('fleet_id')->references('id')->on('fleets');
             $table->integer('unit_id')->unsigned();
             $table->foreign('unit_id')->references('id')->on('units');
-            $table->integer('number')->length(25)->unsigned()->default(0);
+            $table->integer('number')->lenght(15)->unsigned()->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateColonyUnitTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('fleet_unit');
     }
 }

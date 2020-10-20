@@ -17,6 +17,22 @@ return [
             'name' => "Big transporter",
             'description' => "Mobile transport allowing to move even larger amount of resources between 2 colonies.",
         ],
+    'miniscavenger' => [
+            'name' => "Mini scavenger",
+            'description' => "Mini scavenger drone prototype allowing to recover resources from ruin fields.",
+        ],
+    'scavenger' => [
+            'name' => "Scavenger",
+            'description' => "Regular scavenger drone allowing to recover resources from ruin fields.",
+        ],
+    'bigscavenger' => [
+            'name' => "Big scavenger",
+            'description' => "A large version of the scavenger drone allowing to recover resources from ruin fields.",
+        ],
+    'advancedscavenger' => [
+            'name' => "Advanced scavenger",
+            'description' => "An High-Tec version of the scavenger drone allowing to recover resources from ruin fields.",
+        ],
     'hidden' => '-- Hidden craft --',
     'unDiscovered' => 'Undiscovered',
     'buildingStarted' => 'Craft started, **:qtyx :name**. It will be done in **:time**',

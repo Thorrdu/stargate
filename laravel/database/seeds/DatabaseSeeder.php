@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-/*
+        /*
         Buildings
         */
         DB::table('buildings')->insert([
@@ -146,6 +146,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.7,
             'building_bonus' => 0.9,
             'crafting_bonus' => 0.9,
+            'defence_bonus' => 0.9,
             'ship_bonus' => 0.9,
         ]);
 
@@ -1224,6 +1225,159 @@ class DatabaseSeeder extends Seeder
             'level' => 4
         ]);
 
+        DB::table('units')->insert([
+            'id' => 5,
+            'type' => 'Scavenger',
+            'name' => "Mini Scavenger",
+            'slug' => 'miniscavenger',
+            'description' => "Recycle les champs de ruine.",
+            'capacity' => 15000,
+            'buyable' => true,
+            'iron' => 5000,
+            'gold' => 5000,
+            'quartz' => 20000,
+            'naqahdah' => 10000,
+            'base_time' => 1300,
+            'speed' => 2
+        ]);
+        //Chantier spatial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 5,
+            'required_building_id' => 9,
+            'level' => 4
+        ]);
+        //Impulsion
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 5,
+            'required_technology_id' => 15,
+            'level' => 4
+        ]);
+        //Coque
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 5,
+            'required_technology_id' => 8,
+            'level' => 5
+        ]);
+
+        DB::table('units')->insert([
+            'id' => 6,
+            'type' => 'Scavenger',
+            'name' => "Scavenger",
+            'slug' => 'scavenger',
+            'description' => "Recycle les champs de ruine.",
+            'capacity' => 50000,
+            'buyable' => true,
+            'iron' => 10000,
+            'gold' => 10000,
+            'quartz' => 20000,
+            'naqahdah' => 30000,
+            'base_time' => 2600,
+            'speed' => 4
+        ]);
+        //Chantier spatial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 6,
+            'required_building_id' => 9,
+            'level' => 7
+        ]);
+        //Antimatière
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 6,
+            'required_technology_id' => 16,
+            'level' => 4
+        ]);
+        //Bouclier
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 6,
+            'required_technology_id' => 9,
+            'level' => 7
+        ]);
+        //nanotech
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 6,
+            'required_technology_id' => 5,
+            'level' => 6
+        ]);
+
+        DB::table('units')->insert([
+            'id' => 7,
+            'type' => 'Scavenger',
+            'name' => "Grand Scavenger",
+            'slug' => 'bigscavenger',
+            'description' => "Recycle les champs de ruine.",
+            'capacity' => 100000,
+            'buyable' => true,
+            'iron' => 15000,
+            'gold' => 15000,
+            'quartz' => 20000,
+            'naqahdah' => 55000,
+            'base_time' => 5000,
+            'speed' => 5
+        ]);
+        //Chantier spatial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 7,
+            'required_building_id' => 9,
+            'level' => 15
+        ]);
+        //Hyper espace
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 7,
+            'required_technology_id' => 17,
+            'level' => 7
+        ]);
+        //Bouclier
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 7,
+            'required_technology_id' => 9,
+            'level' => 15
+        ]);
+        //nanotech
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 7,
+            'required_technology_id' => 5,
+            'level' => 11
+        ]);
+
+        DB::table('units')->insert([
+            'id' => 8,
+            'type' => 'Scavenger',
+            'name' => "Advanced Scavenger",
+            'slug' => 'advancedscavenger',
+            'description' => "Recycle les champs de ruine.",
+            'capacity' => 500000,
+            'buyable' => true,
+            'iron' => 30000,
+            'gold' => 30000,
+            'quartz' => 40000,
+            'naqahdah' => 110000,
+            'base_time' => 10000,
+            'speed' => 5
+        ]);
+        //Chantier spatial 5
+        DB::table('unit_buildings')->insert([
+            'unit_id' => 8,
+            'required_building_id' => 9,
+            'level' => 18
+        ]);
+        //Hyper espace
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 8,
+            'required_technology_id' => 17,
+            'level' => 9
+        ]);
+        //Bouclier
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 8,
+            'required_technology_id' => 9,
+            'level' => 17
+        ]);
+        //nanotech
+        DB::table('unit_technologies')->insert([
+            'unit_id' => 8,
+            'required_technology_id' => 5,
+            'level' => 13
+        ]);
 
         $this->call([
             GalaxySeeder::class,

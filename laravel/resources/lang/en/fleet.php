@@ -9,11 +9,12 @@ return [
                         "**transport** (`!fleet transport [coordinates] [Ship] [Qty] [Res] [Qty]`)\n".
                         "**spy** (`!fleet spy [coordinates]`) \n".
                         "**attack** (`!fleet attack [coordinates] [Ship] [Qty]`)\n".
+                        "**scavenge** (`!fleet scavenge [Scavengers] [Qty]`)\n".
                         "**history** (`!fleet history`)\n".
                         "Optional parameter: speed [10-100]",
     "fleetMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
                         "Destination: Colony :planet [:coordinateDestination]\n".
-                        "Mission: **:mission**\n".
+                        "Mission: **:mission**\n\n".
                         "**Fleet**\n".
                         ":fleet\n".
                         "**Freight (:freightCapacity)**\n".
@@ -25,7 +26,7 @@ return [
                         "Sending status: **Awaiting**",
     "fleetAttackMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
-                        "Mission: **:mission**\n".
+                        "Mission: **:mission**\n\n".
                         "**Fleet**\n".
                         ":fleet\n".
                         "Capacity: :freightCapacity\n".
@@ -34,6 +35,14 @@ return [
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
+    'attackArrived' => "Your attack fleet has arrived at **:planetDest [:coordinateDestination] (:playerDest)**\n"
+                    ."Origin: **:planetSource [:coordinateSource]**\n"
+                    .":battleResult\n"
+                    ."\nReport detail: `!fleet history :fleetId`",
+    'attacked' => "An attack fleet has arrived on your colony **:planetDest [:coordinateDestination]**\n"
+                ."Origin: **:planetSource [:coordinateSource] (:playerSource)**\n"
+                .":battleResult\n"
+                ."\nReport detail: `!fleet history :fleetId`",
     'missionReturn' => "One of your fleets is arrived on **:planetDest [:coordinateDestination]**\n"
                         ."Origin: **:planetSource [:coordinateSource]**\n\n"
                         ."__Fleet__\n"
@@ -77,11 +86,11 @@ return [
     'passSummary' => "\n__Pass n°:phaseNbr__\n\n".
                     "The attacker has done a total damage of :attackerDamageDone (including :defenderAbsorbedDamage absorbed by shields).\n".
                     "The defender has done a total damage of :defenderDamageDone (including :attackerAbsorbedDamage absorbed by shields).\n\n".
-                    "__Attacker loosing__\n:lostAttackerUnits\n".
-                    "__Defender loosing__\n:lostDefenderUnits\n",
+                    "__Attacker losses__\n:lostAttackerUnits\n".
+                    "__Defender losses__\n:lostDefenderUnits\n",
     'battleWin' => "\n__Battle summary__\n\n".
                     "The attacker has lost :lostAttackUnit unit(s)\n".
-                    "The defender has lost:lostDefenceUnit unit(s)\n\n".
+                    "The defender has lost :lostDefenceUnit unit(s):\n\n".
                     "__Stolen resources__\n".
                     ":stolenResources",
     'battleLost' => "\n__Battle summary__\n\n".
@@ -92,4 +101,28 @@ return [
     'historyHowTo' => 'Display fleet details with `!fleet history [ID]`',
     'historyLine' => ':fleetId - :date - :mission - :destination',
     'emptyHistory' => 'No fleet history...',
+    'ruinFieldGenerated' => 'Ruin field generated: :resources',
+    'noScavengerSelected' => 'No scavenger selected',
+    "scavengeConfirmation" => "__Travel from :planetSource [:coordinateSource]__\n".
+                        "Destination: Colony :planet [:coordinateDestination]\n".
+                        "Mission: **:mission**\n\n".
+                        "**Scavengers**\n".
+                        ":fleet\n".
+                        "Crew: :crew \n".
+                        "Speed: :speed (:maxSpeed%)\n".
+                        "Fuel: :fuel\n".
+                        "Flight duration: :duration\n".
+                        "Sending status: **Awaiting**",
+    'noResourceSeleted' => 'No resource selected',
+    'scavengeMission' => "Arriving of your scavengers a the following coordinates **[:coordinateDestination]**\n"
+                    ."Origin: **:planetSource [:coordinateSource]**\n\n"
+                    ."__Scavenged resources__\n"
+                    .":resources\n",
+    'emptyResources' => 'Empty.',
+    'scavengerReturn' => "Your scavengers have returned from **:planetDest [:coordinateDestination]**\n"
+        ."Origin: **:planetSource [:coordinateSource]**\n\n"
+        ."__Scavengers__\n"
+        .":fleet\n"
+        ."__Freight__\n"
+        .":resources\n",
 ];

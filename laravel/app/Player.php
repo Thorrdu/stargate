@@ -78,7 +78,7 @@ class Player extends Model
 
     public function incomingFleets()
     {
-        return $this->hasMany('App\Fleet','player_destination_id','id')->where([['returning', false],['fleets.ended', false]]);
+        return $this->hasMany('App\Fleet','player_destination_id','id')->where([['returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']]);
     }
 
     public function activeFleets()

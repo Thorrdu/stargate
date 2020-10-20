@@ -26,7 +26,7 @@ class CreateFleetsTable extends Migration
             $table->integer('colony_destination_id')->unsigned()->nullable();
             $table->foreign('colony_destination_id','c_dest_id')->references('id')->on('colonies');
 
-            $table->enum('mission', ['base', 'transport', 'spy', 'colonize', 'attack'])->nullable();
+            $table->enum('mission', ['base', 'transport', 'spy', 'colonize', 'attack','scavenge'])->nullable();
             $table->timestamp('departure_date')->nullable();
             $table->timestamp('arrival_date')->nullable();
             $table->boolean('returning')->default(false);

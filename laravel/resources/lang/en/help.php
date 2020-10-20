@@ -79,6 +79,7 @@ return [
                     "**transport** (`!fleet transport [coordinates] [Ship] [Qty] [Res] [Qty]`)\n".
                     "**spy** (`!fleet spy [coordinates]`) \n".
                     "**attack** (`!fleet attack [coordinates] [Ship] [Qty]`)\n".
+                    "**scavenge** (`!fleet scavenge [Scavengers] [Qty]`)\n".
                     "**history** (`!fleet history`)"
     ],
     'infos' => [

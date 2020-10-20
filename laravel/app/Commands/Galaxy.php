@@ -251,6 +251,19 @@ class Galaxy extends CommandHandler implements CommandInterface
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";
+                if($coordinate->iron > 0 || $coordinate->gold > 0 || $coordinate->quartz > 0)
+                {
+
+                }
+
+                $ruinFieldString = '';
+                foreach(config('stargate.resources') as $resource)
+                {
+                    if($resource != 'naqahdah' && $coordinate->$resource > 0)
+                        $ruinFieldString .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format($coordinate->$resource);
+                }
+                if(!empty($ruinFieldString))
+                    $coordinateList .= trans('galaxy.ruinField', ['resources' => $ruinFieldString], $this->player->lang)."\n";
             }
 
             $embed = [

@@ -33,6 +33,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public $closed;
     public $fleet;
     public $fleetShips;
+    public $fleetUnits;
     public $transportString;
     public $fleetMaxSpeed;
     public $fleetSpeed;
@@ -81,6 +82,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 break;
                                 case 'base':
                                 case 'transport':
+                                case 'scavenge':
                                 case 'spy':
                                 default:
                                     return trans('fleet.unknownFleet', [], $this->player->lang);
@@ -207,11 +209,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
 
+                        if($activeFleet->mission == 'scavenge')
+                            $shipCount = $activeFleet->unitCount();
+                        else
+                            $shipCount = $activeFleet->shipCount();
+
                         $activeFleetsString .= $arrivalDate.' - '.trans('fleet.activeFleet', [
                                                                         'mission' => ucfirst($activeFleet->mission),
                                                                         'id' => $activeFleet->id,
                                                                         'status' => $fleetStatus,
-                                                                        'shipCount' => $activeFleet->shipCount(),
+                                                                        'shipCount' => $shipCount,
                                                                         'colonySource' => $sourceColony->name,
                                                                         'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
                                                                         'colonyDest' => $destinationColony->name,
@@ -267,12 +274,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     return;
                 }
                 elseif(!Str::startsWith('base',$this->args[0]) && !Str::startsWith('transport',$this->args[0]) && !Str::startsWith('attack',$this->args[0])
-                && !Str::startsWith('spy',$this->args[0]) && !Str::startsWith('order',$this->args[0]))
+                && !Str::startsWith('spy',$this->args[0]) && !Str::startsWith('order',$this->args[0]) && !Str::startsWith('scavenge',$this->args[0]))
                 {
                     return trans('fleet.wrongParameter', [], $this->player->lang);
                 }
 
-                /*if(Str::startsWith('colonize',$this->args[0]))
+                /*if(Str::startsWith('scavenge',$this->args[0]))
                     return 'Not yet implemented';*/
 
                 if(Str::startsWith('order',$this->args[0]))
@@ -353,7 +360,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 }
 
                 //&& $this->player->user_id != 125641223544373248
-                if(!(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->id != 1 )
+                if( !(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]) || Str::startsWith('scavenge',$this->args[0])) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->id != 1 )
                     return trans('stargate.samePlayerAction', [], $this->player->lang);
 
                 if(Str::startsWith('base',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
@@ -367,7 +374,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 $this->travelCost = $this->baseTravelCost;
 
                 $fleetString = '';
-                if(!Str::startsWith('spy',$this->args[0]))
+                if(!Str::startsWith('spy',$this->args[0]) && !Str::startsWith('scavenge',$this->args[0]))
                 {
                     ///FLEET CONSTITUTION
                     if(count($this->args) < 4)
@@ -391,6 +398,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->fleetMaxSpeed = 100;
                     $this->fleetSpeed = 100;
                     $this->fleetShips = array();
+                    $this->fleetUnits = array();
 
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
@@ -412,15 +420,45 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             {
                                 $resourceName = $this->args[$cptRes];
 
-                                $ship = $this->player->activeColony->hasShip($resourceName);
-                                if(!$ship) // ship inconnu ou non présent
+                                $shipExists = $this->player->ships->filter(function ($value) use($resourceName){
+                                    return Str::startsWith($value->slug, $resourceName);
+                                });
+                                if($shipExists->count() > 0)
+                                {
+                                    $playerShip = $shipExists->first();
+                                    $fleetString .= $playerShip->name.': '.number_format($qty)."\n";
+
+                                    $colonyHasShip = $this->player->activeColony->ships->filter(function ($value) use($playerShip){
+                                        return $value->id == $playerShip->id;
+                                    });
+                                    if($colonyHasShip->count() > 0)
+                                        $owned = $colonyHasShip->first()->pivot->number;
+                                    else
+                                        $owned = 0;
+
+                                    //Check si possède
+                                    if($owned < $qty)
+                                        return trans('generic.notEnoughResources', ['missingResources' => $playerShip->name.': '.number_format($qty - $owned)], $this->player->lang);
+
+                                    $this->fleet->crew += $playerShip->crew*$qty;
+                                    $this->fleet->capacity += $playerShip->capacity*$qty;
+                                    $shipSpeed = $playerShip->speed * $this->fleetSpeedBonus;
+                                    if($this->fleetMaxSpeed > $shipSpeed)
+                                        $this->fleetMaxSpeed = round($shipSpeed,2);
+
+                                    $this->travelCost += $this->baseTravelCost * $shipSpeed * $qty * $playerShip->required_blueprint;
+                                    $this->fleetShips[] = array('id' => $playerShip->id,'qty' => $qty);
+                                }
+                                else
                                 {
                                     if(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]))
                                     {
+                                        $ressFound = false;
                                         foreach($availableResources as $availableResource)
                                         {
                                             if(Str::startsWith($availableResource,$resourceName))
                                             {
+                                                $ressFound = true;
                                                 $resourceName = $availableResource;
                                                 $this->fleet->$resourceName = $qty;
                                                 $this->usedCapacity += $qty;
@@ -431,25 +469,20 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 $this->transportString .= config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName).': '.number_format($qty)."\n";
                                             }
                                         }
+                                        if(!$ressFound)
+                                        {
+                                            $unit = Unit::Where('slug', 'LIKE', $resourceName.'%')->first();
+                                            if(is_null($unit))
+                                                return trans('stargate.unknownResource', ['resource' => $resourceName], $this->player->lang);
+                                            else
+                                            {
+                                                $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
+                                                $this->transportString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                                if($unit->capacity > 0)
+                                                    $this->usedCapacity += $unit->capacity;
+                                            }
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    $fleetString .= $ship->name.': '.number_format($qty)."\n";
-
-                                    //Check si possède
-                                    if($ship->pivot->number < $qty)
-                                        return trans('generic.notEnoughResources', ['missingResources' => $ship->name.': '.number_format($qty - $ship->pivot->number)], $this->player->lang);
-
-                                    $this->fleet->crew += $ship->crew*$qty;
-                                    $this->fleet->capacity += $ship->capacity*$qty;
-                                    $shipSpeed = $ship->speed * $this->fleetSpeedBonus;
-                                    if($this->fleetMaxSpeed > $shipSpeed)
-                                        $this->fleetMaxSpeed = round($shipSpeed,2);
-
-                                    $this->travelCost += $this->baseTravelCost * $ship->speed * $qty;
-
-                                    $this->fleetShips[] = array('id' => $ship->id,'qty' => $qty);
                                 }
                             }
                         }
@@ -576,7 +609,32 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                     $resource = $ship->name;
                                                 }
 
-                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format(ceil($fleetShip['qty']-$qtyOwned))], $this->player->lang));
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => ucfirst($resource).': '.number_format(ceil($fleetShip['qty']-$qtyOwned))], $this->player->lang));
+                                                $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                return;
+                                            }
+                                        }
+
+                                        //CHECK Units
+                                        foreach($this->fleetUnits as $fleetUnit)
+                                        {
+                                            $unitCheck = $this->player->activeColony->hasUnitById($fleetUnit['id']);
+                                            if(!($unitCheck && $unitCheck->pivot->number >= $fleetUnit['qty']))
+                                            {
+                                                $qtyOwned = 0;
+                                                if($unitCheck)
+                                                {
+                                                    $qtyOwned = $unitCheck->pivot->number;
+                                                    $resource = trans('craft.'.$unitCheck->slug.'.name', [], $this->player->lang);
+                                                }
+                                                else
+                                                {
+                                                    $unit = Unit::find($fleetUnit['id']);
+                                                    $resource = $unit->name;
+                                                }
+
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$resource.'.name', [], $this->player->lang).': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
                                                 $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                                 $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                 return;
@@ -612,7 +670,22 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $this->fleet->ships()->attach([$fleetShip['id'] => ['number' => $fleetShip['qty']]]);
                                             $shipCheck = $this->player->activeColony->hasShipById($fleetShip['id']);
                                             $shipCheck->pivot->number -= $fleetShip['qty'];
-                                            $shipCheck->pivot->save();
+                                            if($shipCheck->pivot->number <= 0)
+                                                $this->player->activeColony->ships()->detach($shipCheck->id);
+                                            else
+                                                $shipCheck->pivot->save();
+                                        }
+                                        //addUnitsToFleet
+                                        foreach($this->fleetUnits as $fleetUnit)
+                                        {
+                                            $this->fleet->units()->attach([$fleetUnit['id'] => ['number' => $fleetUnit['qty']]]);
+                                            $unitCheck = $this->player->activeColony->hasUnitById($fleetUnit['id']);
+                                            $unitCheck->pivot->number -= $fleetUnit['qty'];
+
+                                            if($shipCheck->pivot->number <= 0)
+                                                $this->player->activeColony->units()->detach($unitCheck->id);
+                                            else
+                                                $unitCheck->pivot->save();
                                             //$this->activeColony->ships()->updateExistingPivot($fleetShip['id'], array('number' => 1), false);
                                         }
                                         echo '<br/>dddddd';
@@ -641,8 +714,195 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         });
                     });
 
-
                     return;
+                }
+
+                if(Str::startsWith('scavenge',$this->args[0]))
+                {
+                    ///FLEET CONSTITUTION
+                    if(count($this->args) < 4)
+                        return trans('generic.missingArgs', [], $this->player->lang).' / !fleet scavenge [Coordinates] [Scavengers] [Quantity]';
+
+                    $this->fleet = new Fleet;
+                    $this->fleet->mission = 'scavenge';
+                    $this->fleet->player_source_id = $this->player->id;
+                    $this->fleet->colony_source_id = $this->player->activeColony->id;
+                    $this->fleet->player_destination_id = $this->coordinateDestination->colony->player->id;
+                    $this->fleet->colony_destination_id = $this->coordinateDestination->colony->id;
+
+                    $this->fleet->departure_date = Carbon::now();
+                    $this->fleetMaxSpeed = 100;
+                    $this->fleetSpeed = 100;
+                    $this->fleetUnits = array();
+
+                    for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
+                    {
+                        if(isset($this->args[$cptRes+1]))
+                        {
+                            if((int)$this->args[$cptRes+1] > 0)
+                                $qty = (int)$this->args[$cptRes+1];
+                            else
+                                return trans('generic.wrongQuantity', [], $this->player->lang);
+
+                            if(Str::startsWith('speed',$this->args[$cptRes]))
+                            {
+                                if((int)$this->args[$cptRes+1] >= 10 && (int)$this->args[$cptRes+1] <= 100)
+                                    $this->fleetSpeed = (int)$this->args[$cptRes+1];
+                                else
+                                    $this->fleetSpeed = 100;
+                            }
+                            else
+                            {
+                                $resourceName = $this->args[$cptRes];
+                                $unit = Unit::Where([['slug', 'LIKE', $resourceName.'%'],['type','Scavenger']])->first();
+                                if(is_null($unit))
+                                    return trans('stargate.unknownResource', ['resource' => $resourceName], $this->player->lang);
+                                else
+                                {
+                                    $unitSpeed = $unit->speed * $this->fleetSpeedBonus;
+                                    if($this->fleetMaxSpeed > $unitSpeed)
+                                        $this->fleetMaxSpeed = round($unitSpeed,2);
+
+                                    $this->travelCost += $this->baseTravelCost * $unitSpeed * $qty;
+
+                                    $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
+                                    $fleetString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                    if($unit->capacity > 0)
+                                        $this->usedCapacity += $unit->capacity;
+                                }
+                            }
+                        }
+                        else
+                            return trans('fleet.wrongParameter', [], $this->player->lang);
+                    }
+
+                    if(empty($this->fleetUnits))
+                        return trans('fleet.noScavengerSelected', [], $this->player->lang);
+
+                    //check Speed
+                    $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
+                    $this->travelCost *= $this->fleetSpeed/100;
+
+                    //check Carburant
+                    if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->fleet->naqahdah - $this->player->activeColony->naqahdah))], $this->player->lang);
+
+                    //Get arrivalDate
+                    $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, $this->fleetMaxSpeed);
+                    $this->fleet->arrival_date = Carbon::now()->add($travelTime.'s');
+
+                    $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
+                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
+
+                    $now = Carbon::now();
+                    $fleetDuration = $now->diffForHumans($this->fleet->arrival_date,[
+                        'parts' => 3,
+                        'short' => true, // short syntax as per current locale
+                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                    ]);
+                    $scavengeConfirmation = trans('fleet.scavengeConfirmation', [ 'mission' => ucfirst($this->fleet->mission),
+                                                                'coordinateDestination' => $destCoordinates,
+                                                                'planetDest' => $this->coordinateDestination->colony->name,
+                                                                'planetSource' => $this->player->activeColony->name,
+                                                                'coordinateSource' => $sourceCoordinates,
+                                                                'fleet' => $fleetString,
+                                                                'speed' => $this->fleetMaxSpeed,
+                                                                'maxSpeed' => $this->fleetSpeed,
+                                                                'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost)),
+                                                                'duration' => $fleetDuration,
+                                                            ], $this->player->lang);
+
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage($scavengeConfirmation)->then(function ($messageSent){
+
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            return $messageReaction->user_id == $this->player->user_id;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                            $messageReaction = $collector->first();
+                            try{
+                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                {
+                                    try
+                                    {
+                                        $this->player->activeColony->refresh();
+
+                                        if($this->player->activeColony->naqahdah >= $this->travelCost)
+                                            $this->player->activeColony->naqahdah -= $this->travelCost;
+                                        else
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost-$this->player->activeColony->naqahdah))], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+
+                                        //CHECK Units
+                                        foreach($this->fleetUnits as $fleetUnit)
+                                        {
+                                            $unitCheck = $this->player->activeColony->hasUnitById($fleetUnit['id']);
+                                            if(!($unitCheck && $unitCheck->pivot->number >= $fleetUnit['qty']))
+                                            {
+                                                $qtyOwned = 0;
+                                                if($unitCheck)
+                                                {
+                                                    $qtyOwned = $unitCheck->pivot->number;
+                                                    $resource = trans('craft.'.$unitCheck->slug.'.name', [], $this->player->lang);
+                                                }
+                                                else
+                                                {
+                                                    $unit = Unit::find($fleetUnit['id']);
+                                                    $resource = $unit->name;
+                                                }
+
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$resource.'.name', [], $this->player->lang).': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
+                                                $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                                $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                                return;
+                                            }
+                                        }
+                                        $this->player->activeColony->save();
+                                        $this->fleet->save();
+
+                                        //addUnitsToFleet
+                                        foreach($this->fleetUnits as $fleetUnit)
+                                        {
+                                            $this->fleet->units()->attach([$fleetUnit['id'] => ['number' => $fleetUnit['qty']]]);
+                                            $unitCheck = $this->player->activeColony->hasUnitById($fleetUnit['id']);
+                                            $unitCheck->pivot->number -= $fleetUnit['qty'];
+                                            if($unitCheck->pivot->number <= 0)
+                                                $this->player->activeColony->units()->detach($unitCheck->id);
+                                            else
+                                                $unitCheck->pivot->save();
+                                        }
+
+                                        $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                    }
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                            }
+                            catch(\Exception $e)
+                            {
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                            }
+                        });
+                    });
                 }
 
                 if(Str::startsWith('spy',$this->args[0]))
@@ -702,7 +962,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $this->coordinateDestination->load('colony');
                                         }
 
-                                        $this->player->activeColony->naqahdah -= $this->travelCost;
+                                        if($this->player->activeColony->naqahdah >= $this->travelCost)
+                                            $this->player->activeColony->naqahdah -= $this->travelCost;
+                                        else
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost-$this->player->activeColony->naqahdah))], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+
                                         $this->player->activeColony->save();
 
                                         $wraithProbeExists = $this->player->activeColony->units->filter(function ($value){
@@ -868,7 +1137,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $this->fleet->ships()->attach([$fleetShip['id'] => ['number' => $fleetShip['qty']]]);
                                             $shipCheck = $this->player->activeColony->hasShipById($fleetShip['id']);
                                             $shipCheck->pivot->number -= $fleetShip['qty'];
-                                            $shipCheck->pivot->save();
+                                            if($shipCheck->pivot->number <= 0)
+                                                $this->player->activeColony->ships()->detach($shipCheck->id);
+                                            else
+                                                $shipCheck->pivot->save();
                                             //$this->activeColony->ships()->updateExistingPivot($fleetShip['id'], array('number' => 1), false);
                                         }
 
@@ -1053,7 +1325,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
         {
             $fleetDate = $fleetElem->created_at;
             if($fleetElem->mission == 'attack')
-                $fleetDate = $fleetElem->gateFight->created_at;
+                $fleetDate = $fleetElem->gateFight->updated_at;
 
             if($fleetElem->sourcePlayer->id == $this->player->id)
                 $dest = $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')';
@@ -1087,7 +1359,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public function displayFight(Fleet $fleet)
     {
         try{
-            $fightMessage = $fleet->gateFight->{'report_'.$this->player->lang};
+            $fightMessage = $fleet->gateFight->{'report_'.strtoupper($this->player->lang)};
             if(strlen($fightMessage) < 1800)
             {
                 $this->message->channel->sendMessage($fightMessage);
@@ -1126,7 +1398,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 $this->page = 1;
                 $this->maxPage = count($this->fightPages);
                 $this->maxTime = time()+180;
-                $this->message->channel->sendMessage($this->fightPages[count($this->fightPages)-1])->then(function ($messageSent){
+                $this->message->channel->sendMessage($this->fightPages[0])->then(function ($messageSent){
                     $this->paginatorMessage = $messageSent;
 
                     $this->paginatorMessage->react('⏪')->then(function(){

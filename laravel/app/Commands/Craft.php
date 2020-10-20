@@ -380,11 +380,22 @@ class Craft extends CommandHandler implements CommandInterface
                 $capacityString = "";
                 if(!is_null($unit->capacity) && $unit->capacity > 0)
                     $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang)."\n";
+
+                $speedBonus = $this->player->getShipSpeedBonus();
+                if(!$speedBonus)
+                    $speedBonus = 1;
+                else
+                    $speedBonus = 1+$speedBonus;
+
+                $speedString = '';
+                if(!is_null($unit->speed) && $unit->speed > 0)
+                    $speedString = trans('shipyard.speed', ['speed' => ($unit->speed*$speedBonus)], $this->player->lang)."\n";
+
                 if($hasRequirements == true)
                 {
                     $embed['fields'][] = array(
                         'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
-                        'value' => trans('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString,
+                        'value' => trans('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString.$speedString,
                         'inline' => true
                     );
                 }

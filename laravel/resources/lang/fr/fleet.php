@@ -5,15 +5,16 @@ return [
                             "**order** (`!fleet order [id] return`)\n".
                             //"**explore** (`!fleet explore [coordonées]`)\n".
                             //"**colonize** (`!fleet colonize [coordonées]`)\n".
-                            "**base** (`!fleet base [NuméroDeColonie] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
-                            "**transport** (`!fleet transport [coordonées] [Vaisseau] [Nombre] [Ressource] [Qté]`)\n".
+                            "**base** (`!fleet base [NuméroDeColonie] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
+                            "**transport** (`!fleet transport [coordonées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
                             "**spy** (`!fleet spy [coordonées]`)\n".
                             "**attack** (`!fleet attack [coordonées] [Vaisseau] [Qté]`)\n".
+                            "**scavenge** (`!fleet scavenge [Recycleurs] [Qté]`)\n".
                             "**history** (`!fleet history`)\n".
                             "Paramètre optionel: speed [10-100]",
     "fleetMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
-                        "Mission: **:mission**\n".
+                        "Mission: **:mission**\n\n".
                         "**Flotte**\n".
                         ":fleet\n".
                         "**Transport (:freightCapacity)**\n".
@@ -25,7 +26,7 @@ return [
                         "Statut de l'envoi: **En attente**",
     "fleetAttackMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
-                        "Mission: **:mission**\n".
+                        "Mission: **:mission**\n\n".
                         "**Flotte**\n".
                         ":fleet\n".
                         "Capacité: :freightCapacity\n".
@@ -43,7 +44,6 @@ return [
     ."Origine: **:planetSource [:coordinateSource] (:playerSource)**\n"
     .":battleResult\n"
     ."\nRapport complet: `!fleet history :fleetId`",
-
     'missionReturn' => "Arrivée d'une de vos flotte sur **:planetDest [:coordinateDestination]**\n"
                         ."Origine: **:planetSource [:coordinateSource]**\n\n"
                         ."__Flotte__\n"
@@ -102,4 +102,27 @@ return [
     'historyHowTo' => 'Consultez le détail d\'une fleet avec `!fleet history [ID]`',
     'historyLine' => ':fleetId - :date - :mission - :destination',
     'emptyHistory' => 'Aucun historique actuellement...',
+    'ruinFieldGenerated' => 'Champ de ruine généré: :resources',
+    'noScavengerSelected' => 'Aucun recycleur sélectionné',
+    "scavengeConfirmation" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
+                            "Destination: :planetDest [:coordinateDestination]\n".
+                            "Mission: **:mission**\n\n".
+                            "**Recycleurs**\n".
+                            ":fleet\n".
+                            "Vitesse: :speed (:maxSpeed%)\n".
+                            "Carburant: :fuel\n".
+                            "Durée de vol: :duration\n".
+                            "Statut de l'envoi: **En attente**",
+    'noResourceSeleted' => 'Aucune ressource sélectionnée',
+    'scavengeMission' => "Arrivée de vos recycleurs aux coordonées suivantes **[:coordinateDestination]**\n"
+                        ."Origine: **:planetSource [:coordinateSource]**\n\n"
+                        ."__Ressources recyclées__\n"
+                        .":resources\n",
+    'emptyResources' => 'Vide.',
+    'scavengerReturn' => "Retour de vos recycleur depuis **:planetDest [:coordinateDestination]**\n"
+                    ."Origine: **:planetSource [:coordinateSource]**\n\n"
+                    ."__Recycleurs__\n"
+                    .":fleet\n"
+                    ."__Transport__\n"
+                    .":resources\n",
 ];

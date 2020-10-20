@@ -9,8 +9,8 @@ return [
                 'name' => "Lazer turret",
                 'description' => "",
         ],
-    'ecmcannon' => [
-                'name' => "ECM Cannon",
+    'ecmturret' => [
+                'name' => "ECM turret",
                 'description' => "",
         ],
     'ionsatellite' => [
@@ -19,6 +19,14 @@ return [
         ],
     'plasmaturret' => [
         'name' => "Plasma turret",
+        'description' => "",
+    ],
+    'ecmcannon' => [
+        'name' => "ECM cannon",
+        'description' => "",
+    ],
+    'lasercannon' => [
+        'name' => "Laser cannon",
         'description' => "",
     ],
     'hidden' => '-- Hidden defence --',

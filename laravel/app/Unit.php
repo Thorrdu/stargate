@@ -26,6 +26,11 @@ class Unit extends Model
         return $this->belongsToMany('App\Colony','craft_queues','unit_id','colony_id')->withPivot('craft_end');
     }
 
+    public function fleets()
+    {
+        return $this->belongsToMany('App\Fleet')->withPivot('number');
+    }
+
     public function getPrice(int $qty, $coef = 1)
     {
         $buildingPrice = [];

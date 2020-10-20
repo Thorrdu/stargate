@@ -17,6 +17,22 @@ return [
             'name' => "Grand transporteur",
             'description' => "Transport mobile vous permettant d'acheminer des ressources entre 2 colonies.",
         ],
+    'miniscavenger' => [
+            'name' => "Mini recycleur",
+            'description' => "Prototype miniature de drône recycleur permettant de récolter les ressources d'un champ de ruine.",
+        ],
+    'scavenger' => [
+            'name' => "Recycleur standard",
+            'description' => "Drône recycleur standard permettant de récolter les ressources d'un champ de ruine.",
+        ],
+    'bigscavenger' => [
+            'name' => "Grand recycleur",
+            'description' => "Grand drône recycleur permettant de récolter les ressources d'un champ de ruine.",
+        ],
+    'advancedscavenger' => [
+            'name' => "Recycleur amélioré",
+            'description' => "Une version high-tec du drône recycleur permettant de récolter les ressources d'un champ de ruine.",
+        ],
     'hidden' => '-- Craft caché --',
     'unDiscovered' => 'Non découvert',
     'buildingStarted' => 'Craft commencé, **:qtyx :name**. Terminé dans **:time**',

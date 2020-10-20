@@ -144,13 +144,12 @@ class Colony extends Model
     {
         $maxCapacity = 0;
         $transports = $this->units->filter(function ($value){
-            return !is_null($value->capacity) && $value->capacity > 0;
+            return !is_null($value->capacity) && $value->type == 'Transport';
         });
         foreach($transports as $transport)
             $maxCapacity += $transport->pivot->number * $transport->capacity;
         return $maxCapacity;
     }
-
 
     public function hasCraft(Unit $unit)
     {
@@ -194,11 +193,11 @@ class Colony extends Model
         }
     }
 
-    public function hasShip(String $shipName)
+    public function hasShipById(Int $shipId)
     {
         try{
-            $shipExists = $this->ships->filter(function ($value) use($shipName){
-                return Str::startsWith($value->slug, $shipName);
+            $shipExists = $this->ships->filter(function ($value) use($shipId){
+                return Str::startsWith($value->id, $shipId);
             });
             if($shipExists->count() > 0)
                 return $shipExists->first();
@@ -212,14 +211,14 @@ class Colony extends Model
         }
     }
 
-    public function hasShipById(Int $shipId)
+    public function hasUnitById(Int $unitId)
     {
         try{
-            $shipExists = $this->ships->filter(function ($value) use($shipId){
-                return Str::startsWith($value->id, $shipId);
+            $unitExists = $this->units->filter(function ($value) use($unitId){
+                return Str::startsWith($value->id, $unitId);
             });
-            if($shipExists->count() > 0)
-                return $shipExists->first();
+            if($unitExists->count() > 0)
+                return $unitExists->first();
             else
                 return false;
         }

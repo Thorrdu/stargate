@@ -1024,7 +1024,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             else
                             {
                                 $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
-                                if(is_null($unit) || $unit->slug == 'malp')
+                                if(is_null($unit) || $unit->type != 'Transport')
                                     return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
                                 else
                                 {

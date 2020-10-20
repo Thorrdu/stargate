@@ -9,8 +9,8 @@ return [
             'name' => "Tourelle laser",
             'description' => "",
     ],
-    'ecmcannon' => [
-            'name' => "Canon ECM",
+    'ecmturret' => [
+            'name' => "Tourelle ECM",
             'description' => "",
     ],
     'ionsatellite' => [
@@ -19,6 +19,14 @@ return [
     ],
     'plasmaturret' => [
         'name' => "Tourelle plasma",
+        'description' => "",
+    ],
+    'ecmcannon' => [
+        'name' => "Canon ECM",
+        'description' => "",
+    ],
+    'lasercannon' => [
+        'name' => "Canon laser",
         'description' => "",
     ],
     'hidden' => '-- Défense cachée --',

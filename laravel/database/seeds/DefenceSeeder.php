@@ -63,8 +63,8 @@ class DefenceSeeder extends Seeder
 
         DB::table('defences')->insert([
             'id' => 3,
-            'name' => "Canon ECM",
-            'slug' => 'ecmcannon',
+            'name' => "Tourelle ECM",
+            'slug' => 'ecmturret',
             'iron' => 5000,
             'gold' => 3500,
             'quartz' => 3000,
@@ -136,7 +136,7 @@ class DefenceSeeder extends Seeder
             'gold' => 50000,
             'quartz' => 100000,
             'naqahdah' => 75000,
-            'base_time' => 27000,
+            'base_time' => 12000,
             'fire_power' => 15000,
             'hull' => 5000,
         ]);
@@ -153,6 +153,69 @@ class DefenceSeeder extends Seeder
             'level' => 7
         ]);
 
+
+        DB::table('defences')->insert([
+            'id' => 6,
+            'name' => "Canon ECM",
+            'slug' => 'ecmcannon',
+            'iron' => 400000,
+            'gold' => 500000,
+            'quartz' => 2000000,
+            'naqahdah' => 100000,
+            'base_time' => 15000,
+            'fire_power' => 25000,
+            'hull' => 10000,
+        ]);
+        //Centre de defense 12
+        DB::table('defence_buildings')->insert([
+            'defence_id' => 6,
+            'required_building_id' => 15,
+            'level' => 12
+        ]);
+        //Naqahdah 7
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 6,
+            'required_technology_id' => 14,
+            'level' => 7
+        ]);
+
+
+        DB::table('defences')->insert([
+            'id' => 7,
+            'name' => "Laser cannon",
+            'slug' => 'lasercannon',
+            'iron' => 5000000,
+            'gold' => 5000000,
+            'quartz' => 500000,
+            'naqahdah' => 500000,
+            'base_time' => 50000,
+            'fire_power' => 285000,
+            'hull' => 35000,
+        ]);
+        //Centre de defense 12
+        DB::table('defence_buildings')->insert([
+            'defence_id' => 7,
+            'required_building_id' => 15,
+            'level' => 14
+        ]);
+        //Laser 13
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 5,
+            'required_technology_id' => 11,
+            'level' => 13
+        ]);
+        //IA 8
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 5,
+            'required_technology_id' => 5,
+            'level' => 8
+        ]);
+        //Energie 12
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 5,
+            'required_technology_id' => 4,
+            'level' => 12
+        ]);
 
 
     }

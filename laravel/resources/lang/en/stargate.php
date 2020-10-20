@@ -102,8 +102,7 @@ return [
     'digingActive' => 'You are already diging up. Stargate operational in: **:time**',
     'buryingActive' => 'You are already burying your Stargate. Out of service in: **:time**',
     'buriedStargate' => 'Stargate out of service.',
-    'playerTradeBan' => 'Ce joueur est banni du système de trade.',
+    'playerTradeBan' => 'This played have been banned from the trading system.',
     'sameColony' => 'Destination coordonates are the same as origin...',
-
-    'trade_ban' => 'Vous êtes banni du système de trade. Si ce n\'est déjà fait, vous pouvez demander un sursis de 12h pour régulariser le trade. Voir `!trade [ID]`',
+    'trade_ban' => 'You are banned from the trading system. If it\'s not already done, you can ask for an extention delay of 12h to regularize the trad. See `!trade [ID]`',
 ];
