@@ -129,6 +129,36 @@ class Shipyard extends CommandHandler implements CommandInterface
                         $this->paginatorMessage->createReactionCollector($filter);
                     });
                 }
+                elseif(Str::startsWith('rename', $this->args[0]) && count($this->args) >= 2)
+                {
+                    $ship = Ship::where([['player_id', $this->player->id],['slug', 'LIKE', $this->args[0].'%']])->first();
+                    if(!is_null($ship))
+                    {
+                        $newShipName = trim(join(' ', array_slice($this->args, 1)));
+
+                        if(strlen($newShipName) < 3)
+                            return trans('generic.nameTooShort',[],$this->player->lang);
+
+                        if(strlen($newShipName) > 35)
+                            return trans('generic.nameTooLong',[],$this->player->lang);
+
+                        $ship->name = $newShipName;
+                        $ship->slug = Str::slug($newShipName);
+                        if(strlen($ship->slug) < 3)
+                        {
+                            $ship->save();
+                            return trans('shipyard.shipNameChanged' , ['name' => $ship->name, 'slug' => $ship->slug], $this->player->lang);
+                        }
+                        else
+                            return trans('generic.nameCantBeSlugged',[],$this->player->lang);
+                    }
+                    else
+                        return trans('shipyard.unknownShip', [], $this->player->lang);
+                }
+                elseif(Str::startsWith('remove', $this->args[0]))
+                {
+                    //remove si n'en possède aucun en vol ou sur une colonie
+                }
                 elseif(Str::startsWith('queue', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Shipyard Queue';

@@ -239,7 +239,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                             $counterSpyLvl = 0;
 
                         if(($counterSpyLvl - $spyLvl) >= 2)
-                            $colonyPlayerName = $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer).' '.$coordinate->planet.trans('galaxy.hiddenPlayer', [], $this->player->name);
+                            $colonyPlayerName = $coordinate->planet." - ".$this->player->isWeakOrStrong($colonyPlayer).' '.trans('galaxy.hiddenPlayer', [], $this->player->name);
                     }
 
                     if(empty($colonyPlayerName) && !$colonyPlayer->npc)
@@ -251,10 +251,6 @@ class Galaxy extends CommandHandler implements CommandInterface
                 }
                 else
                     $coordinateList .= $coordinate->planet."\n";
-                if($coordinate->iron > 0 || $coordinate->gold > 0 || $coordinate->quartz > 0)
-                {
-
-                }
 
                 $ruinFieldString = '';
                 foreach(config('stargate.resources') as $resource)

@@ -295,7 +295,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     else
                         return trans('fleet.unknownFleet', [], $this->player->lang);
 
-                    if(isset($this->args[2]) && Str::startsWith('retur',$this->args[2]))
+                    if(isset($this->args[2]) && Str::startsWith('return',$this->args[2]))
                     {
                         if($fleetControl->returning)
                             return trans('fleet.alreadyReturning', [], $this->player->lang);
@@ -318,7 +318,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
 
-                        return trans('fleet.fleetReturning', ['duration',
+                        return trans('fleet.fleetReturning', ['duration' => $fleetDuration,
                                                             'planetSource' => $fleetControl->sourceColony->name,
                                                             'coordinateSource' => $fleetControl->sourceColony->coordinates->humanCoordinates()],
                                                             $this->player->lang);
@@ -924,14 +924,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
                     $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
-                    if(!$wraithProbeNumber)
-                        return trans('generic.notEnoughResources', ['missingResources' => $wraithProbe->name.': 1'], $this->player->lang);
-                    elseif($wraithProbeNumber == 0)
-                        return trans('generic.notEnoughResources', ['missingResources' => $wraithProbe->name.': 1'], $this->player->lang);
+                    if(!$wraithProbeNumber || $wraithProbeNumber == 0)
+                        return trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => $wraithProbe->name.': 1'], $this->player->lang);
+                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($sourceCoordinates,$destCoordinates,$wraithProbe){

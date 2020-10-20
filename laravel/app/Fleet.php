@@ -142,6 +142,7 @@ class Fleet extends Model
                     $scavString .= trans('craft.'.$unit->slug.'.name', [], $this->sourcePlayer->lang).': '.number_format($unit->pivot->number)."\n";
 
                 $fleetMessage = trans('fleet.scavengerReturn', ['coordinateDestination' => $destCoordinates,
+                                                    'planetDest' => $destinationColony->name,
                                                     'planetSource' => $sourceColony->name,
                                                     'coordinateSource' => $sourceCoordinates,
                                                     'fleet' => $scavString,

@@ -80,6 +80,7 @@ return [
     "no" => 'Non',
     "nameTooShort" => "Nom trop court.",
     "nameTooLong" => "Nom trop long.",
+    'nameCantBeSlugged' => 'Nom invalide, ne contient pas assez de caractères normaux',
     "descriptionTooLong" => "Description trop longue. ( max :maxLenght caractères )",
     "descriptionTooShort" => "Description trop courte. ( min :minLenght caractères )",
     'permanent' => 'Permanent',

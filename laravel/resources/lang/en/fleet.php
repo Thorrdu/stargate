@@ -60,7 +60,7 @@ return [
                     ."Origin: **:planetSource [:coordinateSource]**\n\n"
                     ."In his great kindness, **:playerSource** has sent you the following resources:\n"
                     .":resources\n",
-    'fleetReturning' => "Mission Cancelled, your fleet is now heading towards **:planetSource [:coordinateSource]** and will return in :duration",
+    'fleetReturning' => "Mission cancelled, your fleet is now heading towards **:planetSource [:coordinateSource]** and will return in :duration",
     'alreadyReturning' => 'This fleet is already returning.',
     'activeFleets' => "__Active fleets__\n:fleets",
     'incomingFleets' => "__Incoming stranger's fleets__\n:fleets",

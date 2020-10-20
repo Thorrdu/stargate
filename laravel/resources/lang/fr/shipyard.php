@@ -18,4 +18,5 @@ return [
     "capacity" => "Capacité: **:capacity**",
     "crew" => "Equipage: **:crew**",
     "speed" => "Vitesse: **:speed**",
+    'shipNameChanged' => 'Votre vaisseau est désormais connu sous le nom de: **:name** (Slug: `:slug`)',
 ];
