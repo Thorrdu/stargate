@@ -389,7 +389,7 @@ class Craft extends CommandHandler implements CommandInterface
 
                 $speedString = '';
                 if(!is_null($unit->speed) && $unit->speed > 0)
-                    $speedString = trans('shipyard.speed', ['speed' => ($unit->speed*$speedBonus)], $this->player->lang)."\n";
+                    $speedString = trans('shipyard.speed', ['speed' => round($unit->speed*$speedBonus,2)], $this->player->lang)."\n";
 
                 if($hasRequirements == true)
                 {
