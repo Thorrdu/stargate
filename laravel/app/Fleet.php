@@ -131,7 +131,7 @@ class Fleet extends Model
                 }
                 else
                 {
-                    $destinationColony->ships()->attach([$unit->id => ['number' => $unit->pivot->number]]);
+                    $destinationColony->units()->attach([$unit->id => ['number' => $unit->pivot->number]]);
                 }
             }
 
