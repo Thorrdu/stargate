@@ -131,10 +131,10 @@ class Shipyard extends CommandHandler implements CommandInterface
                 }
                 elseif(Str::startsWith('rename', $this->args[0]) && count($this->args) >= 2)
                 {
-                    $ship = Ship::where([['player_id', $this->player->id],['slug', 'LIKE', $this->args[0].'%']])->first();
+                    $ship = Ship::where([['player_id', $this->player->id],['slug', 'LIKE', $this->args[1].'%']])->first();
                     if(!is_null($ship))
                     {
-                        $newShipName = trim(join(' ', array_slice($this->args, 1)));
+                        $newShipName = trim(join(' ', array_slice($this->args, 2)));
 
                         if(strlen($newShipName) < 3)
                             return trans('generic.nameTooShort',[],$this->player->lang);
