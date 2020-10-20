@@ -94,7 +94,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             return trans('fleet.unknownFleet', [], $this->player->lang);
                     }
 
-                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')
+                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])
+                                        ->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])
+                                        ->orWhere([['mission', 'attack'],['ended', true],['player_source_id', $this->player->id]])
+                                        ->orWhere([['mission', 'attack'],['ended', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')
                                         ->with('gateFight') // bring along details of the friend
                                         ->join('gate_fights', 'gate_fights.fleet_id', '=', 'fleets.id')
                                         ->take(100)->get(['fleets.*']);
