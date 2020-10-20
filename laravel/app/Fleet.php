@@ -1172,7 +1172,8 @@ class Fleet extends Model
                 'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
                 'planetDest' => $this->destinationColony->name,
                 'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
-                'battleResult' => ${'battleResult'.strtoupper($this->sourcePlayer->lang)}
+                'battleResult' => ${'battleResult'.strtoupper($this->sourcePlayer->lang)},
+                'fleetId' => $this->id
             ], $this->sourcePlayer->lang);
 
             $embed = [
@@ -1201,7 +1202,8 @@ class Fleet extends Model
                 'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
                 'planetDest' => $this->destinationColony->name,
                 'coordinateDestination' => $this->destinationColony->coordinates->humanCoordinates(),
-                'battleResult' => ${'battleResult'.strtoupper($this->destinationPlayer->lang)}
+                'battleResult' => ${'battleResult'.strtoupper($this->destinationPlayer->lang)},
+                'fleetId' => $this->id
             ], $this->destinationPlayer->lang);
             $embed = [
                 'author' => [
