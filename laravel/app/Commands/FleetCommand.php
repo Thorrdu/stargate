@@ -508,14 +508,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     if($this->fleet->crew + $this->fleet->military > $this->player->activeColony->military)
                         return trans('generic.notEnoughResources', ['missingResources' => trans('shipyard.crew', ['crew' => number_format(ceil($this->fleet->crew - $this->player->activeColony->military))], $this->player->lang)], $this->player->lang);
 
-                    $this->usedCapacity += $this->travelCost;
-                    //check fret capacity
-                    if($this->fleet->capacity < $this->usedCapacity)
-                        return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
 
                     //check Speed
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
                     $this->travelCost *= $this->fleetSpeed/100;
+
+                    $this->travelCost = floor($this->travelCost);
+                    $this->usedCapacity += $this->travelCost;
+                    //check fret capacity
+                    if($this->fleet->capacity < $this->usedCapacity)
+                        return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
 
                     //check Carburant
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
@@ -564,7 +566,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                 'crew' => number_format($this->fleet->crew),
                                                                 'speed' => $this->fleetMaxSpeed,
                                                                 'maxSpeed' => $this->fleetSpeed,
-                                                                'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost)),
+                                                                'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(floor($this->travelCost)),
                                                                 'duration' => $fleetDuration,
                                                             ], $this->player->lang);
 
@@ -766,7 +768,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     if($this->fleetMaxSpeed > $unitSpeed)
                                         $this->fleetMaxSpeed = round($unitSpeed,2);
 
-                                    $this->travelCost += $this->baseTravelCost * $unitSpeed * $qty;
+                                    $this->travelCost += floor($this->baseTravelCost * $unitSpeed * $qty);
 
                                     $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
                                     $fleetString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
@@ -784,7 +786,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     //check Speed
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
-                    $this->travelCost *= $this->fleetSpeed/100;
+                    $this->travelCost *= floor($this->fleetSpeed/100);
 
                     //check Carburant
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
@@ -811,7 +813,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                 'fleet' => $fleetString,
                                                                 'speed' => $this->fleetMaxSpeed,
                                                                 'maxSpeed' => $this->fleetSpeed,
-                                                                'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost)),
+                                                                'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(floor($this->travelCost)),
                                                                 'duration' => $fleetDuration,
                                                             ], $this->player->lang);
 
