@@ -493,7 +493,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 if($componant->crew > 0)
                     $crewString = trans('shipyard.crew', ['crew' => config('stargate.emotes.military').' '.number_format($componant->crew)], $this->player->lang)."\n";
                 if($componant->speed > 0)
-                    $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.$componant->speed], $this->player->lang)."\n";
+                    $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.number_format($componant->speed,2)], $this->player->lang)."\n";
                 if($componant->used_capacity > 0)
                     $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.freight').' '.$componant->used_capacity], $this->player->lang)."\n";
 
