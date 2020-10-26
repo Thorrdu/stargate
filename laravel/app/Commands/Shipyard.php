@@ -182,6 +182,7 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                         $this->paginatorMessage->react('◀️')->then(function(){
                             $this->paginatorMessage->react('▶️')->then(function(){
+                                echo PHP_EOL.config('stargate.emotes.ship');
                                 $this->paginatorMessage->react(config('stargate.emotes.ship'))->then(function(){
                                     $this->paginatorMessage->react(config('stargate.emotes.armament'))->then(function(){
                                         $this->paginatorMessage->react(config('stargate.emotes.shield'))->then(function(){
@@ -202,6 +203,8 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                             if($messageReaction->user_id == $this->player->user_id)
                             {
+                                echo PHP_EOL.$messageReaction->emoji->name;
+
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                     {

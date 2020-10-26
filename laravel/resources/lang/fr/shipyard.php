@@ -3,7 +3,7 @@
 return [
     'hidden' => '-- Vaisseau caché --',
     'unDiscovered' => 'Non découvert',
-    "notBuild" => "Cette colonie ne possède pas de chantier spacial.",
+    "notBuilt" => "Cette colonie ne possède pas de chantier spacial.",
     'buildingStarted' => 'Vaisseau commencé, **:qtyx :name**. Terminé dans **:time**',
     'howTo' => "Construisez un vaisseau avec `!shipyard [slug] [quantité]`\n\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce vaisseau.",

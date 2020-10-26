@@ -3,7 +3,7 @@
 return [
     'hidden' => '-- Hidden Ship --',
     'unDiscovered' => 'Undiscovered',
-    "notBuild" => "This colony doesn't own a Shipyard.",
+    "notBuilt" => "This colony doesn't own a Shipyard.",
     'buildingStarted' => 'Ship started, **:qtyx :name**. It will be done in **:time**',
     'howTo' => "Craft a ship with `!shipyard [slug] [quantity]`\n\n",
     'notYetDiscovered' => "Ship not yet discovered.",
