@@ -483,7 +483,7 @@ class Shipyard extends CommandHandler implements CommandInterface
             {
                 $firePowerString = $shieldString = $hullString = $capacityString = $crewString = $speedString = $usedCapacityString = '';
                 if($componant->fire_power > 0)
-                    $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($componant->firepower)], $this->player->lang)."\n";
+                    $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($componant->fire_power)], $this->player->lang)."\n";
                 if($componant->shield > 0)
                     $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($componant->shield)], $this->player->lang)."\n";
                 if($componant->hull > 0)
