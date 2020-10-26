@@ -182,12 +182,11 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                         $this->paginatorMessage->react('◀️')->then(function(){
                             $this->paginatorMessage->react('▶️')->then(function(){
-                                echo PHP_EOL.config('stargate.emotes.ship');
-                                $this->paginatorMessage->react(config('stargate.emotes.ship'))->then(function(){
-                                    $this->paginatorMessage->react(config('stargate.emotes.armament'))->then(function(){
-                                        $this->paginatorMessage->react(config('stargate.emotes.shield'))->then(function(){
-                                            $this->paginatorMessage->react(config('stargate.emotes.hull'))->then(function(){
-                                                $this->paginatorMessage->react(config('stargate.emotes.reactor'))->then(function(){
+                                $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.ship')))->then(function(){
+                                    $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.armament')))->then(function(){
+                                        $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.shield')))->then(function(){
+                                            $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.hull')))->then(function(){
+                                                $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.reactor')))->then(function(){
                                                     $this->paginatorMessage->react(config('stargate.emotes.cancel'));
                                                 });
                                             });
@@ -225,33 +224,32 @@ class Shipyard extends CommandHandler implements CommandInterface
                                         $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
-                                    elseif($messageReaction->emoji->name == config('stargate.emotes.ship')
-                                        || $messageReaction->emoji->name == config('stargate.emotes.armament')
-                                        || $messageReaction->emoji->name == config('stargate.emotes.shield')
-                                        || $messageReaction->emoji->name == config('stargate.emotes.hull')
-                                        || $messageReaction->emoji->name == config('stargate.emotes.reactor'))
+                                    elseif($messageReaction->emoji->name == 'ship'
+                                        || $messageReaction->emoji->name == 'armament'
+                                        || $messageReaction->emoji->name == 'shield'
+                                        || $messageReaction->emoji->name == 'hull'
+                                        || $messageReaction->emoji->name == 'reactor')
                                     {
                                         echo 'bbb';
                                         switch($messageReaction->emoji->name)
                                         {
-                                            case config('stargate.emotes.ship'):
+                                            case 'ship':
                                                 $this->componantList = ShipPart::where('type','Blueprint')->get();
                                                 $this->componantSelectedType = 'Blueprint';
                                             break;
-                                            case config('stargate.emotes.armament'):
-                                                echo 'aaa';
+                                            case 'armament':
                                                 $this->componantList = ShipPart::where('type','Armament')->get();
                                                 $this->componantSelectedType = 'Armament';
                                             break;
-                                            case config('stargate.emotes.shield'):
+                                            case 'shield':
                                                 $this->componantList = ShipPart::where('type','Shield')->get();
                                                 $this->componantSelectedType = 'Shield';
                                             break;
-                                            case config('stargate.emotes.hull'):
+                                            case 'hull':
                                                 $this->componantList = ShipPart::where('type','Hull')->get();
                                                 $this->componantSelectedType = 'Hull';
                                             break;
-                                            case config('stargate.emotes.reactor'):
+                                            case 'reactor':
                                                 $this->componantList = ShipPart::where('type','Reactor')->get();
                                                 $this->componantSelectedType = 'Reactor';
                                             break;

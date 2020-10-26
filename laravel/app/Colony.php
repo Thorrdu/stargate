@@ -839,7 +839,12 @@ class Colony extends Model
             $buildingExist = $this->buildings->filter(function ($value) use($building){
                 return $value->id == $building->id;
             });
-            if($this->active_building_remove)
+            if($this->active_building_remove && is_null($buildingExist))
+            {
+                $this->active_building_remove = false;
+                return;
+            }
+            elseif($this->active_building_remove)
             {
                 $buildingToRemove = $buildingExist->first();
                 if($buildingToRemove->pivot->level == 1)
