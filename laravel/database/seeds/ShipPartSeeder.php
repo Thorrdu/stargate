@@ -947,7 +947,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 29,
             'name' => "Tourelle à projectile",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'projectileturret',
             'description' => '',
             'iron' => 100,
@@ -968,7 +968,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 30,
             'name' => "Missiles MARK III",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'markiiimissile',
             'description' => '',
             'iron' => 1000,
@@ -995,7 +995,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 31,
             'name' => "Canon laser",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'lasercannon',
             'description' => '',
             'iron' => 1500,
@@ -1023,7 +1023,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 32,
             'name' => "Canon à ion Goa'uld",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'goauldioncannon',
             'description' => '',
             'iron' => 2000,
@@ -1050,7 +1050,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 33,
             'name' => "Canon à plasma",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'plasmacannon',
             'description' => '',
             'iron' => 4000,
@@ -1071,7 +1071,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 34,
             'name' => "Bombe à plasma",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'plasmabomb',
             'description' => '',
             'iron' => 5000,
@@ -1092,7 +1092,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 35,
             'name' => "Bombe au naqahdria",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'naqhadriabomb',
             'description' => '',
             'iron' => 50000,
@@ -1125,7 +1125,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 36,
             'name' => "Lanceur de drone",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'droncelauncher',
             'description' => '',
             'iron' => 75000,
@@ -1158,7 +1158,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_parts')->insert([
             'id' => 37,
             'name' => "Rayon à énergie Ori",
-            'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
+            'type' => 'Armament', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
             'slug' => 'orienergybeam',
             'description' => '',
             'iron' => 200000,
