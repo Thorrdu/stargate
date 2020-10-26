@@ -482,7 +482,7 @@ class Shipyard extends CommandHandler implements CommandInterface
             if($hasRequirements == true)
             {
                 $firePowerString = $shieldString = $hullString = $capacityString = $crewString = $speedString = $usedCapacityString = '';
-                if($componant->firepower > 0)
+                if($componant->fire_power > 0)
                     $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($componant->firepower)], $this->player->lang)."\n";
                 if($componant->shield > 0)
                     $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($componant->shield)], $this->player->lang)."\n";
@@ -495,7 +495,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 if($componant->speed > 0)
                     $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.$componant->speed], $this->player->lang)."\n";
                 if($componant->used_capacity > 0)
-                    $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.speed').' '.$componant->speed], $this->player->lang)."\n";
+                    $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.freight').' '.$componant->used_capacity], $this->player->lang)."\n";
 
                 $embed['fields'][] = array(
                     'name' => trans('shipyard.'.$componant->slug.'.name', [], $this->player->lang),
