@@ -8,6 +8,7 @@ use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Ship;
 use App\Building;
+use App\ShipPart;
 use App\Technology;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -22,6 +23,8 @@ class Shipyard extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $shipList;
+    public $componantList;
+    public $componantSelectedType;
     public $shipQueue;
     public $closed;
 
@@ -158,6 +161,116 @@ class Shipyard extends CommandHandler implements CommandInterface
                 elseif(Str::startsWith('remove', $this->args[0]))
                 {
                     //remove si n'en possède aucun en vol ou sur une colonie
+                }
+                elseif(Str::startsWith('create', $this->args[0]))
+                {
+                    //Permet de créer un modèle de vaisseau sur base des composants sélectionnés
+                    //Limite de 10 modèles par personne
+                }
+                elseif(Str::startsWith('parts', $this->args[0]))
+                {
+                    //Affiche les ship parts disponibles (tri par type, 1 page par catégorie)
+                    $this->componantList = ShipPart::where('type','Blueprint')->get();
+                    $this->componantSelectedType = 'Blueprint';
+
+                    $this->closed = false;
+                    $this->page = 1;
+                    $this->maxPage = ceil($this->componantList->count()/5);
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $this->getComponantsPage())->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react('◀️')->then(function(){
+                            $this->paginatorMessage->react('▶️')->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.ship'))->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.armament'))->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.shield'))->then(function(){
+                                            $this->paginatorMessage->react(config('stargate.emotes.hull'))->then(function(){
+                                                $this->paginatorMessage->react(config('stargate.emotes.reactor'))->then(function(){
+                                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    {
+                                        $this->page--;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    {
+                                        $this->page++;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.ship')
+                                        || $messageReaction->emoji->name == config('stargate.emotes.armament')
+                                        || $messageReaction->emoji->name == config('stargate.emotes.shield')
+                                        || $messageReaction->emoji->name == config('stargate.emotes.hull')
+                                        || $messageReaction->emoji->name == config('stargate.emotes.reactor'))
+                                    {
+                                        echo 'bbb';
+                                        switch($messageReaction->emoji->name)
+                                        {
+                                            case config('stargate.emotes.ship'):
+                                                $this->componantList = ShipPart::where('type','Blueprint')->get();
+                                                $this->componantSelectedType = 'Blueprint';
+                                            break;
+                                            case config('stargate.emotes.armament'):
+                                                echo 'aaa';
+                                                $this->componantList = ShipPart::where('type','Armament')->get();
+                                                $this->componantSelectedType = 'Armament';
+                                            break;
+                                            case config('stargate.emotes.shield'):
+                                                $this->componantList = ShipPart::where('type','Shield')->get();
+                                                $this->componantSelectedType = 'Shield';
+                                            break;
+                                            case config('stargate.emotes.hull'):
+                                                $this->componantList = ShipPart::where('type','Hull')->get();
+                                                $this->componantSelectedType = 'Hull';
+                                            break;
+                                            case config('stargate.emotes.reactor'):
+                                                $this->componantList = ShipPart::where('type','Reactor')->get();
+                                                $this->componantSelectedType = 'Reactor';
+                                            break;
+                                        }
+                                        $this->page = 1;
+                                        $this->maxPage = ceil($this->componantList->count()/5);
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
                 }
                 elseif(Str::startsWith('queue', $this->args[0]))
                 {
@@ -311,6 +424,117 @@ class Shipyard extends CommandHandler implements CommandInterface
             return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
         return false;
     }
+
+    public function getComponantsPage()
+    {
+        $displayList = $this->componantList->skip(5*($this->page -1))->take(5);
+
+        $embed = [
+            'author' => [
+                'name' => $this->player->user_name,
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+            ],
+            "title" => trans('shipyard.componantList', [], $this->player->lang),
+            "description" => trans('generic.'.strtolower($this->componantSelectedType), [], $this->player->lang),
+            'fields' => [],
+            'footer' => array(
+                'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
+            ),
+        ];
+
+        foreach($displayList as $componant)
+        {
+            $componantPrice = "";
+            $componantPrices = $componant->getPrice();
+            foreach (config('stargate.resources') as $resource)
+            {
+                if($componant->$resource > 0)
+                {
+                    if(!empty($componantPrice))
+                        $componantPrice .= " ";
+                    $componantPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($componantPrices[$resource]));
+                }
+            }
+            $componantBaseTime = $componant->base_time;
+
+            $now = Carbon::now();
+            $componantEnd = $now->copy()->addSeconds($componantBaseTime);
+            $componantTime = $now->diffForHumans($componantEnd,[
+                'parts' => 3,
+                'short' => true, // short syntax as per current locale
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+            ]);
+
+            $hasRequirements = true;
+            foreach($componant->requiredTechnologies as $requiredTechnology)
+            {
+                $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
+                if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
+                    $hasRequirements = false;
+            }
+            foreach($componant->requiredBuildings as $requiredBuilding)
+            {
+                $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
+                if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
+                    $hasRequirements = false;
+            }
+            if($hasRequirements == true)
+            {
+                $firePowerString = $shieldString = $hullString = $capacityString = $crewString = $speedString = '';
+                if($componant->firepower > 0)
+                    $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($componant->firepower)], $this->player->lang)."\n";
+                if($componant->shield > 0)
+                    $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($componant->shield)], $this->player->lang)."\n";
+                if($componant->hull > 0)
+                    $hullString = trans('shipyard.hull', ['hull' => config('stargate.emotes.hull').' '.number_format($componant->hull)], $this->player->lang)."\n";
+                if($componant->capacity > 0)
+                    $capacityString = trans('shipyard.capacity', ['capacity' => config('stargate.emotes.freight').' '.number_format($componant->capacity)], $this->player->lang)."\n";
+                if($componant->crew > 0)
+                    $crewString = trans('shipyard.crew', ['crew' => config('stargate.emotes.military').' '.number_format($componant->crew)], $this->player->lang)."\n";
+                if($componant->speed > 0)
+                    $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.$componant->speed], $this->player->lang)."\n";
+                if($componant->used_capacity > 0)
+                    $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.speed').' '.$componant->speed], $this->player->lang)."\n";
+
+                $embed['fields'][] = array(
+                    'name' => trans('shipyard.'.$componant->slug.'.name', [], $this->player->lang),
+                    'value' => "\nSlug: `".$componant->slug."`\n - ".
+                               $firePowerString.$shieldString.$hullString.$capacityString.$speedString.$crewString.$usedCapacityString.
+                               "\n".trans('generic.duration', [], $this->player->lang).": ".$componantTime."\n".
+                               trans('generic.price', [], $this->player->lang).": ".$componantPrice."\n",
+                    'inline' => true
+                );
+            }
+            else
+            {
+                $requirementString = '';
+                foreach($componant->requiredTechnologies as $requiredTechnology)
+                {
+                    $techLevel = $this->player->hasTechnology($requiredTechnology);
+                    if(!$techLevel)
+                        $techLevel = 0;
+
+                    $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                }
+                foreach($componant->requiredBuildings as $requiredBuilding)
+                {
+                    $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                    if(!$buildLvl)
+                        $buildLvl = 0;
+                    $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                }
+
+                $embed['fields'][] = array(
+                    'name' => $componant->id.' - '.trans('shipyard.'.$componant->slug.'.name', [], $this->player->lang),
+                    'value' => "\n".$requirementString,
+                    'inline' => true
+                );
+            }
+        }
+
+        return $embed;
+    }
+
 
     public function getPage()
     {

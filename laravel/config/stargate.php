@@ -30,6 +30,7 @@ return [
         'freight' => '<:freight:765277693712531467>',
         'radar' => '<:radar:765277716324155393>',
         'speed' => '<:speed:765277734950928394>',
+        'ship' => '<:ship:765545674644127764>',
     ],
     'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],

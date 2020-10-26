@@ -47,7 +47,7 @@ class Exploration extends Model
         elseif($randomEvent <= 65)
         {
             //Craft aléatoire
-            $randomUnit = Unit::all()->random();
+            $randomUnit = Unit::where('id','<', 6)->get()->random();
             $resValue = rand(1,4);
             $resourceString = ucfirst(trans('craft.'.$randomUnit->slug.'.name', [], $this->player->lang)).': '.number_format($resValue);
 
@@ -93,6 +93,7 @@ class Exploration extends Model
             );
             $resNumber = FuncUtility::rand_with_weight($resNumberWeight);
 
+            $refounds = [];
             $resourceString = '';
             foreach(range(1,$resNumber) as $n)
             {
@@ -106,8 +107,13 @@ class Exploration extends Model
 
                 $this->colonySource->$resType += $resValue;
 
-                $resourceString .= config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue)."\n";
+                if(isset($refounds[$resType]))
+                    $refounds[$resType] += $resValue;
+                else
+                    $refounds[$resType] = $resValue;
             }
+            foreach($refounds as $resFound => $resQty)
+                $resourceString .= config('stargate.emotes.'.strtolower($resFound))." ".ucfirst($resFound).': '.number_format($resQty)."\n";
 
             $this->exploration_result = true;
             $this->exploration_outcome = 'Resource';

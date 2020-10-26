@@ -310,7 +310,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         if(isset($this->args[$cptRes+1]))
                         {
                             if((int)$this->args[$cptRes+1] > 0)
-                                $qty = $this->args[$cptRes+1];
+                                $qty = (int)$this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
@@ -531,7 +531,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         if(isset($this->args[$cptRes+1]))
                         {
                             if((int)$this->args[$cptRes+1] > 0)
-                                $qty = $this->args[$cptRes+1];
+                                $qty = (int)$this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
@@ -1006,7 +1006,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         if(isset($this->args[$cptRes+1]))
                         {
                             if((int)$this->args[$cptRes+1] > 0)
-                                $qty = $this->args[$cptRes+1];
+                                $qty = (int)$this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 

@@ -215,7 +215,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1140,
             'time_coefficient' => 1.7,
             'crafting_bonus' => 0.9,
-
+            'ship_bonus' => 0.9,
         ]);
         //Usine robotisée 2
         DB::table('building_buildings')->insert([

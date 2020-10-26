@@ -18,6 +18,7 @@ use App\Technology;
 use App\Defence;
 use App\Artifact;
 use App\Fleet;
+use App\Unit;
 use App\Utility\FuncUtility;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
@@ -27,6 +28,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
+
+$randomUnit = Unit::where('id','<', 6)->get()->random();
+die();
 
 
 foreach(Player::find(1)->artifacts as $artifact)

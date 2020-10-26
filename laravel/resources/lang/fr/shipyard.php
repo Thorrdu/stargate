@@ -17,6 +17,7 @@ return [
     "shield" => "Bouclier: **:shield**",
     "hull" => "Coque: **:hull**",
     "capacity" => "Capacité: **:capacity**",
+    'usedCapacity' => "Capacité utilisée: **:usedCapacity**",
     "crew" => "Equipage: **:crew**",
     "speed" => "Vitesse: **:speed**",
     'shipNameChanged' => 'Votre vaisseau est désormais connu sous le nom de: **:name** (Slug: `:slug`)',
