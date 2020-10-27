@@ -704,8 +704,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             if(isset($tradeObject['unit_id']))
                                             {
-                                                $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($tradeObject){
-                                                    return $value->unit_id == $tradeObject['unit_id'];
+                                                $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($tradeObject,$tradePlayer){
+                                                    return $value->unit_id == $tradeObject['unit_id'] && $value->player == $tradePlayer;
                                                 });
                                                 if($tradeResourceExist->count() > 0)
                                                 {
@@ -745,8 +745,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                             elseif(isset($tradeObject['resource']))
                                             {
 
-                                                $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($tradeObject){
-                                                    return $value->resource == $tradeObject['resource'];
+                                                $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($tradeObject,$tradePlayer){
+                                                    return $value->resource == $tradeObject['resource'] && $value->player == $tradePlayer;
                                                 });
                                                 if($tradeResourceExist->count() > 0)
                                                 {

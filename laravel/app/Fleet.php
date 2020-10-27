@@ -340,13 +340,26 @@ class Fleet extends Model
 
                             if($this->player_source_id != $this->player_destination_id)
                             {
-                                $tradeResource = new TradeResource;
-                                $tradeResource->player = $tradePlayer;
-                                $tradeResource->trade_id = $tradeLog->id;
-                                $tradeResource->quantity = $this->$availableResource;
-                                $tradeResource->resource = $availableResource;
-                                $tradeResource->setValue();
-                                $tradeResource->save();
+                                $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($availableResource,$tradePlayer){
+                                    return $value->resource == $availableResource && $value->player == $tradePlayer;
+                                });
+                                if($tradeResourceExist->count() > 0)
+                                {
+                                    $tradeResource = $tradeResourceExist->first();
+                                    $tradeResource->quantity += $this->$availableResource;
+                                    $tradeResource->setValue();
+                                    $tradeResource->save();
+                                }
+                                else
+                                {
+                                    $tradeResource = new TradeResource;
+                                    $tradeResource->player = $tradePlayer;
+                                    $tradeResource->trade_id = $tradeLog->id;
+                                    $tradeResource->quantity = $this->$availableResource;
+                                    $tradeResource->resource = $availableResource;
+                                    $tradeResource->setValue();
+                                    $tradeResource->save();
+                                }
                             }
                             $this->$availableResource = 0;
                         }
@@ -354,8 +367,8 @@ class Fleet extends Model
                     //units -> colony
                     foreach($this->units as $unit)
                     {
-                        $unitExists = $this->destinationColony->units->filter(function ($value) use($unit){
-                            return $value->id == $unit->id;
+                        $unitExists = $this->destinationColony->units->filter(function ($value) use($unit,$tradePlayer){
+                            return $value->id == $unit->id && $value->player == $tradePlayer;
                         });
                         if($unitExists->count() > 0)
                         {
@@ -365,7 +378,7 @@ class Fleet extends Model
                         }
                         else
                         {
-                            $this->destinationColony->ships()->attach([$unit->id => ['number' => $unit->pivot->number]]);
+                            $this->destinationColony->units()->attach([$unit->id => ['number' => $unit->pivot->number]]);
                         }
                         if($this->player_source_id != $this->player_destination_id)
                         {
