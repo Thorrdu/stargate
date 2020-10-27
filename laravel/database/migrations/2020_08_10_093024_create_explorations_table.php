@@ -26,7 +26,7 @@ class CreateExplorationsTable extends Migration
             $table->boolean('exploration_result')->nullable();
             $table->enum('exploration_outcome', ['Resource', 'Unit', 'Artifact ', 'Tip'])->nullable();
 
-            $table->enum('outcome_resource', ['iron', 'gold', 'quartz ', 'naqdahdah', 'E2PZ'])->nullable();
+            $table->enum('outcome_resource', ['iron', 'gold', 'quartz ', 'naqahdah', 'E2PZ'])->nullable();
             $table->integer('unit_id')->unsigned()->nullable();
             $table->foreign('unit_id')->references('id')->on('units');
             $table->integer('outcome_quantity')->length(25)->unsigned()->nullable();
