@@ -839,9 +839,10 @@ class Colony extends Model
             $buildingExist = $this->buildings->filter(function ($value) use($building){
                 return $value->id == $building->id;
             });
-            if($this->active_building_remove && is_null($buildingExist))
+            if($this->active_building_remove && $buildingExist->count() == 0)
             {
                 $this->active_building_remove = false;
+                $this->save();
                 return;
             }
             elseif($this->active_building_remove)
@@ -855,7 +856,6 @@ class Colony extends Model
                     $buildingToRemove->pivot->save();
                 }
                 $this->space_used--;
-                $this->active_building_remove = false;
 
                 $coef = 1;
                 $buildingPriceBonusList = $this->artifacts->filter(function ($value){
@@ -901,6 +901,7 @@ class Colony extends Model
                     $this->space_max += 30;
                 $this->space_used++;
             }
+            $this->active_building_remove = false;
             $this->active_building_id = null;
             $this->active_building_end = null;
             $this->calcProd();

@@ -37,7 +37,7 @@ class Trade extends Model
         if($this->trade_value_player1 > 0)
             $diff1 = $this->trade_value_player1;
         $diff2 = 1;
-        if($this->trade_value_player1 > 0)
+        if($this->trade_value_player2 > 0)
             $diff2 = $this->trade_value_player2;
         if($this->playerSource->points_total > $this->playerDest->points_total && ($this->trade_value_player2/$diff1) > 1.25)
         {

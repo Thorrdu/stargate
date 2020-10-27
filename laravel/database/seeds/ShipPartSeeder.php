@@ -322,12 +322,11 @@ class ShipPartSeeder extends Seeder
         ]);
 
 
-
         DB::table('ship_parts')->insert([
             'id' => 8,
-            'name' => "Destiny",
+            'name' => "Vaisseau de guerre Ori",
             'type' => 'Blueprint', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
-            'slug' => 'destiny',
+            'slug' => 'oriwarship',
             'description' => '',
             'iron' => 90000,
             'gold' => 90000,
@@ -360,9 +359,9 @@ class ShipPartSeeder extends Seeder
         /*
         DB::table('ship_parts')->insert([
             'id' => 9,
-            'name' => "Ori warship",
+            'name' => "Bilskirnir",
             'type' => 'Blueprint', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
-            'slug' => 'oriwarship',
+            'slug' => 'bilskirnir',
             'description' => '',
             'iron' => 10000000,
             'gold' => 10000000,
@@ -1190,7 +1189,7 @@ class ShipPartSeeder extends Seeder
         //Energie 16
         DB::table('ship_part_technologies')->insert([
             'ship_part_id' => 37,
-            'required_technology_id' => 13,
+            'required_technology_id' => 4,
             'level' => 16
         ]);
 
