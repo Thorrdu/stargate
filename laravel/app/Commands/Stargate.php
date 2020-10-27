@@ -684,7 +684,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             $tradeLog = $tradeLogCheck;
                                             $tradePlayer = '';
-                                            if($this->player->id == $tradeLog->player_id_dest)
+                                            if($this->player->id == $tradeLog->player_id_source)
                                                 $tradePlayer = 1;
                                             else
                                                 $tradePlayer = 2;

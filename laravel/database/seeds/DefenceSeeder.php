@@ -200,19 +200,19 @@ class DefenceSeeder extends Seeder
         ]);
         //Laser 13
         DB::table('defence_technologies')->insert([
-            'defence_id' => 5,
+            'defence_id' => 7,
             'required_technology_id' => 11,
             'level' => 13
         ]);
         //IA 8
         DB::table('defence_technologies')->insert([
-            'defence_id' => 5,
+            'defence_id' => 7,
             'required_technology_id' => 5,
             'level' => 8
         ]);
         //Energie 12
         DB::table('defence_technologies')->insert([
-            'defence_id' => 5,
+            'defence_id' => 7,
             'required_technology_id' => 4,
             'level' => 12
         ]);
