@@ -77,13 +77,14 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting upp!", PHP_EOL;
 
-    
-    echo 'UPDATING PRESENCE'.PHP_EOL;
+
+
+    /*echo 'UPDATING PRESENCE'.PHP_EOL;
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
         'name' => "Shard {$discord->commandClientOptions['discordOptions']['shardId']}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
         'type' => 3
     ]);
-    $discord->updatePresence($activity);
+    $discord->updatePresence($activity);*/
 
     try{
         $rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
