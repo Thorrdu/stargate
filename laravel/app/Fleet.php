@@ -1026,7 +1026,7 @@ class Fleet extends Model
             }
         }
 
-        $ruinFieldString = '';
+        $ruinFieldString = $ruinFieldStringFR = $ruinFieldStringEN = '';
         if($ruinfield['iron'] > 0)
         {
             foreach(config('stargate.resources') as $resource)
