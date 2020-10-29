@@ -56,15 +56,15 @@ if($beta)
     $prefix = '-';
 }
 
-$discorOpt = ['loadAllMembers' => true, 'pmChannels' => true];
+$discorOpt = ['loadAllMembers' => false, 'pmChannels' => true];
 
 if(isset($argv) && count($argv) > 2)
 {
-    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => $argv[1], 'shardCount' => $argv[2]];
+    $discorOpt = ['loadAllMembers' => false, 'pmChannels' => true, 'shardId' => $argv[1], 'shardCount' => $argv[2]];
 }
 else
 {
-    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => 0, 'shardCount' => 1];
+    $discorOpt = ['loadAllMembers' => false, 'pmChannels' => true, 'shardId' => 0, 'shardCount' => 1];
 }
 
 $discord = new DiscordCommandClient([

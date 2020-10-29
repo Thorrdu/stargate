@@ -65,9 +65,14 @@ return [
                     "!stargate bury\n"
     ],
     'shipyard' => [
-        'description' => "Allows you to build spaceships",
+        'description' => "Allows you to build spaceships or making new custom models".
+                         "\n\nTo learn more about custom spaceship models use `!shipyard create`",
         'usage' => "!shipyard [Slug] [Quantity]\n".
-                    "!shipyard queue\n"
+                    "!shipyard queue\n".
+                    "!shipyard parts\n".
+                    "!shipyard create [blueprint] [...Componants]\n".
+                    "!shipyard rename [oldSlug] [New name]\n".
+                    "!shipyard remove [Slug]\n"
     ],
     'fleet' => [
         'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",

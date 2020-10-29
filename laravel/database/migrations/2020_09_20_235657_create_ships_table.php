@@ -17,7 +17,7 @@ class CreateShipsTable extends Migration
             $table->increments('id');
             $table->string('name',150)->nullable();
             $table->string('slug', 150);
-            $table->integer('player_id')->unsigned();
+            $table->integer('player_id')->unsigned()->nullable();
             $table->foreign('player_id')->references('id')->on('players');
             $table->integer('required_shipyard')->lenght(5)->unsigned()->default(1);
             $table->integer('required_blueprint')->lenght(5)->unsigned()->default(1);

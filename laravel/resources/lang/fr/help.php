@@ -65,9 +65,14 @@ return [
                     "!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]"
     ],
     'shipyard' => [
-        'description' => "Permet de construire des vaisseaux spatiaux",
+        'description' => "Permet de construire des vaisseaux spatiaux ou d'établir de nouveaux plans personnalisés".
+                        "\n\nPour en savoir plus sur la création d'un modèle personnalisé, consultez `!shipyard create`",
         'usage' => "!shipyard [Slug] [Quantité]\n".
-                    "!shipyard queue\n"
+                    "!shipyard queue\n".
+                    "!shipyard parts\n".
+                    "!shipyard create [blueprint] [...Composants]\n".
+                    "!shipyard rename [oldSlug] [Nouveau nom]\n".
+                    "!shipyard remove [Slug]\n"
     ],
     'fleet' => [
         'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",

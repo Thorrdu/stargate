@@ -91,7 +91,7 @@ class CommandHandler
         {
             if($this->player->untagged_user_name != $discordUsername || $this->player->untagged_user_name == "not loaded")
             {
-                echo PHP_EOL.'News name: '.$this->message->author->user->username ;
+                echo PHP_EOL.'News name: '.$discordUsername ;
                 echo PHP_EOL.'DIFFERENT';
                 $this->player->user_name = $this->player->untagged_user_name = $discordUsername ;
 

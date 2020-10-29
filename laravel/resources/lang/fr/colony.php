@@ -4,7 +4,7 @@ return [
     'buildingUnderConstruction' => 'Bâtiment en construction',
     'technologyUnderResearch' => 'Technologie recherchée',
     "craftQueue" => "Craft Queue",
-    "defenceQueue" => "Defence Queue",
+    "defenceQueue" => "Defense Queue",
     "shipQueue" => "Ship Queue",
     "UnknownColony" => "Colonie inconnue",
     'cannotRemoveHomePlanet' => 'Vous ne pouvez abandonner votre colonie principale...',

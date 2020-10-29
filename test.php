@@ -18,6 +18,7 @@ use App\Technology;
 use App\Defence;
 use App\Artifact;
 use App\Fleet;
+use App\ShipPart;
 use App\Unit;
 use App\Utility\FuncUtility;
 use Faker\Factory as Faker;
@@ -29,7 +30,15 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
-$randomUnit = Unit::where('id','<', 6)->get()->random();
+$shiParts = ShipPart::all();
+foreach($shiParts as $shipPart)
+{
+	echo PHP_EOL."'".$shipPart->slug."' => [\n".
+        "'name' => \"".$shipPart->name."\"\n".
+        "],";
+}
+
+
 die();
 
 

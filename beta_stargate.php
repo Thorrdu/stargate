@@ -56,15 +56,15 @@ if($beta)
     $prefix = '-';
 }
 
-$discorOpt = ['loadAllMembers' => true, 'pmChannels' => true];
+$discorOpt = ['loadAllMembers' => false, 'pmChannels' => true];
 
 if(isset($argv) && count($argv) > 2)
 {
-    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => $argv[1], 'shardCount' => $argv[2]];
+    $discorOpt = ['loadAllMembers' => false, 'pmChannels' => true, 'shardId' => $argv[1], 'shardCount' => $argv[2]];
 }
 else
 {
-    $discorOpt = ['loadAllMembers' => true, 'pmChannels' => true, 'shardId' => 0, 'shardCount' => 1];
+    $discorOpt = ['loadAllMembers' => false, 'pmChannels' => true, 'shardId' => 0, 'shardCount' => 1];
 }
 
 $discord = new DiscordCommandClient([
@@ -77,22 +77,23 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting upp!", PHP_EOL;
 
-
-
-    /*echo 'UPDATING PRESENCE'.PHP_EOL;
+    /*$userExist = $discord->users->get('id','125641223544373248');
+    $userExist->sendMessage('test');*/
+    
+    echo 'UPDATING PRESENCE'.PHP_EOL;
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
         'name' => "Shard {$discord->commandClientOptions['discordOptions']['shardId']}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
-        'type' => 3
+        'type' => Activity::TYPE_LISTENING
     ]);
-    $discord->updatePresence($activity);*/
+    $discord->updatePresence($activity);
 
     try{
-        $rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
+        /*$rowExists = DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->count();
         if($rowExists == 0)
         {
             $usrCount = $discord->users->count();
-            if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
-                $usrCount += 135000;
+            //if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
+                //$usrCount += 135000;
 
             DB::table('configuration')->insert([
                 'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
@@ -107,7 +108,7 @@ $discord->on('ready', function ($discord) use($beta){
         {
             DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
             DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->users->count()]);
-        }
+        }*/
     }
     catch(\Exception $e)
     {
@@ -350,25 +351,25 @@ $discord->on('ready', function ($discord) use($beta){
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
         $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
 
-        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+        /*$activity = $discord->factory(\Discord\Parts\User\Activity::class, [
             'name' => "!help | {$totalServer} servers {$totalUsers} users",
             'type' => 3
         ]);
-        $discord->updatePresence($activity);
-
-        $usrCount = $discord->users->count();
-        if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
-            $usrCount += 135000;
-
-        DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
-        DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $usrCount]);
-        
-            /*
-        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
-            'name' => "!help | {$discord->guilds->count()} servers {$discord->users->count()} users",
-            'type' => 3
-        ]);
         $discord->updatePresence($activity);*/
+
+        //$usrCount = $discord->users->count();
+        /*if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
+            $usrCount += 135000;*/
+
+        //DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
+        //DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $usrCount]);
+        
+
+        $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+            'name' => "!help",// | {$totalServer} servers {$totalUsers} users
+            'type' => Activity::TYPE_LISTENING
+        ]);
+        $discord->updatePresence($activity);
     });
 
 
@@ -393,7 +394,10 @@ $discord->on('ready', function ($discord) use($beta){
                 $reminder->delete();
             else
             {
-                $userExist = $discord->users->get('id',$reminder->player->user_id);
+                $userExist = $discord->factory(\Discord\Parts\User\User::class, [
+                    'id' => $reminder->player->user_id,
+                ]);
+                //$userExist = $discord->users->get('id',$reminder->player->user_id);
                 if(!is_null($userExist))
                 {
                     if(!is_null($reminder->embed))

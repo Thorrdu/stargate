@@ -246,7 +246,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
 
-                            $incomingFleetString .= trans('fleet.incomingFleet', ['mission' => $activeFleet->mission,
+                            $incomingFleetString .= trans('fleet.incomingFleet', ['mission' => $incomingFleet->mission,
                                                                             'shipCount' => $incomingFleet->shipCount(),
                                                                             'colonySource' => $sourceColony->name,
                                                                             'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
@@ -459,7 +459,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         $ressFound = false;
                                         foreach($availableResources as $availableResource)
                                         {
-                                            if(Str::startsWith($availableResource,$resourceName))
+                                            if(Str::startsWith($availableResource,$resourceName) || Str::startsWith($availableResource,strtoupper($resourceName)))
                                             {
                                                 $ressFound = true;
                                                 $resourceName = $availableResource;
@@ -511,9 +511,8 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     //check Speed
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
-                    $this->travelCost *= $this->fleetSpeed/100;
+                    $this->travelCost = floor($this->travelCost * ($this->fleetSpeed/100));
 
-                    $this->travelCost = floor($this->travelCost);
                     $this->usedCapacity += $this->travelCost;
                     //check fret capacity
                     if($this->fleet->capacity < $this->usedCapacity)
@@ -786,7 +785,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     //check Speed
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
-                    $this->travelCost *= floor($this->fleetSpeed/100);
+                    $this->travelCost = floor($this->travelCost * ($this->fleetSpeed/100));
 
                     //check Carburant
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
@@ -1253,11 +1252,13 @@ class FleetCommand extends CommandHandler implements CommandInterface
         $planetDifference = abs($source->planet - $destination->planet);
 
         if($galaxyDifference > 0)
-            return 200 + 150 * $galaxyDifference + 10 * $systemDifference;
+            $baseCusumption = 2 + 150 * $galaxyDifference + 10 * $systemDifference;
         elseif($systemDifference > 1)
-            return 2 + 1.5 * $systemDifference;
+            $baseCusumption = 2 + 1.5 * $systemDifference;
         else
-            return 1 + 0.1 * $planetDifference;
+            $baseCusumption = 1 + 0.1 * $planetDifference;
+
+        return floor($baseCusumption/2);
     }
 
     public function canAttack($colonySource,$colonyDest)
