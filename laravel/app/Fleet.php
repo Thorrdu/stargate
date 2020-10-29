@@ -1165,7 +1165,7 @@ class Fleet extends Model
             $battleResultFR = trans('fleet.battleLost', [
                 'lostAttackUnit' => number_format($globalLostAttackForces),
                 'lostDefenceUnit' => number_format($globalLostDefenceForces)
-            ], 'fr').$ruinFieldStringEN;
+            ], 'fr').$ruinFieldStringFR;
 
             $battleResultEN = trans('fleet.battleLost', [
                 'lostAttackUnit' => number_format($globalLostAttackForces),
