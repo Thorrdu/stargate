@@ -22,7 +22,7 @@ return [
     ],
     'colony' => [
         'description' => 'Affiche les informations essentielles sur votre colonie (Ressources, Bâtiments, Production, ... ) et permet de changer de colonie.',
-        'usage' => "!colony\n!colony list\n!colony switch [numéro]\n!colony remove [numéro]"
+        'usage' => "!colony\n!colony list\n!colony switch [numéro]\n!colony remove [numéro]\n!colony rename [nouveau nom]"
     ],
     'craft' => [
         'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
@@ -119,7 +119,7 @@ return [
     ],
     'empire' => [
         'description' => "Vous permet d'afficher une vue d'ensemble de vos colonies, réclamer leur ressources / vérifier la fin de vos building/research/craft/defence en une commande",
-        'usage' => "!empire\n!emp"
+        'usage' => "!empire\n!empire fleet\n!empire artifacts"
     ],
     'start' => [
         'description' => "Créer votre profile Stargate afin de commencer votre aventure.",

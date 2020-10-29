@@ -13,7 +13,7 @@ return [
                         "**history** (`!fleet history`)\n".
                         "Optional parameter: speed [10-100]",
     "fleetMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
-                        "Destination: Colony :planet [:coordinateDestination]\n".
+                        "Destination: Colony :planetDest [:coordinateDestination]\n".
                         "Mission: **:mission**\n\n".
                         "**Fleet**\n".
                         ":fleet\n".

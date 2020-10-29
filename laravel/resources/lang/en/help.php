@@ -21,7 +21,7 @@ return [
     ],
     'colony' => [
         'description' => 'Display some esential information about your colony (Resources, Buildings, Production, ... ). Also allows to switch between your colonies.',
-        'usage' => "!colony\n!colony list\n!colony switch [number]\n!colony remove [number]"
+        'usage' => "!colony\n!colony list\n!colony switch [number]\n!colony remove [number]\n!colony rename [new name]"
     ],
     'craft' => [
         'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
@@ -119,7 +119,7 @@ return [
     ],
     'empire' => [
         'description' => "Allow you to see an overview of your colonies and to claim resources / check building/research/craft/defence ending with one command",
-        'usage' => "!empire\n!emp"
+        'usage' => "!empire\n!empire fleet\n!empire artifacts"
     ],
     'start' => [
         'description' => "The first commande to start your Stargate adventure. Use it to create your player profile",
