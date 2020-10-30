@@ -514,11 +514,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     $this->usedCapacity += $this->travelCost;
                     //check fret capacity
+
                     if($this->fleet->capacity < $this->usedCapacity)
                         return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
 
                     //check Carburant
-                    echo 'ici';
+                    echo PHP_EOL.$this->fleet->naqahdah;
+                    echo PHP_EOL.$this->travelCost;
+                    //die('CORRIGER');
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil(($this->fleet->naqahdah + $this->travelCost) - $this->player->activeColony->naqahdah))], $this->player->lang);
 
@@ -788,7 +791,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->travelCost = floor($this->travelCost * ($this->fleetSpeed/100));
 
                     //check Carburant
-                    echo 'la';
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil(($this->fleet->naqahdah + $this->travelCost) - $this->player->activeColony->naqahdah))], $this->player->lang);
 
