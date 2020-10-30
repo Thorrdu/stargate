@@ -115,7 +115,10 @@ return [
     ],
     'premium' => [
         'description' => "If you want to support the bot, you can buy a premium through this link: **TO BE DEFINED**"
-                        ."\nYou can also use or give a premium once you bought it.",
+                        ."\nYou can also use or give a premium once you bought it.\n\nPremium advantages:".
+                        "=> +25% basic resources production\n".
+                        "=> Possibility to rename your colonies\n".
+                        "=> Access to the `!empire` command",
         'usage' => "!premium\n!premium use\n!premium give @mention"
     ],
     'empire' => [

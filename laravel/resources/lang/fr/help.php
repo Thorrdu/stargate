@@ -115,7 +115,10 @@ return [
     ],
     'premium' => [
         'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **TO BE DEFINED**"
-                        ."\nUne fois acheté, vous pouvez également utiliser ou offrir un premium",
+                        ."\nUne fois acheté, vous pouvez également utiliser ou offrir un premium\n\nAvantage du premium:\n".
+                        "=> +25% de production des ressources basiques\n".
+                        "=> Possibilité de renommer vos colonies\n".
+                        "=> Accès à la commande `!empire`",
         'usage' => "!premium\n!premium use\n!premium give @mention"
     ],
     'empire' => [

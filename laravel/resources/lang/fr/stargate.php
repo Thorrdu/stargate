@@ -102,7 +102,7 @@ return [
     'digUpConfirm' => 'Souhaitez-vous déterrer votre Stargate ? Cette action prendra **48h**.',
     'burryConfirm' => "Souhaitez-vous enterrer votre Stargate ? Cette action prendra **24h**.\nAttention, dès que le processus aura commencé, vous ne pourrez plus l'utiliser mais des activations exétieures peuvent encore survenir durant l'inhumation.",
     'digingActive' => 'Des travaux d\'excavation sont actuellement en cours. Stargate opérationelle dans: **:time**',
-    'buryingActive' => 'Des travaux d\'inhumation sont actuellement en cours. Stargate inopérante dans: **:time**',
+    'buryingActive' => 'Des travaux d\'ensevelissement sont déjà en cours. Stargate inopérante dans: **:time**',
     'buriedStargate' => 'Stargate inopérante.',
     'playerTradeBan' => 'Ce joueur est banni du système de trade.',
     'trade_ban' => 'Vous êtes banni du système de trade. Vérifiez vos trades via `!trade`',
