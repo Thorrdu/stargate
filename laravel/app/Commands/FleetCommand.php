@@ -519,7 +519,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     //check Carburant
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->fleet->naqahdah - $this->player->activeColony->naqahdah))], $this->player->lang);
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->player->activeColony->naqahdah - ($this->fleet->naqahdah + $this->travelCost)))], $this->player->lang);
 
                     //Get arrivalDate
                     $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, $this->fleetMaxSpeed);
@@ -788,7 +788,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     //check Carburant
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
-                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->fleet->naqahdah - $this->player->activeColony->naqahdah))], $this->player->lang);
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->player->activeColony->naqahdah - ($this->fleet->naqahdah + $this->travelCost)))], $this->player->lang);
 
                     //Get arrivalDate
                     $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, $this->fleetMaxSpeed);
