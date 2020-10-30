@@ -1375,14 +1375,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if($this->player->lang == 'fr')
                 {
                     $this->fightPages = explode('__Passe n',$fightMessage);
-                    $lastSteps = explode('__Rapport de',$this->fightPages[count($this->fightPages)-1]);
+                    $lastSteps = explode('__Résultat de',$this->fightPages[count($this->fightPages)-1]);
                     $this->fightPages[count($this->fightPages)-1] = $lastSteps[0];
                     $this->fightPages[] = $lastSteps[1];
                     foreach($this->fightPages as $key => $value){
                         if($key > 0 && $key != count($this->fightPages)-1)
                             $this->fightPages[$key] = '__Passe n'.$value;
                         elseif($key = count($this->fightPages)-1)
-                            $this->fightPages[$key] = '__Rapport de'.$value;
+                            $this->fightPages[$key] = '__Résultat de'.$value;
                     }
                 }
                 elseif($this->player->lang == 'en')
