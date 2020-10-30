@@ -112,7 +112,6 @@ return [
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
-    'noResourceSeleted' => 'No resource selected',
     'scavengeMission' => "Arriving of your scavengers a the following coordinates **[:coordinateDestination]**\n"
                     ."Origin: **:planetSource [:coordinateSource]**\n\n"
                     ."__Scavenged resources__\n"

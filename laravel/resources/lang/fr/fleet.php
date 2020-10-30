@@ -112,7 +112,6 @@ return [
                             "Carburant: :fuel\n".
                             "Durée de vol: :duration\n".
                             "Statut de l'envoi: **En attente**",
-    'noResourceSeleted' => 'Aucune ressource sélectionnée',
     'scavengeMission' => "Arrivée de vos recycleurs aux coordonées suivantes **[:coordinateDestination]**\n"
                         ."Origine: **:planetSource [:coordinateSource]**\n\n"
                         ."__Ressources recyclées__\n"
