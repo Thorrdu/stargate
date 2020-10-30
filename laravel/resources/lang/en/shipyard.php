@@ -132,9 +132,9 @@ return [
     'modelCreation' => 'New spaceship model creation',
     'newModelCreated' => "Congratulation, you just created a new spaceship model, the `:modelName`!".
                         "\nTo rename it, use `!ship rename :modelSlug [The new name]`",
-    'missingComponement' => 'Missing componants. You must specify at least: A blueprint, a weapon, a hull and a reactor.',
+    'missingComponement' => 'Missing components. You must specify at least: A blueprint, a weapon, a hull and a reactor.',
     'missingFuelStorage' => 'Missing fuel storage. You must keep at least 100 storage space to store fuel for travels.',
-    'unknownShipPart' => 'Unknown componant: :part.',
+    'unknownShipPart' => 'Unknown component: :part.',
     'unknownBlueprint' => 'Unknown Blueprint: :part.',
     'modelsLimitReached' => 'Number of custom spaceship models reached ( 15 ).',
     'impossibleRemoval' => 'Impossible removal, you currently own copies of this spaceship.',
@@ -147,8 +147,8 @@ return [
                               "-A propulsion system\n\n".
                               "Command exemple to create a new custom model: \n".
                               "`!ship create jumper projectileturret 2 taurihull 1 combusionreactor 1`\n".
-                              "The list of all componants wich can be used to create a new model can be found via `!shipyard parts`\n",
-    'componantList' => 'Componants list',
+                              "The list of all components wich can be used to create a new model can be found via `!shipyard parts`\n",
+    'componentList' => 'Components list',
 
 ];
 

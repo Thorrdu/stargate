@@ -24,8 +24,8 @@ class Shipyard extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $shipList;
-    public $componantList;
-    public $componantSelectedType;
+    public $componentList;
+    public $componentSelectedType;
     public $shipQueue;
     public $closed;
     public $blueprintMaker;
@@ -346,8 +346,8 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                         //Proposition de plan
                         $now = Carbon::now();
-                        $componantEnd = $now->copy()->addSeconds($this->blueprintMaker['finalShip']->base_time);
-                        $shipTime = $now->diffForHumans($componantEnd,[
+                        $componentEnd = $now->copy()->addSeconds($this->blueprintMaker['finalShip']->base_time);
+                        $shipTime = $now->diffForHumans($componentEnd,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
@@ -444,14 +444,14 @@ class Shipyard extends CommandHandler implements CommandInterface
                 elseif(Str::startsWith('parts', $this->args[0]))
                 {
                     //Affiche les ship parts disponibles (tri par type, 1 page par catégorie)
-                    $this->componantList = ShipPart::where('type','Blueprint')->get();
-                    $this->componantSelectedType = 'Blueprint';
+                    $this->componentList = ShipPart::where('type','Blueprint')->get();
+                    $this->componentSelectedType = 'Blueprint';
 
                     $this->closed = false;
                     $this->page = 1;
-                    $this->maxPage = ceil($this->componantList->count()/5);
+                    $this->maxPage = ceil($this->componentList->count()/5);
                     $this->maxTime = time()+180;
-                    $this->message->channel->sendMessage('', false, $this->getComponantsPage())->then(function ($messageSent){
+                    $this->message->channel->sendMessage('', false, $this->getComponentsPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
 
                         $this->paginatorMessage->react('◀️')->then(function(){
@@ -487,13 +487,13 @@ class Shipyard extends CommandHandler implements CommandInterface
                                     elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                     {
                                         $this->page--;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponentsPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                                     {
                                         $this->page++;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponentsPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == 'ship'
@@ -505,29 +505,29 @@ class Shipyard extends CommandHandler implements CommandInterface
                                         switch($messageReaction->emoji->name)
                                         {
                                             case 'ship':
-                                                $this->componantList = ShipPart::where('type','Blueprint')->get();
-                                                $this->componantSelectedType = 'Blueprint';
+                                                $this->componentList = ShipPart::where('type','Blueprint')->get();
+                                                $this->componentSelectedType = 'Blueprint';
                                             break;
                                             case 'armament':
-                                                $this->componantList = ShipPart::where('type','Armament')->get();
-                                                $this->componantSelectedType = 'Armament';
+                                                $this->componentList = ShipPart::where('type','Armament')->get();
+                                                $this->componentSelectedType = 'Armament';
                                             break;
                                             case 'shield':
-                                                $this->componantList = ShipPart::where('type','Shield')->get();
-                                                $this->componantSelectedType = 'Shield';
+                                                $this->componentList = ShipPart::where('type','Shield')->get();
+                                                $this->componentSelectedType = 'Shield';
                                             break;
                                             case 'hull':
-                                                $this->componantList = ShipPart::where('type','Hull')->get();
-                                                $this->componantSelectedType = 'Hull';
+                                                $this->componentList = ShipPart::where('type','Hull')->get();
+                                                $this->componentSelectedType = 'Hull';
                                             break;
                                             case 'reactor':
-                                                $this->componantList = ShipPart::where('type','Reactor')->get();
-                                                $this->componantSelectedType = 'Reactor';
+                                                $this->componentList = ShipPart::where('type','Reactor')->get();
+                                                $this->componentSelectedType = 'Reactor';
                                             break;
                                         }
                                         $this->page = 1;
-                                        $this->maxPage = ceil($this->componantList->count()/5);
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponantsPage());
+                                        $this->maxPage = ceil($this->componentList->count()/5);
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getComponentsPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
@@ -697,16 +697,16 @@ class Shipyard extends CommandHandler implements CommandInterface
         return false;
     }
 
-    public function getComponantsPage()
+    public function getComponentsPage()
     {
-        $displayList = $this->componantList->skip(5*($this->page -1))->take(5);
+        $displayList = $this->componentList->skip(5*($this->page -1))->take(5);
 
         $embed = [
             'author' => [
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
-            "title" => trans('shipyard.componantList', [], $this->player->lang),
+            "title" => trans('shipyard.componentList', [], $this->player->lang),
             "description" => '',
             'fields' => [],
             'footer' => array(
@@ -714,37 +714,37 @@ class Shipyard extends CommandHandler implements CommandInterface
             ),
         ];
 
-        foreach($displayList as $componant)
+        foreach($displayList as $component)
         {
-            $componantPrice = "";
-            $componantPrices = $componant->getPrice();
+            $componentPrice = "";
+            $componentPrices = $component->getPrice();
             foreach (config('stargate.resources') as $resource)
             {
-                if($componant->$resource > 0)
+                if($component->$resource > 0)
                 {
-                    if(!empty($componantPrice))
-                        $componantPrice .= " ";
-                    $componantPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($componantPrices[$resource]));
+                    if(!empty($componentPrice))
+                        $componentPrice .= " ";
+                    $componentPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($componentPrices[$resource]));
                 }
             }
-            $componantBaseTime = $componant->base_time;
+            $componentBaseTime = $component->base_time;
 
             $now = Carbon::now();
-            $componantEnd = $now->copy()->addSeconds($componantBaseTime);
-            $componantTime = $now->diffForHumans($componantEnd,[
+            $componentEnd = $now->copy()->addSeconds($componentBaseTime);
+            $componentTime = $now->diffForHumans($componentEnd,[
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
             ]);
 
             $hasRequirements = true;
-            foreach($componant->requiredTechnologies as $requiredTechnology)
+            foreach($component->requiredTechnologies as $requiredTechnology)
             {
                 $currentLvlOwned = $this->player->hasTechnology($requiredTechnology);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredTechnology->pivot->level))
                     $hasRequirements = false;
             }
-            foreach($componant->requiredBuildings as $requiredBuilding)
+            foreach($component->requiredBuildings as $requiredBuilding)
             {
                 $currentLvlOwned = $this->player->activeColony->hasBuilding($requiredBuilding);
                 if(!($currentLvlOwned && $currentLvlOwned >= $requiredBuilding->pivot->level))
@@ -753,34 +753,34 @@ class Shipyard extends CommandHandler implements CommandInterface
             if($hasRequirements == true)
             {
                 $firePowerString = $shieldString = $hullString = $capacityString = $crewString = $speedString = $usedCapacityString = '';
-                if($componant->fire_power > 0)
-                    $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($componant->fire_power)], $this->player->lang)."\n";
-                if($componant->shield > 0)
-                    $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($componant->shield)], $this->player->lang)."\n";
-                if($componant->hull > 0)
-                    $hullString = trans('shipyard.hull', ['hull' => config('stargate.emotes.hull').' '.number_format($componant->hull)], $this->player->lang)."\n";
-                if($componant->capacity > 0)
-                    $capacityString = trans('shipyard.capacity', ['capacity' => config('stargate.emotes.freight').' '.number_format($componant->capacity)], $this->player->lang)."\n";
-                if($componant->crew > 0)
-                    $crewString = trans('shipyard.crew', ['crew' => config('stargate.emotes.military').' '.number_format($componant->crew)], $this->player->lang)."\n";
-                if($componant->speed > 0)
-                    $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.number_format($componant->speed,2)], $this->player->lang)."\n";
-                if($componant->used_capacity > 0)
-                    $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.freight').' '.$componant->used_capacity], $this->player->lang)."\n";
+                if($component->fire_power > 0)
+                    $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($component->fire_power)], $this->player->lang)."\n";
+                if($component->shield > 0)
+                    $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($component->shield)], $this->player->lang)."\n";
+                if($component->hull > 0)
+                    $hullString = trans('shipyard.hull', ['hull' => config('stargate.emotes.hull').' '.number_format($component->hull)], $this->player->lang)."\n";
+                if($component->capacity > 0)
+                    $capacityString = trans('shipyard.capacity', ['capacity' => config('stargate.emotes.freight').' '.number_format($component->capacity)], $this->player->lang)."\n";
+                if($component->crew > 0)
+                    $crewString = trans('shipyard.crew', ['crew' => config('stargate.emotes.military').' '.number_format($component->crew)], $this->player->lang)."\n";
+                if($component->speed > 0)
+                    $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.number_format($component->speed,2)], $this->player->lang)."\n";
+                if($component->used_capacity > 0)
+                    $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.freight').' '.$component->used_capacity], $this->player->lang)."\n";
 
                 $embed['fields'][] = array(
-                    'name' => trans('shipyard.'.$componant->slug.'.name', [], $this->player->lang),
-                    'value' => "\nSlug: `".$componant->slug."`\n - ".
+                    'name' => trans('shipyard.'.$component->slug.'.name', [], $this->player->lang),
+                    'value' => "\nSlug: `".$component->slug."`\n - ".
                                $firePowerString.$shieldString.$hullString.$capacityString.$speedString.$crewString.$usedCapacityString.
-                               "\n".trans('generic.duration', [], $this->player->lang).": ".$componantTime."\n".
-                               trans('generic.price', [], $this->player->lang).": ".$componantPrice."\n",
+                               "\n".trans('generic.duration', [], $this->player->lang).": ".$componentTime."\n".
+                               trans('generic.price', [], $this->player->lang).": ".$componentPrice."\n",
                     'inline' => true
                 );
             }
             else
             {
                 $requirementString = '';
-                foreach($componant->requiredTechnologies as $requiredTechnology)
+                foreach($component->requiredTechnologies as $requiredTechnology)
                 {
                     $techLevel = $this->player->hasTechnology($requiredTechnology);
                     if(!$techLevel)
@@ -788,7 +788,7 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                     $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
                 }
-                foreach($componant->requiredBuildings as $requiredBuilding)
+                foreach($component->requiredBuildings as $requiredBuilding)
                 {
                     $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                     if(!$buildLvl)
@@ -797,7 +797,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 }
 
                 $embed['fields'][] = array(
-                    'name' => $componant->id.' - '.trans('shipyard.'.$componant->slug.'.name', [], $this->player->lang),
+                    'name' => $component->id.' - '.trans('shipyard.'.$component->slug.'.name', [], $this->player->lang),
                     'value' => "\n".$requirementString,
                     'inline' => true
                 );

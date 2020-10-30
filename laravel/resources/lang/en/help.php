@@ -71,7 +71,7 @@ return [
         'usage' => "!shipyard [Slug] [Quantity]\n".
                     "!shipyard queue\n".
                     "!shipyard parts\n".
-                    "!shipyard create [blueprint] [...Componants]\n".
+                    "!shipyard create [blueprint] [...Components]\n".
                     "!shipyard rename [oldSlug] [New name]\n".
                     "!shipyard remove [Slug]\n"
     ],

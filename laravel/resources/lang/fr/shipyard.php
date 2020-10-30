@@ -148,5 +148,5 @@ return [
                               "Exemple de commande permettant de créer un nouveau modèle: \n".
                               "`!ship create jumper projectileturret 2 taurihull 1 combusionreactor 1`\n".
                               "Les composants pouvant servir à la fabrication d'un vaisseau peuvent être consultés via `!shipyard parts`\n",
-    'componantList' => 'Liste des composants',
+    'componentList' => 'Liste des composants',
 ];
