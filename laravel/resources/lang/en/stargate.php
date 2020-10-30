@@ -107,4 +107,6 @@ return [
     'playerTradeBan' => 'This played have been banned from the trading system.',
     'sameColony' => 'Destination coordonates are the same as origin...',
     'trade_ban' => 'You are banned from the trading system. If it\'s not already done, you can ask for an extention delay of 12h to regularize the trad. See `!trade [ID]`',
+    "probeSpySending" => "You started a spy mission on :planetDest [:coordinateDestination] !\nCost: :consumption\nYour probe will arrive in **:fleetDuration**\n\n",
+
 ];

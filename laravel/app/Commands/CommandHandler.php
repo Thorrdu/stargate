@@ -39,12 +39,15 @@ class CommandHandler
     public function __construct2(Message $message,array $args){
         $this->message = $message;
         $this->args = $args;
-        $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(isset($this->message->author->user))
+        if(isset($this->message->author->user)){
             $discordUsername = $this->message->author->user->username;
-        else
+            $this->player = Player::where('user_id', $this->message->author->user->id)->first();
+        }
+        else{
             $discordUsername = $this->message->author->username;
+            $this->player = Player::where('user_id', $message->author->id)->first();
+        }
 
         if(!is_null($this->player))
         {
@@ -80,12 +83,15 @@ class CommandHandler
     public function __construct3(Message $message, array $args, Discord $discord){
         $this->message = $message;
         $this->args = $args;
-        $this->player = Player::where('user_id', $message->author->id)->first();
 
-        if(isset($this->message->author->user))
+        if(isset($this->message->author->user)){
             $discordUsername = $this->message->author->user->username;
-        else
+            $this->player = Player::where('user_id', $this->message->author->user->id)->first();
+        }
+        else{
             $discordUsername = $this->message->author->username;
+            $this->player = Player::where('user_id', $message->author->id)->first();
+        }
 
         if(!is_null($this->player))
         {

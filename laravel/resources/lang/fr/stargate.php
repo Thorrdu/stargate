@@ -107,5 +107,5 @@ return [
     'playerTradeBan' => 'Ce joueur est banni du système de trade.',
     'trade_ban' => 'Vous êtes banni du système de trade. Vérifiez vos trades via `!trade`',
     'sameColony' => 'Les coordonées de destination sont les mêmes que celles de départ...',
-    "probeSpySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\nVotre sonde arrivera dans: **:fleetDuration**\n\n",
+    "probeSpySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\nVotre sonde arrivera dans **:fleetDuration**\n\n",
 ];
