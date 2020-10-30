@@ -30,6 +30,11 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+$player = Player::find(1);
+echo 'Bonus: '.$player->getShipSpeedBonus();
+
+die();
+
 $shiParts = ShipPart::all();
 foreach($shiParts as $shipPart)
 {

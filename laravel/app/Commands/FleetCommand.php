@@ -58,7 +58,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     return trans('profile.vacationMode',[],$this->player->lang);
 
                 $this->player->checkFleets();
-                $this->fleetSpeedBonus = 1+$this->player->getShipSpeedBonus();
+                $this->fleetSpeedBonus = $this->player->getShipSpeedBonus();
 
                 $comTechnology = Technology::find(9); // Shipyard
                 $currentComTechLvl = $this->player->hasTechnology($comTechnology);

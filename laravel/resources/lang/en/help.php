@@ -57,7 +57,7 @@ return [
     ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players",
-        'usage' => "**explore** (`!stargate explore [coordinates]\n".
+        'usage' => "!stargate explore [coordinates]\n".
                     "!stargate colonize [coordinates]\n".
                     "!stargate move [colonyNumber] [Res1] [Qty1]\n".
                     "!stargate move [coordinates] [Res1] [Qty1]\n".

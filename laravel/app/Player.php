@@ -357,7 +357,7 @@ class Player extends Model
         });
         foreach($technologies as $technology)
         {
-            $bonus *= pow(2-$technology->ship_speed_bonus, $technology->pivot->level);
+            $bonus *= pow($technology->ship_speed_bonus, $technology->pivot->level);
         }
 
         return $bonus;

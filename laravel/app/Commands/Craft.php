@@ -382,10 +382,6 @@ class Craft extends CommandHandler implements CommandInterface
                     $capacityString = trans('craft.capacity', ['capacity' => number_format($unit->capacity)], $this->player->lang)."\n";
 
                 $speedBonus = $this->player->getShipSpeedBonus();
-                if(!$speedBonus)
-                    $speedBonus = 1;
-                else
-                    $speedBonus = 1+$speedBonus;
 
                 $speedString = '';
                 if(!is_null($unit->speed) && $unit->speed > 0)

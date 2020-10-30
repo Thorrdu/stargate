@@ -898,10 +898,6 @@ class Shipyard extends CommandHandler implements CommandInterface
                         $hull *= pow(1.1,$hullLvl);
 
                     $speedBonus = $this->player->getShipSpeedBonus();
-                    if(!$speedBonus)
-                        $speedBonus = 1;
-                    else
-                        $speedBonus = 1+$speedBonus;
 
                     $firePowerString = trans('shipyard.firePower', ['firepower' => config('stargate.emotes.armament').' '.number_format($firePower)], $this->player->lang);
                     $shieldString = trans('shipyard.shield', ['shield' => config('stargate.emotes.shield').' '.number_format($shield)], $this->player->lang);
