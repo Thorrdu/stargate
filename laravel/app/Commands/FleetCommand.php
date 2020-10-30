@@ -448,7 +448,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     if($this->fleetMaxSpeed > $shipSpeed)
                                         $this->fleetMaxSpeed = round($shipSpeed,2);
 
-                                    $this->travelCost += $this->baseTravelCost * $shipSpeed * $qty * $playerShip->required_blueprint;
+                                    $this->travelCost += $this->baseTravelCost * $qty * $playerShip->required_blueprint;
                                     $this->fleetShips[] = array('id' => $playerShip->id,'qty' => $qty);
                                 }
                                 else
@@ -766,7 +766,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     if($this->fleetMaxSpeed > $unitSpeed)
                                         $this->fleetMaxSpeed = round($unitSpeed,2);
 
-                                    $this->travelCost += floor($this->baseTravelCost * $unitSpeed * $qty);
+                                    $this->travelCost += floor($this->baseTravelCost * $qty);
 
                                     $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
                                     $fleetString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
@@ -1257,7 +1257,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
         else
             $baseCusumption = 1 + 0.1 * $planetDifference;
 
-        return $baseCusumption/2;
+        return $baseCusumption;
     }
 
     public function canAttack($colonySource,$colonyDest)
