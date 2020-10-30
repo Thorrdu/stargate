@@ -677,7 +677,7 @@ class Fleet extends Model
         //ATTENTION, les vaisseaux de la défenses, eux, attaquent ce qui a le plus gros dps
         //trouver un moyen ?
 
-        $defenceForces = FuncUtility::array_orderby($defenceForces, 'type', SORT_ASC, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC);
+        $defenceForces = FuncUtility::array_orderby($defenceForces, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC); //'type', SORT_ASC,
 
         $winState = false;
 
