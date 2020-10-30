@@ -195,14 +195,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             $fleetStatus = trans('fleet.returningStatus', [], $this->player->lang);
                             $sourceColony = $activeFleet->destinationColony;
                             $destinationColony = $activeFleet->sourceColony;
-                            $destinationColony = $activeFleet->destinationColony;
                         }
                         else
                         {
                             $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
                             $sourceColony = $activeFleet->sourceColony;
                             $destinationColony = $activeFleet->destinationColony;
-
                         }
 
                         $arrivalDateCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$activeFleet->arrival_date);
