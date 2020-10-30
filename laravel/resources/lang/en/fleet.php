@@ -104,7 +104,7 @@ return [
     'ruinFieldGenerated' => 'Ruin field generated: :resources',
     'noScavengerSelected' => 'No scavenger selected',
     "scavengeConfirmation" => "__Travel from :planetSource [:coordinateSource]__\n".
-                        "Destination: Colony :planet [:coordinateDestination]\n".
+                        "Destination: Colony :planetDest [:coordinateDestination]\n".
                         "Mission: **:mission**\n\n".
                         "**Scavengers**\n".
                         ":fleet\n".
