@@ -51,17 +51,19 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                             else
                                 $recrutementStatusString = trans('generic.no', [], $this->player->lang);
 
-                            $totalAlliances = DB::table('alliances')->count();
+                            $totalAlliances = DB::table('a lliances')->count();
                             $generalPosition = DB::table('alliances')->where([['id', '!=', 1],['points_total', '>' , $alliance->points_total]])->count() + 1;
                             $buildingPosition = DB::table('alliances')->where([['id', '!=', 1],['points_building', '>' , $alliance->points_building]])->count() + 1;
                             $researchPosition = DB::table('alliances')->where([['id', '!=', 1],['points_research', '>' , $alliance->points_research]])->count() + 1;
+                            $craftPosition = DB::table('alliances')->where([['id', '!=', 1],['points_craft', '>' , $alliance->points_craft]])->count() + 1;
                             $militaryPosition = DB::table('alliances')->where([['id', '!=', 1],['points_military', '>' , $alliance->points_military]])->count() + 1;
                             $defencePosition = DB::table('alliances')->where([['id', '!=', 1],['points_defence', '>' , $alliance->points_defence]])->count() + 1;
 
                             $topPosition = trans('generic.general',[],$this->player->lang).": ".number_format($alliance->points_total)." Points (Position: ".number_format($generalPosition)."/{$totalAlliances})\n"
                             .config('stargate.emotes.productionBuilding')." ".trans('generic.building',[],$this->player->lang).": Points ".number_format($alliance->points_building)." (".number_format($buildingPosition)."/{$totalAlliances})\n"
                             .config('stargate.emotes.research')." ".trans('generic.research',[],$this->player->lang).": Points ".number_format($alliance->points_research)." (Position: ".number_format($researchPosition)."/{$totalAlliances})\n"
-                            .config('stargate.emotes.craft')." ".trans('generic.unit',[],$this->player->lang).": Points ".number_format($alliance->points_military)." (Position: ".number_format($militaryPosition)."/{$totalAlliances})\n"
+                            .config('stargate.emotes.craft')." ".trans('generic.unit',[],$this->player->lang).": Points ".number_format($alliance->points_craft)." (Position: ".number_format($craftPosition)."/{$totalAlliances})\n"
+                            .config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).": Points ".number_format($alliance->points_military)." (Position: ".number_format($militaryPosition)."/{$totalAlliances})\n"
                             .config('stargate.emotes.defence')." ".trans('generic.defence',[],$this->player->lang).": Points ".number_format($alliance->points_defence)." (Position: ".number_format($defencePosition)."/{$totalAlliances})\n";
 
                             //Display Current Alliance
