@@ -367,8 +367,8 @@ class Fleet extends Model
                     //units -> colony
                     foreach($this->units as $unit)
                     {
-                        $unitExists = $this->destinationColony->units->filter(function ($value) use($unit,$tradePlayer){
-                            return $value->id == $unit->id && $value->player == $tradePlayer;
+                        $unitExists = $this->destinationColony->units->filter(function ($value) use($unit){
+                            return $value->id == $unit->id;
                         });
                         if($unitExists->count() > 0)
                         {
@@ -380,13 +380,24 @@ class Fleet extends Model
                         {
                             $this->destinationColony->units()->attach([$unit->id => ['number' => $unit->pivot->number]]);
                         }
+
                         if($this->player_source_id != $this->player_destination_id)
                         {
-                            $tradeResource = new TradeResource;
-                            $tradeResource->player = $tradePlayer;
-                            $tradeResource->trade_id = $tradeLog->id;
-                            $tradeResource->quantity = $unit->pivot->number;
-                            $tradeResource->unit_id = $unit->id;
+                            $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($unit,$tradePlayer){
+                                return $value->unit_id == $unit->id && $value->player == $tradePlayer;
+                            });
+                            if($tradeResourceExist->count() > 0)
+                            {
+                                $tradeResource = $tradeResourceExist->first();
+                                $tradeResource->quantity += $unit->pivot->number;
+                            }
+                            else{
+                                $tradeResource = new TradeResource;
+                                $tradeResource->player = $tradePlayer;
+                                $tradeResource->trade_id = $tradeLog->id;
+                                $tradeResource->quantity = $unit->pivot->number;
+                                $tradeResource->unit_id = $unit->id;
+                            }
                             $tradeResource->setValue();
                             $tradeResource->save();
                         }
