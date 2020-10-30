@@ -42,7 +42,8 @@ return [
     ],
     'alliance' => [
         'description' => "Allows you to create or manage your alliance.",
-        'usage' => "!alliance create [Tag] [Name]\n".
+        'usage' => "!alliance list\n".
+                    "!alliance create [Tag] [Name]\n".
                     "!alliance set internal_description [Description]\n".
                     "!alliance set external_description [Description]\n".
                     "!alliance set leader [@mention]\n".
