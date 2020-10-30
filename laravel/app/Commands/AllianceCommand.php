@@ -51,7 +51,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                             else
                                 $recrutementStatusString = trans('generic.no', [], $this->player->lang);
 
-                            $totalAlliances = DB::table('a lliances')->count();
+                            $totalAlliances = DB::table('alliances')->count();
                             $generalPosition = DB::table('alliances')->where([['id', '!=', 1],['points_total', '>' , $alliance->points_total]])->count() + 1;
                             $buildingPosition = DB::table('alliances')->where([['id', '!=', 1],['points_building', '>' , $alliance->points_building]])->count() + 1;
                             $researchPosition = DB::table('alliances')->where([['id', '!=', 1],['points_research', '>' , $alliance->points_research]])->count() + 1;
