@@ -246,13 +246,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
 
-                            $incomingFleetString .= trans('fleet.incomingFleet', ['mission' => $incomingFleet->mission,
+                            $incomingFleetString .= $arrivalDate.' - '.trans('fleet.incomingFleet', [
+                                                                            'mission' => $incomingFleet->mission,
                                                                             'shipCount' => $incomingFleet->shipCount(),
                                                                             'colonySource' => $sourceColony->name,
                                                                             'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
                                                                             'colonyDest' => $destinationColony->name,
                                                                             'coordinatesDest' => $destinationColony->coordinates->humanCoordinates(),
-                                                                            ], $this->player->lang);
+                                                                            ], $this->player->lang)."\n";
                         }
                     } //dest
                     if(empty($incomingFleetString))
@@ -482,7 +483,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
                                                 $this->transportString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
                                                 if($unit->capacity > 0)
-                                                    $this->usedCapacity += $unit->capacity;
+                                                    $this->usedCapacity += $unit->capacity * $qty;
                                             }
                                         }
                                     }
