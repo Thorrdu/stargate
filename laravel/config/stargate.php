@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '0.8.2.5 (Early Access)',
+    'version' => '0.8.3 (Early Access)',
     'ownerId' => '125641223544373248',
     'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
