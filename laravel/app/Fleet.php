@@ -538,10 +538,6 @@ class Fleet extends Model
 
     public function resolveFight()
     {
-        //AutoWin
-        if($this->destinationColony->defences->count() == 0 && $this->destinationColony->ships->count() == 0)
-            return 'win';
-
         $attackerFireCoef = $defenderFireCoef = 1;
         $attackerShieldCoef = $defenderShieldCoef = 1;
         $attackerHullCoef = $defenderHullCoef = 1;

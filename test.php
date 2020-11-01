@@ -30,6 +30,12 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+$defenceForces = array();
+$defenceForces = FuncUtility::array_orderby($defenceForces, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC); //'type', SORT_ASC,
+print_r($defenceForces);
+die();
+
+
 $player = Player::find(1);
 echo 'Bonus: '.$player->getShipSpeedBonus();
 
