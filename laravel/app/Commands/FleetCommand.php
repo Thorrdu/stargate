@@ -368,7 +368,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if(Str::startsWith('base',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     return trans('stargate.notAColonyOfYour', [], $this->player->lang);
 
-                if($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != 125641223544373248)
+                if(!Str::startsWith('scavenge',$this->args[0]) && $this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != 125641223544373248)
                     return trans('stargate.sameColony', [], $this->player->lang);
 
                 //Base Fuel Consumption
