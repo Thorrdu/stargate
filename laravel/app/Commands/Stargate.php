@@ -1509,7 +1509,7 @@ class Stargate extends CommandHandler implements CommandInterface
         {
             $now = Carbon::now();
             $convertedDate = Carbon::createFromFormat("Y-m-d H:i:s",$lastFight->created_at);
-            $timeUntilAttack = $now->diffForHumans($lastFight->addHours(72),[
+            $timeUntilAttack = $now->diffForHumans($convertedDate->addHours(72),[
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
