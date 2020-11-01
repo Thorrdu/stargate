@@ -60,7 +60,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 $this->player->checkFleets();
                 $this->fleetSpeedBonus = $this->player->getShipSpeedBonus();
 
-                $comTechnology = Technology::find(9); // Shipyard
+                $comTechnology = Technology::find(1); // Info et com
                 $currentComTechLvl = $this->player->hasTechnology($comTechnology);
                 if(!$currentComTechLvl)
                 {
