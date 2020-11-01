@@ -647,7 +647,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         }
 
                                         //CHECK RESOURCES
-                                        foreach(config('stargate.resources') as $resource)
+                                        foreach($availableResources as $resource)
                                         {
                                             $qtyNeeded = $this->fleet->$resource;
                                             if($resource == 'naqahdah')
@@ -693,7 +693,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 $unitCheck->pivot->save();
                                             //$this->activeColony->ships()->updateExistingPivot($fleetShip['id'], array('number' => 1), false);
                                         }
-                                        echo '<br/>dddddd';
 
                                         $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
                                         $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
@@ -702,7 +701,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     {
                                         echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                                     }
-                                    echo '<br/>fffffff';
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
