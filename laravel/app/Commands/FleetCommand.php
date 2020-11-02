@@ -687,7 +687,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $unitCheck = $this->player->activeColony->hasUnitById($fleetUnit['id']);
                                             $unitCheck->pivot->number -= $fleetUnit['qty'];
 
-                                            if($shipCheck->pivot->number <= 0)
+                                            if($unitCheck->pivot->number <= 0)
                                                 $this->player->activeColony->units()->detach($unitCheck->id);
                                             else
                                                 $unitCheck->pivot->save();
