@@ -110,7 +110,8 @@ return [
     ],
     'profile' => [
         'description' => "Display information about your profile such as lang, vote number, ..."
-                        ."\nAlso allows to manage your notification at the end of building/research",
+                        ."\nAlso allows to manage your notification at the end of building/research or when your vote is available.".
+                        "\nThis command also allow to activate or disable the vacation mode.",
         'usage' => "!profile\n!profile notification [on/off]\n!profile vacation"
     ],
     'premium' => [

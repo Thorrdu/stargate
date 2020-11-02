@@ -346,6 +346,15 @@ $discord->on('ready', function ($discord) use($beta){
             $reminder->reminder = trans('vote.thankyou', [], $playerVoted->lang);
             $reminder->player_id = $playerVoted->id;
             $reminder->save();
+
+            if($playerVoted->notification)
+            {
+                $reminder = new Reminder;
+                $reminder->reminder_date = Carbon::now()->add('12h');
+                $reminder->reminder = trans('vote.reminder', [], $playerVoted->lang);
+                $reminder->player_id = $playerVoted->id;
+                $reminder->save();
+            }
         }
 
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));

@@ -8,4 +8,5 @@ return [
     'thankyou' => "You just voted for Stargate, thank you! (You can use your reward via `!vote use`)",
     'voteBoxOpening' => "Vote box opening...\n:artifact",
     'tooManyArtifacts' => "Already too many artifacts on this colony.",
+    'reminder' => 'Your vote is available.'
 ];

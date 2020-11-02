@@ -759,9 +759,7 @@ class Fleet extends Model
                 if($defenceDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
                 {
                     /**
-                     *
                      * Est-ce que plusieurs vaisseaux détruits ?
-                     *
                      */
                     $defenceDamageLeft -= ($forceUnit['shield_left'] + $forceUnit['hull_left']);
                     $attackShieldAbsorbed += $forceUnit['shield_left'];
@@ -848,7 +846,7 @@ class Fleet extends Model
                     $defenceDamageLeft = 0;
                 }
                 array_values(array_filter($attackForces));
-                if($defenceDamageLeft == 0)
+                if($defenceDamageLeft <= 0)
                     break;
             }
 
@@ -867,9 +865,7 @@ class Fleet extends Model
                 if($fleetDamageLeft >= ($forceUnit['shield_left'] + $forceUnit['hull_left']))
                 {
                     /**
-                     *
                      * Est-ce que plusieurs vaisseaux détruits ?
-                     *
                      */
                     $fleetDamageLeft -= ($forceUnit['shield_left'] + $forceUnit['hull_left']);
                     $defenceShieldAbsorbed += $forceUnit['shield_left'];
@@ -967,13 +963,13 @@ class Fleet extends Model
                     }
                     else
                     {
-                        $defenceShieldAbsorbed += $fleetDamageLeft;;
+                        $defenceShieldAbsorbed += $fleetDamageLeft;
                         $defenceForces[$key]['shield_left'] -= $fleetDamageLeft;
                     }
                     $fleetDamageLeft = 0;
                 }
                 array_values(array_filter($defenceForces));
-                if($fleetDamageLeft == 0)
+                if($fleetDamageLeft <= 0)
                     break;
             }
 

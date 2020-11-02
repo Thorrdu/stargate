@@ -110,7 +110,8 @@ return [
     ],
     'profile' => [
         'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
-                        ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche",
+                        ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
+                        "\nCette commande permet également d'activer ou désactiver le mode vacance.",
         'usage' => "!profile\n!profile notification [on/off]\n!profile vacation"
     ],
     'premium' => [
