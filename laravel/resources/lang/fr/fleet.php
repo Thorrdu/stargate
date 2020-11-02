@@ -88,7 +88,7 @@ return [
                     "Le défenseur fait un dégât total de :defenderDamageDone (dont :attackerAbsorbedDamage absorbé(s) par les boucliers).\n\n".
                     "__Pertes de l'attaquant__\n:lostAttackerUnits\n".
                     "__Pertes du défenseur__\n:lostDefenderUnits\n",
-    'battleWin' => "\n__Rapport de bataille__\n\n".
+    'battleWin' => "\n__Résultat du combat__\n\n".
                     "L'attaquant a perdu :lostAttackUnit unité(s)\n".
                     "Le défenseur a perdu :lostDefenceUnit unité(s)\n\n".
                     "__Ressources pillées__\n".
