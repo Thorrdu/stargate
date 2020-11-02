@@ -466,7 +466,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 $this->usedCapacity += $qty;
 
                                                 if($resourceName != 'E2PZ' && $resourceName != 'military' && $this->coordinateDestination->colony->{'storage_'.$resourceName} < ($this->fleet->$resourceName))
-                                                    return trans('stargate.transportStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName)], $this->player->lang);
+                                                    return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName)], $this->player->lang);
 
                                                 $this->transportString .= config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName).': '.number_format($qty)."\n";
                                             }
