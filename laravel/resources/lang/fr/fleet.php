@@ -67,7 +67,7 @@ return [
     'noActiveFleet' => 'Aucune flotte active',
     'noIncomingFleet' => 'Aucune flotte en approche',
     'returningStatus' => 'Retour',
-    'ongoingStatus' => 'Allé',
+    'ongoingStatus' => 'Aller',
     'activeFleet' => '[**:mission/:status**] [ID:**:id**] Votre flotte de **:shipCount vaisseaux** en provenance de **:colonySource [:coordinatesSource]** se dirige vers **:colonyDest [:coordinatesDest]**',
     'incomingFleet' => '[**:mission**] Une flotte étrangère de **:shipCount vaisseaux** en provenance de **:colonySource [:coordinatesSource]** se dirige vers **:colonyDest [:coordinatesDest]**',
     'noResourceSeleted' => 'Aucune ressource sélectionnée...',
