@@ -563,7 +563,7 @@ class Fleet extends Model
                     break;
                 }
             }
-            $defenderTechLevel = $this->sourcePlayer->hasTechnology($fleetTech);
+            $defenderTechLevel = $this->destinationPlayer->hasTechnology($fleetTech);
             if($defenderTechLevel)
             {
                 switch($fleetTech->slug)
@@ -581,6 +581,22 @@ class Fleet extends Model
                     break;
                 }
             }
+        }
+
+        $attackForces = array();
+        foreach($this->ships as $ship)
+        {
+            $attackForces[] = array(
+                'type' => 'ship',
+                'item' => $ship,
+                'quantity' => $ship->pivot->number,
+                'fire_power' => $ship->fire_power * $attackerFireCoef,
+                'total_fire_power' => $ship->fire_power * $attackerFireCoef * $ship->pivot->number,
+                'shield' => $ship->shield * $attackerShieldCoef,
+                'hull' => $ship->hull * $attackerHullCoef,
+                'shield_left' => $ship->shield * $attackerShieldCoef,
+                'hull_left' => $ship->hull * $attackerHullCoef
+            );
         }
 
         $defenceForces = array();
@@ -614,21 +630,7 @@ class Fleet extends Model
             );
         }
 
-        $attackForces = array();
-        foreach($this->ships as $ship)
-        {
-            $attackForces[] = array(
-                'type' => 'ship',
-                'item' => $ship,
-                'quantity' => $ship->pivot->number,
-                'fire_power' => $ship->fire_power * $attackerFireCoef,
-                'total_fire_power' => $ship->fire_power * $attackerFireCoef * $ship->pivot->number,
-                'shield' => $ship->shield * $attackerShieldCoef,
-                'hull' => $ship->hull * $attackerHullCoef,
-                'shield_left' => $ship->shield * $attackerShieldCoef,
-                'hull_left' => $ship->hull * $attackerHullCoef
-            );
-        }
+
 
 
         //Le combat
