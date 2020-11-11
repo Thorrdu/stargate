@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Ship;
@@ -647,14 +647,7 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                         $hasEnough = true;
 
-                        $coef = 1;
-                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Ship';
-                        });
-                        foreach($buildingPriceBonusList as $buildingPriceBonus)
-                        {
-                            $coef *= $buildingPriceBonus->bonus_coef;
-                        }
+                        $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Ship']);
 
                         $shipPrices = $ship->getPrice($qty, $coef);
 
@@ -838,14 +831,7 @@ class Shipyard extends CommandHandler implements CommandInterface
             {
                 $shipPrice = "";
 
-                $coef = 1;
-                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Ship';
-                });
-                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                {
-                    $coef *= $buildingPriceBonus->bonus_coef;
-                }
+                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Ship']);
 
                 $shipPrices = $ship->getPrice(1, $coef);
                 foreach (config('stargate.resources') as $resource)

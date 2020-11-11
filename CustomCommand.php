@@ -11,7 +11,7 @@
 
 namespace Discord;
 
-use Discord\CustomCommandClient;
+use Discord\myDiscordCommandClient;
 use Discord\Parts\Channel\Message;
 
 /**
@@ -25,6 +25,13 @@ class CustomCommand
      * @var string Command trigger.
      */
     protected $command;
+
+    /**
+     * The Group of the command.
+     *
+     * @var string Group.
+     */
+    public $group;
 
     /**
      * The short description of the command.
@@ -85,9 +92,10 @@ class CustomCommand
     /**
      * Creates a command instance.
      *
-     * @param CustomCommandClient $client          The Discord Command Client.
+     * @param myDiscordCommandClient $client          The Discord Command Client.
      * @param string               $command         The command trigger.
      * @param \Callable            $callable        The callable function.
+     * @param string               $group           The command group.
      * @param string               $description     The short description of the command.
      * @param string               $longDescription The long description of the command.
      * @param string               $usage           The usage of the command.
@@ -95,9 +103,10 @@ class CustomCommand
      * @param int                  $cooldownMessage The cooldown message to show when a cooldown is in effect.
      */
     public function __construct(
-        CustomCommandClient $client,
+        myDiscordCommandClient $client,
         $command,
         callable $callable,
+        $group,
         $description,
         $longDescription,
         $usage,
@@ -107,6 +116,7 @@ class CustomCommand
         $this->client = $client;
         $this->command = $command;
         $this->callable = $callable;
+        $this->group = $group;
         $this->description = $description;
         $this->longDescription = $longDescription;
         $this->usage = $usage;
@@ -231,6 +241,7 @@ class CustomCommand
 
         return [
             'command' => $prefix.$this->command,
+            'group' => $this->group,
             'description' => $this->description,
             'longDescription' => $this->longDescription,
             'usage' => $this->usage,
@@ -247,7 +258,7 @@ class CustomCommand
      */
     public function __get($variable)
     {
-        $allowed = ['command', 'description', 'longDescription', 'usage', 'cooldown', 'cooldownMessage'];
+        $allowed = ['command', 'group', 'description', 'longDescription', 'usage', 'cooldown', 'cooldownMessage'];
 
         if (array_search($variable, $allowed) !== false) {
             return $this->{$variable};

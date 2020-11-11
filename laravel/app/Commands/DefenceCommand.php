@@ -217,14 +217,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
 
                         $hasEnough = true;
 
-                        $coef = 1;
-                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Defence';
-                        });
-                        foreach($buildingPriceBonusList as $buildingPriceBonus)
-                        {
-                            $coef *= $buildingPriceBonus->bonus_coef;
-                        }
+                        $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Defence']);
 
                         $defencePrices = $defence->getPrice($qty, $coef);
 
@@ -338,14 +331,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
             {
                 $defencePrice = "";
 
-                $coef = 1;
-                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Defence';
-                });
-                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                {
-                    $coef *= $buildingPriceBonus->bonus_coef;
-                }
+                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Defence']);
 
                 $defencePrices = $defence->getPrice(1, $coef);
                 foreach (config('stargate.resources') as $resource)

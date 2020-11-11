@@ -59,7 +59,7 @@ return [
         ],
     'subluminal' => [
         'name' => "Sublumic speed",
-        'description' => "Ability to propel a ship at a higher speed than a standard combusion",
+        'description' => "Ability to propel a ship at a higher speed than a standard combustion",
         ],
     'antimatter' => [
         'name' => "Antimatter",
@@ -69,6 +69,8 @@ return [
         'name' => "Hyperspace",
         'description' => "Ability to travel at the speed of light and more",
         ],
+    'noActiveTechnology' => 'No technology under research...',
+    'technologyCanceled' => 'Research **canceled**, the majority of resources have been recovered. 25% of the invested resources have been lost.',
     'hiddenTechnology' => '-- Hidden technology --',
     'unDiscovered' => 'undiscovered',
     'unknownTechnology' => 'Unknown technology...',

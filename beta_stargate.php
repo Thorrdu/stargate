@@ -4,9 +4,9 @@ include __DIR__.'/vendor/autoload.php';
 
 //Laravel
 require __DIR__.'/laravel/vendor/autoload.php';
-/*
+
 require __DIR__.'/CustomCommandClient.php';
-require __DIR__.'/Command.php';*/
+require __DIR__.'/CustomCommand.php';
 
 $app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
@@ -22,14 +22,14 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
-use Discord\DiscordCommandClient;
-//use Discord\CustomCommandClient;
+//use Discord\myDiscordCommandClient;
+use Discord\myDiscordCommandClient as DiscordCommandClient;
 
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
@@ -347,11 +347,14 @@ $discord->on('ready', function ($discord) use($beta){
             $reminder->player_id = $playerVoted->id;
             $reminder->save();
 
-            $reminder = new Reminder;
-            $reminder->reminder_date = Carbon::now()->add('12h');
-            $reminder->reminder = trans('vote.reminder', [], $playerVoted->lang);
-            $reminder->player_id = $playerVoted->id;
-            $reminder->save();
+            if($playerVoted->notification)
+            {
+                $reminder = new Reminder;
+                $reminder->reminder_date = Carbon::now()->add('12h');
+                $reminder->reminder = trans('vote.reminder', [], $playerVoted->lang);
+                $reminder->player_id = $playerVoted->id;
+                $reminder->save();
+            }
         }
 
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
@@ -418,63 +421,13 @@ $discord->on('ready', function ($discord) use($beta){
                 }
             }
         }
-        /*
-        $playerIdRemind = 0;
-        $rmdCounter = 0;
-        $rmdMessagesStr = "";
-        foreach($reminders as $reminder)
-        {  
-            $rmdCounter++;
-            
-            if($playerIdRemind == 0)
-                $playerIdRemind = $reminder->player->user_id;
-            
-            if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->user_id)
-            {
-                if($totalReminders == $rmdCounter)
-                {
-                    if($playerIdRemind == $reminder->player->user_id)
-                    {
-                        $rmdMessagesStr .= $reminder->reminder;
-
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-                    }
-                    else
-                    {
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-
-                        $playerIdRemind = $reminder->player->user_id;
-                        $rmdMessagesStr = $reminder->reminder;
-
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-                    }
-                }
-                else
-                {
-                    $userExist = $discord->users->get('id',$playerIdRemind);
-                    if(!is_null($userExist))
-                        $userExist->sendMessage($rmdMessagesStr);
-
-                    $rmdMessagesStr = "";
-                    $playerIdRemind = $reminder->player->user_id;
-                }
-            }
-            $rmdMessagesStr .= $reminder->reminder."\n";
-
-            $reminder->delete();
-        }*/
     });
    
     $discord->registerCommand('help', function ($message, $args) use($discord){
         $command = new CustomHelp($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.start.description', [], 'fr'),
         'usage' => trans('help.start.usage', [], 'fr'),
         'aliases' => array('h','he'),
@@ -662,6 +615,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Invite($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.invite.description', [], 'fr'),
 		'usage' => trans('help.invite.usage', [], 'fr'),
 		//'aliases' => array('r'),
@@ -713,6 +667,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new LangCommand($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.lang.description', [], 'fr'),
 		'usage' => trans('help.lang.usage', [], 'fr'),
         //'aliases' => array('b')
@@ -724,6 +679,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new ReminderCommand($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
         'aliases' => array('rmd','rem','remind'),
@@ -734,6 +690,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Ban($message, $args, $discord);
         return $command->execute();
     },[
+        'group' => 'admin',
         'description' => trans('help.ban.description', [], 'fr'),
 		'usage' => trans('help.ban.usage', [], 'fr'),
         //'aliases' => array('b')
@@ -744,6 +701,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Infos($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.infos.description', [], 'fr'),
 		'usage' => trans('help.infos.usage', [], 'fr'),
         'aliases' => array('info'),
@@ -768,6 +726,7 @@ $discord->on('ready', function ($discord) use($beta){
             return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }   
     },[
+        'group' => 'utility',
         'description' => trans('help.uptime.description', [], 'fr'),
 		'usage' => trans('help.uptime.usage', [], 'fr'),
         'aliases' => array('up'),
@@ -778,6 +737,7 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Captcha($message,$args,$discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.captcha.description', [], 'fr'),
 		'usage' => trans('help.captcha.usage', [], 'fr'),
         'cooldown' => 5
@@ -787,8 +747,29 @@ $discord->on('ready', function ($discord) use($beta){
         $command = new Ping($message,$args, $discord);
         return $command->execute();
     },[
+        'group' => 'utility',
         'description' => trans('help.ping.description', [], 'fr'),
 		'usage' => trans('help.ping.usage', [], 'fr'),
+        'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('prefix', function ($message, $args) use($discord){
+        $command = new Prefix($message,$args, $discord);
+        return $command->execute();
+    },[
+        'group' => 'utility',
+        'description' => trans('help.prefix.description', [], 'fr'),
+		'usage' => trans('help.prefix.usage', [], 'fr'),
+        'cooldown' => 5
+    ]);	
+
+    $discord->registerCommand('channel', function ($message, $args) use($discord){
+        $command = new ChannelCommand($message,$args, $discord);
+        return $command->execute();
+    },[
+        'group' => 'utility',
+        'description' => trans('help.channel.description', [], 'fr'),
+		'usage' => trans('help.channel.usage', [], 'fr'),
         'cooldown' => 5
     ]);	
 

@@ -248,13 +248,7 @@ class Colony extends Model
                 $bonus *= pow($technology->technology_bonus, $technology->pivot->level);
         }
 
-        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Time' && $value->bonus_type == 'Research';
-        });
-        foreach($buildingTimeBonusList as $buildingTimeBonus)
-        {
-            $bonus *= $buildingTimeBonus->bonus_coef;
-        }
+        $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Research']);
 
         return $bonus;
     }
@@ -278,13 +272,7 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->building_bonus, $technology->pivot->level);
 
-        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Time' && $value->bonus_type == 'Building';
-        });
-        foreach($buildingTimeBonusList as $buildingTimeBonus)
-        {
-            $bonus *= $buildingTimeBonus->bonus_coef;
-        }
+        $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Building']);
 
         return $bonus;
     }
@@ -305,13 +293,7 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->crafting_bonus, $technology->pivot->level);
 
-        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Time' && $value->bonus_type == 'Craft';
-        });
-        foreach($buildingTimeBonusList as $buildingTimeBonus)
-        {
-            $bonus *= $buildingTimeBonus->bonus_coef;
-        }
+        $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Craft']);
 
         return $bonus;
     }
@@ -332,13 +314,7 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->defence_bonus, $technology->pivot->level);
 
-        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Time' && $value->bonus_type == 'Defence';
-        });
-        foreach($buildingTimeBonusList as $buildingTimeBonus)
-        {
-            $bonus *= $buildingTimeBonus->bonus_coef;
-        }
+        $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Defence']);
 
         return $bonus;
     }
@@ -359,13 +335,7 @@ class Colony extends Model
         foreach($technologies as $technology)
             $bonus *= pow($technology->ship_bonus, $technology->pivot->level);
 
-        $buildingTimeBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Time' && $value->bonus_type == 'Ship';
-        });
-        foreach($buildingTimeBonusList as $buildingTimeBonus)
-        {
-            $bonus *= $buildingTimeBonus->bonus_coef;
-        }
+        $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Ship']);
 
         return $bonus;
     }
@@ -380,15 +350,7 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getCraftingBonus();
 
-        $coef = 1;
-        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
-        });
-        foreach($buildingPriceBonusList as $buildingPriceBonus)
-        {
-            $coef *= $buildingPriceBonus->bonus_coef;
-        }
-
+        $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Craft']);
         $buildingPrices = $unit->getPrice($qty, $coef);
         foreach (config('stargate.resources') as $resource)
         {
@@ -425,15 +387,7 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getDefencebuildBonus();
 
-        $coef = 1;
-        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Price' && $value->bonus_type == 'Defence';
-        });
-        foreach($buildingPriceBonusList as $buildingPriceBonus)
-        {
-            $coef *= $buildingPriceBonus->bonus_coef;
-        }
-
+        $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Defence']);
         $buildingPrices = $defence->getPrice($qty, $coef);
         foreach (config('stargate.resources') as $resource)
         {
@@ -471,15 +425,7 @@ class Colony extends Model
         /** Application des bonus */
         $buildingTime *= $this->getShipbuildBonus();
 
-        $coef = 1;
-        $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Price' && $value->bonus_type == 'Ship';
-        });
-        foreach($buildingPriceBonusList as $buildingPriceBonus)
-        {
-            $coef *= $buildingPriceBonus->bonus_coef;
-        }
-
+        $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Ship']);
         $buildingPrices = $ship->getPrice($qty, $coef);
         foreach (config('stargate.resources') as $resource)
         {
@@ -525,15 +471,7 @@ class Colony extends Model
         }
         else
         {
-            $coef = 1;
-            $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-                return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-            });
-            foreach($buildingPriceBonusList as $buildingPriceBonus)
-            {
-                $coef *= $buildingPriceBonus->bonus_coef;
-            }
-
+            $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
             $buildingPrices = $building->getPrice($wantedLvl, $coef);
             foreach (config('stargate.resources') as $resource)
             {
@@ -743,7 +681,6 @@ class Colony extends Model
 
     public function calcProd()
     {
-
         $energyBuildings = $this->buildings->filter(function ($value){
             return $value->type == 'Energy';
         });
@@ -783,6 +720,8 @@ class Colony extends Model
 
             if(!is_null($this->player->premium_expiration))
                 $this->$varName *= 1.25;
+
+            $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $varName]);
         }
 
         $storageBuildings = $this->buildings->filter(function ($value) use($resource){
@@ -802,6 +741,8 @@ class Colony extends Model
         {
             $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
         }
+        $this->production_military *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'military']);
+
 
         $e2pzBuildings = $this->buildings->filter(function ($value){
             return $value->production_type == 'e2pz' && $value->type == 'Science';
@@ -813,15 +754,7 @@ class Colony extends Model
                 $this->production_e2pz = config('stargate.base_prod.e2pz');
             $this->production_e2pz += $e2pzBuilding->getProductionE2PZ($e2pzBuilding->pivot->level);
         }
-
-        $productionBonusList = $this->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Production';
-        });
-        foreach($productionBonusList as $productionBonus)
-        {
-            $varBonus = 'production_'.$productionBonus->bonus_resource;
-            $this->$varBonus *= $productionBonus->bonus_coef;
-        }
+        $this->production_military *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'E2PZ']);
     }
 
     public function checkColony(){
@@ -831,6 +764,45 @@ class Colony extends Model
         $this->checkCraftQueues();
         $this->checkDefenceQueues();
         $this->checkShipQueues();
+    }
+
+    public function getArtifactBonus(Array $options)
+    {
+        $returnBonus = 1;
+        print_r($options);
+        switch(count($options))
+        {
+            case 1:
+                $bonusList = $this->artifacts->filter(function ($value) use($options){
+                    $key1 = array_keys($options)[0];
+                    return $value->$key1 == $options[$key1];
+                });
+            break;
+            case 2:
+                $bonusList = $this->artifacts->filter(function ($value) use($options){
+                    $key1 = array_keys($options)[0];
+                    $key2 = array_keys($options)[1];
+                    return $value->$key1 == $options[$key1] && $value->$key2 == $options[$key2];
+                });
+            break;
+            default:
+                return 1;
+            break;
+        }
+        foreach($bonusList as $bonus)
+            $returnBonus *= $bonus->bonus_coef;
+
+        /*
+        $table->enum('bonus_category', ['Production', 'Time', 'Price', 'DefenceLure', 'ColonyMax']);
+        $table->enum('bonus_type', ['Research', 'Building', 'Ship', 'Defence', 'Craft'])->nullable();
+        $table->enum('bonus_resource', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'])->nullable();
+        */
+        if($returnBonus > 1.25 && in_array($options['bonus_category'],array('Production','Time','Price')))
+            $returnBonus = 1.25;
+        elseif($returnBonus < 0.75 && in_array($options['bonus_category'],array('Production','Time','Price')))
+            $returnBonus = 0.75;
+
+        return $returnBonus;
     }
 
     public function buildingIsDone(Building $building)
@@ -857,14 +829,7 @@ class Colony extends Model
                 }
                 $this->space_used--;
 
-                $coef = 1;
-                $buildingPriceBonusList = $this->artifacts->filter(function ($value){
-                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                });
-                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                {
-                    $coef *= $buildingPriceBonus->bonus_coef;
-                }
+                $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                 $wantedLvl = 1;
                 $currentLvl = $this->player->activeColony->hasBuilding($building);

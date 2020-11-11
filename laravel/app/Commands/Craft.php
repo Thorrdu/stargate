@@ -215,14 +215,7 @@ class Craft extends CommandHandler implements CommandInterface
 
                         $hasEnough = true;
 
-                        $coef = 1;
-                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
-                        });
-                        foreach($buildingPriceBonusList as $buildingPriceBonus)
-                        {
-                            $coef *= $buildingPriceBonus->bonus_coef;
-                        }
+                        $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Craft']);
 
                         $unitPrices = $unit->getPrice($qty, $coef);
 
@@ -332,14 +325,7 @@ class Craft extends CommandHandler implements CommandInterface
             {
                 $unitPrice = "";
 
-                $coef = 1;
-                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Craft';
-                });
-                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                {
-                    $coef *= $buildingPriceBonus->bonus_coef;
-                }
+                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Craft']);
 
                 $unitPrices = $unit->getPrice(1, $coef);
                 foreach (config('stargate.resources') as $resource)

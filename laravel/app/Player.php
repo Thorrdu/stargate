@@ -26,6 +26,11 @@ class Player extends Model
         return $this->hasOne('App\Colony','id','active_colony_id');
     }
 
+    public function activeTechnologyColony()
+    {
+        return $this->hasOne('App\Colony','id','active_technology_colony_id');
+    }
+
     public function colonies()
     {
         return $this->hasMany('App\Colony')->orderBy('colonies.id','ASC');
@@ -245,17 +250,11 @@ class Player extends Model
         $buildingEnd = $current->addSeconds($buildingTime);
 
         $this->active_technology_id = $technology->id;
+        $this->active_technology_colony_id = $this->activeColony->id;
         $this->active_technology_end = $buildingEnd;
         $this->save();
 
-        $coef = 1;
-        $buildingPriceBonusList = $this->activeColony->artifacts->filter(function ($value){
-            return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
-        });
-        foreach($buildingPriceBonusList as $buildingPriceBonus)
-        {
-            $coef *= $buildingPriceBonus->bonus_coef;
-        }
+        $coef = $this->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Research']);
 
         $buildingPrices = $technology->getPrice($wantedLvl, $coef);
         foreach (config('stargate.resources') as $resource)
@@ -312,6 +311,7 @@ class Player extends Model
             }
 
             $this->active_technology_id = null;
+            $this->active_technology_colony_id = null;
             $this->active_technology_end = null;
             foreach($this->colonies as $colony)
             {

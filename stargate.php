@@ -82,7 +82,7 @@ use App\Commands\{HelpCommand as CustomHelp, AllianceCommand, Start, Colony as C
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;

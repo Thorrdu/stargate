@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Building;
@@ -120,7 +120,9 @@ class Build extends CommandHandler implements CommandInterface
                 elseif(Str::startsWith('cancel', $this->args[0]))
                 {
                     //if aucune construction en cours, return
-                    if(is_null($this->player->activeColony->active_building_end) || is_null($this->player->activeColony->active_building_remove))
+                    if(!is_null($this->player->activeColony->active_building_remove))
+                        return;
+                    if(is_null($this->player->activeColony->active_building_end))
                     {
                         return trans('building.noActiveBuilding',[],$this->player->lang);
                     }
@@ -133,19 +135,14 @@ class Build extends CommandHandler implements CommandInterface
                         if($currentLvl)
                             $wantedLvl += $currentLvl;
 
-                        $coef = 1;
-                        $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                            return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                        });
-                        foreach($buildingPriceBonusList as $buildingPriceBonus)
-                            $coef *= $buildingPriceBonus->bonus_coef;
+                        $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                         $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
                         foreach(config('stargate.resources') as $resource)
                         {
                             if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
                             {
-                                $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.8);
+                                $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
                                 if($this->player->activeColony->{'storage_'.$resource} <= $newResource)
                                     $newResource = $this->player->activeColony->{'storage_'.$resource};
                                 $this->player->activeColony->$resource = $newResource;
@@ -232,14 +229,7 @@ class Build extends CommandHandler implements CommandInterface
 
                                 $hasEnough = true;
 
-                                $coef = 1;
-                                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                                });
-                                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                                {
-                                    $coef *= $buildingPriceBonus->bonus_coef;
-                                }
+                                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                                 $buildingPrices = $building->getPrice($wantedLvl, $coef);
                                 $missingResString = "";
@@ -326,14 +316,7 @@ class Build extends CommandHandler implements CommandInterface
                             {
                                 $buildingPrice = "";
 
-                                $coef = 1;
-                                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                                });
-                                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                                {
-                                    $coef *= $buildingPriceBonus->bonus_coef;
-                                }
+                                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                                 $buildingPrices = $building->getPrice($wantedLvl, $coef);
                                 foreach (config('stargate.resources') as $resource)
@@ -542,14 +525,7 @@ class Build extends CommandHandler implements CommandInterface
             {
                 $buildingPrice = "";
 
-                $coef = 1;
-                $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                    return $value->bonus_category == 'Price' && $value->bonus_type == 'Building';
-                });
-                foreach($buildingPriceBonusList as $buildingPriceBonus)
-                {
-                    $coef *= $buildingPriceBonus->bonus_coef;
-                }
+                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                 $buildingPrices = $building->getPrice($wantedLvl, $coef);
                 foreach (config('stargate.resources') as $resource)

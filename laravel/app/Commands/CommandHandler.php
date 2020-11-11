@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
 use App\Player;
-use Discord\DiscordCommandClient as Discord;
+use Discord\myDiscordCommandClient as Discord;
 use Illuminate\Support\Str;
 
 class CommandHandler

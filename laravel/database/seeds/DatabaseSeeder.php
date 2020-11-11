@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Colony;
+use App\ShipPart;
 
 class DatabaseSeeder extends Seeder
 {
@@ -983,7 +984,7 @@ class DatabaseSeeder extends Seeder
             'id' => 15,
             'name' => 'Vitesse subluminique', // Impulsion
             'slug' => Str::slug('subluminal'),
-            'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard.",
+            'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combustion standard.",
             'type' => 'Center',
             'iron' => 1000,
             'gold' => 2000,
@@ -1144,7 +1145,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 9,
             'level' => 7
         ]);
-        //Combusion 6
+        //Combustion 6
         DB::table('unit_technologies')->insert([
             'unit_id' => 2,
             'required_technology_id' => 10,
@@ -1183,7 +1184,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 9,
             'level' => 3
         ]);
-        //Combusion 2
+        //Combustion 2
         DB::table('unit_technologies')->insert([
             'unit_id' => 3,
             'required_technology_id' => 10,
@@ -1218,7 +1219,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 9,
             'level' => 5
         ]);
-        //Combusion 4
+        //Combustion 4
         DB::table('unit_technologies')->insert([
             'unit_id' => 4,
             'required_technology_id' => 10,
@@ -1383,7 +1384,8 @@ class DatabaseSeeder extends Seeder
             GalaxySeeder::class,
             ThorrSeeder::class,
             DefenceSeeder::class,
-            NpcSeeder::class,
+            ShipPartSeeder::class,
+            //NpcSeeder::class,
         ]);
 
         $colonies = Colony::all();

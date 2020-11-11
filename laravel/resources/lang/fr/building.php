@@ -88,7 +88,7 @@ return [
     'unknownBuilding' => 'Bâtiment inconnu...',
     'asuranRestriction' => 'Ce bâtiment n\'est disponbile que sur votre planète mère.',
     'noActiveBuilding' => 'Aucun bâtiment en cours de construction...',
-    'buildingCanceled' => 'Construction annulée, la majorité des ressources ont pu être récupérées. 20% des ressources ont été perdues.',
+    'buildingCanceled' => 'Construction annulée, la majorité des ressources ont pu être récupérées. 25% des ressources ont été perdues.',
     'howTo' => "Construisez avec `!build :id confirm` ou `!build :slug confirm`\n\n:description",
     'buildingList' => 'Liste des bâtiments',
     'genericHowTo' => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",

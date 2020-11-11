@@ -27,6 +27,10 @@ return [
     'laboratory' => 'Laboratory',
     'ship' => 'Ship',
     'ships' => 'Ships',
+    'scavenger' => 'Scavenger',
+    'scavengers' => 'Scavengers',
+    'probe' => 'Probe',
+    'probes' => 'Probes',
     'unit' => 'Craft',
     'units' => 'Crafts',
     'artifact' => 'Artifact',
@@ -87,5 +91,11 @@ return [
     'active' => 'ACTIVE',
     'inactive' => 'INACTIVE',
     'empty' => 'Empty',
-    'closed' => 'Ended'
+    'closed' => 'Ended',
+    'activities' => 'Activities',
+    'adminrestricted' => 'This command require admin permission',
+    'noCustomChannelInDM' => "No custom channel in dm...",
+    'channelIgnored' => 'Le bot will not answer anymore in this channel...',
+    'channelNotIgnored' => 'Le bot will answer again in this channel...',
+    'wrongParameter' => 'Wrong Parameters.',
 ];

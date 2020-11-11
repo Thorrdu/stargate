@@ -17,6 +17,7 @@ use App\Trade;
 use App\TradeResource;
 use App\SpyLog;
 use App\GateFight;
+use App\Pact;
 use App\Reminder;
 use \Discord\Parts\Channel\Message as Message;
 use Discord\Parts\Embed\Embed;
@@ -210,8 +211,15 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
 
-                        if($activeFleet->mission == 'scavenge')
+                        $shipType = trans('generic.ships', [], $this->player->lang);
+                        if(in_array($activeFleet->mission, array('scavenge','spy')))
+                        {
                             $shipCount = $activeFleet->unitCount();
+                            if($activeFleet->mission == 'scavenge')
+                                $shipType = trans('generic.scavengers', [], $this->player->lang);
+                            else
+                                $shipType = trans('generic.probe', [], $this->player->lang);
+                        }
                         else
                             $shipCount = $activeFleet->shipCount();
 
@@ -220,6 +228,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                         'id' => $activeFleet->id,
                                                                         'status' => $fleetStatus,
                                                                         'shipCount' => $shipCount,
+                                                                        'shipType' => $shipType,
                                                                         'colonySource' => $sourceColony->name,
                                                                         'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
                                                                         'colonyDest' => $destinationColony->name,
@@ -232,7 +241,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $incomingFleetString = '';
                     foreach($this->player->incomingFleets as $incomingFleet)
                     {
-                        if($incomingFleet->player_source_id != $incomingFleet->player_destination_id && !$incomingFleet->returning)
+                        if($incomingFleet->player_source_id != $incomingFleet->player_destination_id && !$incomingFleet->returning && $incomingFleet->mission != 'scavenge')
                         {
                             $sourceColony = $incomingFleet->sourceColony;
                             $destinationColony = $incomingFleet->destinationColony;
@@ -244,9 +253,19 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
 
+                            $shipType = trans('generic.ships', [], $this->player->lang);
+                            if($incomingFleet->mission == 'spy')
+                            {
+                                $shipCount = 1;
+                                $shipType = trans('generic.probe', [], $this->player->lang);
+                            }
+                            else
+                                $shipCount = $incomingFleet->shipCount();
+
                             $incomingFleetString .= $arrivalDate.' - '.trans('fleet.incomingFleet', [
                                                                             'mission' => $incomingFleet->mission,
-                                                                            'shipCount' => $incomingFleet->shipCount(),
+                                                                            'shipCount' => $shipCount,
+                                                                            'shipType' => $shipType,
                                                                             'colonySource' => $sourceColony->name,
                                                                             'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
                                                                             'colonyDest' => $destinationColony->name,
@@ -378,6 +397,13 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 $fleetString = '';
                 if(!Str::startsWith('spy',$this->args[0]) && !Str::startsWith('scavenge',$this->args[0]))
                 {
+                    if(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]))
+                    {
+                        $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
+                        if(is_null($pactExists))
+                            return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
+                    }
+
                     ///FLEET CONSTITUTION
                     if(count($this->args) < 4)
                         return trans('generic.missingArgs', [], $this->player->lang).' / !fleet [Order] [Coordinates] Ship1 Qty1 Ress1 Qty1';
@@ -428,37 +454,44 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 if($shipExists->count() > 0)
                                 {
                                     $playerShip = $shipExists->first();
-                                    $fleetString .= $playerShip->name.': '.number_format($qty)."\n";
 
-                                    $colonyHasShip = $this->player->activeColony->ships->filter(function ($value) use($playerShip){
-                                        return $value->id == $playerShip->id;
-                                    });
-                                    if($colonyHasShip->count() > 0)
-                                        $owned = $colonyHasShip->first()->pivot->number;
-                                    else
-                                        $owned = 0;
+                                    $alreadyFound = array_search($playerShip->id, array_column($this->fleetShips, 'id'));
+                                    if($alreadyFound === false)
+                                    {
+                                        $fleetString .= $playerShip->name.': '.number_format($qty)."\n";
 
-                                    //Check si possède
-                                    if($owned < $qty)
-                                        return trans('generic.notEnoughResources', ['missingResources' => $playerShip->name.': '.number_format($qty - $owned)], $this->player->lang);
+                                        $colonyHasShip = $this->player->activeColony->ships->filter(function ($value) use($playerShip){
+                                            return $value->id == $playerShip->id;
+                                        });
+                                        if($colonyHasShip->count() > 0)
+                                            $owned = $colonyHasShip->first()->pivot->number;
+                                        else
+                                            $owned = 0;
 
-                                    $this->fleet->crew += $playerShip->crew*$qty;
-                                    $this->fleet->capacity += $playerShip->capacity*$qty;
-                                    $shipSpeed = $playerShip->speed * $this->fleetSpeedBonus;
-                                    if($this->fleetMaxSpeed > $shipSpeed)
-                                        $this->fleetMaxSpeed = round($shipSpeed,2);
+                                        //Check si possède
+                                        if($owned < $qty)
+                                            return trans('generic.notEnoughResources', ['missingResources' => $playerShip->name.': '.number_format($qty - $owned)], $this->player->lang);
 
-                                    $this->travelCost += $this->baseTravelCost * $qty * $playerShip->required_blueprint;
-                                    $this->fleetShips[] = array('id' => $playerShip->id,'qty' => $qty);
+                                        $this->fleet->crew += $playerShip->crew*$qty;
+                                        $this->fleet->capacity += $playerShip->capacity*$qty;
+                                        $shipSpeed = $playerShip->speed * $this->fleetSpeedBonus;
+                                        if($this->fleetMaxSpeed > $shipSpeed)
+                                            $this->fleetMaxSpeed = round($shipSpeed,2);
+
+                                        $this->travelCost += $this->baseTravelCost * $qty * $playerShip->required_blueprint;
+                                        $this->fleetShips[] = array('id' => $playerShip->id,'qty' => $qty);
+                                    }
                                 }
                                 else
                                 {
                                     if(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]))
                                     {
-                                        $ressFound = false;
+                                        $ressFound = $bypass = false;
+                                        if(Str::startsWith('e2pz',$resourceName) || Str::startsWith('zpm',$resourceName) || Str::startsWith('ZPM',$resourceName))
+                                            $resourceName = 'E2PZ';
                                         foreach($availableResources as $availableResource)
                                         {
-                                            if(Str::startsWith($availableResource,$resourceName) || Str::startsWith($availableResource,strtoupper($resourceName)))
+                                            if((Str::startsWith($availableResource,$resourceName) || Str::startsWith($availableResource,strtoupper($resourceName))) && !strstr($this->transportString,$availableResource))
                                             {
                                                 $ressFound = true;
                                                 $resourceName = $availableResource;
@@ -470,18 +503,24 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                                                 $this->transportString .= config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName).': '.number_format($qty)."\n";
                                             }
+                                            elseif(strstr($this->transportString,$availableResource))
+                                                $bypass = true;
                                         }
-                                        if(!$ressFound)
+                                        if(!$ressFound && !$bypass)
                                         {
                                             $unit = Unit::Where('slug', 'LIKE', $resourceName.'%')->first();
                                             if(is_null($unit))
                                                 return trans('stargate.unknownResource', ['resource' => $resourceName], $this->player->lang);
                                             else
                                             {
-                                                $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
-                                                $this->transportString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
-                                                if($unit->capacity > 0)
-                                                    $this->usedCapacity += $unit->capacity * $qty;
+                                                $alreadyFound = array_search($unit->id, array_column($this->fleetUnits, 'id'));
+                                                if($alreadyFound === false)
+                                                {
+                                                    $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
+                                                    $this->transportString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                                    if($unit->capacity > 0)
+                                                        $this->usedCapacity += $unit->capacity * $qty;
+                                                }
                                             }
                                         }
                                     }
@@ -762,16 +801,21 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     return trans('stargate.unknownResource', ['resource' => $resourceName], $this->player->lang);
                                 else
                                 {
-                                    $unitSpeed = $unit->speed * $this->fleetSpeedBonus;
-                                    if($this->fleetMaxSpeed > $unitSpeed)
-                                        $this->fleetMaxSpeed = round($unitSpeed,2);
+                                    $alreadyFound = array_search($unit->id, array_column($this->fleetUnits, 'id'));
+                                    if($alreadyFound === false)
+                                    {
+                                        $unitSpeed = $unit->speed * $this->fleetSpeedBonus;
+                                        if($this->fleetMaxSpeed > $unitSpeed)
+                                            $this->fleetMaxSpeed = round($unitSpeed,2);
 
-                                    $this->travelCost += floor($this->baseTravelCost * $qty);
+                                        $this->travelCost += floor($this->baseTravelCost * $qty);
 
-                                    $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
-                                    $fleetString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
-                                    if($unit->capacity > 0)
-                                        $this->usedCapacity += $unit->capacity;
+                                        $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
+                                        $fleetString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                        if($unit->capacity > 0)
+                                            $this->usedCapacity += $unit->capacity;
+                                    }
+
                                 }
                             }
                         }

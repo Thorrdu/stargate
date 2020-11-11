@@ -729,9 +729,9 @@ class ShipPartSeeder extends Seeder
 
         DB::table('ship_parts')->insert([
             'id' => 21,
-            'name' => "Réacteur à Combusion",
+            'name' => "Réacteur à Combustion",
             'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
-            'slug' => 'combusionreactor',
+            'slug' => 'combustionreactor',
             'description' => '',
             'iron' => 250,
             'gold' => 250,
@@ -741,7 +741,7 @@ class ShipPartSeeder extends Seeder
             'used_capacity' => 20,
             'base_time' => 30,
         ]);
-        //Combusion 2
+        //Combustion 2
         DB::table('ship_part_technologies')->insert([
             'ship_part_id' => 21,
             'required_technology_id' => 10,
@@ -752,7 +752,7 @@ class ShipPartSeeder extends Seeder
             'id' => 22,
             'name' => "Combustion améliorée",
             'type' => 'Reactor', //['Blueprint', 'Armament', 'Shield', 'Hull', 'Reactor']
-            'slug' => 'advancedcombusion',
+            'slug' => 'advancedcombustion',
             'description' => '',
             'iron' => 350,
             'gold' => 250,
@@ -762,7 +762,7 @@ class ShipPartSeeder extends Seeder
             'used_capacity' => 38,
             'base_time' => 45,
         ]);
-        //Combusion 5
+        //Combustion 5
         DB::table('ship_part_technologies')->insert([
             'ship_part_id' => 22,
             'required_technology_id' => 10,
@@ -783,7 +783,7 @@ class ShipPartSeeder extends Seeder
             'used_capacity' => 75,
             'base_time' => 60,
         ]);
-        //Combusion 6
+        //Combustion 6
         DB::table('ship_part_technologies')->insert([
             'ship_part_id' => 23,
             'required_technology_id' => 10,

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '0.8.6 (Early Access)',
+    'version' => '0.9 (Beta)',
     'ownerId' => '125641223544373248',
     'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
@@ -33,12 +33,13 @@ return [
         'ship' => '<:ship:765545674644127764>',
         'reactor' => '<:reactor:765522326934519808>'
     ],
-    'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 100, 'maxPlanets' => 10],
+    'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 150, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
     'maxProdTime' => 720, //12h
     'maxColonies' => 6,
     'maxHourly' => 24,
     'gateFight' => ['StrongWeak' => 0],
     'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 10000],
-    'guilds' => []
+    'guilds' => [],
+    'channels' => [],
 ];

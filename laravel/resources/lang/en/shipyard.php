@@ -58,10 +58,10 @@ return [
     'atlantisshield' => [
         'name' => "Atlantis shield"
     ],
-    'combusionreactor' => [
-        'name' => "Combusion reactor"
+    'combustionreactor' => [
+        'name' => "Combustion reactor"
     ],
-    'advancedcombusion' => [
+    'advancedcombustion' => [
         'name' => "Advanced combustion"
     ],
     'ionreactor' => [
@@ -146,7 +146,7 @@ return [
                               "-A hull\n".
                               "-A propulsion system\n\n".
                               "Command exemple to create a new custom model: \n".
-                              "`!ship create jumper projectileturret 2 taurihull 1 combusionreactor 1`\n".
+                              "`!ship create jumper projectileturret 2 taurihull 1 combustionreactor 1`\n".
                               "The list of all components wich can be used to create a new model can be found via `!shipyard parts`\n",
     'componentList' => 'Components list',
 

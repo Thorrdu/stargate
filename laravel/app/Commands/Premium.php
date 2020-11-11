@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use Discord\Parts\Embed\Embed;
 use App\Player;

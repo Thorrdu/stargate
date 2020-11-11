@@ -24,14 +24,12 @@ class Building extends Model
     public function getPrice(int $level, $coef = 1)
     {
         if($level == 1)
-            $level--; //Du au coeficient
+            $level--;
         $buildingPrice = [];
         foreach (config('stargate.resources') as $resource)
         {
             if($this->$resource > 0)
-                //$buildingPrice[$resource] = $this->coefCalc($this->$resource,$this->upgrade_coefficient,$level);
                 $buildingPrice[$resource] = $this->$resource * pow($this->upgrade_coefficient, $level) * $coef;
-
         }
         return $buildingPrice;
     }
@@ -51,7 +49,6 @@ class Building extends Model
         return $this->time_base * pow($this->time_coefficient, $level);
 
         return $this->coefCalc($this->time_base,$this->time_coefficient,$level);
-
     }
 
     public function getProductionEnergy(int $level)

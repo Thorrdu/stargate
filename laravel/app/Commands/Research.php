@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Building;
@@ -116,6 +116,45 @@ class Research extends CommandHandler implements CommandInterface
                         $this->paginatorMessage->createReactionCollector($filter);
                     });
                 }
+                elseif(Str::startsWith('cancel', $this->args[0]))
+                {
+                    //if aucune construction en cours, return
+                    if(is_null($this->player->active_technology_end))
+                    {
+                        return trans('research.noActiveTechnology',[],$this->player->lang);
+                    }
+                    else
+                    {
+                        $cancelledResearch = $this->player->activeTechnology;
+
+                        $wantedLvl = 1;
+                        $currentLvl = $this->player->hasTechnology($cancelledResearch);
+                        if($currentLvl)
+                            $wantedLvl += $currentLvl;
+
+                        $coef = $this->player->activeTechnologyColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Research']);
+
+                        $buildingPrices = $cancelledResearch->getPrice($wantedLvl, $coef);
+                        foreach(config('stargate.resources') as $resource)
+                        {
+                            if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
+                            {
+                                $newResource = $this->player->activeTechnologyColony->$resource + ceil($buildingPrices[$resource]*0.75);
+                                if($this->player->activeTechnologyColony->{'storage_'.$resource} <= $newResource)
+                                    $newResource = $this->player->activeTechnologyColony->{'storage_'.$resource};
+                                $this->player->activeTechnologyColony->$resource = $newResource;
+                            }
+                        }
+                        $this->player->activeTechnologyColony->save();
+
+                        $this->player->active_technology_colony_id = null;
+                        $this->player->active_technology_id = null;
+                        $this->player->active_technology_end = null;
+                        $this->player->save();
+
+                        return trans('research.technologyCanceled',[],$this->player->lang);
+                    }
+                }
                 else
                 {
                     $technology = Technology::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
@@ -167,14 +206,7 @@ class Research extends CommandHandler implements CommandInterface
 
                             $hasEnough = true;
 
-                            $coef = 1;
-                            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
-                            });
-                            foreach($buildingPriceBonusList as $buildingPriceBonus)
-                            {
-                                $coef *= $buildingPriceBonus->bonus_coef;
-                            }
+                            $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Research']);
 
                             $technologyPrices = $technology->getPrice($wantedLvl, $coef);
                             $missingResString = "";
@@ -234,14 +266,8 @@ class Research extends CommandHandler implements CommandInterface
 
                             $buildingPrice = "";
 
-                            $coef = 1;
-                            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
-                            });
-                            foreach($buildingPriceBonusList as $buildingPriceBonus)
-                            {
-                                $coef *= $buildingPriceBonus->bonus_coef;
-                            }
+                            $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Research']);
+
                             $buildingPrices = $technology->getPrice($wantedLvl, $coef);
                             foreach (config('stargate.resources') as $resource)
                             {
@@ -407,14 +433,7 @@ class Research extends CommandHandler implements CommandInterface
 
             $buildingPrice = "";
 
-            $coef = 1;
-            $buildingPriceBonusList = $this->player->activeColony->artifacts->filter(function ($value){
-                return $value->bonus_category == 'Price' && $value->bonus_type == 'Research';
-            });
-            foreach($buildingPriceBonusList as $buildingPriceBonus)
-            {
-                $coef *= $buildingPriceBonus->bonus_coef;
-            }
+            $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Research']);
 
             $buildingPrices = $technology->getPrice($wantedLvl, $coef);
             foreach (config('stargate.resources') as $resource)

@@ -16,6 +16,7 @@ use App\Trade;
 use App\TradeResource;
 use App\SpyLog;
 use App\GateFight;
+use App\Pact;
 use App\Reminder;
 use App\Utility\PlayerUtility;
 use \Discord\Parts\Channel\Message as Message;
@@ -318,10 +319,10 @@ class Stargate extends CommandHandler implements CommandInterface
                             if(Str::startsWith('e2pz',$resource) || Str::startsWith('zpm',$resource) || Str::startsWith('ZPM',$resource))
                                 $resource = 'E2PZ';
 
-                            $resFound = false;
+                            $resFound = $bypass = false;
                             foreach($availableResources as $availableResource)
                             {
-                                if(Str::startsWith($availableResource,$resource))
+                                if(Str::startsWith($availableResource,$resource) && !isset($this->tradeResources[$availableResource]))
                                 {
                                     $resource = $availableResource;
 
@@ -332,21 +333,25 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
                                         return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
+
+                                    $this->tradeResources[$resource] = $qty;
                                 }
+                                elseif(isset($this->tradeResources[$availableResource]))
+                                    $bypass = true;
                             }
-                            if(!$resFound)
+                            if(!$resFound && !$bypass)
                             {
                                 $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
                                 if(is_null($unit))
                                     return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
-                                else
+                                elseif(!isset($this->tradeResources[$unit->slug]))
                                 {
                                     $resFound = true;
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                    $this->tradeResources[$resource] = $qty;
                                 }
                             }
-                            $this->tradeResources[$resource] = $qty;
                         }
                         else
                             return trans('generic.wrongQuantity', [], $this->player->lang);
@@ -498,6 +503,10 @@ class Stargate extends CommandHandler implements CommandInterface
                     if($this->coordinateDestination->colony->player->npc)
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
+                    $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
+                    if(is_null($pactExists))
+                        return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
+
                     if($this->player->trade_ban && $this->coordinateDestination->colony->player->trade_ban && $this->player->trade_extend != null && $this->coordinateDestination->colony->player->trade_extend != null)
                     {
                         $tradeExtention = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->trade_extend);
@@ -539,10 +548,10 @@ class Stargate extends CommandHandler implements CommandInterface
                             if(Str::startsWith('e2pz',$resource) || Str::startsWith('zpm',$resource) || Str::startsWith('ZPM',$resource))
                                 $resource = 'E2PZ';
 
-                            $resFound = false;
+                            $resFound = $bypass = false;
                             foreach($availableResources as $availableResource)
                             {
-                                if(Str::startsWith($availableResource,$resource))
+                                if(Str::startsWith($availableResource,$resource) && !isset($this->tradeResources[$availableResource]))
                                 {
                                     $resource = $availableResource;
 
@@ -553,21 +562,25 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
                                         return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
+
+                                    $this->tradeResources[$resource] = $qty;
                                 }
+                                elseif(isset($this->tradeResources[$availableResource]))
+                                    $bypass = true;
                             }
-                            if(!$resFound)
+                            if(!$resFound && !$bypass)
                             {
                                 $unit = Unit::Where('slug', 'LIKE', $resource.'%')->first();
                                 if(is_null($unit))
                                     return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
-                                else
+                                elseif(!isset($this->tradeResources[$unit->slug]))
                                 {
                                     $resFound = true;
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                    $this->tradeResources[$resource] = $qty;
                                 }
                             }
-                            $this->tradeResources[$resource] = $qty;
                         }
                         else
                             return trans('generic.wrongQuantity', [], $this->player->lang);
@@ -1011,15 +1024,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             $resource = $this->args[$cptRes];
-                            $resFound = false;
+                            $resFound = $bypass = false;
                             if(Str::startsWith('military',$resource))
                             {
-                                $resource = 'military';
-                                if($this->player->activeColony->military < $qty)
-                                    return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($qty-$this->player->activeColony->military)], $this->player->lang);
+                                if(empty($this->attackMilitaries))
+                                {
+                                    $resource = 'military';
+                                    if($this->player->activeColony->military < $qty)
+                                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.number_format($qty-$this->player->activeColony->military)], $this->player->lang);
 
-                                $this->attackMilitaries = $qty;
-                                $attackConfirmPower .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
+                                    $this->attackMilitaries = $qty;
+                                    $attackConfirmPower .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
+                                }
                             }
                             else
                             {
@@ -1030,7 +1046,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                 {
                                     $resFound = true;
                                     $resource = $unit->slug;
-                                    $attackConfirmPower .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
+                                    $unitName = trans('craft.'.$unit->slug.'.name', [], $this->player->lang);
+                                    if(!strstr($attackConfirmPower,$unitName))
+                                    $attackConfirmPower .= $unitName.': '.number_format($qty)."\n";
                                     $this->attackUnits[] = ['qty' => $qty, 'unit' => $unit];
 
                                     $unitOwned = $this->player->activeColony->hasCraft($unit);
@@ -1314,8 +1332,14 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 $lostDefenceQty = ceil($defence->pivot->number*0.3);
                                                 $newDefenceQty = floor($defence->pivot->number*0.7);
                                                 $defenderLooseString .= trans('defence.'.$defence->slug.'.name', [], $this->coordinateDestination->colony->player->lang).': '.number_format($lostDefenceQty)."\n";
-                                                $defence->pivot->number = $newDefenceQty;
-                                                $defence->pivot->save();
+
+                                                if($newDefenceQty > 0)
+                                                {
+                                                    $defence->pivot->number = $newDefenceQty;
+                                                    $defence->pivot->save();
+                                                }
+                                                else
+                                                    $this->coordinateDestination->defences()->detach($defence->id);
                                             }
                                         }
 

@@ -50,6 +50,5 @@ class Trade extends Model
             return false;
         }
         return true;
-
     }
 }

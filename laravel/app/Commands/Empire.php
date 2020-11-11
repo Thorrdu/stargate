@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use Discord\Parts\Embed\Embed;
 use App\Player;
@@ -32,7 +32,19 @@ class Empire extends CommandHandler implements CommandInterface
                 if(!is_null($this->player->vacation))
                     return trans('profile.vacationMode',[],$this->player->lang);
 
-                if(empty($this->args) || Str::startsWith('colonies', $this->args[0]))
+                $prefix = $this->discord->commandClientOptions['prefix'];
+                if(!is_null($this->message->channel->guild_id))
+                {
+                    $guildConfig = config('stargate.guilds.'.$this->message->channel->guild_id);
+                    if(!is_null($guildConfig))
+                        $prefix = $guildConfig['prefix'];
+                }
+
+                if(empty($this->args))
+                {
+                    return $this->message->reply("`{$prefix}empire [production/activities/fleet/artifacts]`");
+                }
+                elseif(Str::startsWith('production', $this->args[0]))
                 {
                     $embed = [
                         'author' => [
@@ -82,7 +94,55 @@ class Empire extends CommandHandler implements CommandInterface
 
                         $colonyString .= $resourcesValue;
 
+                        $embed['fields'][] = array(
+                            'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
+                            'value' => $colonyString."\n\n.",
+                            'inline' => true
+                        );
+                    }
 
+                    $totalHourlyProdString = "**Hourly**";
+                    $totalDailyProdString = "\n\n**Daily**";
+                    foreach (config('stargate.resources') as $resource)
+                    {
+                        $totalProd = ${$resource.'TotalProduction'};
+                        $totalHourlyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd)."/h";
+                        $totalDailyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd*24)."/d";
+                    }
+
+                    $totalMilProd = ${'militaryTotalProduction'};
+                    $totalHourlyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd)."/h";
+                    $totalDailyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd*24)."/d";
+
+                    $totalE2pzProd = ${'e2pzTotalProduction'};
+                    $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60),2)."/h";
+                    $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
+
+                    $embed['fields'][] = array(
+                        'name' => 'Prod',
+                        'value' => $totalHourlyProdString.$totalDailyProdString,
+                        'inline' => true
+                    );
+                }
+                elseif(Str::startsWith('activities', $this->args[0]))
+                {
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                        ],
+                        "title" => 'Empire - '.trans('generic.activities', [], $this->player->lang),
+                        'fields' => [],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+
+                    foreach($this->player->colonies as $colony)
+                    {
+                        $colony->checkColony();
+
+                        $colonyString = '';
                         $now = Carbon::now();
                         if(!is_null($colony->active_building_end)){
                             $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$colony->active_building_end);
@@ -95,7 +155,7 @@ class Empire extends CommandHandler implements CommandInterface
 
                             if(!$currentLevel)
                                 $currentLevel = 0;
-                            $colonyString .= "\n".trans('colony.buildingUnderConstruction', [], $this->player->lang)."\n"."Lvl ".($currentLevel+1)." - ".trans('building.'.$colony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime;
+                            $colonyString .= "\n".trans('colony.buildingUnderConstruction', [], $this->player->lang)."\n"."Lvl ".($currentLevel+1)." - ".trans('building.'.$colony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime."\n";
 
                         }
 
@@ -135,29 +195,6 @@ class Empire extends CommandHandler implements CommandInterface
                         );
                     }
 
-                    $totalHourlyProdString = "**Hourly**";
-                    $totalDailyProdString = "\n\n**Daily**";
-                    foreach (config('stargate.resources') as $resource)
-                    {
-                        $totalProd = ${$resource.'TotalProduction'};
-                        $totalHourlyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd)."/h";
-                        $totalDailyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd*24)."/d";
-                    }
-
-                    $totalMilProd = ${'militaryTotalProduction'};
-                    $totalHourlyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd)."/h";
-                    $totalDailyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd*24)."/d";
-
-                    $totalE2pzProd = ${'e2pzTotalProduction'};
-                    $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60),2)."/h";
-                    $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
-
-                    $embed['fields'][] = array(
-                        'name' => 'Prod',
-                        'value' => $totalHourlyProdString.$totalDailyProdString,
-                        'inline' => true
-                    );
-
                     if(!is_null($this->player->active_technology_end)){
                         $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
                         $buildingTime = $now->diffForHumans($buildingEnd,[
@@ -192,6 +229,8 @@ class Empire extends CommandHandler implements CommandInterface
 
                     foreach($this->player->colonies as $colony)
                     {
+                        $colony->checkColony();
+
                         $fleetString = "";
                         $defenseString = "";
 
@@ -212,10 +251,7 @@ class Empire extends CommandHandler implements CommandInterface
                             'value' => "**".trans('stargate.fleet', [], $this->player->lang)."**\n".$fleetString."\n\n**".trans('stargate.defences', [], $this->player->lang)."**\n".$defenseString,
                             'inline' => true
                         );
-
-
                     }
-
                 }
                 elseif(Str::startsWith('artifacts', $this->args[0]))
                 {
@@ -233,6 +269,8 @@ class Empire extends CommandHandler implements CommandInterface
 
                     foreach($this->player->colonies as $colony)
                     {
+                        $colony->checkColony();
+
                         $artifactString = "";
                         foreach($colony->artifacts as $artifact)
                             $artifactString .= $artifact->toString($this->player->lang)."\n";
@@ -247,8 +285,12 @@ class Empire extends CommandHandler implements CommandInterface
                         );
                     }
                 }
+                else
+                    return $this->message->reply("`{$prefix}empire [production/activities/fleet/artifacts]`");
+
                 if(isset($embed))
                     $this->message->channel->sendMessage('', false, $embed);
+
             }
             catch(\Exception $e)
             {

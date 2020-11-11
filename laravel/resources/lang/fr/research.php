@@ -59,7 +59,7 @@ return [
         ],
     'subluminal' => [
         'name' => "Vitesse subluminique",
-        'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combusion standard",
+        'description' => "Capacité à propulser un vaisseau à une vitesse suppérieure à une combustion standard",
         ],
     'antimatter' => [
         'name' => "Antimatière",
@@ -72,6 +72,8 @@ return [
     'hiddenTechnology' => '-- Technologie cachée --',
     'unDiscovered' => 'Non découverte',
     'unknownTechnology' => 'Technologie inconnue...',
+    'noActiveTechnology' => 'Aucune technologie en cours de recherche...',
+    'technologyCanceled' => 'Recherche **annulée**, la majorité des ressources ont pu être récupérées. 25% des ressources ont été perdues.',
     'howTo' => "Rechercher avec `!research :id confirm` ou `!research :slug confirm`\n\n:description",
     'technologyList' => 'Liste des technologies',
     'genericHowTo' => "Pour voir le détail d'une technologie: `!research [ID/Slug]`\nPour commencer la recherche d'une technologie: `!research [ID/Slug] confirm`\n",

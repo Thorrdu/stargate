@@ -22,4 +22,18 @@ return [
     'unknownTrade' => 'Trade inconnu.',
     'warn' => '**_Attention, Un trade injuste à été détecté. Il vous reste +-24h pour ajuster le trade avant d\'être banni du système de trade._**'."\nPlus d'info: `!trade :tradeID`",
     'ban' => 'N\'ayant pas régulariser le trade endéant les temps. Vous êtes désormais banni du système de trade...'."\nUne ultime chance peut être obtenue en réclamant un délai avec `!trade :tradeID extend`",
+
+    'noPactWithThisPlayer' => 'Vous ne possédez pas de pacte commercial avec ce joueur...',
+    'cantCancelWithUnfairFairTrade' => 'Vous ne pouvez annuler un pacte avec ce joueur, un trade injuste est en cours.',
+    'pactAlreadyExists' => 'Vous avez déjà un pacte commercial avec ce joueur.',
+    'pactConfirm' => "<@:player_2_id>, vous êtes invité à créer un pacte commercial <@:player_1_id>".
+                    "\nCe pacte vous permettra de commercer avec lui.".
+                    "\nStatut: **En attente**",
+    'pactCancelConfirm' => "Souhaitez-vous rompre votre pacte commercial avec :player_2_name ?".
+                            "\nVous ne pourrez-plus commercer avec lui.".
+                            "\nStatut: **En attente**",
+    'emptyPacts' => 'Aucun pacte',
+    'pactList' => 'Liste de vos pactes actifs',
+    'pactPlayers' => 'Joueurs',
+
 ];

@@ -85,7 +85,7 @@ return [
     'hiddenBuilding' => '-- Hidden building --',
     'unDiscovered' => 'Undiscovered',
     'noActiveBuilding' => 'No building under construction...',
-    'buildingCanceled' => 'Building canceled, the majority of resources have been rewovered. 20% of the invested resources have been lost.',
+    'buildingCanceled' => 'Building canceled, the majority of resources have been recovered. 25% of the invested resources have been lost.',
     'unknownBuilding' => 'Unknown building...',
     'asuranRestriction' => 'This building is only available on your home planet.',
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",

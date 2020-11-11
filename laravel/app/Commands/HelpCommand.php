@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Database\Eloquent\Model;
-use Discord\DiscordCommandClient;
+use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use App\Player;
 use App\Building;
@@ -40,11 +40,77 @@ class HelpCommand extends CommandHandler implements CommandInterface
         }
 
         try{
-            $this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
+
+            $this->prefix = $this->discord->commandClientOptions['prefix'];
+            if(!is_null($this->message->channel->guild_id))
+            {
+                $guildConfig = config('stargate.guilds.'.$this->message->channel->guild_id);
+                if(!is_null($guildConfig))
+                    $this->prefix = $guildConfig['prefix'];
+            }
+
+            //$this->prefix = str_replace((string) $this->discord->user, '@'.$this->discord->username, $this->discord->commandClientOptions['prefix']);
 
             if(empty($this->args) || $this->args[0] == 'list')
             {
                 echo PHP_EOL.'Execute Help';
+
+                $embed = [
+                    'author' => [
+                        'name' => $this->discord->commandClientOptions['name'],
+                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                    ],
+                    "title" => $this->prefix.' Help',
+                    "description" => trans('help.mainHelp', ['prefix' => $this->prefix], $this->lang)."\n----------------------------",
+                    'fields' => [],
+                    'footer' => array(
+                        'text'  => $this->discord->commandClientOptions['name'],
+
+                    ),
+                ];
+
+                $gameCommandString = $utilityCommandString = $adminCommandString = '';
+
+                foreach($this->discord->commands as $command)
+                {
+                    $help = $command->getHelp($this->prefix);
+
+                    if(!strstr($help['command'],'help'))
+                    {
+                        if(!empty(${$command->group.'CommandString'}))
+                            ${$command->group.'CommandString'} .= ' ';
+                        ${$command->group.'CommandString'} .= '`'.str_replace($this->prefix,'',$help['command']).'`';
+                    }
+                }
+
+                $embed['fields'][] = array(
+                    'name' => 'Game',
+                    'value' => $gameCommandString,
+                    'inline' => false
+                );
+
+                $embed['fields'][] = array(
+                    'name' => 'Utility',
+                    'value' => $utilityCommandString,
+                    'inline' => false
+                );
+
+                if($this->player->user_id == 125641223544373248)
+                {
+                    $embed['fields'][] = array(
+                        'name' => 'Admin',
+                        'value' => $adminCommandString,
+                        'inline' => false
+                    );
+                }
+
+
+
+                $this->message->channel->sendMessage('', false, $embed);
+
+                return;
+
+
 
                 $this->closed = false;
                 $this->page = 1;
@@ -134,7 +200,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                     ],
                     "title" => 'Help: '.$help['command'],
-                    "description" => !empty($help['longDescription'])?$help['longDescription']:trans('help.'.$help['command'].'.description', [], $this->lang),
+                    "description" => !empty($help['longDescription'])?$help['longDescription']:trans('help.'.$help['command'].'.description', ['prefix' => $this->prefix], $this->lang),
                     'fields' => [],
                     'footer' => array(
                         'text'  => $this->discord->commandClientOptions['name'],
@@ -145,11 +211,12 @@ class HelpCommand extends CommandHandler implements CommandInterface
                 {
                     $embed['fields'][] = array(
                         'name' => 'Usage',
-                        'value' => "``".trans('help.'.$help['command'].'.usage', [], $this->lang)."``",
+                        'value' => "``".trans('help.'.$help['command'].'.usage', ['prefix' => $this->prefix], $this->lang)."``",
                         'inline' => true
                     );
                 }
 
+                /*
                 if(!empty($this->discord->aliases))
                 {
                     $aliasesString = "";
@@ -166,7 +233,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         'value' => $aliasesString,
                         'inline' => true
                     );
-                }
+                }*/
 
                 $newEmbed = $this->discord->factory(Embed::class,$embed);
                 $this->message->channel->sendMessage('', false, $newEmbed);

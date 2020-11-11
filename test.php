@@ -30,6 +30,55 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+
+$colony = Colony::find(1);
+
+echo $colony->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'iron']);
+
+
+
+die();
+$fleetShips = [];
+$fleetShips[] = array('id' => 10,'qty' => 11);
+$fleetShips[] = array('id' => 1,'qty' => 5);
+
+$found_key = array_search(1, array_column($fleetShips, 'id'));
+if($found_key !== false)
+echo 'FOUND: '.$found_key;
+else
+echo 'NOT FOUND: ';
+
+die();
+
+$player = Player::find(1);
+$armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
+$armamentLvl = $player->hasTechnology($armamentTec);
+$shieldTec = Technology::Where('slug', 'LIKE', 'shield')->first();
+$shieldLvl = $player->hasTechnology($shieldTec);
+$hullTec = Technology::Where('slug', 'LIKE', 'hull')->first();
+$hullLvl = $player->hasTechnology($hullTec);
+
+$firePower = 1;
+if($armamentLvl)
+	$firePower *= pow(1.1,$armamentLvl);
+$shield = 1;
+if($shieldLvl)
+	$shield *= pow(1.1,$shieldLvl);
+$hull = 1;
+if($hullLvl)
+	$hull *= pow(1.1,$hullLvl);
+
+
+echo PHP_EOL.$firePower;
+echo PHP_EOL.$shield;
+echo PHP_EOL.$hull;
+
+
+ 
+
+
+die();
+
 $defenceForces = array();
 $defenceForces = FuncUtility::array_orderby($defenceForces, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC); //'type', SORT_ASC,
 print_r($defenceForces);

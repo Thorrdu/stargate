@@ -912,6 +912,7 @@ class Fleet extends Model
                         }
                     }
 
+
                     if($defenceForces[$key]['quantity'] <= 0)
                     {
                         if($forceUnit['type'] == 'ship')
@@ -919,18 +920,20 @@ class Fleet extends Model
                             $this->destinationColony->military -= $nbrShipDestroyed * $forceUnit['item']->crew;
                             $this->destinationColony->ships()->detach($forceUnit['item']->id);
                         }
-                        elseif($defenceForces[$key]['quantity'] == 1)
-                        {
-                            $this->destinationColony->defences()->detach($forceUnit['item']->id);
-                        }
                         else
                         {
-                            $defenceForces[$key]['item']->pivot->number = floor($defenceForces[$key]['item']->pivot->number * 0.95);
-                            $defenceForces[$key]['item']->pivot->save();
+                            $newDefNumber = floor($defenceForces[$key]['item']->pivot->number*0.95);
+                            if($newDefNumber > 0)
+                            {
+                                $defenceForces[$key]['item']->pivot->number = floor($defenceForces[$key]['item']->pivot->number * 0.95);
+                                $defenceForces[$key]['item']->pivot->save();
+                            }
+                            else
+                                $this->destinationColony->defences()->detach($forceUnit['item']->id);
                         }
+
                         //Tous les vaisseaux de la ligne détruits
                         unset($defenceForces[$key]);
-
                     }
                     else
                     {
@@ -939,6 +942,7 @@ class Fleet extends Model
                          * Est-ce que vaisseau endomagé avec ce qui reste?
                          *
                          */
+
                         if($fleetDamageLeft >= $forceUnit['shield_left'])
                         {
                             $fleetDamageLeft -= $forceUnit['shield_left'];

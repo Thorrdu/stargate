@@ -4,9 +4,9 @@ include __DIR__.'/vendor/autoload.php';
 
 //Laravel
 require __DIR__.'/laravel/vendor/autoload.php';
-/*
+
 require __DIR__.'/CustomCommandClient.php';
-require __DIR__.'/Command.php';*/
+require __DIR__.'/CustomCommand.php';
 
 $app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
@@ -28,8 +28,8 @@ use App\Trade;
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
-use Discord\DiscordCommandClient;
-//use Discord\CustomCommandClient;
+//use Discord\myDiscordCommandClient;
+use Discord\myDiscordCommandClient as DiscordCommandClient;
 
 use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
@@ -421,57 +421,6 @@ $discord->on('ready', function ($discord) use($beta){
                 }
             }
         }
-        /*
-        $playerIdRemind = 0;
-        $rmdCounter = 0;
-        $rmdMessagesStr = "";
-        foreach($reminders as $reminder)
-        {  
-            $rmdCounter++;
-            
-            if($playerIdRemind == 0)
-                $playerIdRemind = $reminder->player->user_id;
-            
-            if($totalReminders == $rmdCounter || $playerIdRemind != $reminder->player->user_id)
-            {
-                if($totalReminders == $rmdCounter)
-                {
-                    if($playerIdRemind == $reminder->player->user_id)
-                    {
-                        $rmdMessagesStr .= $reminder->reminder;
-
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-                    }
-                    else
-                    {
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-
-                        $playerIdRemind = $reminder->player->user_id;
-                        $rmdMessagesStr = $reminder->reminder;
-
-                        $userExist = $discord->users->get('id',$playerIdRemind);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage($rmdMessagesStr);
-                    }
-                }
-                else
-                {
-                    $userExist = $discord->users->get('id',$playerIdRemind);
-                    if(!is_null($userExist))
-                        $userExist->sendMessage($rmdMessagesStr);
-
-                    $rmdMessagesStr = "";
-                    $playerIdRemind = $reminder->player->user_id;
-                }
-            }
-            $rmdMessagesStr .= $reminder->reminder."\n";
-
-            $reminder->delete();
-        }*/
     });
    
     $discord->registerCommand('help', function ($message, $args) use($discord){

@@ -119,14 +119,7 @@ class PlayerUtility
             {
                 if(count($colonyDest->defences) > 0)
                 {
-                    $coef = 1;
-                    $defenceLureList = $colonyDest->artifacts->filter(function ($value){
-                        return $value->bonus_category == 'DefenceLure';
-                    });
-                    foreach($defenceLureList as $defenceLure)
-                    {
-                        $coef *= $defenceLure->bonus_coef;
-                    }
+                    $coef = $colonyDest->getArtifactBonus(['bonus_category' => 'DefenceLure']);
 
                     $defenceString = '';
                     foreach($colonyDest->defences as $defence)
