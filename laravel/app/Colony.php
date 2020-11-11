@@ -769,7 +769,6 @@ class Colony extends Model
     public function getArtifactBonus(Array $options)
     {
         $returnBonus = 1;
-        print_r($options);
         switch(count($options))
         {
             case 1:
