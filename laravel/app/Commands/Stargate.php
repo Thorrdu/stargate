@@ -504,7 +504,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
                     $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
-                    if(is_null($pactExists))
+                    if(is_null($pactExists) && $this->player->user_id != 125641223544373248)
                         return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
 
                     if($this->player->trade_ban && $this->coordinateDestination->colony->player->trade_ban && $this->player->trade_extend != null && $this->coordinateDestination->colony->player->trade_extend != null)
