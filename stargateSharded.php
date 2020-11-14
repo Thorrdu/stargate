@@ -563,7 +563,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
-		'aliases' => array('sg'),
+		'aliases' => array('s','sg'),
         'cooldown' => 5
     ]);
 
