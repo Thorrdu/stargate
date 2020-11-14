@@ -120,8 +120,12 @@ class myDiscordCommandClient extends Discord
                             }
                         }
 
-                        if(empty($commandsFound))
+                        if(array_key_exists($command, $this->aliases)) {
+                            $command = $this->commands[$this->aliases[$command]];
+                        }elseif(empty($commandsFound))
+                        {
                             return;
+                        }
                         elseif(count($commandsFound) > 1)
                         {
                             //var_dump($commandsFound);

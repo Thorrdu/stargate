@@ -66,13 +66,16 @@ return [
                     ":prefixalliance upgrade\n"
     ],
     'stargate' => [
-        'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer",
+        'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer".
+                        "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
+                        "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
         'usage' => ":prefixstargate explore [coordonées]\n".
                     ":prefixstargate colonize [coordonées]\n".
                     ":prefixstargate move [NuméroDeColonie] [Res1] [Qté1]\n".
                     ":prefixstargate move [coordonées] [Res1] [Qté1]\n".
                     ":prefixstargate spy [coordonées]\n".
-                    ":prefixstargate attack [coordonées] military [Qté] [Unit1] [Qté1]"
+                    ":prefixstargate attack [coordonées] military [Qté] [Unit1] [Qté1]".
+                    ":prefixstargate bury"
     ],
     'shipyard' => [
         'description' => "Permet de construire des vaisseaux spatiaux ou d'établir de nouveaux plans personnalisés".

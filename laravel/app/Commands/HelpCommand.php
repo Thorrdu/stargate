@@ -216,7 +216,6 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     );
                 }
 
-                /*
                 if(!empty($this->discord->aliases))
                 {
                     $aliasesString = "";
@@ -233,7 +232,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         'value' => $aliasesString,
                         'inline' => true
                     );
-                }*/
+                }
 
                 $newEmbed = $this->discord->factory(Embed::class,$embed);
                 $this->message->channel->sendMessage('', false, $newEmbed);
