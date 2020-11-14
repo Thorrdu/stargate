@@ -74,7 +74,7 @@ return [
                     ":prefixstargate move [NuméroDeColonie] [Res1] [Qté1]\n".
                     ":prefixstargate move [coordonées] [Res1] [Qté1]\n".
                     ":prefixstargate spy [coordonées]\n".
-                    ":prefixstargate attack [coordonées] military [Qté] [Unit1] [Qté1]".
+                    ":prefixstargate attack [coordonées] military [Qté] [Unit1] [Qté1]\n".
                     ":prefixstargate bury"
     ],
     'shipyard' => [
