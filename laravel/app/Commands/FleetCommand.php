@@ -908,7 +908,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                     $resource = $unit->name;
                                                 }
 
-                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$resource.'.name', [], $this->player->lang).': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => $resource.': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
                                                 $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                                 $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                 return;

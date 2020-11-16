@@ -248,7 +248,7 @@ class Fleet extends Model
                         'planetSource' => $this->sourceColony->name,
                         'coordinateSource' => $this->sourceColony->coordinates->humanCoordinates(),
                         'resources' => $scavengedResString,
-                    ], $this->sourcePlayer->player->lang);
+                    ], $this->sourcePlayer->lang);
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->add('1s');
