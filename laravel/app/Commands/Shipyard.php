@@ -763,9 +763,9 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                 $embed['fields'][] = array(
                     'name' => trans('shipyard.'.$component->slug.'.name', [], $this->player->lang),
-                    'value' => "\nSlug: `".$component->slug."`\n - ".
+                    'value' => "\nSlug: `".$component->slug."`\n".
                                $firePowerString.$shieldString.$hullString.$capacityString.$speedString.$crewString.$usedCapacityString.
-                               "\n".trans('generic.duration', [], $this->player->lang).": ".$componentTime."\n".
+                               trans('generic.duration', [], $this->player->lang).": ".$componentTime."\n".
                                trans('generic.price', [], $this->player->lang).": ".$componentPrice."\n",
                     'inline' => true
                 );
