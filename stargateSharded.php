@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\TopUpdater;
@@ -431,7 +431,18 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.start.description', [], 'fr'),
         'usage' => trans('help.start.usage', [], 'fr'),
         'aliases' => array('h'),
-        'cooldown' => 2
+        'cooldown' => 5
+    ]);
+
+    $discord->registerCommand('tutorial', function ($message, $args) use($discord){
+        $command = new Tutorial($message,$args,$discord);
+        return $command->execute();
+    },[
+        'group' => 'utility',
+        'description' => trans('help.tutorial.description', [], 'fr'),
+        'usage' => trans('help.tutorial.usage', [], 'fr'),
+        'aliases' => array('t'),
+        'cooldown' => 5
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -441,7 +452,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.start.description', [], 'fr'),
 		'usage' => trans('help.start.usage', [], 'fr'),
         //'aliases' => array('start'),
-        'cooldown' => 3
+        'cooldown' => 5
     ]);
     //trans('generic.missingRequirements', [], $this->player->lang)
 
