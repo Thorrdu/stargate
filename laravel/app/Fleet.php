@@ -51,7 +51,7 @@ class Fleet extends Model
 
         $travelTime = 0;
         if($galaxyDifference > 0)
-            $travelTime += 3600 + $galaxyDifference*1800 + $systemDifference*30;
+            $travelTime += (3600 + $galaxyDifference*1800 + $systemDifference*30) * 2;
         elseif($systemDifference > 0)
             $travelTime = 900 + $systemDifference * 60;
         else
@@ -59,7 +59,7 @@ class Fleet extends Model
 
         $travelTime /= $speed;
 
-        return $travelTime;
+        return $travelTime*1.2;
     }
 
     public function outcome()
@@ -1063,7 +1063,7 @@ class Fleet extends Model
                 $totalResource += $this->destinationColony->$resource;
             }
             $claimAll = false;
-            if($this->capacity >= ($totalResource*0.6))
+            if($this->capacity >= ($totalResource*0.4))
                 $claimAll = true;
 
             foreach(config('stargate.resources') as $resource)
@@ -1071,7 +1071,7 @@ class Fleet extends Model
                 if($this->destinationColony->$resource > 1)
                 {
                     $ratio = $this->destinationColony->$resource / $totalResource;
-                    $maxClaimable = ceil($this->destinationColony->$resource * 0.6);
+                    $maxClaimable = ceil($this->destinationColony->$resource * 0.4);
 
                     $claimed = 0;
                     if($claimAll)

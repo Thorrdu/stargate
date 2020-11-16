@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\TopUpdater;
@@ -430,8 +430,19 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.start.description', [], 'fr'),
         'usage' => trans('help.start.usage', [], 'fr'),
-        'aliases' => array('h','he'),
-        'cooldown' => 2
+        'aliases' => array('h'),
+        'cooldown' => 5
+    ]);
+
+    $discord->registerCommand('tutorial', function ($message, $args) use($discord){
+        $command = new Tutorial($message,$args,$discord);
+        return $command->execute();
+    },[
+        'group' => 'utility',
+        'description' => trans('help.tutorial.description', [], 'fr'),
+        'usage' => trans('help.tutorial.usage', [], 'fr'),
+        'aliases' => array('t'),
+        'cooldown' => 5
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -441,7 +452,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.start.description', [], 'fr'),
 		'usage' => trans('help.start.usage', [], 'fr'),
         //'aliases' => array('start'),
-        'cooldown' => 3
+        'cooldown' => 5
     ]);
     //trans('generic.missingRequirements', [], $this->player->lang)
 
@@ -461,7 +472,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.colony.description', [], 'fr'),
 		'usage' => trans('help.colony.usage', [], 'fr'),
-		'aliases' => array('c','co','col'),
+		'aliases' => array('c'),
         'cooldown' => 3
     ]);	
 
@@ -471,7 +482,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.build.description', [], 'fr'),
 		'usage' => trans('help.build.usage', [], 'fr'),
-		'aliases' => array('b','bu'),
+		'aliases' => array('b'),
         'cooldown' => 3
     ]);	
 
@@ -481,7 +492,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.research.description', [], 'fr'),
 		'usage' => trans('help.research.usage', [], 'fr'),
-		'aliases' => array('r','search'),
+		'aliases' => array('r'),
         'cooldown' => 3
     ]);
     
@@ -491,7 +502,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.craft.description', [], 'fr'),
 		'usage' => trans('help.craft.usage', [], 'fr'),
-		'aliases' => array('cr','cra','craf'),
+		//'aliases' => array('cr','cra','craf'),
         'cooldown' => 3
     ]);
     
@@ -501,7 +512,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.defence.description', [], 'fr'),
 		'usage' => trans('help.defence.usage', [], 'fr'),
-		'aliases' => array('d','de','def'),
+		//'aliases' => array('d'),
         'cooldown' => 3
     ]);	
 
@@ -511,7 +522,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.empire.description', [], 'fr'),
 		'usage' => trans('help.empire.usage', [], 'fr'),
-		'aliases' => array('e','em','emp'),
+		//'aliases' => array('e'),
         'cooldown' => 30
     ]);	
 
@@ -521,7 +532,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.premium.description', [], 'fr'),
 		'usage' => trans('help.premium.usage', [], 'fr'),
-		'aliases' => array('pre','prem'),
+		//'aliases' => array('pre','prem'),
         'cooldown' => 5
     ]);	
 
@@ -533,7 +544,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
-		'aliases' => array('g','ga','gal'),
+		//'aliases' => array('g','ga','gal'),
         'cooldown' => 35
     ]);	
 
@@ -543,7 +554,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.fleet.description', [], 'fr'),
 		'usage' => trans('help.fleet.usage', [], 'fr'),
-		'aliases' => array('fleet','f'),
+		//'aliases' => array('fleet','f'),
         'cooldown' => 5
     ]);	
 
@@ -553,7 +564,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.shipyard.description', [], 'fr'),
 		'usage' => trans('help.shipyard.usage', [], 'fr'),
-		'aliases' => array('sh','ship'),
+		//'aliases' => array('sh','ship'),
         'cooldown' => 5
     ]);	
 
@@ -563,7 +574,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
-		'aliases' => array('s','st','sta','star'),
+		'aliases' => array('s','sg'),
         'cooldown' => 5
     ]);
 
@@ -584,7 +595,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.alliance.description', [], 'fr'),
 		'usage' => trans('help.alliance.usage', [], 'fr'),
-        'aliases' => array('a','al','ally'),
+        //'aliases' => array('a','al','ally'),
         'cooldown' => 2
 
     ]);	
@@ -595,7 +606,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.trade.description', [], 'fr'),
 		'usage' => trans('help.trade.usage', [], 'fr'),
-        'aliases' => array('t','tr','tra'),
+        //'aliases' => array('t','tr','tra'),
         'cooldown' => 5
 
     ]);	
@@ -628,7 +639,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.vote.description', [], 'fr'),
 		'usage' => trans('help.vote.usage', [], 'fr'),
-		'aliases' => array('v','vo'),
+		//'aliases' => array('v','vo'),
         'cooldown' => 5
     ]);	
 
@@ -643,7 +654,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.daily.description', [], 'fr'),
 		'usage' => trans('help.daily.usage', [], 'fr'),
-		'aliases' => array('da','day'),
+		//'aliases' => array('da','day'),
         'cooldown' => 5
     ]);
 
@@ -658,7 +669,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.hourly.description', [], 'fr'),
 		'usage' => trans('help.hourly.usage', [], 'fr'),
-		'aliases' => array('ho','hr','hor'),
+		'aliases' => array('hr'),
         'cooldown' => 5
     ]);
 
@@ -682,7 +693,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
-        'aliases' => array('rmd','rem','remind'),
+        'aliases' => array('rmd'),
         'cooldown' => 5
     ]);	
 
@@ -704,7 +715,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.infos.description', [], 'fr'),
 		'usage' => trans('help.infos.usage', [], 'fr'),
-        'aliases' => array('info'),
+        //'aliases' => array('info'),
         'cooldown' => 5
     ]);	
 
@@ -729,7 +740,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.uptime.description', [], 'fr'),
 		'usage' => trans('help.uptime.usage', [], 'fr'),
-        'aliases' => array('up'),
+        //'aliases' => array('up'),
         'cooldown' => 5
     ]);	
 

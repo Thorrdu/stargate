@@ -1296,7 +1296,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $totalResource += $this->coordinateDestination->colony->$resource;
                                                 }
                                                 $claimAll = false;
-                                                if($totalCapacity >= ($totalResource*0.6))
+                                                if($totalCapacity >= ($totalResource*0.5))
                                                     $claimAll = true;
 
                                                 foreach(config('stargate.resources') as $resource)
@@ -1304,7 +1304,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     if($this->coordinateDestination->colony->$resource > 1)
                                                     {
                                                         $ratio = $this->coordinateDestination->colony->$resource / $totalResource;
-                                                        $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.6);
+                                                        $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.5);
 
                                                         $claimed = 0;
                                                         if($claimAll)

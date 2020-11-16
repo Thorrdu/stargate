@@ -1301,7 +1301,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
         else
             $baseCusumption = 1 + 0.1 * $planetDifference;
 
-        return $baseCusumption*2.5;
+        return $baseCusumption*1.2;
     }
 
     public function canAttack($colonySource,$colonyDest)

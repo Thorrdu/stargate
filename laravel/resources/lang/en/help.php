@@ -3,6 +3,10 @@
 return [
     'usage' => 'Usage',
     'mainHelp' => 'Run `:prefixhelp` command to get more information about a command.',
+    'tutorial' => [
+        'description' => "Some clues for new players",
+        'usage' => ":prefixtutorial"
+    ],
     'ban' => [
         'description' => 'Ban/Unban a player from the bot.',
         'usage' => ':prefixban @mention'

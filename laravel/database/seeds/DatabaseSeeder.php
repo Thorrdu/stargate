@@ -799,7 +799,7 @@ class DatabaseSeeder extends Seeder
         /*
         NECESSITE LE CENTRE DE DEFENCE AVANCé
         DB::table('buildings')->insert([
-            'id' => 20,
+            'id' => 21,
             'name' => 'Usine de replicateur',
             'slug' => Str::slug('replicantFactory'),
             'description' => "L'usine de réplicateur permet d'automatiser encore d'avantage votre colonie, réduisant la majorité des temps de construction",
@@ -826,13 +826,6 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 7,
             'level' => 18
         ]);
-
-
-
-
-
-
-
 
 
             */
