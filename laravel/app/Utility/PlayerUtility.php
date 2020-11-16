@@ -160,11 +160,11 @@ class PlayerUtility
             if($showMilitaries)
             {
                 $militaryString = config('stargate.emotes.military')." ".trans('generic.militaries', [], $colonySource->player->lang).": ".number_format($colonyDest->military);
-                foreach($colonyDest->units as $unit)
+                /*foreach($colonyDest->units as $unit)
                 {
                     $militaryString .= ', ';
                     $militaryString .= trans('craft.'.$unit->slug.'.name', [], $colonySource->player->lang).' ('.number_format($unit->pivot->number).')';
-                }
+                }*/
                 $embed['fields'][] = [
                     'name' => trans('generic.militaries', [], $colonySource->player->lang),
                     'value' => $militaryString
