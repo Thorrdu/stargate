@@ -100,4 +100,5 @@ return [
     'dmBuildIsOver' => 'A building has just been completed...',
     'buildingMaxed' => 'This Building is already maxed...',
     'buildingRemoved' => 'The removal of **:name** has been done on :colony',
+    'cantCancelRemove' => 'You can\'t cancel a demolition once started...',
 ];

@@ -390,13 +390,6 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                 }
                 else
                 {
-                    /*
-                    $embed['fields'][] = array(
-                        'name' => trans('defence.hidden', [], $this->player->lang),
-                        'value' => trans('defence.unDiscovered', [], $this->player->lang),
-                        'inline' => true
-                    );*/
-
                     $requirementString = '';
                     foreach($defence->requiredTechnologies as $requiredTechnology)
                     {

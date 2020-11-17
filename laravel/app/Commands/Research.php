@@ -505,7 +505,7 @@ class Research extends CommandHandler implements CommandInterface
                 }
 
                 $embed['fields'][] = array(
-                    'name' => trans('research.hiddenTechnology', [], $this->player->lang),
+                    'name' => trans('research.'.$technology->slug.'.name', [], $this->player->lang),
                     'value' => $requirementString,
                     'inline' => true
                 );

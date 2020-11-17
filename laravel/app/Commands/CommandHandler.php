@@ -27,7 +27,6 @@ class CommandHandler
         }
     }
 
-
     //CLI VERSION
     public function __construct1(array $args) {
         $this->message = null; //Factory message?
@@ -69,13 +68,6 @@ class CommandHandler
         if(!is_null($this->player) && $this->player->ban)
             return "Vous êtes banni...";
 
-            /*
-        if(is_null($message->nonce))
-        {
-            $this->player->ban = true;
-            $this->player->save();
-        }*/
-
         $this->log();
     }
 
@@ -109,13 +101,6 @@ class CommandHandler
         }
 
         $this->discord = $discord;
-
-        /*
-        if(is_null($message->nonce))
-        {
-            $this->player->ban = true;
-        }*/
-
         $this->log();
     }
 
@@ -135,11 +120,10 @@ class CommandHandler
                 if(is_null($this->message->nonce) && $this->discord)
                 {
                     $flagCount = 0;
-                    $lastCommands = CommandLog::Where('player_id', $this->player)->orderBy('created_at', 'desc')->limit(4)->get();
-
+                    $lastCommands = CommandLog::Where('player_id', $this->player)->orderBy('created_at', 'desc')->limit(7)->get();
                     foreach($lastCommands as $lastCommand)
                     {
-                        if($lastCommand[0]->command_flag == 1)
+                        if($lastCommand->command_flag == 1 || $lastCommand->captcha_flag == 1)
                             $flagCount++;
                     }
                     if($flagCount >= 5)

@@ -98,4 +98,5 @@ return [
     'channelIgnored' => 'Le bot will not answer anymore in this channel...',
     'channelNotIgnored' => 'Le bot will answer again in this channel...',
     'wrongParameter' => 'Wrong Parameters.',
+    'availableRessources' => 'Available resources',
 ];

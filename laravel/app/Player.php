@@ -363,6 +363,21 @@ class Player extends Model
         return $bonus;
     }
 
+    public function getShipConsumptionBonus()
+    {
+        $bonus = 1;
+
+        $technologies = $this->technologies->filter(function ($value){
+            return !is_null($value->ship_consumption_bonus) && $value->ship_consumption_bonus > 0;
+        });
+        foreach($technologies as $technology)
+        {
+            $bonus *= pow($technology->ship_consumption_bonus, $technology->pivot->level);
+        }
+
+        return $bonus;
+    }
+
     public function checkFleets()
     {
         $checkedFleet = 0;

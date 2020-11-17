@@ -119,40 +119,47 @@ class Build extends CommandHandler implements CommandInterface
                 }
                 elseif(Str::startsWith('cancel', $this->args[0]))
                 {
-                    //if aucune construction en cours, return
-                    if(!is_null($this->player->activeColony->active_building_remove))
-                        return;
-                    if(is_null($this->player->activeColony->active_building_end))
+                    try
                     {
-                        return trans('building.noActiveBuilding',[],$this->player->lang);
-                    }
-                    else
-                    {
-                        $cancelledBuilding = $this->player->activeColony->activeBuilding;
-
-                        $wantedLvl = 1;
-                        $currentLvl = $this->player->activeColony->hasBuilding($cancelledBuilding);
-                        if($currentLvl)
-                            $wantedLvl += $currentLvl;
-
-                        $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
-
-                        $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
-                        foreach(config('stargate.resources') as $resource)
+                        //if aucune construction en cours, return
+                        if($this->player->activeColony->active_building_remove)
+                            return trans('building.cantCancelRemove',[],$this->player->lang);
+                        if(is_null($this->player->activeColony->active_building_end))
                         {
-                            if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
-                            {
-                                $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
-                                if($this->player->activeColony->{'storage_'.$resource} <= $newResource)
-                                    $newResource = $this->player->activeColony->{'storage_'.$resource};
-                                $this->player->activeColony->$resource = $newResource;
-                            }
+                            return trans('building.noActiveBuilding',[],$this->player->lang);
                         }
-                        $this->player->activeColony->active_building_id = null;
-                        $this->player->activeColony->active_building_end = null;
-                        $this->player->activeColony->save();
+                        else
+                        {
+                            $cancelledBuilding = $this->player->activeColony->activeBuilding;
 
-                        return trans('building.buildingCanceled',[],$this->player->lang);
+                            $wantedLvl = 1;
+                            $currentLvl = $this->player->activeColony->hasBuilding($cancelledBuilding);
+                            if($currentLvl)
+                                $wantedLvl += $currentLvl;
+
+                            $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
+
+                            $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
+                            foreach(config('stargate.resources') as $resource)
+                            {
+                                if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
+                                {
+                                    $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
+                                    if($this->player->activeColony->{'storage_'.$resource} <= $newResource)
+                                        $newResource = $this->player->activeColony->{'storage_'.$resource};
+                                    $this->player->activeColony->$resource = $newResource;
+                                }
+                            }
+                            $this->player->activeColony->active_building_id = null;
+                            $this->player->activeColony->active_building_end = null;
+                            $this->player->activeColony->save();
+
+                            return trans('building.buildingCanceled',[],$this->player->lang);
+                        }
+                    }
+                    catch(\Exception $e)
+                    {
+                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                     }
                 }
                 else
@@ -507,6 +514,13 @@ class Build extends CommandHandler implements CommandInterface
                 'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
             ),
         ];
+        /*
+        $embed['description'] .= "\n".trans('generic.availableRessources', [], $this->player->lang);
+        foreach (config('stargate.resources') as $resource)
+        {
+            $embed['description'] .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(floor($this->player->activeColony->$resource));
+        }
+        $embed['description'] .= "\n\n ";*/
 
         foreach($displayList as $building)
         {
@@ -603,7 +617,7 @@ class Build extends CommandHandler implements CommandInterface
                 }
 
                 $embed['fields'][] = array(
-                    'name' => trans('building.hiddenBuilding', [], $this->player->lang),
+                    'name' => trans('building.'.$building->slug.'.name', [], $this->player->lang),
                     'value' => $requirementString,
                     'inline' => true
                 );

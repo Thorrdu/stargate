@@ -101,4 +101,5 @@ return [
     'dmBuildIsOver' => 'Un bâtiment vient de se terminer...',
     'buildingMaxed' => 'Ce bâtiment est déjà au niveau maximum...',
     'buildingRemoved' => 'La destruction de **:name** s\'est terminée sur :colony',
+    'cantCancelRemove' => 'Vous ne pouvez annulez la destruction une fois commencée...',
 ];

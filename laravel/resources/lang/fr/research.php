@@ -39,7 +39,7 @@ return [
         ],
     'afterburner' => [
         'name' => "Combustion",
-        'description' => "Permet la conception de moteurs conventionels",
+        'description' => "Permet la conception de moteurs conventionnels",
         ],
     'laser' => [
         'name' => "Laser",

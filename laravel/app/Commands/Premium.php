@@ -129,7 +129,6 @@ class Premium extends CommandHandler implements CommandInterface
                 }
                 else
                 {
-
                     $premiumMessage = "";
                     if(!is_null($this->player->premium_expiration))
                     {

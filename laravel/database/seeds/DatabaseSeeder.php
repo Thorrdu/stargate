@@ -621,7 +621,7 @@ class DatabaseSeeder extends Seeder
             'id' => 10,
             'name' => 'Combustion',
             'slug' => Str::slug('afterburner'),
-            'description' => "Permet la conception de moteurs conventionels.",
+            'description' => "Permet la conception de moteurs conventionnels.",
             'type' => 'Center',
             'iron' => 2400,
             'gold' => 0,

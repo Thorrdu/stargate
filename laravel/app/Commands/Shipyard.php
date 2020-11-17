@@ -903,7 +903,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 else
                 {
                     $embed['fields'][] = array(
-                        'name' => trans('shipyard.hidden', [], $this->player->lang),
+                        'name' => $ship->name,
                         'value' => $requirementString,
                         'inline' => true
                     );

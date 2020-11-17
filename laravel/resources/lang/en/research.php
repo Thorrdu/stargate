@@ -58,7 +58,7 @@ return [
         'description' => "Mastery of technology related to Naqahdah. Allows the manufacture of weapons related to this resource and reduce fuel consumption",
         ],
     'subluminal' => [
-        'name' => "Sublumic speed",
+        'name' => "Subluminal  speed",
         'description' => "Ability to propel a ship at a higher speed than a standard combustion",
         ],
     'antimatter' => [

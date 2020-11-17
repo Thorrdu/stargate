@@ -40,6 +40,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public $fleetSpeed;
     public $usedCapacity;
     public $fleetSpeedBonus;
+    public $fleetConsumptionBonus;
     public $fleetHistory;
     public $fightPages;
 
@@ -60,6 +61,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                 $this->player->checkFleets();
                 $this->fleetSpeedBonus = $this->player->getShipSpeedBonus();
+                $this->fleetConsumptionBonus = $this->player->getShipConsumptionBonus();
 
                 $comTechnology = Technology::find(1); // Info et com
                 $currentComTechLvl = $this->player->hasTechnology($comTechnology);
@@ -1301,7 +1303,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
         else
             $baseCusumption = 1 + 0.1 * $planetDifference;
 
-        return $baseCusumption*1.2;
+        return ($baseCusumption*1.2)*$this->fleetConsumptionBonus;
     }
 
     public function canAttack($colonySource,$colonyDest)
