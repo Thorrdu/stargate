@@ -617,7 +617,7 @@ class Build extends CommandHandler implements CommandInterface
                 }
 
                 $embed['fields'][] = array(
-                    'name' => trans('building.'.$building->slug.'.name', [], $this->player->lang),
+                    'name' => $building->id.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang),
                     'value' => $requirementString,
                     'inline' => true
                 );
