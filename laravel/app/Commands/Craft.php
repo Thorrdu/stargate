@@ -331,11 +331,7 @@ class Craft extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($unit->$resource > 0)
-                    {
-                        if(!empty($unitPrice))
-                            $unitPrice .= " ";
-                        $unitPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($unitPrices[$resource]));
-                    }
+                        $unitPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]));
                 }
                 $unitTime = $unit->base_time;
 

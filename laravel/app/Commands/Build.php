@@ -329,14 +329,12 @@ class Build extends CommandHandler implements CommandInterface
                                 foreach (config('stargate.resources') as $resource)
                                 {
                                     if($building->$resource > 0)
-                                    {
-                                        $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
-                                    }
+                                        $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
                                 }
                                 if($building->energy_base > 0 && $building->slug != 'naqahdahreactor')
                                 {
                                     $energyRequired = $building->getEnergy($wantedLvl);
-                                    $buildingPrice .= config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired))."\n";
+                                    $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
                                 }
 
                                 $buildingTime = $building->getTime($wantedLvl);
@@ -545,16 +543,12 @@ class Build extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($building->$resource > 0)
-                    {
-                        if(!empty($buildingPrice))
-                            $buildingPrice .= " ";
-                        $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
-                    }
+                        $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
                 }
                 if($building->energy_base > 0)
                 {
                     $energyRequired = $building->getEnergy($wantedLvl);
-                    $buildingPrice .= " ".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
+                    $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
                 }
 
                 $buildingTime = $building->getTime($wantedLvl);

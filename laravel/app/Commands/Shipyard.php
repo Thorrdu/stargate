@@ -364,11 +364,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                         foreach (config('stargate.resources') as $resource)
                         {
                             if($this->blueprintMaker['finalShip']->$resource > 0)
-                            {
-                                if(!empty($shipPrice))
-                                    $shipPrice .= " ";
-                                $shipPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($this->blueprintMaker['finalShip']->$resource));
-                            }
+                                $shipPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($this->blueprintMaker['finalShip']->$resource));
                         }
 
                         $shipModel = $firePowerString."\n".$shieldString."\n".$hullString."\n".$capacityString."\n".$speedString."\n".$crewString."\n".trans('generic.duration', [], $this->player->lang).": ".$shipTime."\n".trans('generic.price', [], $this->player->lang).": ".$shipPrice;
@@ -714,11 +710,7 @@ class Shipyard extends CommandHandler implements CommandInterface
             foreach (config('stargate.resources') as $resource)
             {
                 if($component->$resource > 0)
-                {
-                    if(!empty($componentPrice))
-                        $componentPrice .= " ";
-                    $componentPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($componentPrices[$resource]));
-                }
+                    $componentPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($componentPrices[$resource]));
             }
             $componentBaseTime = $component->base_time;
 
@@ -837,11 +829,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($ship->$resource > 0)
-                    {
-                        if(!empty($shipPrice))
-                            $shipPrice .= " ";
-                        $shipPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($shipPrices[$resource]));
-                    }
+                        $shipPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($shipPrices[$resource]));
                 }
                 $shipTime = $ship->base_time;
 

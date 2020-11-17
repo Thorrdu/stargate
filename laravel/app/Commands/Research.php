@@ -272,9 +272,7 @@ class Research extends CommandHandler implements CommandInterface
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($technology->$resource > 0)
-                                {
-                                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]))."\n";
-                                }
+                                    $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
                             }
 
                             $buildingTime = $technology->getTime($wantedLvl);
@@ -439,11 +437,7 @@ class Research extends CommandHandler implements CommandInterface
             foreach (config('stargate.resources') as $resource)
             {
                 if($technology->$resource > 0)
-                {
-                    if(!empty($buildingPrice))
-                        $buildingPrice .= " ";
-                    $buildingPrice .= config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(round($buildingPrices[$resource]));
-                }
+                    $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
             }
 
             $buildingTime = $technology->getTime($wantedLvl);
