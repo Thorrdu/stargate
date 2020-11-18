@@ -95,7 +95,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     'inline' => false
                 );
 
-                if($this->player->user_id == 125641223544373248)
+                if(!is_null($this->player) && $this->player->user_id == 125641223544373248)
                 {
                     $embed['fields'][] = array(
                         'name' => 'Admin',
