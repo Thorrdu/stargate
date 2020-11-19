@@ -16,7 +16,8 @@ class Infos extends CommandHandler implements CommandInterface
             return trans('generic.banned',[],$this->player->lang);
 
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
-        $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
+        //$totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
+        $shardDisplay = $this->discord->commandClientOptions['discordOptions']['shardId'];
 
         $totalPlayers = DB::table('players')->count();
         $embed = [
@@ -44,7 +45,7 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Shards',
-                    'value' => "{$this->discord->commandClientOptions['discordOptions']['shardId']}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
+                    'value' => "{$shardDisplay}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
                     'inline' => true
                 ],
                 [
@@ -52,11 +53,11 @@ class Infos extends CommandHandler implements CommandInterface
                     'value' => $totalServer,
                     'inline' => true
                 ],
-                [
+                /*[
                     'name' => 'Users',
                     'value' => $totalUsers,
                     'inline' => true
-                ],
+                ],*/
                 [
                     'name' => 'Players',
                     'value' => number_format($totalPlayers),

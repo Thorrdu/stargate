@@ -116,6 +116,7 @@ $discord->on('ready', function ($discord) use($beta){
         echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
     }
     
+    
     $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
     Config::set('stargate.gateFight.StrongWeak', $newLimit);
     echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
