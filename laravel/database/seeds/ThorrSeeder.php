@@ -27,7 +27,13 @@ class ThorrSeeder extends Seeder
         $thorrdu->votes = 0;
         $thorrdu->npc = false;
         $thorrdu->save();
-        $thorrdu->addColony();
+
+        for($cpt = 1 ; $cpt <= config('stargate.galaxy.maxGalaxies') ; $cpt++)
+        {
+            $coordinate = Coordinate::where([['galaxy', $cpt],['system', 1],['planet', 1]])->first();
+            $thorrdu->addColony($coordinate);
+        }
+        $thorrdu->load('colonies');
 
 
         $alliance = new Alliance;
@@ -86,12 +92,7 @@ class ThorrSeeder extends Seeder
         $thorrdu->role_id = $role->id;
         $thorrdu->save();
 
-        for($cpt = 2 ; $cpt <= config('stargate.galaxy.maxGalaxies') ; $cpt++)
-        {
-            $coordinate = Coordinate::where([['galaxy', $cpt],['system', 1],['planet', 1]])->first();
-            $thorrdu->addColony($coordinate);
-        }
-        $thorrdu->load('colonies');
+
 
 
 
