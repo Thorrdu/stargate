@@ -47,7 +47,7 @@ global $beta;
 $beta = false;
 if(basename($_SERVER['PHP_SELF']) == "beta_stargate.php")
     $beta = true;
-$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.Sc1wU-YOokbAS2HXVc8sNt_R02w';
+$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.JOOyhOLsy99pafPsoTrfYPOyDZg';
 $prefix = '!';
 
 if($beta)
