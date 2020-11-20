@@ -9,4 +9,5 @@ return [
     'restrictedCommand' => 'Cette commande est réservée aux possesseur d\'un compte premium. Plus d\'infos avec `!help premium`.',
     "giveConfirmaton" => "__Souhaitez vous offrir un **Premium** à :player__\n".
                         "Statut: **En attente**",
+    "howGetPrem" => "Utilisez `!help premium` pour savoir comment en obtenir.",
 ];

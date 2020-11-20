@@ -149,6 +149,9 @@ class Premium extends CommandHandler implements CommandInterface
                     $premiumMessage .= "\n".trans("premium.havingPremium", ['premium' => $this->player->premium ], $this->player->lang);
                     if($this->player->premium > 0)
                         $premiumMessage .= "\n".trans("premium.howTo", [], $this->player->lang);
+                    else
+                        $premiumMessage .= "\n".trans("premium.howGetPrem", [], $this->player->lang);
+
 
                     return $premiumMessage;
                 }

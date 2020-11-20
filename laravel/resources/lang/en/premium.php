@@ -9,4 +9,5 @@ return [
     'restrictedCommand' => 'This command is restricted to premium owner. More information with `!help premium`.',
     "giveConfirmaton" => "__Do you want to offer a **Premium** to :player__\n".
                         "Offering status: **Awaiting**",
+    "howGetPrem" => "Check `!help premium` to know how to get one.",
 ];

@@ -131,7 +131,7 @@ return [
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
-        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)**"
+        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paysafe Card ou Paypal, contactez Thorrdu en DM)"
                         ."\nUne fois acheté, vous pouvez également utiliser ou offrir un premium\n\nAvantage du premium:\n".
                         "=> +25% de production des ressources basiques\n".
                         "=> Possibilité de renommer vos colonies\n".
