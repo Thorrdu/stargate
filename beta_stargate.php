@@ -79,10 +79,11 @@ $discord->on('ready', function ($discord) use($beta){
 
     /*$userExist = $discord->users->get('id','125641223544373248');
     $userExist->sendMessage('test');*/
-    
+    $shardUpDisplay = $discord->commandClientOptions['discordOptions']['shardId'] + 1;
+
     echo 'UPDATING PRESENCE'.PHP_EOL;
     $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
-        'name' => "Shard {$discord->commandClientOptions['discordOptions']['shardId']}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
+        'name' => "Shard {$shardUpDisplay}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
         'type' => Activity::TYPE_LISTENING
     ]);
     $discord->updatePresence($activity);
@@ -114,6 +115,7 @@ $discord->on('ready', function ($discord) use($beta){
     {
         echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
     }
+    
     
     $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
     Config::set('stargate.gateFight.StrongWeak', $newLimit);

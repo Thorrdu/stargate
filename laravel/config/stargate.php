@@ -33,13 +33,13 @@ return [
         'ship' => '<:ship:765545674644127764>',
         'reactor' => '<:reactor:765522326934519808>'
     ],
-    'galaxy' => ['maxGalaxies' => 5, 'maxSystems' => 150, 'maxPlanets' => 10],
+    'galaxy' => ['maxGalaxies' => 7, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
     'maxProdTime' => 720, //12h
     'maxColonies' => 6,
     'maxHourly' => 24,
     'gateFight' => ['StrongWeak' => 0],
-    'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 10000],
+    'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 100000],
     'guilds' => [],
     'channels' => [],
 ];

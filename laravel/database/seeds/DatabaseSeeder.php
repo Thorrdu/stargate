@@ -1375,8 +1375,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             GalaxySeeder::class,
-            ThorrSeeder::class,
             DefenceSeeder::class,
+            ThorrSeeder::class,
             ShipPartSeeder::class,
             //NpcSeeder::class,
         ]);
