@@ -254,6 +254,8 @@ class Build extends CommandHandler implements CommandInterface
                                 if($building->energy_base > 0)
                                 {
                                     $energyPrice = $building->getEnergy($wantedLvl);
+                                    if($wantedLvl > 1)
+                                        $energyPrice -= $building->getEnergy($wantedLvl-1);
                                     $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
                                     $missingEnergy = $energyPrice - $energyLeft;
                                     if($missingEnergy > 0)
