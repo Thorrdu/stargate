@@ -721,7 +721,7 @@ class Colony extends Model
             if(!is_null($this->player->premium_expiration))
                 $this->$varName *= 1.4;
 
-            $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $varName]);
+            $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $resource]);
         }
 
         $storageBuildings = $this->buildings->filter(function ($value) use($resource){
