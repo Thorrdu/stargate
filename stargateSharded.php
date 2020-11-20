@@ -656,7 +656,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.daily.description', [], 'fr'),
 		'usage' => trans('help.daily.usage', [], 'fr'),
-		//'aliases' => array('da','day'),
+		'aliases' => array('day'),
         'cooldown' => 5
     ]);
 

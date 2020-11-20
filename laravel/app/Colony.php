@@ -724,7 +724,7 @@ class Colony extends Model
             $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $resource]);
         }
 
-        $storageBuildings = $this->buildings->filter(function ($value) use($resource){
+        $storageBuildings = $this->buildings->filter(function ($value){
             return $value->type == 'Storage';
         });
         foreach($storageBuildings as $storageBuilding)

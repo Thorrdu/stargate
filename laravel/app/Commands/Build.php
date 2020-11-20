@@ -334,6 +334,8 @@ class Build extends CommandHandler implements CommandInterface
                                 if($building->energy_base > 0 && $building->slug != 'naqahdahreactor')
                                 {
                                     $energyRequired = $building->getEnergy($wantedLvl);
+                                    if($wantedLvl > 1)
+                                        $energyRequired -= $building->getEnergy($wantedLvl-1);
                                     $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
                                 }
 
@@ -548,6 +550,8 @@ class Build extends CommandHandler implements CommandInterface
                 if($building->energy_base > 0)
                 {
                     $energyRequired = $building->getEnergy($wantedLvl);
+                    if($wantedLvl > 1)
+                        $energyRequired -= $building->getEnergy($wantedLvl-1);
                     $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
                 }
 
