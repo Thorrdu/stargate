@@ -31,6 +31,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
+$player = Player::find(87);
+	TopUpdater::update($player);
+
+die();
+
 $colony = Colony::find(1);
 
 echo $colony->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'iron']);
