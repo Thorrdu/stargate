@@ -131,7 +131,7 @@ return [
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
-        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paysafe Card ou Paypal, contactez Thorrdu en DM)\n".
+        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paypal, contactez Thorrdu en DM)\n".
                         "Prix: 5 Euros = 1 Mois / 50 Euros = 1 an.\n".
                         "\nUne fois acheté, vous pouvez également utiliser ou offrir un premium\n\nAvantage du premium:\n".
                         "=> +40% de production des ressources basiques\n".
