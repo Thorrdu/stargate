@@ -11,5 +11,6 @@ return [
                       ."Yopu were quickly named as the new leader of this unlucky group and you decided to explore this planet to finally found a new place to settle.\n"
                       ."As a leader on this new colony, your role is to develop and defend your place, explore the galaxy and find a way to go back on Earth.\n"
                       ."\nTo check your colony's information, use `!colony` (or `!c`) \nThen build your first buildings like an energy source with `!build` (or `!b`)".
+                      "\n\nFor a more complete tutorial, check `!tutorial`".
                       "\n\nGood luck!"
 ];

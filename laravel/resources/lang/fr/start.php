@@ -12,5 +12,6 @@ return [
                         "\nEn tant que leader de cette nouvelle colonie, votre rôle est de vous développer et de préparer vos défenses afin de pouvoir explorer la galaxie pour finalement, trouver un moyen de rentrer sur terre.".
                         "\n\nPour consulter les informations de votre colonie, utilisez `!colony` (ou `!c`)".
                         "\nConstruisez ensuite vos premiers bâtiments comme une source d'énergie via `!build` (ou `!b`)".
+                        "\n\nPour un tutoriel plus complet, jettez un oeil à `!tutorial`".
                         "\n\nBonne chance !"
 ];
