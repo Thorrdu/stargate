@@ -920,6 +920,8 @@ class Colony extends Model
                 $bonusTypes = ['Research', 'Building', 'Ship', 'Defence', 'Craft'];
 
             $bonusResources = ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'];
+            if(!$this->prime_colony)
+                $bonusResources = ['iron', 'gold', 'quartz', 'naqahdah', 'military'];
 
             $newArtifact = new Artifact;
             $newArtifact->colony_id = $this->id;
@@ -990,8 +992,9 @@ class Colony extends Model
                 $alreadyOwned = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','Colony')->count();
                 if($alreadyOwned > 0)
                     return $this->generateArtifact($options);
-                $newArtifact->bonus_coef = 1;
-                $maxEnding = null;
+                $newArtifact->bonus_coef = 2;
+                if(isset($options['maxEnding']))
+                    unset($options['maxEnding']);
             }
 
             $minEnding = 1;

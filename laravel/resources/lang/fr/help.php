@@ -127,8 +127,9 @@ return [
     'profile' => [
         'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
                         ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
+                        "\nSi vous le souhaitez, vous pouvez cacher les coordonées lors de l'affichage de `!colony`".
                         "\nCette commande permet également d'activer ou désactiver le mode vacance.",
-        'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile vacation"
+        'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
         'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paypal, contactez Thorrdu en DM)\n".

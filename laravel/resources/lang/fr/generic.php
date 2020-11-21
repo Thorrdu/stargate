@@ -99,4 +99,5 @@ return [
     'channelNotIgnored' => 'Le bot répondra désormais de nouveau dans ce channel...',
     'wrongParameter' => 'Mauvais parametres.',
     'availableRessources' => 'Ressources disponibles',
+    'hidden' => 'Caché',
 ];

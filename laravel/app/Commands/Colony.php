@@ -227,7 +227,17 @@ class Colony extends CommandHandler implements CommandInterface
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
 
-                $coordinates = $this->player->activeColony->coordinates;
+                $colonyName = trans('generic.colony', [], $this->player->lang).': ';
+                if($this->player->hide_coordinates)
+                {
+                    $colonyName .= $coordinatesDisplay = trans('generic.hidden', [], $this->player->lang);
+                }
+                else
+                {
+                    $coordinates = $this->player->activeColony->coordinates;
+                    $coordinatesDisplay = $coordinates->humanCoordinates();
+                    $colonyName .= $this->player->activeColony->name;
+                }
 
                 $embed = [
                     'author' => [
@@ -235,8 +245,8 @@ class Colony extends CommandHandler implements CommandInterface
                         'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                     ],
                    // 'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
-                    "title" => 'Colonie '.$this->player->activeColony->name,
-                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinates->humanCoordinates(),
+                    "title" => $colonyName,
+                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinatesDisplay,
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',

@@ -42,16 +42,35 @@ class Profile extends CommandHandler implements CommandInterface
                     {
                         $this->player->notification = true;
                         $this->player->save();
-                        return trans('profile.notification.disabled',[],$this->player->lang);
+                        return trans('profile.notification.enabled',[],$this->player->lang);
                     }
                     elseif(Str::startsWith('off', $this->args[1]))
                     {
                         $this->player->notification = false;
                         $this->player->save();
-                        return trans('profile.notification.enabled',[],$this->player->lang);
+                        return trans('profile.notification.disabled',[],$this->player->lang);
                     }
                     else
                         return trans('profile.notification.missingParameter',[],$this->player->lang);
+                }
+                if(Str::startsWith('hide', $this->args[0]))
+                {
+                    if(count($this->args) < 2)
+                        return trans('profile.hide.missingParameter',[],$this->player->lang);
+                    if(Str::startsWith('on', $this->args[1]))
+                    {
+                        $this->player->hide_coordinates = true;
+                        $this->player->save();
+                        return trans('profile.hide.enabled',[],$this->player->lang);
+                    }
+                    elseif(Str::startsWith('off', $this->args[1]))
+                    {
+                        $this->player->hide_coordinates = false;
+                        $this->player->save();
+                        return trans('profile.hide.disabled',[],$this->player->lang);
+                    }
+                    else
+                        return trans('profile.hide.missingParameter',[],$this->player->lang);
                 }
                 if(Str::startsWith('vacation', $this->args[0]))
                 {

@@ -127,13 +127,14 @@ return [
     'profile' => [
         'description' => "Display information about your profile such as lang, vote number, ..."
                         ."\nAlso allows to manage your notification at the end of building/research or when your vote is available.".
+                        "\nIf you wish to, you can hide your coordinates when displaying `!colony`.".
                         "\nThis command also allow to activate or disable the vacation mode.",
-        'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile vacation"
+        'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
         'description' => "If you want to support the bot, you can buy a premium through this link: **[Utip](https://utip.io/thorrdu)** (For payement with Paypal, contact Thorrdu in DM)\n".
                         "Price: 5 Euros = 1 Month / 50 Euros = 1 Year.\n".
-                        "\nYou can also use or give a premium once you bought it.\n\nPremium advantages:".
+                        "\nYou can also use or give a premium once you bought it.\n\nPremium advantages:\n".
 
                         "=> +40% basic resources production\n".
                         "=> Possibility to rename your colonies\n".

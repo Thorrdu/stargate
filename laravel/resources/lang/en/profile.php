@@ -6,6 +6,11 @@ return [
         "disabled" => "Building/Research notification **ON**",
         "enabled" => "Building/Research notification **OFF**",
     ],
+    "hide" => [
+        "missingParameter" => "Missing or wrong parameter. try `!profile hide on/off`",
+        "enabled" => "Your coordinates are now **hidden**",
+        "disabled" => "Your coordinates are now **displayed**",
+    ],
     'nextVacation' => 'You came back from **vacation mode** too recently. You\'ll be able to activate it again in **:time**.',
     'vacationUntil' => 'You activated **vacation mode** too recently. You\'ll be able to desactivate it in **:time**.',
     'vacationConfirm' => 'Do you want to activate **vacation mode** ?'.

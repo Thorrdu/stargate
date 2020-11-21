@@ -97,6 +97,8 @@ class Player extends Model
             $newColony = new Colony;
             $newColony->colony_type = 1;
             $newColony->player_id = $this->id;
+            if($this->colonies->count() == 0)
+                $newColony->prime_colony = true;
             $newColony->name = 'P'.rand(1, 9).Str::upper(Str::random(1)).'-'.rand(1, 9).rand(1, 9).rand(1, 9);
             $newColony->last_claim = date("Y-m-d H:i:s");
             $newColony->artifact_check = Carbon::now()->add(rand(1,72).'h');

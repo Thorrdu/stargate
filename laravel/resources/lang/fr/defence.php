@@ -31,7 +31,7 @@ return [
     ],
     'hidden' => '-- Défense cachée --',
     'unDiscovered' => 'Non découverte',
-    'buildingStarted' => 'Défense commencée, **:qtyx :name**. Terminé dans **:time**',
+    'buildingStarted' => 'Construction de Défense commencée, **:qtyx :name**. Terminé dans **:time**',
     'howTo' => "Construisez une défense avec `!defence [id] [quantité]` ou `!defence [slug] [quantité]`\n\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert cette défense.",
     "unknownDefence" => "Défense inconnue",
