@@ -79,11 +79,17 @@ $discord->on('ready', function ($discord) use($beta){
 
     /*$userExist = $discord->users->get('id','125641223544373248');
     $userExist->sendMessage('test');*/
-    $shardUpDisplay = $discord->commandClientOptions['discordOptions']['shardId'] + 1;
+    //$shardUpDisplay = $discord->commandClientOptions['discordOptions']['shardId'] + 1;
 
     echo 'UPDATING PRESENCE'.PHP_EOL;
-    $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+    /*$activity = $discord->factory(\Discord\Parts\User\Activity::class, [
         'name' => "Shard {$shardUpDisplay}/{$discord->commandClientOptions['discordOptions']['shardCount']} loading...",
+        'type' => Activity::TYPE_LISTENING
+    ]);
+    $discord->updatePresence($activity);*/
+
+    $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
+        'name' => "!help",// | {$totalServer} servers {$totalUsers} users
         'type' => Activity::TYPE_LISTENING
     ]);
     $discord->updatePresence($activity);
@@ -375,12 +381,12 @@ $discord->on('ready', function ($discord) use($beta){
         //DB::table('configuration')->Where([['key','LIKE','shardServer'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $discord->guilds->count()]);
         //DB::table('configuration')->Where([['key','LIKE','shardUser'.$discord->commandClientOptions['discordOptions']['shardId']]])->update(['value' => $usrCount]);
         
-
+            /*
         $activity = $discord->factory(\Discord\Parts\User\Activity::class, [
             'name' => "!help",// | {$totalServer} servers {$totalUsers} users
             'type' => Activity::TYPE_LISTENING
         ]);
-        $discord->updatePresence($activity);
+        $discord->updatePresence($activity);*/
     });
 
 
