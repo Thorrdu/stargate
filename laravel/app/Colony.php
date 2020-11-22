@@ -719,7 +719,7 @@ class Colony extends Model
                 $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
 
             if(!is_null($this->player->premium_expiration))
-                $this->$varName *= 1.4;
+                $this->$varName *= 1.35;
 
             $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $resource]);
         }

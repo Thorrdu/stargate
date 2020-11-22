@@ -136,7 +136,7 @@ return [
                         "Price: 5 Euros = 1 Month / 50 Euros = 1 Year.\n".
                         "\nYou can also use or give a premium once you bought it.\n\nPremium advantages:\n".
 
-                        "=> +40% basic resources production\n".
+                        "=> +35% basic resources production\n".
                         "=> Possibility to rename your colonies\n".
                         "=> Access to the `:prefixempire` command",
         'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention"
