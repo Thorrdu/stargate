@@ -77,10 +77,7 @@ class Premium extends CommandHandler implements CommandInterface
                             {
                                 $this->qtyToGive = 1;
                                 if(isset($this->args[2]) && (int)$this->args[2] > 0)
-                                {
                                     $this->qtyToGive = (int)$this->args[2];
-                                }
-                                $this->paginatorMessage->content = trans('generic.notEnoughResources', ['missingResources' => '1 Premium'], $this->player->lang);
 
                                 if($this->player->trade_ban)
                                     return trans('stargate.trade_ban', [], $this->player->lang);
