@@ -44,7 +44,7 @@ class Trade extends Model
         foreach($this->tradeResources as $tradeResource)
         {
             if($tradeResource->resource == 'premium')
-                $this->{'p'.$tradeResource->player.'HasPremium'} = true;
+                ${'p'.$tradeResource->player.'HasPremium'} = true;
         }
 
         if($this->playerSource->points_total > $this->playerDest->points_total && ($this->trade_value_player2/$diff1) > 1.25)
