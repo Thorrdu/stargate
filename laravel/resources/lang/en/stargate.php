@@ -66,6 +66,12 @@ return [
     "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] from :planetNameSource [:coordinateSource]\n".
                             "Troops:\n:militaryUnits".
                             "\nCost: :consumption",
+    "exploreConfirmation" => "Send an exploration team to :coordinateDestination ?\n".
+                            "Troops: :militaryUnits".
+                            "\nCost: :consumption",
+    "colonizeConfirmation" => "Send a colonization team to :coordinateDestination ?\n".
+                            "Troops: :militaryUnits".
+                            "\nCost: :consumption",
     "attackSent" => "Your troops have been send on :planet [:coordinateDestination].\nA report will arrive soon.",
     "attackCancelled" => "Attack cancelled",
     "attackerWinReport" => "Attack through Stargate [:destination] (:player)\n\n".
