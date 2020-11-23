@@ -38,4 +38,5 @@ return [
     'awaitBalancing' => 'En attente de régularisation...',
     'youAlreadyHaveActiveTrade' => 'Vous avez déjà un autre trade actif avec un autre joueur. Voir `!trade` pour le côturer.',
     'playerHasActiveTrade' => 'Ce joueur possède déjà un trade actif avec un autre joueur.',
+    'closed' => 'Trade clôturé.',
 ];

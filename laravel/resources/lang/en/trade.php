@@ -37,4 +37,5 @@ return [
     'awaitBalancing' => 'Await balancing...',
     'youAlreadyHaveActiveTrade' => 'You already have an active trade with another player. See `!trade` to close it',
     'playerHasActiveTrade' => 'This player already have an active trade with another player.',
+    'closed' => 'Trade closed.',
 ];
