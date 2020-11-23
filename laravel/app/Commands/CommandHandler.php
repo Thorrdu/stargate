@@ -130,7 +130,9 @@ class CommandHandler
                     {
                         $this->player->ban = true;
                         $this->player->save();
-                        $userExist = $this->discord->users->get('id', $this->player->user_id);
+                        $userExist = $this->discord->factory(\Discord\Parts\User\User::class, [
+                            'id' => $this->player->user_id,
+                        ]);
                         if(!is_null($userExist))
                             $userExist->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
                     }
@@ -141,7 +143,9 @@ class CommandHandler
                         $this->player->captcha_key = Str::random(10);
                         $this->player->save();
 
-                        $userExist = $this->discord->users->get('id',$this->player->user_id);
+                        $userExist = $this->discord->factory(\Discord\Parts\User\User::class, [
+                            'id' => $this->player->user_id,
+                        ]);
                         if(!is_null($userExist))
                             $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
                     }

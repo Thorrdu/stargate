@@ -710,7 +710,14 @@ class Shipyard extends CommandHandler implements CommandInterface
             foreach (config('stargate.resources') as $resource)
             {
                 if($component->$resource > 0)
+                {
                     $componentPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($componentPrices[$resource]));
+
+                    if($this->player->activeColony->$resource >= ceil($componentPrices[$resource]))
+                        $componentPrice .= ' '.config('stargate.emotes.confirm');
+                    else
+                        $componentPrice .= ' '.config('stargate.emotes.cancel');
+                }
             }
             $componentBaseTime = $component->base_time;
 
@@ -829,7 +836,14 @@ class Shipyard extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($ship->$resource > 0)
+                    {
                         $shipPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($shipPrices[$resource]));
+
+                        if($this->player->activeColony->$resource >= ceil($shipPrices[$resource]))
+                            $shipPrice .= ' '.config('stargate.emotes.confirm');
+                        else
+                            $shipPrice .= ' '.config('stargate.emotes.cancel');
+                    }
                 }
                 $shipTime = $ship->base_time;
 

@@ -1749,12 +1749,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/teamreflex/DiscordPHP.git",
-                "reference": "f62054852a6c54e7e1faa080ca3d41eb3b637af0"
+                "reference": "ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/teamreflex/DiscordPHP/zipball/f62054852a6c54e7e1faa080ca3d41eb3b637af0",
-                "reference": "f62054852a6c54e7e1faa080ca3d41eb3b637af0",
+                "url": "https://api.github.com/repos/teamreflex/DiscordPHP/zipball/ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4",
+                "reference": "ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4",
                 "shasum": ""
             },
             "require": {
@@ -1772,12 +1772,15 @@
                 "trafficcophp/bytebuffer": "^0.3"
             },
             "require-dev": {
+                "davidcole1340/reactsh": "dev-master",
                 "friendsofphp/php-cs-fixer": "^2.16",
+                "phpunit/phpunit": "^9.4",
                 "symfony/var-dumper": "*"
             },
             "suggest": {
                 "ext-event": "For a faster, and more performant loop",
                 "ext-libev": "For a faster, and more performant loop",
+                "ext-mbstring": "For accurate calculations of string length when handling non-english characters.",
                 "ext-uv": "For a faster, and more performant loop. PHP >=7 only. Preferred."
             },
             "type": "library",
@@ -1804,7 +1807,7 @@
                 }
             ],
             "description": "An unofficial API to interact with the voice and text service Discord.",
-            "time": "2020-11-02T20:17:42+00:00"
+            "time": "2020-11-22T22:51:16+00:00"
         },
         {
             "name": "trafficcophp/bytebuffer",

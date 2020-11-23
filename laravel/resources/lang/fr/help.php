@@ -69,6 +69,10 @@ return [
                     ":prefixalliance disband\n".
                     ":prefixalliance upgrade\n"
     ],
+    'flex' => [
+        'description' => "Vous permet de flex vos ressources aux autres joueurs.",
+        'usage' => ":prefixflex [resource] [quantité/all]"
+    ],
     'stargate' => [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer".
                         "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
@@ -133,12 +137,13 @@ return [
     ],
     'premium' => [
         'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paypal, contactez Thorrdu en DM)\n".
-                        "Prix: 5 Euros = 1 Mois / 50 Euros = 1 an.\n".
+                        "Prix: 5 Euros = 1 Mois / 5 Premium achetés = 1 Premium offert.\n".
                         "\nUne fois acheté, vous pouvez également utiliser ou offrir un premium\n\nAvantage du premium:\n".
-                        "=> +35% de production des ressources basiques\n".
+                        "=> +30% de production\n".
+                        "=> -20% de temps de construction/recherche\n".
                         "=> Possibilité de renommer vos colonies\n".
                         "=> Accès à la commande `:prefixempire`",
-        'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention"
+        'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention\n:prefixpremium give @mention [quantité]"
     ],
     'empire' => [
         'description' => "Vous permet d'afficher une vue d'ensemble de vos colonies, réclamer leur ressources / vérifier la fin de vos building/research/craft/defence en une commande",
@@ -153,13 +158,12 @@ return [
         'usage' =>  ":prefixtop [general/building/research/craft/defence/military]\n:prefixtop [general/building/research/craft/defence/military] alliance"
     ],
     'trade'=> [
-        'description' => "Liste les trades actifs.\nAfficher le détail d'un trade via `:prefixtrade [id]`\nClôturer un trade en cours avant la date de fin avec `:prefixtrade [id] close`\nDemander le prolongemnet d'un trade avec `:prefixtrade [id] extend`".
+        'description' => "Liste les trades actifs.\nAfficher le détail d'un trade via `:prefixtrade [id]`\nClôturer un trade en cours avant la date de fin avec `:prefixtrade [id] close`".
                         "\nInviter un joueur à un pacte commercial avec `:prefixtrade pact <mention>` ou annulez-en un avec `:prefixtrade pact <mention> cancel` ",
         'usage' =>  ":prefixtrade list\n".
                     ":prefixtrade ratio\n".
                     ":prefixtrade [ID]\n".
                     ":prefixtrade [ID] close\n".
-                    ":prefixtrade [ID] extend\n".
                     ":prefixtrade pact list\n".
                     ":prefixtrade pact [mention/ID]\n".
                     ":prefixtrade pact [mention/ID] cancel\n"

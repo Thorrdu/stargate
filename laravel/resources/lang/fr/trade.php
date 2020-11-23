@@ -24,7 +24,7 @@ return [
     'ban' => 'N\'ayant pas régulariser le trade endéant les temps. Vous êtes désormais banni du système de trade...'."\nUne ultime chance peut être obtenue en réclamant un délai avec `!trade :tradeID extend`",
 
     'noPactWithThisPlayer' => 'Vous ne possédez pas de pacte commercial avec ce joueur...',
-    'cantCancelWithUnfairFairTrade' => 'Vous ne pouvez annuler un pacte avec ce joueur, un trade injuste est en cours.',
+    'cantCancelWithUnfairFairTrade' => 'Vous ne pouvez annuler un pacte avec ce joueur, un trade est en cours.',
     'pactAlreadyExists' => 'Vous avez déjà un pacte commercial avec ce joueur.',
     'pactConfirm' => "<@:player_2_id>, vous êtes invité à créer un pacte commercial <@:player_1_id>".
                     "\nCe pacte vous permettra de commercer avec lui.".
@@ -35,5 +35,7 @@ return [
     'emptyPacts' => 'Aucun pacte',
     'pactList' => 'Liste de vos pactes actifs',
     'pactPlayers' => 'Joueurs',
-
+    'awaitBalancing' => 'En attente de régularisation...',
+    'youAlreadyHaveActiveTrade' => 'Vous avez déjà un autre trade actif avec un autre joueur. Voir `!trade` pour le côturer.',
+    'playerHasActiveTrade' => 'Ce joueur possède déjà un trade actif avec un autre joueur.',
 ];

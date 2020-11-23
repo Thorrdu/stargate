@@ -23,7 +23,7 @@ return [
     ],
     'robotfactory' => [
         'name' => 'Robot factory',
-        'description' => 'Allow your settlers to be helped by robots when working'
+        'description' => 'Allow your settlers to be helped by robots when working. This will reduce the time of all your buildings.'
     ],
     'research' => [
         'name' => 'Research center',

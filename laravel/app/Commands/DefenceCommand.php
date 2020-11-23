@@ -337,7 +337,14 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($defence->$resource > 0)
+                    {
                         $defencePrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($defencePrices[$resource]));
+
+                        if($this->player->activeColony->$resource >= ceil($defencePrices[$resource]))
+                            $defencePrice .= ' '.config('stargate.emotes.confirm');
+                        else
+                            $defencePrice .= ' '.config('stargate.emotes.cancel');
+                    }
                 }
                 $defenceTime = $defence->base_time;
 

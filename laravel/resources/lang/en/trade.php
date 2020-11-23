@@ -23,7 +23,7 @@ return [
     'warn' => '**_Warning, Unfair trade detected. You have +-24h hours left to ajust the trade before getting banned from the trade system._**'."\nMore info: `!trade :tradeID`",
     'ban' => 'Has you haven\'t regulated the unfair trade, you\'re now banned from the trade system...'."\nHowever, you can get an ultimate chance by claiming a time extention with `!trade :tradeID extend`",
     'noPactWithThisPlayer' => 'You do not posess a trade pact with this player...',
-    'cantCancelWithUnfairFairTrade' => 'You can\'t cancel your pact with this player, An unfair trade is still active.',
+    'cantCancelWithUnfairFairTrade' => 'You can\'t cancel your pact with this player, A trade is still active.',
     'pactAlreadyExists' => 'You already have an active pact with this player.',
     'pactConfirm' => "<@:player_2_id>, You're invited to create a trade pact with <@:player_1_id>".
                     "\nThis pact will allow you to trade with him.".
@@ -34,4 +34,7 @@ return [
     'emptyPacts' => 'No active pact',
     'pactList' => 'Active pacts list',
     'pactPlayers' => 'Players',
+    'awaitBalancing' => 'Await balancing...',
+    'youAlreadyHaveActiveTrade' => 'You already have an active trade with another player. See `!trade` to close it',
+    'playerHasActiveTrade' => 'This player already have an active trade with another player.',
 ];

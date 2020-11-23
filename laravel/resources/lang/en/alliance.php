@@ -41,7 +41,7 @@ return [
     'promoteRight' => "Promote right",
     'unknownRole' => "Unknown role.",
     'roleNameChanged' => "The role **:oldRole** has been changed to **:newRole**.",
-    'recruitementEnabled' => "The alliance is not opened to recruitement.",
+    'recruitementEnabled' => "The alliance is now opened to recruitement.",
     'recruitementDisabled' => "The alliance is now closed to recruitement.",
     'recruitementRightEnabled' => "Recruit right enabled.",
     'recruitementRightDisabled' => "Recruit right disabled.",

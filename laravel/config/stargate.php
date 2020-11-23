@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '1.0.2',
+    'version' => '1.0.3',
     'ownerId' => '125641223544373248',
     'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
@@ -42,4 +42,8 @@ return [
     'alliance' => ['maxRoles' => 5, 'baseMembers' => 5, 'baseUpgradePrice' => 100000],
     'guilds' => [],
     'channels' => [],
+    'premium' => [
+        'bonusProduction' => 1.30,
+        'bonusTime' => 0.8,
+    ],
 ];

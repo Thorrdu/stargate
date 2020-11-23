@@ -331,7 +331,14 @@ class Craft extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($unit->$resource > 0)
+                    {
                         $unitPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($unitPrices[$resource]));
+
+                        if($this->player->activeColony->$resource >= ceil($unitPrices[$resource]))
+                            $unitPrice .= ' '.config('stargate.emotes.confirm');
+                        else
+                            $unitPrice .= ' '.config('stargate.emotes.cancel');
+                    }
                 }
                 $unitTime = $unit->base_time;
 

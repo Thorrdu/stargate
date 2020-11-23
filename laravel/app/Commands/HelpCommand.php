@@ -104,13 +104,9 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     );
                 }
 
-
-
                 $this->message->channel->sendMessage('', false, $embed);
 
                 return;
-
-
 
                 $this->closed = false;
                 $this->page = 1;

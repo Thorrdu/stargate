@@ -7,7 +7,7 @@ return [
     'havingPremium' => 'Vous possédez **:premium premium**.',
     'howTo' => "Vous pouvez choisir d'en activer un pour vous avec `!premium use` ou décider d'en offrir un avec `!premium give @mention`.",
     'restrictedCommand' => 'Cette commande est réservée aux possesseur d\'un compte premium. Plus d\'infos avec `!help premium`.',
-    "giveConfirmaton" => "__Souhaitez vous offrir un **Premium** à :player__\n".
+    "giveConfirmaton" => "__Souhaitez vous offrir **:qty Premium** à :player__\n".
                         "Statut: **En attente**",
     "howGetPrem" => "Utilisez `!help premium` pour savoir comment en obtenir.",
 ];

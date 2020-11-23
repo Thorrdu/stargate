@@ -69,6 +69,10 @@ return [
                     ":prefixalliance disband\n".
                     ":prefixalliance upgrade\n"
     ],
+    'flex' => [
+        'description' => "Allows you to show to flex your resources to other players.",
+        'usage' => ":prefixflex [resource] [quantity/all]"
+    ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players".
                         "**Lvl 5 - Research Center** required to use the gate to contact other planets.\n".
@@ -133,13 +137,14 @@ return [
     ],
     'premium' => [
         'description' => "If you want to support the bot, you can buy a premium through this link: **[Utip](https://utip.io/thorrdu)** (For payement with Paypal, contact Thorrdu in DM)\n".
-                        "Price: 5 Euros = 1 Month / 50 Euros = 1 Year.\n".
+                        "Price: 5 Euros = 1 Month / 5 Premium bought = 1 Premium offered.\n".
                         "\nYou can also use or give a premium once you bought it.\n\nPremium advantages:\n".
 
-                        "=> +35% basic resources production\n".
+                        "=> +30% production\n".
+                        "=> -20% building/research time\n".
                         "=> Possibility to rename your colonies\n".
                         "=> Access to the `:prefixempire` command",
-        'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention"
+        'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention\n:prefixpremium give @mention [quantité]"
     ],
     'empire' => [
         'description' => "Allow you to see an overview of your colonies and claiming resources / check building/research/craft/defence ending with one command",
@@ -154,13 +159,12 @@ return [
         'usage' => ":prefixtop [general/building/research/craft/defence/military]\n:prefixtop [general/building/research/craft/defence/military] alliance"
     ],
     'trade'=> [
-        'description' => "List all your active trades.\nDisplay a specific trade details with `:prefixtrade [id]`\nClose a trade before the end with `:prefixtrade [id] close`\nAsk for a time extention with `:prefixtrade [id] extend`".
+        'description' => "List all your active trades.\nDisplay a specific trade details with `:prefixtrade [id]`\nClose a trade before the end with `:prefixtrade [id] close`".
                         "\nInvite a player to a trade pact with `:prefixtrade pact <mention>` or cancel an existing on with `:prefixtrade pact <mention> cancel` ",
         'usage' =>  ":prefixtrade list\n".
                     ":prefixtrade ratio\n".
                     ":prefixtrade [ID]\n".
                     ":prefixtrade [ID] close\n".
-                    ":prefixtrade [ID] extend\n".
                     ":prefixtrade pact list\n".
                     ":prefixtrade pact [mention/ID]\n".
                     ":prefixtrade pact [mention/ID] cancel\n"

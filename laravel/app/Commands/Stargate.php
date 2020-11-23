@@ -507,23 +507,26 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(is_null($pactExists) && $this->player->user_id != 125641223544373248)
                         return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
 
-                    if($this->player->trade_ban && $this->coordinateDestination->colony->player->trade_ban && $this->player->trade_extend != null && $this->coordinateDestination->colony->player->trade_extend != null)
-                    {
-                        $tradeExtention = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->trade_extend);
-                        if($tradeExtention->isPast())
-                        {
-                            $this->player->trade_extend = null;
-                            $this->player->save();
-                            $this->coordinateDestination->colony->player->trade_extend  = null;
-                            $this->coordinateDestination->colony->player->save();
-
-                            return trans('stargate.extentionExpired', [], $this->player->lang);
-                        }
-                    }
-                    elseif($this->player->trade_ban)
+                    if($this->player->trade_ban)
                         return trans('stargate.trade_ban', [], $this->player->lang);
                     elseif($this->coordinateDestination->colony->player->ban)
                         return trans('stargate.playerTradeBan', [], $this->player->lang);
+                    elseif($this->player->user_id != config('stargate.ownerId'))
+                    {
+                        $activeTradeCheck = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])
+                                            ->orWhere([["player_id_dest", $this->player->id], ["player_id_source", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])->count();
+
+                        if($activeTradeCheck > 0)
+                            return trans('trade.youAlreadyHaveActiveTrade', [], $this->player->lang);
+                        else
+                        {
+                            $playerActiveTradeCheck = Trade::where([["player_id_source", '!=', $this->player->id], ["player_id_dest", $this->coordinateDestination->colony->player->id], ["active", true]])
+                            ->orWhere([["player_id_dest", '!=', $this->player->id], ["player_id_source", $this->coordinateDestination->colony->player->id], ["active", true]])->count();
+
+                            if($playerActiveTradeCheck > 0)
+                                return trans('trade.playerHasActiveTrade', [], $this->player->lang);
+                        }
+                    }
 
                     if(count($this->args) < 4)
                         return trans('generic.missingArgs', [], $this->player->lang).' / !s trade [Coordinates] Ress1 Qty1';

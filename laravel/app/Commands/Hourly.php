@@ -89,7 +89,7 @@ class Hourly extends CommandHandler implements CommandInterface
 
                     $resValue = ($this->player->activeColony->$varProd / 60)* rand(15,25) * $multiplier;
 
-                    $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: '.($displayMultiplier/10).' (+'.$displayMultiplier.'%))';
+                    $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: '.$this->player->hr_combo.' (+'.$displayMultiplier.'%))';
 
                     $this->player->activeColony->$resType += $resValue;
                     $this->player->activeColony->save();
@@ -101,7 +101,9 @@ class Hourly extends CommandHandler implements CommandInterface
                         $this->player->captcha = true;
                         $this->player->captcha_key = Str::random(10);
 
-                        $userExist = $this->discord->users->get('id',$this->player->user_id);
+                        $userExist = $this->discord->factory(\Discord\Parts\User\User::class, [
+                            'id' => $this->player->user_id,
+                        ]);
                         if(!is_null($userExist))
                             $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
                     }

@@ -250,6 +250,9 @@ class Colony extends Model
 
         $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Research']);
 
+        if(!is_null($this->player->premium_expiration))
+            $bonus *= config('stargate.premium.bonusTime');
+
         return $bonus;
     }
 
@@ -274,6 +277,9 @@ class Colony extends Model
 
         $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Building']);
 
+        if(!is_null($this->player->premium_expiration))
+            $bonus *= config('stargate.premium.bonusTime');
+
         return $bonus;
     }
 
@@ -294,6 +300,9 @@ class Colony extends Model
             $bonus *= pow($technology->crafting_bonus, $technology->pivot->level);
 
         $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Craft']);
+
+        if(!is_null($this->player->premium_expiration))
+            $bonus *= config('stargate.premium.bonusTime');
 
         return $bonus;
     }
@@ -316,6 +325,9 @@ class Colony extends Model
 
         $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Defence']);
 
+        if(!is_null($this->player->premium_expiration))
+            $bonus *= config('stargate.premium.bonusTime');
+
         return $bonus;
     }
 
@@ -336,6 +348,9 @@ class Colony extends Model
             $bonus *= pow($technology->ship_bonus, $technology->pivot->level);
 
         $bonus *= $this->getArtifactBonus(['bonus_category' => 'Time', 'bonus_type' => 'Ship']);
+
+        if(!is_null($this->player->premium_expiration))
+            $bonus *= config('stargate.premium.bonusTime');
 
         return $bonus;
     }
@@ -719,7 +734,7 @@ class Colony extends Model
                 $this->$varName += $productionBuilding->getProduction($productionBuilding->pivot->level);
 
             if(!is_null($this->player->premium_expiration))
-                $this->$varName *= 1.35;
+                $this->$varName *= config('stargate.premium.bonusProduction');
 
             $this->$varName *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => $resource]);
         }
@@ -742,7 +757,8 @@ class Colony extends Model
             $this->production_military += $militaryBuilding->getProduction($militaryBuilding->pivot->level);
         }
         $this->production_military *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'military']);
-
+        if(!is_null($this->player->premium_expiration))
+            $this->production_military *= config('stargate.premium.bonusProduction');
 
         $e2pzBuildings = $this->buildings->filter(function ($value){
             return $value->production_type == 'e2pz' && $value->type == 'Science';
@@ -754,7 +770,9 @@ class Colony extends Model
                 $this->production_e2pz = config('stargate.base_prod.e2pz');
             $this->production_e2pz += $e2pzBuilding->getProductionE2PZ($e2pzBuilding->pivot->level);
         }
-        $this->production_military *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'E2PZ']);
+        $this->production_e2pz *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'E2PZ']);
+        if(!is_null($this->player->premium_expiration))
+            $this->production_e2pz *= config('stargate.premium.bonusProduction');
     }
 
     public function checkColony(){

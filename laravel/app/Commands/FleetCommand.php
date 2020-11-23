@@ -572,11 +572,27 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]))
                 {
                     if(Str::startsWith('transport',$this->args[0])){
+
                         if($this->player->trade_ban)
                             return trans('stargate.trade_ban', [], $this->player->lang);
-
-                        if($this->coordinateDestination->colony->player->trade_ban || $this->coordinateDestination->colony->player->ban)
+                        elseif($this->coordinateDestination->colony->player->ban)
                             return trans('stargate.playerTradeBan', [], $this->player->lang);
+                        elseif($this->player->user_id != config('stargate.ownerId'))
+                        {
+                            $activeTradeCheck = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])
+                                                ->orWhere([["player_id_dest", $this->player->id], ["player_id_source", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])->count();
+
+                            if($activeTradeCheck > 0)
+                                return trans('trade.youAlreadyHaveActiveTrade', [], $this->player->lang);
+                            else
+                            {
+                                $playerActiveTradeCheck = Trade::where([["player_id_source", '!=', $this->player->id], ["player_id_dest", $this->coordinateDestination->colony->player->id], ["active", true]])
+                                ->orWhere([["player_id_dest", '!=', $this->player->id], ["player_id_source", $this->coordinateDestination->colony->player->id], ["active", true]])->count();
+
+                                if($playerActiveTradeCheck > 0)
+                                    return trans('trade.playerHasActiveTrade', [], $this->player->lang);
+                            }
+                        }
 
                         $this->fleet->mission = 'transport';
                     }

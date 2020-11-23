@@ -272,7 +272,14 @@ class Research extends CommandHandler implements CommandInterface
                             foreach (config('stargate.resources') as $resource)
                             {
                                 if($technology->$resource > 0)
+                                {
                                     $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
+
+                                    if($this->player->activeColony->$resource >= ceil($buildingPrices[$resource]))
+                                        $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                                    else
+                                        $buildingPrice .= ' '.config('stargate.emotes.cancel');
+                                }
                             }
 
                             $buildingTime = $technology->getTime($wantedLvl);
@@ -437,7 +444,14 @@ class Research extends CommandHandler implements CommandInterface
             foreach (config('stargate.resources') as $resource)
             {
                 if($technology->$resource > 0)
+                {
                     $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
+
+                    if($this->player->activeColony->$resource >= ceil($buildingPrices[$resource]))
+                        $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                    else
+                        $buildingPrice .= ' '.config('stargate.emotes.cancel');
+                }
             }
 
             $buildingTime = $technology->getTime($wantedLvl);

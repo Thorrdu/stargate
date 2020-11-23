@@ -224,8 +224,8 @@ class TradeCommand extends CommandHandler implements CommandInterface
 
                                 //Check si trade actif non fair
                                 $activeTrade = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", $playerInvited->id], ["active", true]])->orWhere([["player_id_dest", $this->player->id], ["player_id_source", $playerInvited->id], ["active", true]])->get()->first();
-                                if(!is_null($activeTrade) && !$activeTrade->getFairness())
-                                    return trans('trade.cantCancelWithUnfairFairTrade', [] , $this->player->lang);
+                                if(!is_null($activeTrade))
+                                    return trans('trade.cantCancelWithActiveTrade', [] , $this->player->lang);
 
                                 $pactCancelMsg = trans('trade.pactCancelConfirm', [
                                     'player_2_name' => $playerInvited->user_name
@@ -368,18 +368,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                             {
                                 $trade->active = false;
                                 $trade->save();
-
-                                if($this->player->trade_ban)
-                                {
-                                    $trade->playerSource->trade_ban = false;
-                                    $trade->playerSource->trade_extend = null;
-                                    $trade->playerSource->save();
-                                    $trade->playerDest->trade_ban = false;
-                                    $trade->playerDest->trade_extend = null;
-                                    $trade->playerDest->save();
-                                }
                                 return trans('trade.closed', [], $this->player->lang);
-
                             }
                             else
                             {
@@ -387,58 +376,31 @@ class TradeCommand extends CommandHandler implements CommandInterface
                             }
                         }
 
-                        if(isset($this->args[1]) && Str::startsWith('extend', $this->args[1]))
-                        {
-                            if($trade->extended)
-                                return trans('trade.alreadyExtended', [], $this->player->lang);
-                                //une extention de temps à déjà été accordée
-
-                            $tradeTime = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-                            if(abs($tradeTime->diffInHours(Carbon::now())) < 72)
-                                return trans('trade.extentionNotRequired', [], $this->player->lang);
-
-                            $trade->extended = true;
-                            $trade->save();
-
-                            $trade->playerSource->trade_extend = Carbon::now()->add('48h');
-                            $trade->playerSource->save();
-                            $trade->playerDest->trade_extend = Carbon::now()->add('48h');
-                            $trade->playerDest->save();
-
-                            return trans('trade.extentionGranted', [], $this->player->lang);
-                        }
-
                         $now = Carbon::now();
                         $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-                        $closingDate = $tradeCreation->add('72h');
-                        if($closingDate->isPast())
+                        $closingDate = $tradeCreation->add('24h');
+
+                        if($trade->active && $closingDate->isPast() && $trade->getFairness())
                         {
-
-                            if($trade->extended && !is_null($this->player->trade_extend))
-                            {
-
-                                $extendDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->trade_extend);
-                                if($extendDate->isPast())
-                                    $tradeEnding = trans('generic.closed', [], $this->player->lang);
-                                else
-                                {
-                                    $tradeEnding = $now->diffForHumans($extendDate,[
-                                        'parts' => 3,
-                                        'short' => true, // short syntax as per current locale
-                                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                                    ]);
-                                }
-                            }
-                            else
-                                $tradeEnding = trans('generic.closed', [], $this->player->lang);
+                            $trade->active = false;
+                            $trade->save();
                         }
-                        else
+
+                        if($trade->active && !$trade->getFairness())
+                        {
+                            $tradeEnding = trans('trade.awaitBalancing', [], $this->player->lang);
+                        }
+                        elseif($trade->active)
                         {
                             $tradeEnding = $now->diffForHumans($closingDate,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale
                                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
                             ]);
+                        }
+                        else
+                        {
+                            $tradeEnding = trans('generic.closed', [], $this->player->lang);
                         }
 
                         $warning = '';
@@ -449,8 +411,6 @@ class TradeCommand extends CommandHandler implements CommandInterface
                             $status = trans('trade.status.unbalanced', [], $this->player->lang);
                             $warning = trans('trade.warning', [], $this->player->lang);
                         }
-
-                        if($trade->playerSource->id == $this->player->id)
 
                         $embed = [
                             'author' => [
@@ -533,7 +493,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
         {
             $now = Carbon::now();
             $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-            $closingDate = $tradeCreation->add('72h');
+            $closingDate = $tradeCreation->add('24h');
             if($closingDate->isPast())
             {
 
@@ -557,7 +517,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
             }
             else
             {
-                $tradeEnding = $now->diffForHumans($tradeCreation->add('72h'),[
+                $tradeEnding = $now->diffForHumans($tradeCreation->add('24h'),[
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE

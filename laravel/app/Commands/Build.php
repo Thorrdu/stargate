@@ -331,7 +331,14 @@ class Build extends CommandHandler implements CommandInterface
                                 foreach (config('stargate.resources') as $resource)
                                 {
                                     if($building->$resource > 0)
+                                    {
                                         $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
+
+                                        if($this->player->activeColony->$resource >= ceil($buildingPrices[$resource]))
+                                            $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                                        else
+                                            $buildingPrice .= ' '.config('stargate.emotes.cancel');
+                                    }
                                 }
                                 if($building->energy_base > 0 && $building->slug != 'naqahdahreactor')
                                 {
@@ -339,6 +346,12 @@ class Build extends CommandHandler implements CommandInterface
                                     if($wantedLvl > 1)
                                         $energyRequired -= $building->getEnergy($wantedLvl-1);
                                     $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
+
+                                    $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
+                                    if($energyLeft >= $energyRequired)
+                                        $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                                    else
+                                        $buildingPrice .= ' '.config('stargate.emotes.cancel');
                                 }
 
                                 $buildingTime = $building->getTime($wantedLvl);
@@ -547,7 +560,14 @@ class Build extends CommandHandler implements CommandInterface
                 foreach (config('stargate.resources') as $resource)
                 {
                     if($building->$resource > 0)
+                    {
                         $buildingPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]));
+
+                        if($this->player->activeColony->$resource >= ceil($buildingPrices[$resource]))
+                            $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                        else
+                            $buildingPrice .= ' '.config('stargate.emotes.cancel');
+                    }
                 }
                 if($building->energy_base > 0)
                 {
@@ -555,6 +575,12 @@ class Build extends CommandHandler implements CommandInterface
                     if($wantedLvl > 1)
                         $energyRequired -= $building->getEnergy($wantedLvl-1);
                     $buildingPrice .= "\n".config('stargate.emotes.energy')." ".trans('generic.energy', [], $this->player->lang)." ".number_format(round($energyRequired));
+
+                    $energyLeft = ($this->player->activeColony->energy_max - $this->player->activeColony->energy_used);
+                    if($energyLeft >= $energyRequired)
+                        $buildingPrice .= ' '.config('stargate.emotes.confirm');
+                    else
+                        $buildingPrice .= ' '.config('stargate.emotes.cancel');
                 }
 
                 $buildingTime = $building->getTime($wantedLvl);

@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\TopUpdater;
@@ -255,6 +255,16 @@ $discord->on('ready', function ($discord) use($beta){
                 $artifactAutoDeleted++;
             }
             echo PHP_EOL.$artifactAutoDeleted.' Artefact deleted';
+
+            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('24h')]])->get();
+            foreach($expiredTrades as $expiredTrade)
+            {
+                if(!$expiredTrade->getFairness())
+                {
+                    $expiredTrade->active = false;
+                    $expiredTrade->save();
+                }
+            }
         });
 
 
@@ -265,79 +275,6 @@ $discord->on('ready', function ($discord) use($beta){
             $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
             Config::set('stargate.gateFight.StrongWeak', $newLimit);
             echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
-
-            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('48h')]])->get();
-            $now = Carbon::now();
-            foreach($expiredTrades as $expiredTrade)
-            {
-                $now = Carbon::now();     
-                $tradeTime = Carbon::createFromFormat("Y-m-d H:i:s",$expiredTrade->created_at);
-                if($expiredTrade->getFairness())
-                {
-                    if(($expiredTrade->playerDest->trade_ban || $expiredTrade->playerSource->trade_ban))
-                    {
-                        //trade_ban Unban
-                        $expiredTrade->playerSource->trade_ban = false;
-                        $expiredTrade->playerDest->trade_extend = null;
-                        $expiredTrade->playerSource->save();
-                        $expiredTrade->playerDest->trade_ban = false;
-                        $expiredTrade->playerDest->trade_extend = null;
-                        $expiredTrade->playerDest->save();
-                    }
-                    $expiredTrade->active = false;
-                    $expiredTrade->save();
-                }
-                else
-                {
-                    if(!$expiredTrade->warned){
-                        $expiredTrade->warned = true;
-                        $expiredTrade->save();
-
-                        /**
-                         * Envoi du warn
-                         */    
-                        
-                        $reminderSource = new Reminder;
-                        $reminderSource->reminder_date = Carbon::now()->add('1s');
-                        $reminderSource->reminder = trans('trade.warn', ['tradeID' => $expiredTrade->id], $expiredTrade->playerSource->lang);
-                        $reminderSource->player_id = $expiredTrade->playerSource->id;
-                        $reminderSource->save();
-
-                        $reminderDest = $reminderSource->replicate();
-                        $reminderDest->reminder = trans('trade.warn', ['tradeID' => $expiredTrade->id], $expiredTrade->playerDest->lang);
-                        $reminderDest->player_id = $expiredTrade->playerDest->id;
-                        $reminderDest->save();
-
-                    }
-                    elseif(abs($tradeTime->diffInHours($now)) >= 72)
-                    {
-                        if(!$expiredTrade->extended && (!$expiredTrade->playerSource->trade_ban || !$expiredTrade->playerDest->trade_ban))
-                        {
-                            //trade_ban
-                            $expiredTrade->playerSource->trade_ban = true;
-                            $expiredTrade->playerSource->save();
-                            $expiredTrade->playerDest->trade_ban = true;
-                            $expiredTrade->playerDest->save();
-
-                            /**
-                             * Envoi du ban
-                             */
-                            $reminderSource = new Reminder;
-                            $reminderSource->reminder_date = Carbon::now()->add('1s');
-                            $reminderSource->reminder = trans('trade.ban', ['tradeID' => $expiredTrade->id], $expiredTrade->playerSource->lang);
-                            $reminderSource->player_id = $expiredTrade->playerSource->id;
-                            $reminderSource->save();
-
-                            $reminderDest = $reminderSource->replicate();
-                            $reminderDest->reminder = trans('trade.ban', ['tradeID' => $expiredTrade->id], $expiredTrade->playerDest->lang);
-                            $reminderDest->player_id = $expiredTrade->playerDest->id;
-                            $reminderDest->save();
-                        }
-
-
-                    }
-                }
-            }
         });
     }
 
@@ -562,9 +499,19 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.fleet.description', [], 'fr'),
 		'usage' => trans('help.fleet.usage', [], 'fr'),
-		//'aliases' => array('fleet','f'),
+		'aliases' => array('f'),
         'cooldown' => 5
     ]);	
+
+    $discord->registerCommand('flex', function ($message, $args) use($discord){
+        $command = new Flex($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.flex.description', [], 'fr'),
+		'usage' => trans('help.flex.usage', [], 'fr'),
+        'cooldown' => 5
+    ]);	
+
 
     $discord->registerCommand('shipyard', function ($message, $args) use($discord){
         $command = new Shipyard($message,$args,$discord);
@@ -605,7 +552,6 @@ $discord->on('ready', function ($discord) use($beta){
 		'usage' => trans('help.alliance.usage', [], 'fr'),
         //'aliases' => array('a','al','ally'),
         'cooldown' => 2
-
     ]);	
 
     $discord->registerCommand('trade', function ($message, $args) use($discord){

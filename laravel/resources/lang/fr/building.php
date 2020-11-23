@@ -23,7 +23,7 @@ return [
     ],
     'robotfactory' => [
         'name' => 'Usine robotisée',
-        'description' => 'Permet à vos colons de travailler avec le support ...'
+        'description' => 'Permet à vos colons de travailler avec le support de robots. Augmentant ainsi grandement la vitesse de toutes vos constructions.'
     ],
     'research' => [
         'name' => 'Centre de recherche',

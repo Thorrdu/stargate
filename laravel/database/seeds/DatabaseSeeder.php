@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'energy_coefficient' => NULL,
             'display_order' => 0,
             'upgrade_coefficient' => 1.6,
-            'level_max' => 20,
+            //'level_max' => 20,
             'time_base' => 146
         ]);
 
@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
             'energy_coefficient' => 1.14,
             'display_order' => 0,
             'upgrade_coefficient' => 1.45,
-            'level_max' => 20,
+            //'level_max' => 20,
             'time_base' => 162
         ]);
 
@@ -82,7 +82,7 @@ class DatabaseSeeder extends Seeder
             'energy_coefficient' => 1.12,
             'display_order' => 1,
             'upgrade_coefficient' => 1.45,
-            'level_max' => 20,
+            //'level_max' => 20,
             'time_base' => 155
         ]);
 

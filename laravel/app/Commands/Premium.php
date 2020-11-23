@@ -7,6 +7,8 @@ use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
 use Discord\Parts\Embed\Embed;
 use App\Player;
+use App\Trade;
+use App\TradeResource;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
@@ -14,6 +16,7 @@ use Illuminate\Support\Str;
 class Premium extends CommandHandler implements CommandInterface
 {
     public $playerGiven;
+    public $qtyToGive;
 
     public function execute()
     {
@@ -72,7 +75,35 @@ class Premium extends CommandHandler implements CommandInterface
                             $this->playerGiven = Player::where('user_id', $playerMatch[0])->first();
                             if(!is_null($this->playerGiven))
                             {
-                                $upgradeMsg = trans('premium.giveConfirmaton', ['player' => $this->playerGiven->user_name], $this->player->lang);
+                                $this->qtyToGive = 1;
+                                if(isset($this->args[2]) && (int)$this->args[2] > 0)
+                                {
+                                    $this->qtyToGive = (int)$this->args[2];
+                                }
+                                $this->paginatorMessage->content = trans('generic.notEnoughResources', ['missingResources' => '1 Premium'], $this->player->lang);
+
+                                if($this->player->trade_ban)
+                                    return trans('stargate.trade_ban', [], $this->player->lang);
+                                elseif($this->playerGiven->ban)
+                                    return trans('stargate.playerTradeBan', [], $this->player->lang);
+                                elseif($this->player->user_id != config('stargate.ownerId'))
+                                {
+                                    $activeTradeCheck = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", '!=', $this->playerGiven->id], ["active", true]])
+                                                        ->orWhere([["player_id_dest", $this->player->id], ["player_id_source", '!=', $this->playerGiven->id], ["active", true]])->count();
+
+                                    if($activeTradeCheck > 0)
+                                        return trans('trade.youAlreadyHaveActiveTrade', [], $this->player->lang);
+                                    else
+                                    {
+                                        $playerActiveTradeCheck = Trade::where([["player_id_source", '!=', $this->player->id], ["player_id_dest", $this->playerGiven->id], ["active", true]])
+                                        ->orWhere([["player_id_dest", '!=', $this->player->id], ["player_id_source", $this->playerGiven->id], ["active", true]])->count();
+
+                                        if($playerActiveTradeCheck > 0)
+                                            return trans('trade.playerHasActiveTrade', [], $this->player->lang);
+                                    }
+                                }
+
+                                $upgradeMsg = trans('premium.giveConfirmaton', ['player' => $this->playerGiven->user_name,'qty' => $this->qtyToGive], $this->player->lang);
 
                                 $this->maxTime = time()+180;
                                 $this->message->channel->sendMessage($upgradeMsg)->then(function ($messageSent){
@@ -92,16 +123,82 @@ class Premium extends CommandHandler implements CommandInterface
                                             if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                             {
                                                 $this->player->refresh();
-                                                if($this->player->premium > 0)
+
+                                                $activeTradeCheck = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", '!=', $this->playerGiven->id], ["active", true]])
+                                                                    ->orWhere([["player_id_dest", $this->player->id], ["player_id_source", '!=', $this->playerGiven->id], ["active", true]])->count();
+
+                                                if($this->player->user_id != config('stargate.ownerId'))
                                                 {
-                                                    $this->player->premium--;
+                                                    if($activeTradeCheck > 0)
+                                                        return trans('trade.youAlreadyHaveActiveTrade', [], $this->player->lang);
+                                                    else
+                                                    {
+                                                        $playerActiveTradeCheck = Trade::where([["player_id_source", '!=', $this->player->id], ["player_id_dest", $this->playerGiven->id], ["active", true]])
+                                                        ->orWhere([["player_id_dest", '!=', $this->player->id], ["player_id_source", $this->playerGiven->id], ["active", true]])->count();
+
+                                                        if($playerActiveTradeCheck > 0)
+                                                            return trans('trade.playerHasActiveTrade', [], $this->player->lang);
+                                                    }
+                                                }
+
+                                                if( $this->player->premium > $this->qtyToGive )
+                                                {
+                                                    $this->player->premium -= $this->qtyToGive ;
                                                     $this->player->save();
-                                                    $this->playerGiven->premium++;
+                                                    $this->playerGiven->premium += $this->qtyToGive ;
                                                     $this->playerGiven->save();
                                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.confirmed', [], $this->player->lang),$this->paginatorMessage->content);
+
+                                                    if($this->player->user_id != config('stargate.ownerId'))
+                                                    {
+                                                        $tradeLogCheck = Trade::where([['player_id_dest',$this->playerGiven->id], ['player_id_source',$this->player->id], ['active', true]])
+                                                                                ->orWhere([['player_id_source',$this->playerGiven->id], ['player_id_dest',$this->player->id], ['active', true]])->first();
+
+                                                        if(!is_null($tradeLogCheck))
+                                                        {
+                                                            $tradeLog = $tradeLogCheck;
+                                                            $tradePlayer = '';
+                                                            if($this->player->id == $tradeLog->player_id_source)
+                                                                $tradePlayer = 1;
+                                                            else
+                                                                $tradePlayer = 2;
+                                                        }
+                                                        else
+                                                        {
+                                                            $tradeLog = new Trade;
+                                                            $tradeLog->player_id_source = $this->player->id;
+                                                            $tradeLog->player_id_dest = $this->playerGiven->id;
+                                                            $tradeLog->trade_value_player1 = 0;
+                                                            $tradeLog->trade_value_player2 = 0;
+                                                            $tradeLog->save();
+                                                            $tradePlayer = 1;
+                                                        }
+
+                                                        $tradeResourceExist = $tradeLog->tradeResources->filter(function ($value) use($tradePlayer){
+                                                            return $value->resource == 'premium' && $value->player == $tradePlayer;
+                                                        });
+                                                        if($tradeResourceExist->count() > 0)
+                                                        {
+                                                            $tradeResource = $tradeResourceExist->first();
+                                                            $tradeResource->quantity += $this->qtyToGive;
+                                                        }
+                                                        else
+                                                        {
+                                                            $tradeResource = new TradeResource();
+                                                            $tradeResource->player = $tradePlayer;
+                                                            $tradeResource->trade_id = $tradeLog->id;
+                                                            $tradeResource->resource = 'premium';
+                                                            $tradeResource->quantity = $this->qtyToGive;
+                                                        }
+                                                        $tradeResource->trade_value = 0;
+                                                        $tradeResource->save();
+                                                        $tradeLog->setTradeValue();
+                                                        $tradeLog->save();
+                                                    }
+
                                                 }
                                                 else
-                                                    $this->paginatorMessage->content = trans('generic.notEnoughResources', ['missingResources' => '1 Premium'], $this->player->lang);
+                                                    $this->paginatorMessage->content = trans('generic.notEnoughResources', ['missingResources' => ($this->qtyToGive-$this->player->premium).' Premium'], $this->player->lang);
                                                 $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                             }
                                             elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
