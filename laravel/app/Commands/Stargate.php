@@ -264,25 +264,19 @@ class Stargate extends CommandHandler implements CommandInterface
                             return trans('stargate.alreadyExplored', [], $this->player->lang);
                     }
 
-                    $this->player->activeColony->military -= 1000;
-                    $this->player->activeColony->E2PZ -= $travelCost;
-                    $this->player->activeColony->save();
-
-                    $exploration = new Exploration;
-                    $exploration->player_id = $this->player->id;
-                    $exploration->colony_source_id = $this->player->activeColony->id;
-                    $exploration->coordinate_destination_id = $this->coordinateDestination->id;
-                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
-                    $exploration->save();
-
+                    //confirm
+                    $exploreConfirmPower = config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).': '.number_format(1000);
+                    $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
+                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                    $exploreConfirmation = trans('stargate.exploreConfirmation', ['militaryUnits' => $exploreConfirmPower, 'coordinateDestination' => $destCoordinates, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
                     $embed = [
                         'author' => [
                             'name' => $this->player->user_name,
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
-                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/exploration.gif'],
+                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/manStanding.gif'],
                         "title" => "Stargate",
-                        "description" => trans('stargate.explorationSent', ['coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang),
+                        "description" => $exploreConfirmation,
                         'fields' => [
                         ],
                         'footer' => array(
@@ -290,7 +284,115 @@ class Stargate extends CommandHandler implements CommandInterface
                         ),
                     ];
                     $newEmbed = $this->discord->factory(Embed::class,$embed);
-                    $this->message->channel->sendMessage('', false, $newEmbed);
+
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($travelCost){
+
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            return $messageReaction->user_id == $this->player->user_id;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost){
+                            $messageReaction = $collector->first();
+                            try{
+                                if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.cancelled', [], $this->player->lang)]);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                {
+                                    $this->player->refresh();
+                                    $this->player->activeColony->refresh();
+                                    if($this->player->activeColony->military < 1000)
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                                    'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang)
+                                                                    ]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                        return;
+                                    }
+
+                                    $currentExplo = Exploration::where([['player_id', $this->player->id],['exploration_result', null]])->count();
+                                    if($currentExplo > 0)
+                                    {
+                                        $communication = Technology::find(1);
+                                        $comLvl = $this->player->hasTechnology($communication);
+                                        if(!$comLvl)
+                                            $comLvl = 0;
+
+                                        if(ceil($comLvl/4) <= $currentExplo)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                                    'description' => trans('stargate.maxExplorationReached', [], $this->player->lang)
+                                                                    ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+                                    }
+
+                                    if($this->player->explorations->count() > 0)
+                                    {
+                                        $alreadyExplored = $this->player->explorations->filter(function ($value) {
+                                            return $value->coordinateDestination->id == $this->coordinateDestination->id;
+                                        });
+                                        if($alreadyExplored->count() > 0)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                                    'description' => trans('stargate.alreadyExplored', [], $this->player->lang)
+                                                                    ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+                                    }
+
+                                    $this->player->activeColony->military -= 1000;
+                                    $this->player->activeColony->E2PZ -= $travelCost;
+                                    $this->player->activeColony->save();
+
+                                    $exploration = new Exploration;
+                                    $exploration->player_id = $this->player->id;
+                                    $exploration->colony_source_id = $this->player->activeColony->id;
+                                    $exploration->coordinate_destination_id = $this->coordinateDestination->id;
+                                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
+                                    $exploration->save();
+
+                                    $embed = [
+                                        'author' => [
+                                            'name' => $this->player->user_name,
+                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                        ],
+                                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/exploration.gif'],
+                                        "title" => "Stargate",
+                                        "description" => trans('stargate.explorationSent', ['coordinates' => $this->coordinateDestination->galaxy.':'.$this->coordinateDestination->system.':'.$this->coordinateDestination->planet], $this->player->lang),
+                                        'fields' => [
+                                        ],
+                                        'footer' => array(
+                                            'text'  => 'Stargate',
+                                        ),
+                                    ];
+                                    $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+                            }
+                            catch(\Exception $e)
+                            {
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                            }
+                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                        });
+                    });
                     return;
                 }
 
@@ -963,20 +1065,19 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     if($this->player->colonies->count() < $possibleColonies)
                     {
-                        $this->player->activeColony->military -= 1000;
-                        $this->player->activeColony->E2PZ -= $travelCost;
-                        $this->player->activeColony->save();
+                        //confirm
+                        $colonizeConfirmPower = config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).': '.number_format(1000);
+                        $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                        $this->player->addColony($this->coordinateDestination);
-
+                        $colonizeConfirmation = trans('stargate.colonizeConfirmation', ['militaryUnits' => $colonizeConfirmPower, 'coordinateDestination' => $destCoordinates, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
                         $embed = [
                             'author' => [
                                 'name' => $this->player->user_name,
                                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                             ],
-                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/colonize.gif'],
+                            'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/manStanding.gif'],
                             "title" => "Stargate",
-                            "description" => trans('stargate.colonizeDone', ['destination' => $destCoordinates], $this->player->lang),
+                            "description" => $colonizeConfirmation,
                             'fields' => [
                             ],
                             'footer' => array(
@@ -984,7 +1085,79 @@ class Stargate extends CommandHandler implements CommandInterface
                             ),
                         ];
                         $newEmbed = $this->discord->factory(Embed::class,$embed);
-                        $this->message->channel->sendMessage('',false,$newEmbed);
+
+                        $this->maxTime = time()+180;
+                        $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($travelCost,$possibleColonies){
+
+                            $this->paginatorMessage = $messageSent;
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                });
+                            });
+
+                            $filter = function($messageReaction){
+                                return $messageReaction->user_id == $this->player->user_id;
+                            };
+                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost,$possibleColonies){
+                                $messageReaction = $collector->first();
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.cancelled', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                    {
+                                        $this->player->refresh();
+
+                                        if($this->player->colonies->count() < $possibleColonies)
+                                        {
+                                            $this->player->activeColony->refresh();
+
+                                            $this->player->activeColony->military -= 1000;
+                                            $this->player->activeColony->E2PZ -= $travelCost;
+                                            $this->player->activeColony->save();
+                                            $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                                            $this->player->addColony($this->coordinateDestination);
+
+                                            $embed = [
+                                                'author' => [
+                                                    'name' => $this->player->user_name,
+                                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                ],
+                                                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/colonize.gif'],
+                                                "title" => "Stargate",
+                                                "description" => trans('stargate.colonizeDone', ['destination' => $destCoordinates], $this->player->lang),
+                                                'fields' => [
+                                                ],
+                                                'footer' => array(
+                                                    'text'  => 'Stargate',
+                                                ),
+                                            ];
+                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                        }
+                                        else
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                                        'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                                        'description' => trans('stargate.toManyColonies', [], $this->player->lang)
+                                                                        ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+                                    }
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                            });
+                        });
+                        return;
                     }
                     else
                     {
@@ -1100,8 +1273,6 @@ class Stargate extends CommandHandler implements CommandInterface
                             $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
                             });
                         });
-
-
 
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;

@@ -10,7 +10,7 @@ class Ban extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
-            if($this->message->author->id == 125641223544373248)
+            if($this->message->author->id == config('stargate.ownerId'))
             {
                 echo PHP_EOL.'Ban';
                 $playerToBan = null;

@@ -95,6 +95,10 @@ class Player extends Model
     {
         try{
             $newColony = new Colony;
+            if($this->colonies->count() > 0)
+                $newColony->military = 1000;
+            else
+                $newColony->military = 100;
             $newColony->colony_type = 1;
             $newColony->player_id = $this->id;
             if($this->colonies->count() == 0)
@@ -168,13 +172,6 @@ class Player extends Model
             $colony->shipQueues()->detach();
             $colony->defenceQueues()->detach();
 
-            $trades = Trade::where('colony_source_id', $colony->coordinates->id)->orWhere('colony_destination_id', $colony->coordinates->id)->get();
-            foreach($trades as $trade)
-            {
-                foreach($trades->tradeResources as $tradeResource)
-                    $tradeResource->delete();
-                $trade->delete();
-            }
             $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
             foreach($gateFigthts as $gateFight)
                 $gateFight->delete();

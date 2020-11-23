@@ -14,6 +14,11 @@ use App\Coordinate;
 
 class Empire extends CommandHandler implements CommandInterface
 {
+    public $listner;
+    public $paginatorMessage;
+    public $maxTime;
+    public $closed;
+
     public function execute()
     {
         if(!is_null($this->player))
@@ -289,7 +294,42 @@ class Empire extends CommandHandler implements CommandInterface
                     return $this->message->reply("`{$prefix}empire [production/activities/fleet/artifacts]`");
 
                 if(isset($embed))
-                    $this->message->channel->sendMessage('', false, $embed);
+                {
+                    $this->closed = false;
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $embed)->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closed', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
+                }
 
             }
             catch(\Exception $e)

@@ -22,7 +22,7 @@ class Flex extends CommandHandler implements CommandInterface
             echo PHP_EOL.'Execute flex';
 
             if(count($this->args) < 2)
-                return trans('reminder.wrongParameter', [], $this->player->lang);
+                return trans('generic.wrongParameter', [], $this->player->lang);
 
             $qtyToCheck = 0;
             if(Str::startsWith($this->args[1], 'all'))

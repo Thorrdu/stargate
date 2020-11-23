@@ -100,12 +100,12 @@ class TopUpdater
             $alliance->old_points_research = $alliance->points_research;
             $alliance->old_points_total = $alliance->points_total;
 
-            $alliance->points_craft = $alliance->members->avg('points_craft');
-            $alliance->points_military = $alliance->members->avg('points_military');
-            $alliance->points_defence = $alliance->members->avg('points_defence');
-            $alliance->points_building = $alliance->members->avg('points_building');
-            $alliance->points_research = $alliance->members->avg('points_research');
-            $alliance->points_total = $alliance->members->avg('points_total');
+            $alliance->points_craft = $alliance->members->sum('points_craft');
+            $alliance->points_military = $alliance->members->sum('points_military');
+            $alliance->points_defence = $alliance->members->sum('points_defence');
+            $alliance->points_building = $alliance->members->sum('points_building');
+            $alliance->points_research = $alliance->members->sum('points_research');
+            $alliance->points_total = $alliance->members->sum('points_total');
 
             $alliance->last_top_update = date("Y-m-d H:i:s");
             $alliance->save();

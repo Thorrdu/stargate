@@ -3,8 +3,8 @@
 return [
     "notification" => [
         "missingParameter" => "Missing or wrong parameter. try `!profile notification on/off`",
-        "disabled" => "Building/Research notification **ON**",
-        "enabled" => "Building/Research notification **OFF**",
+        "enabled" => "Building/Research notification **ON**",
+        "disabled" => "Building/Research notification **OFF**",
     ],
     "hide" => [
         "missingParameter" => "Missing or wrong parameter. try `!profile hide on/off`",

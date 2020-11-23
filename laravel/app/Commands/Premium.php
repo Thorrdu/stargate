@@ -138,7 +138,7 @@ class Premium extends CommandHandler implements CommandInterface
                                                     }
                                                 }
 
-                                                if( $this->player->premium > $this->qtyToGive )
+                                                if( $this->player->premium >= $this->qtyToGive )
                                                 {
                                                     $this->player->premium -= $this->qtyToGive ;
                                                     $this->player->save();

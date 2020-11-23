@@ -31,9 +31,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
-$player = Player::find(87);
-	TopUpdater::update($player);
-
+$alliances = Alliance::All();
+foreach($alliances as $alliance)
+	TopUpdater::updateAlliance($alliance);
 die();
 
 $colony = Colony::find(1);

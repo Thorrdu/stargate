@@ -502,14 +502,22 @@ class Research extends CommandHandler implements CommandInterface
                     if(!$techLevel)
                         $techLevel = 0;
 
-                    $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." ($techLevel)\n";
+                    $requirementString .= trans('research.'.$requiredTechnology->slug.'.name', [], $this->player->lang)." Lvl ".$requiredTechnology->pivot->level." (".$techLevel;
+                    if($techLevel >= $requiredTechnology->pivot->level)
+                        $requirementString .= ' '.config('stargate.emotes.confirm').")\n";
+                    else
+                        $requirementString .= ' '.config('stargate.emotes.cancel').")\n";
                 }
                 foreach($technology->requiredBuildings as $requiredBuilding)
                 {
                     $buildLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
                     if(!$buildLvl)
                         $buildLvl = 0;
-                    $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." ($buildLvl)\n";
+                    $requirementString .= trans('building.'.$requiredBuilding->slug.'.name', [], $this->player->lang)." Lvl ".$requiredBuilding->pivot->level." (".$buildLvl;
+                    if($buildLvl >= $requiredBuilding->pivot->level)
+                        $requirementString .= ' '.config('stargate.emotes.confirm').")\n";
+                    else
+                        $requirementString .= ' '.config('stargate.emotes.cancel').")\n";
                 }
 
                 $embed['fields'][] = array(
