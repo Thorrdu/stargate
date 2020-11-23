@@ -432,6 +432,8 @@ class TradeCommand extends CommandHandler implements CommandInterface
                         ];
 
                         $tradeTotalValue = $trade->trade_value_player1 + $trade->trade_value_player2;
+                        if($tradeTotalValue <= 0)
+                            $tradeTotalValue = 1;
                         $player1TradeString = trans('trade.tradeValue', ['totalValue' => number_format($trade->trade_value_player1)."\n".number_format(($trade->trade_value_player1/$tradeTotalValue)*100,2).'%'], $this->player->lang)."\n";
                         $player2TradeString = trans('trade.tradeValue', ['totalValue' => number_format($trade->trade_value_player2)."\n".number_format(($trade->trade_value_player2/$tradeTotalValue)*100,2).'%'], $this->player->lang)."\n";
 
