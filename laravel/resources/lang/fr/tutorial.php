@@ -17,7 +17,7 @@ return [
                         "\nVous devrez sans doute améliorer votre centrale thermique en cours de route, vos mines nécéssitant de l'énergie pour fonctionner.".
 
                         "\n\nVos productions lancées, votre prochain objectif sera de rendre votre Porte des Etoiles (`!stargate`) fonctionnelle afin de contacter d'autres mondes et ainsi pouvoir explorer, coloniser d'autres planètes, commercer avec d'autres colonies ou encore les piller.".
-                        "\nPour cela, vous aurez besoin d'un centre de recherche, d'un centre de recrutement ainsi qu'une usine Asuran pour alimenter la porte.".
+                        "\nPour cela, vous aurez besoin d'un Laboratoire de recherche, d'un centre de recrutement ainsi qu'une usine Asuran pour alimenter la porte.".
 
                         "\n\nSi vous éprouvez des difficultés, n'hésitez pas à joindre le [Support Server](http://discord.gg/9hG6zaw) et y poser vos questions.",
 ];

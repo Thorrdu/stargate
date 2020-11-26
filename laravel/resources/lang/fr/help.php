@@ -75,7 +75,7 @@ return [
     ],
     'stargate' => [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer".
-                        "**Lvl 5 - Centre de recherche** est requis pour activer la porte vers d'autres planètes..\n".
+                        "**Lvl 5 - Laboratoire de recherche** est requis pour activer la porte vers d'autres planètes..\n".
                         "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
         'usage' => ":prefixstargate explore [coordonées]\n".
                     ":prefixstargate colonize [coordonées]\n".

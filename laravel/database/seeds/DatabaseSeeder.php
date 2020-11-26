@@ -153,7 +153,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('buildings')->insert([
             'id' => 7,
-            'name' => 'Centre de recherche',
+            'name' => 'Laboratoire de recherche',
             'slug' => Str::slug('research'),
             'description' => "Donne un lieu à vos colons pour effectuer des recherches\nPermet également de comprendre le fonctionnement de la porte des étoiles",
             'type' => 'Science',
@@ -394,7 +394,7 @@ class DatabaseSeeder extends Seeder
             'technology_bonus' => 0.95,
             'ship_consumption_bonus' => 0.94,
         ]);
-        //Centre de recherche 1
+        //Laboratoire de recherche 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 1,
             'required_building_id' => 7,
@@ -416,7 +416,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1800,
             'time_coefficient' => 2
         ]);
-        //Centre de recherche 1
+        //Laboratoire de recherche 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 2,
             'required_building_id' => 7,
@@ -438,7 +438,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 2200,
             'time_coefficient' => 2
         ]);
-        //Centre de recherche 1
+        //Laboratoire de recherche 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 3,
             'required_building_id' => 7,
@@ -473,7 +473,7 @@ class DatabaseSeeder extends Seeder
             'required_building_id' => 9,
             'level' => 1
         ]);
-        //Centre de recherche 1
+        //Laboratoire de recherche 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 4,
             'required_building_id' => 7,
@@ -498,7 +498,7 @@ class DatabaseSeeder extends Seeder
             'technology_bonus' => 0.98,
             'crafting_bonus' => 0.98,
         ]);
-        //Centre de recherche 8
+        //Laboratoire de recherche 8
         DB::table('technology_buildings')->insert([
             'technology_id' => 5,
             'required_building_id' => 7,
@@ -527,7 +527,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1020,
             'time_coefficient' => 2
         ]);
-        //- Centre de Recherche : Niveau 1
+        //- Laboratoire de recherche : Niveau 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 6,
             'required_building_id' => 7,
@@ -550,7 +550,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'fire_power_bonus' => 1.1
         ]);
-        //- Centre de Recherche : Niveau 4
+        //- Laboratoire de recherche : Niveau 4
         DB::table('technology_buildings')->insert([
             'technology_id' => 7,
             'required_building_id' => 7,
@@ -573,7 +573,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'hull_bonus' => 1.1
         ]);
-        //- Centre de Recherche : Niveau 1
+        //- Laboratoire de recherche : Niveau 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 8,
             'required_building_id' => 7,
@@ -604,7 +604,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'shield_bonus' => 1.1
         ]);
-        //- Centre de Recherche : Niveau 5
+        //- Laboratoire de recherche : Niveau 5
         DB::table('technology_buildings')->insert([
             'technology_id' => 9,
             'required_building_id' => 7,
@@ -633,7 +633,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'ship_speed_bonus' => 1.01,
         ]);
-        //- Centre de Recherche : Niveau 1
+        //- Laboratoire de recherche : Niveau 1
         DB::table('technology_buildings')->insert([
             'technology_id' => 10,
             'required_building_id' => 7,
@@ -672,7 +672,7 @@ class DatabaseSeeder extends Seeder
             'technology_bonus' => 0.5,
             'ship_bonus' => 0.7,
         ]);
-        //Centre de recherche 8
+        //Laboratoire de recherche 8
         DB::table('building_buildings')->insert([
             'building_id' => 16,
             'required_building_id' => 7,
@@ -771,7 +771,7 @@ class DatabaseSeeder extends Seeder
             'required_technology_id' => 4,
             'level' => 3
         ]);
-        //Centre de recherche 4
+        //Laboratoire de recherche 4
         DB::table('building_buildings')->insert([
             'building_id' => 19,
             'required_building_id' => 7,
@@ -820,7 +820,7 @@ class DatabaseSeeder extends Seeder
             'defence_bonus' => 0.85,
             'craft_bonus' => 0.10,
         ]);
-        //Centre de recherche 18
+        //Laboratoire de recherche 18
         DB::table('building_buildings')->insert([
             'building_id' => 20,
             'required_building_id' => 7,
@@ -861,7 +861,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 600,
             'time_coefficient' => 2
         ]);
-        //Centre de Recherche Niveau 2
+        //Laboratoire de recherche Niveau 2
         DB::table('technology_buildings')->insert([
             'technology_id' => 11,
             'required_building_id' => 7,
@@ -889,7 +889,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1320,
             'time_coefficient' => 2
         ]);
-        //Centre de Recherche Niveau 4
+        //Laboratoire de recherche Niveau 4
         DB::table('technology_buildings')->insert([
             'technology_id' => 12,
             'required_building_id' => 7,
@@ -923,7 +923,7 @@ class DatabaseSeeder extends Seeder
             'time_base' => 1900,
             'time_coefficient' => 2
         ]);
-        //Centre de Recherche 6
+        //Laboratoire de recherche 6
         DB::table('technology_buildings')->insert([
             'technology_id' => 13,
             'required_building_id' => 7,
@@ -965,7 +965,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'ship_consumption_bonus' => 0.99
         ]);
-        //Centre de Recherche 10
+        //Laboratoire de recherche 10
         DB::table('technology_buildings')->insert([
             'technology_id' => 14,
             'required_building_id' => 7,
@@ -989,7 +989,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'ship_speed_bonus' => 1.02
         ]);
-        //Centre de Recherche 3
+        //Laboratoire de recherche 3
         DB::table('technology_buildings')->insert([
             'technology_id' => 15,
             'required_building_id' => 7,
@@ -1024,7 +1024,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'ship_speed_bonus' => 1.05
         ]);
-        //Centre de Recherche 7
+        //Laboratoire de recherche 7
         DB::table('technology_buildings')->insert([
             'technology_id' => 16,
             'required_building_id' => 7,
@@ -1065,7 +1065,7 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 2,
             'ship_speed_bonus' => 1.08
         ]);
-        //Centre de Recherche 12
+        //Laboratoire de recherche 12
         DB::table('technology_buildings')->insert([
             'technology_id' => 17,
             'required_building_id' => 7,
@@ -1093,7 +1093,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 150,
             'base_time' => 240
         ]);
-        //Centre de recherche 5
+        //Laboratoire de recherche 5
         DB::table('unit_buildings')->insert([
             'unit_id' => 1,
             'required_building_id' => 7,
@@ -1126,7 +1126,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 1200,
             'base_time' => 600
         ]);
-        //Centre de recherche 6
+        //Laboratoire de recherche 6
         DB::table('unit_buildings')->insert([
             'unit_id' => 2,
             'required_building_id' => 7,
@@ -1165,7 +1165,7 @@ class DatabaseSeeder extends Seeder
             'naqahdah' => 50,
             'base_time' => 600
         ]);
-        //Centre de recherche 5
+        //Laboratoire de recherche 5
         DB::table('unit_buildings')->insert([
             'unit_id' => 3,
             'required_building_id' => 7,
@@ -1200,7 +1200,7 @@ class DatabaseSeeder extends Seeder
             'base_time' => 2000
 
         ]);
-        //Centre de recherche 6
+        //Laboratoire de recherche 6
         DB::table('unit_buildings')->insert([
             'unit_id' => 4,
             'required_building_id' => 7,
