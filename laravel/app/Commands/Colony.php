@@ -636,7 +636,6 @@ class Colony extends CommandHandler implements CommandInterface
                                     $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                     $this->closed = true;
                                 }
-                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                             }
                             catch(\Exception $e)
                             {

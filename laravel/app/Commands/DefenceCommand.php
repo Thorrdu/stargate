@@ -74,6 +74,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                         $messageReaction->message->addEmbed($newEmbed);
                                         $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                         $this->closed = true;
+                                        return;
                                     }
                                     elseif($messageReaction->emoji->name == '⏪')
                                     {
@@ -149,6 +150,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                         $messageReaction->message->addEmbed($newEmbed);
                                         $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
                                         $this->closed = true;
+                                        return;
                                     }
                                     elseif($messageReaction->emoji->name == '⏪')
                                     {
