@@ -120,7 +120,7 @@ return [
     "genericHowTo" => "TEXTE",
     "shipQueue" => "Liste des vaisseaux en cours",
     "emptyQueue" => "Aucun vaisseau en cours",
-    "emptyList" => "Aucun plan de vaisseau disponible",
+    "emptyList" => "Aucun plan de vaisseau disponible. Pour en créer un, rendez-vous dans `!shipyard create`",
     "firePower" => "Armement: **:firepower**",
     "shield" => "Bouclier: **:shield**",
     "hull" => "Coque: **:hull**",

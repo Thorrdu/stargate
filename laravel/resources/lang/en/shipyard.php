@@ -120,7 +120,7 @@ return [
     "genericHowTo" => "TEXT",
     "shipQueue" => "Ship queue",
     "emptyQueue" => "Ship queue is empty",
-    "emptyList" => "No ship blueprint available",
+    "emptyList" => "No ship blueprint available. To create one, go to `!shipyard create`",
     "firePower" => "Armament: **:firepower**",
     "shield" => "Shield: **:shield**",
     "hull" => "Hull: **:hull**",
