@@ -26,12 +26,12 @@ return [
         'description' => 'Permet à vos colons de travailler avec le support de robots. Augmentant ainsi grandement la vitesse de toutes vos constructions.'
     ],
     'research' => [
-        'name' => 'Centre de recherche',
+        'name' => 'Laboratoire de recherche',
         'description' => "Donne un lieu à vos colons pour effectuer des recherches.".
                          "\nPermet également de comprendre le fonctionnement de la porte des étoiles"
     ],
     'military' => [
-        'name' => 'Centre de recrutement',
+        'name' => 'Caserne militaire',
         'description' => "Vous permet de recruter les autochtones de votre nouvelle planète et en faire des militaires capables de vous aider au combat ou en exploration."
     ],
     'shipyard' => [

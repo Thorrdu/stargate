@@ -400,7 +400,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 $fleetString = '';
                 if(!Str::startsWith('spy',$this->args[0]) && !Str::startsWith('scavenge',$this->args[0]))
                 {
-                    if(Str::startsWith('transport',$this->args[0]))
+                    if(Str::startsWith('transport',$this->args[0]) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     {
                         $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
                         if(is_null($pactExists) && $this->player->user_id != 125641223544373248)

@@ -75,7 +75,7 @@ return [
     ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players".
-                        "**Lvl 5 - Research Center** required to use the gate to contact other planets.\n".
+                        "**Lvl 5 - Research Laboratory** required to use the gate to contact other planets.\n".
                         "However, at Lvl 4 you'll be able to receive gate dialing",
         'usage' => ":prefixstargate explore [coordinates]\n".
                     ":prefixstargate colonize [coordinates]\n".

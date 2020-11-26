@@ -17,7 +17,7 @@ return [
                         "\nYou may need to upgrade your thermal power plant along the way, as your mines require energy to operate.".
 
                         "\n\nOnce your productions have started, your next objective will be to make your Stargate (`!stargate`) functional in order to contact other worlds and thus be able to explore, colonize other planets, trade with other colonies or even loot them.".
-                        "\nFor this, you will need a research center, a recruiting center as well as an Asuran factory to power the gate.".
+                        "\nFor this, you will need a Research Laboratory, a recruiting center as well as an Asuran factory to power the gate.".
 
                         "\n\nIf you experience any difficulties, please do not hesitate to reach the [Support Server](http://discord.gg/9hG6zaw) and ask your questions.",
 ];

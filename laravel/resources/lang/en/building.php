@@ -26,12 +26,12 @@ return [
         'description' => 'Allow your settlers to be helped by robots when working. This will reduce the time of all your buildings.'
     ],
     'research' => [
-        'name' => 'Research center',
+        'name' => 'Research laboratory',
         'description' => "Give a location  to your settlers to make research, reduce the research time by 10% per level.\n".
                          "Moreover it allows to understand the exploitation of the Stargate"
     ],
     'military' => [
-        'name' => 'Recruitement center',
+        'name' => 'Military barrack',
         'description' => 'You can recruit natives from your new planet and make them militaries able to help you in fights or exploring new worlds.'
     ],
     'shipyard' => [

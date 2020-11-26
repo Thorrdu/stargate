@@ -408,7 +408,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->tradeResources = [];
                     $capacityNeeded = 0;
                     $tradeString = "";
-                    $tradeCapacity = 0;
+                    //$tradeCapacity = 0;
 
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
@@ -454,7 +454,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
                                     $this->tradeResources[$resource] = $qty;
-                                    $tradeCapacity += $unit->capacity;
+                                    //$tradeCapacity += $unit->capacity;
                                 }
                             }
                         }
@@ -462,7 +462,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
                     }
 
-                    //$tradeCapacity = $this->player->activeColony->tradeCapacity();
+                    $tradeCapacity = $this->player->activeColony->tradeCapacity();
                     if($tradeCapacity < $capacityNeeded)
                         return trans('generic.notEnoughCapacity', ['missingCapacity' => number_format(round($capacityNeeded - $tradeCapacity))], $this->player->lang);
 
@@ -643,7 +643,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->tradeResources = [];
                     $capacityNeeded = 0;
                     $tradeString = "";
-                    $tradeCapacity = 0;
+                    //$tradeCapacity = 0;
 
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
@@ -689,7 +689,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
                                     $this->tradeResources[$resource] = $qty;
-                                    $tradeCapacity += $unit->capacity;
+                                    //$tradeCapacity += $unit->capacity;
                                 }
                             }
                         }
@@ -697,7 +697,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
                     }
 
-                    //$tradeCapacity = $this->player->activeColony->tradeCapacity();
+                    $tradeCapacity = $this->player->activeColony->tradeCapacity();
                     if($tradeCapacity < $capacityNeeded)
                         return trans('generic.notEnoughCapacity', ['missingCapacity' => number_format(round($capacityNeeded - $tradeCapacity))], $this->player->lang);
 

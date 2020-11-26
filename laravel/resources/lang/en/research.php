@@ -22,7 +22,7 @@ return [
         'description' => "Allows you to develop an artificial intelligence capable of helping you on a daily basis in your colony",
         ],
     'blueprint' => [
-        'name' => "Ship Bluprint",
+        'name' => "Ship Blueprint",
         'description' => "Allows the design of spaceships",
         ],
     'armament' => [

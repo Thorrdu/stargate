@@ -12,7 +12,7 @@ return [
     "unknownCoordinates" => "Unknown Coordinates",
     "unReacheableCoordinates" => 'Unreachable Coordinates',
     "stargateShattered" => "The Stargate is shattered and not ready for proper usage.\nMay be giving your scientist more resources could help solve this problem...\n\n".
-                            "**Lvl 5 - Research Center** required to use the gate to contact other planets.\n".
+                            "**Lvl 5 - Research Laboratory** required to use the gate to contact other planets.\n".
                             "However, at Lvl 4 you'll be able to receive gate dialing",
     "failedDialing" => "The dialing to this planet failed. There is no gate to contact on those coordinates.",
     "maxExplorationReached" => "Too many exploration missions are already ongoing.",

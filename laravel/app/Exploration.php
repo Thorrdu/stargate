@@ -39,6 +39,9 @@ class Exploration extends Model
         {
             $this->exploration_result = true;
             $this->exploration_outcome = 'Artifact';
+            $this->colonySource->military += 1000;
+            $this->colonySource->save();
+
             $this->save();
             $newArtifact = $this->colonySource->generateArtifact(array('maxEnding'=> 72))->toString($this->player->lang);
 

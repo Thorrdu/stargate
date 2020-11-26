@@ -3,7 +3,7 @@
 return [
     "accountExists" => "Vous possédez déjà un compte...",
     "langChoice" => "Bienvenue sur Stargate,\n\nAvant de commencer votre aventure, merci de cliquer sur la réaction correspondant à votre langue.",
-    "startMessage" => "\nEt voici comment tout à commencé,".
+    "startMessage" => "\nEt voici comment tout a commencé,".
                         "\n\nVous avez enfin été choisi pour participer au programme SGC. Votre rêve de vous voir affecter à la nouvelle base de la terre sur une planète lointaine devient enfin une réalité.".
                         "\n\nCe que personne n'avait prévu, c'est qu'au moment où vous traverseriez la porte pour rejoindre votre nouvelle affectation, une anomalie se trouverait sur la trajectoire du vortex vous reliant à la dite planète.".
                         "\n\nRésultat, vous vous retrouvez seul sur un monde inconnu dont la disposition des étoiles dans le ciel n'a rien de commun avec celles de votre bonne vieille Voie lactée.".
