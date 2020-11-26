@@ -37,14 +37,14 @@ return [
                        "The following resources have been delivred:\n:resources",
     "tradeSent" => "You sent the following resources from :planetSource [:coordinateSource] to :planetDest [:coordinateDestination] (:player):\n:resources\nAt a cost of: :consumption",
     "tradeMessage" => "__Sending resources from :planetSource [:coordinateSource]__\n".
-                      "Destination: :planet [:coordinateDestination]\n".
-                      "Resources:\n".
+                      "Destination: :planet [:coordinateDestination]\n\n".
+                      "**Freight (:freightCapacity)**\n".
                       ":resources\n".
                       "Cost: :consumption\n\n".
                       "Sending status: **Awaiting**",
     "moveMessage" => "__Sending de ressources depuis la planète :planetSource [:coordinateSource]__\n".
-                      "Destination: Colony :planet [:coordinateDestination]\n".
-                      "Resources:\n".
+                      "Destination: Colony :planet [:coordinateDestination]\n\n".
+                      "**Freight (:freightCapacity)**\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Sending status: **Awaiting**",

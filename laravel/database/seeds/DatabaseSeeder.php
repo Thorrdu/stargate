@@ -612,7 +612,7 @@ class DatabaseSeeder extends Seeder
         ]);
         //- Energie : Niveau 5
         DB::table('technology_technologies')->insert([
-            'technology_id' => 6,
+            'technology_id' => 9,
             'required_technology_id' => 4,
             'level' => 5
         ]);

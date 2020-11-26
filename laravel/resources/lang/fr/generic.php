@@ -92,7 +92,7 @@ return [
     'inactive' => 'INACTIF',
     'empty' => 'Vide',
     'closed' => 'Clôs',
-    'activities' => 'Activitiés',
+    'activities' => 'Activités',
     'adminrestricted' => 'Cette demande requière la permission admin',
     'noCustomChannelInDM' => "Pas de channel custom en dm...",
     'channelIgnored' => 'Le bot ne répondra désormais plus dans ce channel...',

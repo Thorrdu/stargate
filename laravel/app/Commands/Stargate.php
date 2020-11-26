@@ -408,6 +408,8 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->tradeResources = [];
                     $capacityNeeded = 0;
                     $tradeString = "";
+                    $tradeCapacity = 0;
+
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
                         if(isset($this->args[$cptRes+1]))
@@ -452,6 +454,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
                                     $this->tradeResources[$resource] = $qty;
+                                    $tradeCapacity += $unit->capacity;
                                 }
                             }
                         }
@@ -459,14 +462,14 @@ class Stargate extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
                     }
 
-                    $tradeCapacity = $this->player->activeColony->tradeCapacity();
+                    //$tradeCapacity = $this->player->activeColony->tradeCapacity();
                     if($tradeCapacity < $capacityNeeded)
                         return trans('generic.notEnoughCapacity', ['missingCapacity' => number_format(round($capacityNeeded - $tradeCapacity))], $this->player->lang);
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.moveMessage', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'planetSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'planet' => $this->coordinateDestination->colony->name, 'freightCapacity' => number_format($capacityNeeded).'/'.number_format($tradeCapacity), 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){
@@ -640,6 +643,8 @@ class Stargate extends CommandHandler implements CommandInterface
                     $this->tradeResources = [];
                     $capacityNeeded = 0;
                     $tradeString = "";
+                    $tradeCapacity = 0;
+
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
                         if(isset($this->args[$cptRes+1]))
@@ -684,6 +689,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resource = $unit->slug;
                                     $tradeString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
                                     $this->tradeResources[$resource] = $qty;
+                                    $tradeCapacity += $unit->capacity;
                                 }
                             }
                         }
@@ -691,14 +697,14 @@ class Stargate extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
                     }
 
-                    $tradeCapacity = $this->player->activeColony->tradeCapacity();
+                    //$tradeCapacity = $this->player->activeColony->tradeCapacity();
                     if($tradeCapacity < $capacityNeeded)
                         return trans('generic.notEnoughCapacity', ['missingCapacity' => number_format(round($capacityNeeded - $tradeCapacity))], $this->player->lang);
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
 
-                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planetDest' => $this->coordinateDestination->colony->name, 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $tradeMsg = trans('stargate.tradeMessage', ['coordinateDestination' => $destCoordinates, 'coordinateSource' => $sourceCoordinates, 'planetSource' => $this->player->activeColony->name, 'planetDest' => $this->coordinateDestination->colony->name, 'freightCapacity' => number_format($capacityNeeded).'/'.number_format($tradeCapacity), 'resources' => $tradeString, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage($tradeMsg)->then(function ($messageSent) use($travelCost){

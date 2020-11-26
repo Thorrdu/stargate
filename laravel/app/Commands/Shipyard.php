@@ -761,7 +761,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                     $usedCapacityString = trans('shipyard.usedCapacity', ['usedCapacity' => config('stargate.emotes.freight').' '.$component->used_capacity], $this->player->lang)."\n";
 
                 $embed['fields'][] = array(
-                    'name' => trans('shipyard.'.$component->slug.'.name', [], $this->player->lang),
+                    'name' => $component->id.' - '.trans('shipyard.'.$component->slug.'.name', [], $this->player->lang),
                     'value' => "\nSlug: `".$component->slug."`\n".
                                $firePowerString.$shieldString.$hullString.$capacityString.$speedString.$crewString.$usedCapacityString.
                                trans('generic.duration', [], $this->player->lang).": ".$componentTime."\n".

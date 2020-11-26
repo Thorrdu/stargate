@@ -83,7 +83,23 @@ class Colony extends CommandHandler implements CommandInterface
                             {
                                 $this->player->active_colony_id = $coordinateSwitch->colony->id;
                                 $this->player->save();
-                                return trans('colony.colonySwitched', ['colony' => $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']'], $this->player->lang);
+
+                                $colony = $this->player->activeColony->buildings->filter(function ($value) {
+                                    return $value->id == $this->player->activeColony->id;
+                                });
+                                $colonyArr = array_filter(
+                                    $this->player->colonies->toArray(),
+                                    function ($colony) {
+                                        return $colony['id'] == $this->player->activeColony->id;
+                                    }
+                                );
+                                $colonyName = ' n° '.(key($colonyArr)+1).': ';
+                                if($this->player->hide_coordinates)
+                                    $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                                else
+                                    $colonyName .= $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']';
+
+                                return trans('colony.colonySwitched', ['colony' => $colonyName], $this->player->lang);
                             }
                             else
                                 return trans('colony.UnknownColony', [], $this->player->lang);
@@ -95,7 +111,14 @@ class Colony extends CommandHandler implements CommandInterface
                     {
                         $this->player->active_colony_id = $this->player->colonies[(int)$this->args[1]-1]->id;
                         $this->player->save();
-                        return trans('colony.colonySwitched', ['colony' => $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']'], $this->player->lang);
+
+                        $colonyName = ' n° '.(int)$this->args[1].': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']';
+
+                        return trans('colony.colonySwitched', ['colony' => $colonyName], $this->player->lang);
                     }
                     else
                         return trans('colony.UnknownColony', [], $this->player->lang);
@@ -232,15 +255,26 @@ class Colony extends CommandHandler implements CommandInterface
                 $this->player->activeColony->checkColony();
                 $this->player->refresh();
 
-                $colonyName = trans('generic.colony', [], $this->player->lang).': ';
+                $colonyName = trans('generic.colony', [], $this->player->lang);
+                $colony = $this->player->activeColony->buildings->filter(function ($value) {
+                    return $value->id == $this->player->activeColony->id;
+                });
+                $colonyArr = array_filter(
+                    $this->player->colonies->toArray(),
+                    function ($colony) {
+                        return $colony['id'] == $this->player->activeColony->id;
+                    }
+                );
+                $colonyName .= ' n° '.(key($colonyArr)+1).': ';
+
                 if($this->player->hide_coordinates)
                 {
-                    $colonyName .= $coordinatesDisplay = trans('generic.hidden', [], $this->player->lang);
+                    $colonyName .= $coordinatesDisplay = '['.trans('generic.hidden', [], $this->player->lang).']';
                 }
                 else
                 {
                     $coordinates = $this->player->activeColony->coordinates;
-                    $coordinatesDisplay = $coordinates->humanCoordinates();
+                    $coordinatesDisplay = '['.$coordinates->humanCoordinates().']';
                     $colonyName .= $this->player->activeColony->name;
                 }
 

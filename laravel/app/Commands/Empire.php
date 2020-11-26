@@ -70,9 +70,15 @@ class Empire extends CommandHandler implements CommandInterface
                     ${'militaryTotalProduction'} = 0;
                     ${'e2pzTotalProduction'} = 0;
 
-                    foreach($this->player->colonies as $colony)
+                    foreach($this->player->colonies as $key => $colony)
                     {
                         $colony->checkColony();
+
+                        $colonyName = ' n° '.($key+1).': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
                         $colonyString = "";
 
@@ -100,7 +106,7 @@ class Empire extends CommandHandler implements CommandInterface
                         $colonyString .= $resourcesValue;
 
                         $embed['fields'][] = array(
-                            'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
+                            'name' => $colonyName,
                             'value' => $colonyString."\n\n.",
                             'inline' => true
                         );
@@ -143,9 +149,15 @@ class Empire extends CommandHandler implements CommandInterface
                         ),
                     ];
 
-                    foreach($this->player->colonies as $colony)
+                    foreach($this->player->colonies as $key => $colony)
                     {
                         $colony->checkColony();
+
+                        $colonyName = ' n° '.($key+1).': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
                         $colonyString = '';
                         $now = Carbon::now();
@@ -194,7 +206,7 @@ class Empire extends CommandHandler implements CommandInterface
                         }
 
                         $embed['fields'][] = array(
-                            'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
+                            'name' => $colonyName,
                             'value' => $colonyString."\n\n.",
                             'inline' => true
                         );
@@ -232,9 +244,15 @@ class Empire extends CommandHandler implements CommandInterface
                         ),
                     ];
 
-                    foreach($this->player->colonies as $colony)
+                    foreach($this->player->colonies as $key => $colony)
                     {
                         $colony->checkColony();
+
+                        $colonyName = ' n° '.($key+1).': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
                         $fleetString = "";
                         $defenseString = "";
@@ -252,7 +270,7 @@ class Empire extends CommandHandler implements CommandInterface
                             $fleetString = trans('stargate.emptyFleet', [], $this->player->lang);
 
                         $embed['fields'][] = array(
-                            'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
+                            'name' => $colonyName,
                             'value' => "**".trans('stargate.fleet', [], $this->player->lang)."**\n".$fleetString."\n\n**".trans('stargate.defences', [], $this->player->lang)."**\n".$defenseString,
                             'inline' => true
                         );
@@ -272,9 +290,15 @@ class Empire extends CommandHandler implements CommandInterface
                         ),
                     ];
 
-                    foreach($this->player->colonies as $colony)
+                    foreach($this->player->colonies as $key => $colony)
                     {
                         $colony->checkColony();
+
+                        $colonyName = ' n° '.($key+1).': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
                         $artifactString = "";
                         foreach($colony->artifacts as $artifact)
@@ -284,7 +308,7 @@ class Empire extends CommandHandler implements CommandInterface
                             $artifactString = trans('generic.noArtifact', [], $this->player->lang);
 
                         $embed['fields'][] = array(
-                            'name' => $colony->name.' ['.$colony->coordinates->humanCoordinates().']',
+                            'name' => $colonyName,
                             'value' => $artifactString,
                             'inline' => true
                         );

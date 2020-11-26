@@ -37,14 +37,14 @@ return [
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
     "tradeSent" => "Vous avez envoyé les ressources suivantes depuis :planetSource [:coordinateSource] sur :planetDest [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
     "tradeMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".
-                      "Destination: :planetDest [:coordinateDestination]\n".
-                      "Ressources:\n".
+                      "Destination: :planetDest [:coordinateDestination]\n\n".
+                      "**Transport (:freightCapacity)**\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
     "moveMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".
-                      "Destination: Colonie :planetDest [:coordinateDestination]\n".
-                      "Ressources:\n".
+                      "Destination: Colonie :planetDest [:coordinateDestination]\n\n".
+                      "**Transport (:freightCapacity)**\n".
                       ":resources\n".
                       "Coût: :consumption\n\n".
                       "Statut de l'envoi: **En attente**",
