@@ -53,15 +53,15 @@ class TopUpdater
                         $defencePoints += TopUpdater::priceMerging($defence->getPrice($defence->pivot->number));
                     foreach($colony->ships as $ship)
                         $militaryPoint += TopUpdater::priceMerging($ship->getPrice($ship->pivot->number));
+                }
 
-                    $activeFleets = Fleet::where([['ended', false],['player_source_id', $player->id]])->get();
-                    foreach($activeFleets as $fleet)
-                    {
-                        foreach($fleet->ships as $ship)
-                            $militaryPoint += TopUpdater::priceMerging($ship->getPrice($ship->pivot->number));
-                        foreach($fleet->units as $unit)
-                            $craftPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
-                    }
+                $activeFleets = Fleet::where([['ended', false],['player_source_id', $player->id]])->get();
+                foreach($activeFleets as $fleet)
+                {
+                    foreach($fleet->ships as $ship)
+                        $militaryPoint += TopUpdater::priceMerging($ship->getPrice($ship->pivot->number));
+                    foreach($fleet->units as $unit)
+                        $craftPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
                 }
 
                 $player->points_craft = round($craftPoint/1000);
