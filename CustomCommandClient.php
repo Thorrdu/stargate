@@ -86,7 +86,7 @@ class myDiscordCommandClient extends Discord
                 if ($message->author->id == $this->id || (isset($message->author->bot) && $message->author->bot == true) || (isset($message->author->user->bot) && $message->author->user->bot == true)) {
                     return;
                 }
-
+                $dmChannel = false;
                 $prefix = $this->commandClientOptions['prefix'];
                 if(!is_null($message->channel->guild_id))
                 {
@@ -94,14 +94,20 @@ class myDiscordCommandClient extends Discord
                     if(!is_null($guildConfig))
                         $prefix = $guildConfig['prefix'];
                 }
+                else
+                    $dmChannel = true;
 
                 $channelIgnore = config('stargate.channels.'.$message->channel->id.'.ignore');
                 if(!is_null($channelIgnore) && $channelIgnore == 'on' && !Str::startsWith($message->content, $prefix.'channel'))
                     return;
 
                 $withoutPrefix = '';
-                if (substr($message->content, 0, strlen($prefix)) == $prefix){
-                    $withoutPrefix = substr($message->content, strlen($prefix));
+                if (substr($message->content, 0, strlen($prefix)) == $prefix || $dmChannel){
+                    if($dmChannel && !substr($message->content, 0, strlen($prefix)) == $prefix)
+                        $withoutPrefix = $message->content;
+                    else
+                        $withoutPrefix = substr($message->content, strlen($prefix));
+
                     if(!empty($withoutPrefix))
                     {
                         $args = str_getcsv($withoutPrefix, ' ');
