@@ -86,6 +86,7 @@ class myDiscordCommandClient extends Discord
                 if ($message->author->id == $this->id || (isset($message->author->bot) && $message->author->bot == true) || (isset($message->author->user->bot) && $message->author->user->bot == true)) {
                     return;
                 }
+
                 $dmChannel = false;
                 $prefix = $this->commandClientOptions['prefix'];
                 if(!is_null($message->channel->guild_id))
@@ -103,7 +104,7 @@ class myDiscordCommandClient extends Discord
 
                 $withoutPrefix = '';
                 if (substr($message->content, 0, strlen($prefix)) == $prefix || $dmChannel){
-                    if($dmChannel && !substr($message->content, 0, strlen($prefix)) == $prefix)
+                    if($dmChannel && !(substr($message->content, 0, strlen($prefix)) == $prefix))
                         $withoutPrefix = $message->content;
                     else
                         $withoutPrefix = substr($message->content, strlen($prefix));
