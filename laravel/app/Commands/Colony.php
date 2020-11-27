@@ -148,6 +148,9 @@ class Colony extends CommandHandler implements CommandInterface
                                     if($activeFleets > 0)
                                         return trans('colony.activeFleetError', [], $this->player->lang);
 
+                                    if($this->player->active_technology_colony_id == $coordinateSwitch->colony->id)
+                                        return trans('colony.activeLaboratoryError', [], $this->player->lang);
+
 
                                     $colonyName = $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']';
                                     $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
@@ -299,7 +302,7 @@ class Colony extends CommandHandler implements CommandInterface
                     if(!empty($resourcesValue))
                         $resourcesValue .= "\n";
 
-                    $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($this->player->activeColony->$resource)." (".number_format($this->player->activeColony['production_'.$resource])."/h)";
+                    $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format(floor($this->player->activeColony->$resource))." (".number_format($this->player->activeColony['production_'.$resource])."/h)";
                     $storageValue .= number_format($this->player->activeColony->{'storage_'.$resource}).' '.ucfirst($resource)."\n";
                 }
 

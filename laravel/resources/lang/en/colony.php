@@ -17,4 +17,5 @@ return [
     'colonyNameChanged' => 'Your colony is now knowned as: **:name**',
     'removeRequest' => 'Do you realy want to remove colony **:name** ?',
     'activeFleetError' => 'Cannot remove this colony. An active fleet is still bound to this colony. Please retry later.',
+    'activeLaboratoryError' => 'Cannot remove this colony. The laboratory of this colony is busy. Please retry later.',
 ];

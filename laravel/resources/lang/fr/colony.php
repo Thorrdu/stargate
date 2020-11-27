@@ -17,4 +17,6 @@ return [
     'colonyNameChanged' => 'Votre colonie s\'appelle désormais: **:name**',
     'removeRequest' => 'Voulez vous vraiment abandonner la colonie **:name** ?',
     'activeFleetError' => 'Vous ne pouvez abandonner cette colonie. Une flotte active est toujours liée à cette colonie. Merci de réessayer plus tard.',
+    'activeLaboratoryError' => 'Vous ne pouvez abandonner cette colonie. Une recherche est en cours sur cette colonie. Merci de réessayer plus tard.',
+
 ];
