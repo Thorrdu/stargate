@@ -546,9 +546,11 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         return trans('fleet.noShipSelected', [], $this->player->lang);
 
                     //check crew capacity
-                    if($this->fleet->crew + $this->fleet->military > $this->player->activeColony->military)
+                    if($this->fleet->crew > $this->player->activeColony->military)
                         return trans('generic.notEnoughResources', ['missingResources' => trans('shipyard.crew', ['crew' => number_format(ceil($this->fleet->crew - $this->player->activeColony->military))], $this->player->lang)], $this->player->lang);
 
+                    if(($this->fleet->crew + $this->fleet->military) > $this->player->activeColony->military)
+                        return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang). ': '. number_format(ceil(($this->fleet->crew + $this->fleet->military) - $this->player->activeColony->military))], $this->player->lang);
 
                     //check Speed
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
