@@ -7,7 +7,7 @@ return [
         ],
     'wraithProbe' => [
             'name' => "Sonde wraith",
-            'description' => "Sonde spaciale wraith permettant le scanner une planète depuis l'espace.",
+            'description' => "Sonde spatiale wraith permettant le scanner une planète depuis l'espace.",
             ],
     'transport' => [
             'name' => "Petit transporteur",

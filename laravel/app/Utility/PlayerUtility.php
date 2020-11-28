@@ -2,6 +2,8 @@
 
 namespace App\Utility;
 
+use App\Colony;
+use App\Player;
 use App\Reminder;
 use App\SpyLog;
 use App\Technology;
@@ -199,5 +201,26 @@ class PlayerUtility
         {
             echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
+    }
+
+    public static function checkEndings(){
+        $playersTechnologyEnded = Player::whereNotNull('active_technology_end')->Where('active_technology_end','<',date("Y-m-d H:i:s"))->get();
+        foreach($playersTechnologyEnded as $playerTechnologyEnded)
+        {
+            $playerTechnologyEnded->technologyIsDone($playerTechnologyEnded->activeTechnology);
+            //CHECK QUEUE
+        }
+
+        $coloniesBuildingEnded = Colony::whereNotNull('active_building_end')->Where('active_building_end','<',date("Y-m-d H:i:s"))->get();
+        foreach($coloniesBuildingEnded as $colonyBuildingEnded)
+        {
+            $colonyBuildingEnded->buildingIsDone($colonyBuildingEnded->activeBuilding);
+            //CHECK QUEUE
+        }
+    }
+
+    public static function sendDm($discord, $playerId, $message, $type = 'text')
+    {
+
     }
 }

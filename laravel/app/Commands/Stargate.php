@@ -1058,7 +1058,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.military', [], $this->player->lang).': '.ceil(1000-$this->player->activeColony->military)], $this->player->lang);
 
                     $possibleColonies = $maxColonies = config('stargate.maxColonies');
-                    $maxColonies += 2;
+                    $maxColonies += 1;
                     $colonyMaxBonusList = $this->player->artifacts->filter(function ($value){
                         return $value->bonus_category == 'ColonyMax';
                     });

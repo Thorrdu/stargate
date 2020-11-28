@@ -17,10 +17,10 @@ class CreateArtifactsTable extends Migration
             $table->increments('id');
             $table->integer('colony_id')->unsigned();
             $table->foreign('colony_id')->references('id')->on('colonies');
-            $table->enum('bonus_category', ['Production', 'Time', 'Price', 'DefenceLure', 'ColonyMax']);
+            $table->enum('bonus_category', ['Production', 'Time', 'Price', 'DefenceLure', 'ColonyMax','maxSpace']);
             $table->enum('bonus_type', ['Research', 'Building', 'Ship', 'Defence', 'Craft'])->nullable();
             $table->enum('bonus_resource', ['iron', 'gold', 'quartz', 'naqahdah', 'military', 'e2pz'])->nullable();
-            $table->decimal('bonus_coef', 25, 5)->length(25)->unsigned()->nullable();
+            $table->decimal('bonus_coef', 25, 5)->length(25)->nullable();
             $table->timestamp('bonus_end')->nullable();
             $table->timestamps();
         });

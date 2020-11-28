@@ -77,12 +77,12 @@ return [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer".
                         "**Lvl 5 - Laboratoire de recherche** est requis pour activer la porte vers d'autres planètes..\n".
                         "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
-        'usage' => ":prefixstargate explore [coordonées]\n".
-                    ":prefixstargate colonize [coordonées]\n".
+        'usage' => ":prefixstargate explore [Coordonnées]\n".
+                    ":prefixstargate colonize [Coordonnées]\n".
                     ":prefixstargate move [NuméroDeColonie] [Res1] [Qté1]\n".
-                    ":prefixstargate move [coordonées] [Res1] [Qté1]\n".
-                    ":prefixstargate spy [coordonées]\n".
-                    ":prefixstargate attack [coordonées] military [Qté] [Unit1] [Qté1]\n".
+                    ":prefixstargate move [Coordonnées] [Res1] [Qté1]\n".
+                    ":prefixstargate spy [Coordonnées]\n".
+                    ":prefixstargate attack [Coordonnées] military [Qté] [Unit1] [Qté1]\n".
                     ":prefixstargate bury"
     ],
     'shipyard' => [
@@ -99,12 +99,12 @@ return [
         'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",
         'usage' =>  ":prefixfleet \n".
                     "**order** (`:prefixfleet order [id] return`)\n".
-                    //"**explore** (`:prefixfleet explore [coordonées]`)\n".
-                    //"**colonize** (`:prefixfleet colonize [coordonées]`)\n".
+                    //"**explore** (`:prefixfleet explore [Coordonnées]`)\n".
+                    //"**colonize** (`:prefixfleet colonize [Coordonnées]`)\n".
                     "**base** (`:prefixfleet base [NuméroDeColonie] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
-                    "**transport** (`:prefixfleet transport [coordonées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
-                    "**spy** (`:prefixfleet spy [coordonées]`)\n".
-                    "**attack** (`:prefixfleet attack [coordonées] [Vaisseaux] [Qté]`)\n".
+                    "**transport** (`:prefixfleet transport [Coordonnées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
+                    "**spy** (`:prefixfleet spy [Coordonnées]`)\n".
+                    "**attack** (`:prefixfleet attack [Coordonnées] [Vaisseaux] [Qté]`)\n".
                     "**scavenge** (`:prefixfleet scavenge [Recycleurs] [Qté]`)\n".
                     "**history** (`:prefixfleet history`)"
     ],
@@ -131,7 +131,7 @@ return [
     'profile' => [
         'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
                         ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
-                        "\nSi vous le souhaitez, vous pouvez cacher les coordonées lors de l'affichage de `!colony`".
+                        "\nSi vous le souhaitez, vous pouvez cacher les coordonnées lors de l'affichage de `!colony`".
                         "\nCette commande permet également d'activer ou désactiver le mode vacance.",
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"
     ],

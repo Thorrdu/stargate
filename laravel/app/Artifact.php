@@ -82,6 +82,8 @@ class Artifact extends Model
             else
                 $artifactString .= config('stargate.emotes.'.strtolower($this->bonus_resource))." $resName: +".(($this->bonus_coef-1)*100).'%';
         }
+        elseif($this->bonus_category == "maxSpace")
+            $artifactString .= trans('colony.maxSpaceBonus', [], $lang).": ".number_format($this->bonus_coef);
         elseif($this->bonus_category == "ColonyMax")
             $artifactString .= trans('colony.colonyMaxBonus', [], $lang).": +".number_format($this->bonus_coef);
         elseif($this->bonus_category == "DefenceLure")
@@ -106,7 +108,7 @@ class Artifact extends Model
                 'parts' => 3,
                 'short' => true, // short syntax as per current locale
                 'syntax' => CarbonInterface::DIFF_ABSOLUTE
-            ]);   
+            ]);
 
             $artifactString .= ' ('.$buildingTime.')';
 

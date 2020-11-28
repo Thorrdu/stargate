@@ -2,7 +2,7 @@
 //BUILDING FR
 return [
     'thermalreactor' => [
-        'name' => 'Centrale Thermique',
+        'name' => 'Centrale thermique',
         'description' => "Reacteur permettant d'exploiter l'énergie thermique souteraine présente sur votre colonie"
     ],
     'ironmine' => [
@@ -35,7 +35,7 @@ return [
         'description' => "Vous permet de recruter les autochtones de votre nouvelle planète et en faire des militaires capables de vous aider au combat ou en exploration."
     ],
     'shipyard' => [
-        'name' => 'Chantier Spatial',
+        'name' => 'Chantier spatial',
         'description' => 'Permet de déveloper la construction de sondes et vaisseaux spaciaux'
     ],
     'naqahdahreactor' => [
@@ -43,15 +43,15 @@ return [
         'description' => "Centrale permettant de générer d'énormes quantités d'énergie en consommant du Naqahdah."
     ],
     'ironstorage' => [
-        'name' => 'Entrepôt de Fer',
+        'name' => 'Entrepôt de fer',
         'description' => 'Permet de multiplier la capacité de stockage en Fer par 1.8 / LVL'
     ],
     'goldstorage' => [
-        'name' => "Entrepôt d'Or",
+        'name' => "Entrepôt d'or",
         'description' => 'Permet de multiplier la capacité de stockage en Or par 1.8 / LVL'
     ],
     'quartzstorage' => [
-        'name' => 'Entrepôt de Quartz',
+        'name' => 'Entrepôt de quartz',
         'description' => 'Permet de multiplier la capacité de stockage en Quartz par 1.8 / LVL'
     ],
     'naqahdahstorage' => [

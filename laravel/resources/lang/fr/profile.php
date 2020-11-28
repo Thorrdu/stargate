@@ -8,8 +8,8 @@ return [
     ],
     "hide" => [
         "missingParameter" => "Mauvais paramètres. Essayez `!profile hide on/off`",
-        "enabled" => "Vos coordonées sont désormais **cachées**",
-        "disabled" => "Vos coordonées sont désormais **visibles**",
+        "enabled" => "Vos coordonnées sont désormais **cachées**",
+        "disabled" => "Vos coordonnées sont désormais **visibles**",
     ],
     'nextVacation' => 'Vous êtes revenu de **mode vacance** trop récement. Vous pourrez le réactiver dans **:time**.',
     'vacationUntil' => 'Vous avez activé le **mode vacance** trop récement. Vous pourrez le désactiver dans **:time**.',

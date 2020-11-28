@@ -10,7 +10,7 @@ return [
         'description' => "Determines your efficiency while spying on an enemy planet",
         ],
     'counterspy' => [
-        'name' => "Counter-Spy",
+        'name' => "Counter-spy",
         'description' => "Determines your effectiveness against a foreign player's spy attempt",
         ],
     'energy' => [
@@ -22,7 +22,7 @@ return [
         'description' => "Allows you to develop an artificial intelligence capable of helping you on a daily basis in your colony",
         ],
     'blueprint' => [
-        'name' => "Ship Blueprint",
+        'name' => "Ship blueprint",
         'description' => "Allows the design of spaceships",
         ],
     'armament' => [
@@ -54,7 +54,7 @@ return [
         'description' => "Mastery of plasma technology, creating a laser heated to extreme temperatures enables the development of terribly lethal weapons",
         ],
     'naqahdah' => [
-        'name' => "Naqahdah Mastery",
+        'name' => "Naqahdah mastery",
         'description' => "Mastery of technology related to Naqahdah. Allows the manufacture of weapons related to this resource and reduce fuel consumption",
         ],
     'subluminal' => [

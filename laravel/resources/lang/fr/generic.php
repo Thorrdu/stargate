@@ -65,7 +65,7 @@ return [
     'wrongQuantity' => "Veuillez indiquer une quantité valide.",
     'unknownPlayer' => 'Joueur inconnu',
     'missingPerm' => "Permission manquantes...",
-    'coordinates' => "Coordonées",
+    'coordinates' => "Coordonnées",
     "buildingSpace" => "Espace constructible",
     'noArtifact' => 'Aucun artefact',
     "awaiting" => "En attente",

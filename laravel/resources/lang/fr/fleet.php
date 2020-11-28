@@ -3,12 +3,12 @@
 return [
     "askBaseParameter" => "Actions possibles:\n".
                             "**order** (`!fleet order [id] return`)\n".
-                            //"**explore** (`!fleet explore [coordonées]`)\n".
-                            //"**colonize** (`!fleet colonize [coordonées]`)\n".
+                            //"**explore** (`!fleet explore [Coordonnées]`)\n".
+                            //"**colonize** (`!fleet colonize [Coordonnées]`)\n".
                             "**base** (`!fleet base [NuméroDeColonie] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
-                            "**transport** (`!fleet transport [coordonées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
-                            "**spy** (`!fleet spy [coordonées]`)\n".
-                            "**attack** (`!fleet attack [coordonées] [Vaisseau] [Qté]`)\n".
+                            "**transport** (`!fleet transport [Coordonnées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
+                            "**spy** (`!fleet spy [Coordonnées]`)\n".
+                            "**attack** (`!fleet attack [Coordonnées] [Vaisseau] [Qté]`)\n".
                             "**scavenge** (`!fleet scavenge [Recycleurs] [Qté]`)\n".
                             "**history** (`!fleet history`)\n".
                             "Paramètre optionel: speed [10-100]",
@@ -112,7 +112,7 @@ return [
                             "Carburant: :fuel\n".
                             "Durée de vol: :duration\n".
                             "Statut de l'envoi: **En attente**",
-    'scavengeMission' => "Arrivée de vos recycleurs aux coordonées suivantes **[:coordinateDestination]**\n"
+    'scavengeMission' => "Arrivée de vos recycleurs aux coordonnées suivantes **[:coordinateDestination]**\n"
                         ."Origine: **:planetSource [:coordinateSource]**\n\n"
                         ."__Ressources recyclées__\n"
                         .":resources\n",

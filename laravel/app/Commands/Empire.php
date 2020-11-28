@@ -112,8 +112,8 @@ class Empire extends CommandHandler implements CommandInterface
                         );
                     }
 
-                    $totalHourlyProdString = "**Hourly**";
-                    $totalDailyProdString = "\n\n**Daily**";
+                    $totalHourlyProdString = "";
+                    $totalDailyProdString = "";
                     foreach (config('stargate.resources') as $resource)
                     {
                         $totalProd = ${$resource.'TotalProduction'};
@@ -130,8 +130,13 @@ class Empire extends CommandHandler implements CommandInterface
                     $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
 
                     $embed['fields'][] = array(
-                        'name' => 'Prod',
-                        'value' => $totalHourlyProdString.$totalDailyProdString,
+                        'name' => 'Hourly',
+                        'value' => $totalHourlyProdString,
+                        'inline' => true
+                    );
+                    $embed['fields'][] = array(
+                        'name' => 'Daily',
+                        'value' => $totalDailyProdString,
                         'inline' => true
                     );
                 }

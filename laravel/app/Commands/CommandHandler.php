@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use \Discord\Parts\Channel\Message as Message;
 use App\CommandLog as CommandLog;
 use App\Player;
+use App\Reminder;
+use Carbon\Carbon;
 use Discord\myDiscordCommandClient as Discord;
 use Illuminate\Support\Str;
 
@@ -118,23 +120,28 @@ class CommandHandler
                     $log->captcha_flag = true;
 
                 if(is_null($this->message->nonce) && $this->discord)
+                    $log->command_flag = true;
+
+                if($log->command_flag || $log->captcha_flag)
                 {
                     $flagCount = 0;
-                    $lastCommands = CommandLog::Where('player_id', $this->player)->orderBy('created_at', 'desc')->limit(7)->get();
+                    $lastCommands = CommandLog::Where('player_id', $this->player)->orderBy('created_at', 'desc')->limit(8)->get();
                     foreach($lastCommands as $lastCommand)
                     {
-                        if($lastCommand->command_flag == 1 || $lastCommand->captcha_flag == 1)
+                        if($lastCommand->command_flag || $lastCommand->captcha_flag )
                             $flagCount++;
                     }
-                    if($flagCount >= 5)
+                    if($flagCount >= 6)
                     {
                         $this->player->ban = true;
                         $this->player->save();
-                        $userExist = $this->discord->factory(\Discord\Parts\User\User::class, [
-                            'id' => $this->player->user_id,
-                        ]);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage("**Anti-Cheat System**\n\nSuite à un comportement violant les règles d'utilisation du bot, vous êtes désormais banni.");
+
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now()->addSecond(1);
+
+                            $reminder->reminder = "**Anti-Cheat System**\n\nSuite à un comportement suspect, votre compte à été suspendu.";
+                        $reminder->player_id = $this->player->id;
+                        $reminder->save();
                     }
                     elseif($lastCommand[0]->command_flag == 1)
                     {
@@ -143,11 +150,12 @@ class CommandHandler
                         $this->player->captcha_key = Str::random(10);
                         $this->player->save();
 
-                        $userExist = $this->discord->factory(\Discord\Parts\User\User::class, [
-                            'id' => $this->player->user_id,
-                        ]);
-                        if(!is_null($userExist))
-                            $userExist->sendMessage(trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang));
+                        $reminder = new Reminder;
+                        $reminder->reminder_date = Carbon::now()->addSecond(1);
+
+                            $reminder->reminder = trans('generic.captchaLink', ['link' => 'https://web.thorr.ovh/captcha/'.$this->player->captcha_key], $this->player->lang);
+                        $reminder->player_id = $this->player->id;
+                        $reminder->save();
                     }
 
                     //$lastCommand = CommandLog::Where('player_id', $this->player)->latest('created_at')->first();

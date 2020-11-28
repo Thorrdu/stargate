@@ -2,19 +2,19 @@
 //STARGATE FR
 return [
     "askBaseParameter" => "Actions possibles:\n".
-                            "**explore** (`!stargate explore [coordonées]`)\n".
-                            "**colonize** (`!stargate colonize [coordonées]`)\n".
+                            "**explore** (`!stargate explore [Coordonnées]`)\n".
+                            "**colonize** (`!stargate colonize [Coordonnées]`)\n".
                             "**move** (`!stargate move [NuméroDeColonie] [Res1] [Qté1]`)\n".
-                            "**trade** (`!stargate trade [coordonées] [Res1] [Qté1]`)\n".
-                            "**spy** (`!stargate spy [coordonées]`)\n".
-                            "**attack** (`!stargate attack [coordonées] military [Qté] [Unit1] [Qté1]`)\n".
+                            "**trade** (`!stargate trade [Coordonnées] [Res1] [Qté1]`)\n".
+                            "**spy** (`!stargate spy [Coordonnées]`)\n".
+                            "**attack** (`!stargate attack [Coordonnées] military [Qté] [Unit1] [Qté1]`)\n".
                             "**bury** (`!stargate bury`)\n",
-    "unknownCoordinates" => "Coordonées inconnues",
-    "unReacheableCoordinates" => 'Coordonées hors de portée',
+    "unknownCoordinates" => "Coordonnées inconnues",
+    "unReacheableCoordinates" => 'Coordonnées hors de portée',
     "stargateShattered" => "La porte des étoiles est actuellement hors service.\nFournir d'avantage de ressources à vos scientifiques pourrait être la solution...\n\n".
                             "**Lvl 5 - Laboratoire de recherche** est requis pour activer la porte vers d'autres planètes..\n".
                             "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
-    "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonées.",
+    "failedDialing" => "L'appel vers cette planète à échoué. Il n'y a pas de porte à contacter à ces coordonnées.",
     "maxExplorationReached" => "Trop de missions d'exploration déjà en cours.",
     "alreadyExplored" => "Vous avez déjà exploré cette planète.",
     "explorationSent" => "L'équipe d'exploration est bien arrivée sur la planète [:coordinates].\nUn rapport vous sera envoyé à la fin de la mission.",
@@ -112,6 +112,6 @@ return [
     'buriedStargate' => 'Stargate inopérante.',
     'playerTradeBan' => 'Ce joueur est banni du système de trade.',
     'trade_ban' => 'Vous êtes banni du système de trade. Vérifiez vos trades via `!trade`',
-    'sameColony' => 'Les coordonées de destination sont les mêmes que celles de départ...',
+    'sameColony' => 'Les coordonnées de destination sont les mêmes que celles de départ...',
     "probeSpySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\nVotre sonde arrivera dans **:fleetDuration**\n\n",
 ];

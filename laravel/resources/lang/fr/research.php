@@ -10,7 +10,7 @@ return [
         'description' => "Détermine votre efficacité lors de l'espionnage d'une planète ennemie",
         ],
     'counterspy' => [
-        'name' => "Contre-Espionage",
+        'name' => "Contre-espionage",
         'description' => "Détermine votre efficacité à contre la tentative d'espionage d'un joueur étranger",
         ],
     'energy' => [
@@ -54,7 +54,7 @@ return [
         'description' => "La maîtrise de la technologie du plasma, créant un laser chauffé à des températures extrême permet le dévelopement d'armes terriblement morteles",
         ],
     'naqahdah' => [
-        'name' => "Maîtrise du Naqahdah",
+        'name' => "Maîtrise du naqahdah",
         'description' => "Maîtrise de la technologie liée au Naqahdah. Permet la fabrication d'armement liée à cette ressource et de réduire la consommation de carburant",
         ],
     'subluminal' => [
@@ -66,7 +66,7 @@ return [
         'description' => "Capacité à maîtriser l'antimatière",
         ],
     'hyperspace' => [
-        'name' => "Hyper Espace",
+        'name' => "Hyper espace",
         'description' => "Capacité à voyager à la vitesse de la lumière et d'avantage",
         ],
     'hiddenTechnology' => '-- Technologie cachée --',

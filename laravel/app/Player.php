@@ -264,16 +264,6 @@ class Player extends Model
                 $this->activeColony->$resource = 0;
         }
 
-        if($this->notification)
-        {
-            $reminder = new Reminder;
-            $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-            $reminder->reminder = $this->activeColony->name." [".$this->activeColony->coordinates->humanCoordinates()."] **Lvl ".$wantedLvl." - ".trans('research.'.$technology->slug.'.name', [], $this->lang)."** ".trans("reminder.isDone", [], $this->lang);
-            $reminder->player_id = $this->id;
-            $reminder->save();
-            //$this->player->reminders()->attach($reminder->id);
-        }
-
         $this->activeColony->save();
         //$this->save();
         return $this->active_technology_end;
@@ -294,6 +284,7 @@ class Player extends Model
     public function technologyIsDone(Technology $technology)
     {
         try{
+            $newLvl = 1;
             $technologyExists = $this->technologies->filter(function ($value) use($technology){
                 return $value->id == $technology->id;
             });
@@ -302,6 +293,7 @@ class Player extends Model
                 $technologyToUpgrade = $technologyExists->first();
                 $technologyToUpgrade->pivot->level++;
                 $technologyToUpgrade->pivot->save();
+                $newLvl = $technologyToUpgrade->pivot->level;
             }
             else
             {
@@ -319,6 +311,15 @@ class Player extends Model
             }
             //$this->activeColony->saveWithoutEvents();
             $this->save();
+
+            if($this->notification)
+            {
+                $reminder = new Reminder;
+                $reminder->reminder_date = Carbon::now()->addSecond(1);
+                $reminder->reminder = $this->activeColony->name." [".$this->activeColony->coordinates->humanCoordinates()."] **Lvl ".$newLvl." - ".trans('research.'.$technology->slug.'.name', [], $this->lang)."** ".trans("reminder.isDone", [], $this->lang);
+                $reminder->player_id = $this->id;
+                $reminder->save();
+            }
         }
         catch(\Exception $e)
         {

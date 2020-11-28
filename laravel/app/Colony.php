@@ -502,25 +502,6 @@ class Colony extends Model
         $this->active_building_id = $building->id;
         $this->active_building_end = $buildingEnd;
 
-        if($this->player->notification)
-        {
-            try{
-                $reminder = new Reminder;
-                $reminder->reminder_date = Carbon::now()->addSecond($buildingTime);
-                if($removal)
-                    $reminder->reminder = trans("building.buildingRemoved", ['colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
-                else
-                    $reminder->reminder = $this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$wantedLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
-                $reminder->player_id = $this->player->id;
-                $reminder->save();
-            }
-            catch(\Exception $e)
-            {
-                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-            }
-            //$this->player->reminders()->attach($reminder->id);
-        }
-
         $this->save();
         return $this->active_building_end;
     }
@@ -825,6 +806,8 @@ class Colony extends Model
     public function buildingIsDone(Building $building)
     {
         try{
+            $removal = false;
+            $newLvl = 1;
             $buildingExist = $this->buildings->filter(function ($value) use($building){
                 return $value->id == $building->id;
             });
@@ -836,6 +819,7 @@ class Colony extends Model
             }
             elseif($this->active_building_remove)
             {
+                $removal = true;
                 $buildingToRemove = $buildingExist->first();
                 if($buildingToRemove->pivot->level == 1)
                     $this->buildings()->detach($building->id);
@@ -872,6 +856,7 @@ class Colony extends Model
                     $buildingToUpgrade = $buildingExist->first();
                     $buildingToUpgrade->pivot->level++;
                     $buildingToUpgrade->pivot->save();
+                    $newLvl = $buildingToUpgrade->pivot->level;
                 }
                 else
                 {
@@ -888,6 +873,25 @@ class Colony extends Model
             $this->active_building_end = null;
             $this->calcProd();
             $this->save();
+
+            if($this->player->notification)
+            {
+                try{
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    if($removal)
+                        $reminder->reminder = trans("building.buildingRemoved", ['colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
+                    else
+                        $reminder->reminder = $this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$newLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
+                catch(\Exception $e)
+                {
+                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                }
+            }
+
         }
         catch(\Exception $e)
         {
@@ -917,11 +921,12 @@ class Colony extends Model
     {
         try{
             $categoryWeights = [
-                'Production' => 30,
-                'Time' => 20,
-                'Price' => 20,
-                'DefenceLure' => 10,
-                'ColonyMax' => 10
+                'Time' => 35,
+                'Production' => 20,
+                'maxSpace' => 15,
+                'Price' => 9,
+                'ColonyMax' => 10,
+                'DefenceLure' => 5,
             ];
 
             if(isset($options['bonusCategories']))
@@ -930,7 +935,10 @@ class Colony extends Model
                 $bonusCategories = ['Production', 'Time', 'Price', 'DefenceLure'];
 
             if(!isset($options['maxEnding']))
+            {
                 $bonusCategories[] = 'ColonyMax';
+                $bonusCategories[] = 'maxSpace';
+            }
 
             if(isset($options['bonusTypes']))
                 $bonusTypes = $options['bonusTypes'];
@@ -948,7 +956,7 @@ class Colony extends Model
                 $isBonus = $options['forceBonus'];
             else
             {
-                if(rand(0,100) > 75)
+                if(rand(0,100) > 70)
                     $isBonus = false;
                 else
                     $isBonus = true;
@@ -1005,12 +1013,31 @@ class Colony extends Model
                 else
                     $newArtifact->bonus_coef = 1-$bonusCoef;
             }
+            elseif(in_array($newArtifact->bonus_category,['maxSpace']))
+            {
+                $additionalSpace = rand(20,60);
+                if($isBonus)
+                {
+                    $newArtifact->bonus_coef = $additionalSpace;
+                    $this->space_max += $additionalSpace;
+                }
+                else
+                {
+                    $newArtifact->bonus_coef = 0-$additionalSpace;
+                    $this->space_max -= $additionalSpace;
+                }
+
+                if(isset($options['maxEnding']))
+                    unset($options['maxEnding']);
+
+                $this->save();
+            }
             elseif(in_array($newArtifact->bonus_category,['ColonyMax']))
             {
-                $alreadyOwned = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','Colony')->count();
+                $alreadyOwned = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','ColonyMax')->count();
                 if($alreadyOwned > 0)
                     return $this->generateArtifact($options);
-                $newArtifact->bonus_coef = 2;
+                $newArtifact->bonus_coef = 1;
                 if(isset($options['maxEnding']))
                     unset($options['maxEnding']);
             }
@@ -1028,6 +1055,7 @@ class Colony extends Model
                 $this->calcProd();
                 $this->save();
             }
+
             return $newArtifact;
         }
         catch(\Exception $e)

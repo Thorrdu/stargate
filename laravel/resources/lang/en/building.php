@@ -67,11 +67,11 @@ return [
         'description' => 'Command Center equipped with an out of common Artificial Intelligence. It will increase your life quality on this colony.'
     ],
     'ironadvancedmine' => [
-        'name' => 'Advanced Iron mine',
+        'name' => 'Advanced iron mine',
         'description' => 'Now used to mining iron on this colony, your settlers developed a much better way to extract it on this planet.'
     ],
     'goldadvancedmine' => [
-        'name' => 'Advanced Gold mine',
+        'name' => 'Advanced gold mine',
         'description' => 'Now used to mining gold on this colony, your settlers developed a much better way to extract it on this planet.'
     ],
     'asuranfactory' => [

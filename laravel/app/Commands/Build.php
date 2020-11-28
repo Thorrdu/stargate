@@ -264,7 +264,7 @@ class Build extends CommandHandler implements CommandInterface
                                 }
                             }
 
-                            if( !is_null($this->player->active_technology_id) && $building->id == 7)
+                            if( !is_null($this->player->active_technology_id) && $building->id == 7 && $this->player->activeColony->id == $this->player->active_technology_colony_id)
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             if( $this->player->activeColony->defenceQueues->count() > 0 && $building->id == 15 )
