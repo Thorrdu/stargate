@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
 use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
+use App\Utility\PlayerUtility;
 use App\Utility\TopUpdater;
  
 //use Discord\Discord;
@@ -155,6 +156,8 @@ $discord->on('ready', function ($discord) use($beta){
                 $stargateBurial->stargate_action_date = null;
                 $stargateBurial->save();
             }
+
+            PlayerUtility::checkEndings();
         });
 
         $discord->loop->addPeriodicTimer(300, function () use ($discord) {
@@ -169,12 +172,6 @@ $discord->on('ready', function ($discord) use($beta){
                     $colony->calcProd(); //reload Prods
                     $colony->save(); 
                 }
-            }
-
-            $playersTechnologyEnded = Player::Where('active_technology_end','<',date("Y-m-d H:i:s"))->get();
-            foreach($playersTechnologyEnded as $playerTechnologyEnded)
-            {
-                $playerTechnologyEnded->checkTechnology();
             }
 
             $dateNow = Carbon::now();
@@ -200,7 +197,7 @@ $discord->on('ready', function ($discord) use($beta){
                 {
                     $newArtifact = $colonyCheckArtifact->generateArtifact(['forceBonus' => true])->toString($colonyCheckArtifact->player->lang);
                 }
-                elseif(rand(0,100) > 50)
+                else
                 {
                     $newArtifact = $colonyCheckArtifact->generateArtifact()->toString($colonyCheckArtifact->player->lang);
                 }
@@ -301,10 +298,10 @@ $discord->on('ready', function ($discord) use($beta){
                 $reminder->save();
             }
         }
-
+        /*
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
         $totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
-
+        */
         /*$activity = $discord->factory(\Discord\Parts\User\Activity::class, [
             'name' => "!help | {$totalServer} servers {$totalUsers} users",
             'type' => 3
@@ -324,11 +321,8 @@ $discord->on('ready', function ($discord) use($beta){
             'type' => Activity::TYPE_LISTENING
         ]);
         $discord->updatePresence($activity);*/
-    });
 
 
-
-    $discord->loop->addPeriodicTimer(rand(40,60), function () use ($discord) {
         
         /*echo PHP_EOL.'UPDATING PRESENCE'.PHP_EOL;
         $game = $discord->factory(Game::class, [
@@ -367,7 +361,7 @@ $discord->on('ready', function ($discord) use($beta){
             }
         }
     });
-   
+
     $discord->registerCommand('help', function ($message, $args) use($discord){
         $command = new CustomHelp($message,$args,$discord);
         return $command->execute();
