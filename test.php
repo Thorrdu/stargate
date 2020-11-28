@@ -30,6 +30,14 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+$a = '30a';
+if(is_numeric($a))
+	echo $a;
+else
+	echo 'no';
+
+
+die();
 
 $alliances = Alliance::All();
 foreach($alliances as $alliance)

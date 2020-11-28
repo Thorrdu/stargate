@@ -165,7 +165,10 @@ class Build extends CommandHandler implements CommandInterface
                 }
                 elseif(!empty(trim($this->args[0])))
                 {
-                    $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
+                    if(is_numeric($this->args[0]))
+                        $building = Building::where('id', (int)$this->args[0])->first();
+                    else
+                        $building = Building::where('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))
                     {
                         if($building->id == 19 && $this->player->activeColony->id != $this->player->colonies[0]->id)

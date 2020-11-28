@@ -158,7 +158,10 @@ class Research extends CommandHandler implements CommandInterface
                 }
                 elseif(!empty(trim($this->args[0])))
                 {
-                    $technology = Technology::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
+                    if(is_numeric($this->args[0]))
+                        $technology = Technology::where('id', (int)$this->args[0])->first();
+                    else
+                        $technology = Technology::where('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($technology))
                     {
                         if(count($this->args) == 2 && Str::startsWith('confirm', $this->args[1]))
