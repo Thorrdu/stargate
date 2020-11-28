@@ -163,7 +163,7 @@ class Build extends CommandHandler implements CommandInterface
                         echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                     }
                 }
-                else
+                elseif(!empty(trim($this->args[0])))
                 {
                     $building = Building::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($building))

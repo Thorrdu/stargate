@@ -156,7 +156,7 @@ class Research extends CommandHandler implements CommandInterface
                         return trans('research.technologyCanceled',[],$this->player->lang);
                     }
                 }
-                else
+                elseif(!empty(trim($this->args[0])))
                 {
                     $technology = Technology::where('id', (int)$this->args[0])->orWhere('slug', 'LIKE', $this->args[0].'%')->first();
                     if(!is_null($technology))

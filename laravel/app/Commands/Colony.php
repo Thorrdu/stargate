@@ -144,7 +144,7 @@ class Colony extends CommandHandler implements CommandInterface
                                 else
                                 {
 
-                                    $activeFleets = Fleet::where([['colony_source_id' => $coordinateSwitch->colony->id],['ended', false]])->orWhere([['colony_destination_id' => $coordinateSwitch->colony->id],['ended', false]])->count();
+                                    $activeFleets = Fleet::where([['colony_source_id', $coordinateSwitch->colony->id],['ended', false]])->orWhere([['colony_destination_id', $coordinateSwitch->colony->id],['ended', false]])->count();
                                     if($activeFleets > 0)
                                         return trans('colony.activeFleetError', [], $this->player->lang);
 
@@ -207,7 +207,7 @@ class Colony extends CommandHandler implements CommandInterface
                             return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
                         else
                         {
-                            $activeFleets = Fleet::where([['colony_source_id' => $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->orWhere([['colony_destination_id' => $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->count();
+                            $activeFleets = Fleet::where([['colony_source_id', $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->orWhere([['colony_destination_id', $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->count();
                             if($activeFleets > 0)
                                 return trans('colony.activeFleetError', [], $this->player->lang);
 
