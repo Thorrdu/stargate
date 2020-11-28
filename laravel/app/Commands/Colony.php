@@ -151,7 +151,6 @@ class Colony extends CommandHandler implements CommandInterface
                                     if($this->player->active_technology_colony_id == $coordinateSwitch->colony->id)
                                         return trans('colony.activeLaboratoryError', [], $this->player->lang);
 
-
                                     $colonyName = $coordinateSwitch->colony->name.' ['.$coordinateSwitch->humanCoordinates().']';
                                     $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
 
@@ -208,6 +207,13 @@ class Colony extends CommandHandler implements CommandInterface
                             return trans('colony.cannotRemoveHomePlanet', [], $this->player->lang);
                         else
                         {
+                            $activeFleets = Fleet::where([['colony_source_id' => $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->orWhere([['colony_destination_id' => $this->player->colonies[(int)$this->args[1]-1]->id],['ended', false]])->count();
+                            if($activeFleets > 0)
+                                return trans('colony.activeFleetError', [], $this->player->lang);
+
+                            if($this->player->active_technology_colony_id == $this->player->colonies[(int)$this->args[1]-1]->id)
+                                return trans('colony.activeLaboratoryError', [], $this->player->lang);
+
                             $colonyName = $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']';
                             $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
 
