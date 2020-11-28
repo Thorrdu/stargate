@@ -146,7 +146,7 @@ return [
                               "-Une coque\n".
                               "-Un système de propulsion\n\n".
                               "Exemple de commande permettant de créer un nouveau modèle: \n".
-                              "`!ship create jumper projectileturret 1 taurihull 1 combustionreactor 1`\n".
+                              "`!ship create jumper projectileturret 1 taurihull 1 combustionreactor 5`\n".
                               "Les composants pouvant servir à la fabrication d'un vaisseau peuvent être consultés via `!shipyard parts`\n",
     'componentList' => 'Liste des composants',
 ];
