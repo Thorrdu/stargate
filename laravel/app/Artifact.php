@@ -48,7 +48,7 @@ class Artifact extends Model
             switch($this->bonus_type)
             {
                 case 'Research':
-                    $bonusName = config('stargate.emotes.research')." ".trans('generic.researchTime', [], $lang)."\n";
+                    $bonusName = config('stargate.emotes.research')." ".trans('generic.researchTime', [], $lang);
                 break;
                 case 'Building':
                     $bonusName = config('stargate.emotes.productionBuilding')." ".trans('generic.buildingTime', [], $lang);
