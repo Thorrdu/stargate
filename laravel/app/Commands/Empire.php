@@ -178,24 +178,6 @@ class Empire extends CommandHandler implements CommandInterface
                             'inline' => true
                         );
                     }
-
-                    if(!is_null($this->player->active_technology_end)){
-                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
-                        $buildingTime = $now->diffForHumans($buildingEnd,[
-                            'parts' => 3,
-                            'short' => true, // short syntax as per current locale
-                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                        ]);
-
-                        $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
-                        if(!$currentLevel)
-                            $currentLevel = 0;
-                        $embed['fields'][] = array(
-                            'name' => trans('colony.technologyUnderResearch', [], $this->player->lang),
-                            'value' => "Lvl ".($currentLevel+1)." - ".trans('research.'.$this->player->activetechnology->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
-                            'inline' => true
-                        );
-                    }
                 }
                 elseif(Str::startsWith('activities', $this->args[0]))
                 {
