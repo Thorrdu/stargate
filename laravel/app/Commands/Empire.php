@@ -47,8 +47,9 @@ class Empire extends CommandHandler implements CommandInterface
 
                 if(empty($this->args))
                 {
-                    return $this->message->reply("`{$prefix}empire [production/activities/fleet/artifacts]`");
+                    return $this->message->reply("`{$prefix}empire [production/buildings/activities/fleet/artifacts]`");
                 }
+
                 elseif(Str::startsWith('production', $this->args[0]))
                 {
                     $embed = [
@@ -107,7 +108,7 @@ class Empire extends CommandHandler implements CommandInterface
 
                         $embed['fields'][] = array(
                             'name' => $colonyName,
-                            'value' => $colonyString."\n\n.",
+                            'value' => $colonyString."\n.",
                             'inline' => true
                         );
                     }
@@ -139,6 +140,62 @@ class Empire extends CommandHandler implements CommandInterface
                         'value' => $totalDailyProdString,
                         'inline' => true
                     );
+                }
+                elseif(Str::startsWith('buildings', $this->args[0]))
+                {
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                        ],
+                        "title" => 'Empire - '.trans('generic.buildings', [], $this->player->lang),
+                        'fields' => [],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+
+                    foreach($this->player->colonies as $key => $colony)
+                    {
+                        $colony->checkColony();
+
+                        $colonyName = ' n° '.($key+1).': ';
+                        if($this->player->hide_coordinates)
+                            $colonyName .= '['.trans('generic.hidden', [], $this->player->lang).']';
+                        else
+                            $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
+
+                        $colonyString = '';
+                        foreach($this->player->activeColony->buildings as $building)
+                        {
+                            $colonyString .= 'Lvl '.$building->pivot->level.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang)."\n";
+                        }
+                        if(empty($colonyString))
+                            $colonyString = trans('generic.empty', [], $this->player->lang);
+                        $embed['fields'][] = array(
+                            'name' => $colonyName,
+                            'value' => $colonyString."\n.",
+                            'inline' => true
+                        );
+                    }
+
+                    if(!is_null($this->player->active_technology_end)){
+                        $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->active_technology_end);
+                        $buildingTime = $now->diffForHumans($buildingEnd,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+
+                        $currentLevel = $this->player->hasTechnology($this->player->activeTechnology);
+                        if(!$currentLevel)
+                            $currentLevel = 0;
+                        $embed['fields'][] = array(
+                            'name' => trans('colony.technologyUnderResearch', [], $this->player->lang),
+                            'value' => "Lvl ".($currentLevel+1)." - ".trans('research.'.$this->player->activetechnology->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
+                            'inline' => true
+                        );
+                    }
                 }
                 elseif(Str::startsWith('activities', $this->args[0]))
                 {
@@ -212,7 +269,7 @@ class Empire extends CommandHandler implements CommandInterface
 
                         $embed['fields'][] = array(
                             'name' => $colonyName,
-                            'value' => $colonyString."\n\n.",
+                            'value' => $colonyString."\n.",
                             'inline' => true
                         );
                     }
@@ -320,7 +377,7 @@ class Empire extends CommandHandler implements CommandInterface
                     }
                 }
                 else
-                    return $this->message->reply("`{$prefix}empire [production/activities/fleet/artifacts]`");
+                    return $this->message->reply("`{$prefix}empire [production/buildings/activities/fleet/artifacts]`");
 
                 if(isset($embed))
                 {

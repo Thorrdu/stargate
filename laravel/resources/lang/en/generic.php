@@ -19,6 +19,7 @@ return [
     'e2pz' => 'ZPM',
     'resource' => 'Resource',
     'resources' => 'Resources',
+    'buildings' => 'Buildings',
     'productionBuildings' => 'Production buildings',
     'scienceBuildings' => 'Science buildings',
     'militaryBuildings' => 'Military buildings',

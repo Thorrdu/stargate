@@ -148,7 +148,7 @@ return [
     ],
     'empire' => [
         'description' => "Allow you to see an overview of your colonies and claiming resources / check building/research/craft/defence ending with one command",
-        'usage' => ":prefixempire\n:prefixempire activities\n:prefixempire production\n:prefixempire fleet\n:prefixempire artifacts"
+        'usage' => ":prefixempire\n:prefixempire activities\n:prefixempire production\n:prefixempire buildings\n:prefixempire fleet\n:prefixempire artifacts"
     ],
     'start' => [
         'description' => "The first commande to start your Stargate adventure. Use it to create your player profile",

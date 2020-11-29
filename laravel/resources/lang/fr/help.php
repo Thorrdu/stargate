@@ -147,7 +147,7 @@ return [
     ],
     'empire' => [
         'description' => "Vous permet d'afficher une vue d'ensemble de vos colonies, réclamer leur ressources / vérifier la fin de vos building/research/craft/defence en une commande",
-        'usage' => ":prefixempire\n:prefixempire activities\n:prefixempire production\n:prefixempire fleet\n:prefixempire artifacts"
+        'usage' => ":prefixempire\n:prefixempire activities\n:prefixempire production\n:prefixempire buildings\n:prefixempire fleet\n:prefixempire artifacts"
     ],
     'start' => [
         'description' => "Créer votre profile Stargate afin de commencer votre aventure.",

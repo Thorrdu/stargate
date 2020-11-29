@@ -72,7 +72,7 @@ class Colony extends Model
 
     public function buildings()
     {
-        return $this->belongsToMany('App\Building')->withPivot('level');
+        return $this->belongsToMany('App\Building')->withPivot('level')->orderBy('buildings.id','ASC');;
     }
 
     public function artifacts()
