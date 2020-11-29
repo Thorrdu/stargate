@@ -95,8 +95,8 @@ class myDiscordCommandClient extends Discord
                     if(!is_null($guildConfig))
                         $prefix = $guildConfig['prefix'];
                 }
-                else
-                    $dmChannel = true;
+                /*else
+                    $dmChannel = true;*/
 
                 $channelIgnore = config('stargate.channels.'.$message->channel->id.'.ignore');
                 if(!is_null($channelIgnore) && $channelIgnore == 'on' && !Str::startsWith($message->content, $prefix.'channel'))
