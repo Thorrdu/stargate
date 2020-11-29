@@ -166,7 +166,7 @@ class Empire extends CommandHandler implements CommandInterface
                             $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
                         $colonyString = '';
-                        foreach($this->player->activeColony->buildings as $building)
+                        foreach($colony->buildings as $building)
                         {
                             $colonyString .= 'Lvl '.$building->pivot->level.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang)."\n";
                         }
