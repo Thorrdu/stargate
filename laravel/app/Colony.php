@@ -956,7 +956,7 @@ class Colony extends Model
                 $isBonus = $options['forceBonus'];
             else
             {
-                if(rand(0,100) > 70)
+                if(rand(0,100) > 90)
                     $isBonus = false;
                 else
                     $isBonus = true;
