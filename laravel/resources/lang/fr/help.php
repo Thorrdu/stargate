@@ -79,8 +79,8 @@ return [
                         "Cependant, au Lvl 4, les autres joueurs pourront se connecter à votre porte",
         'usage' => ":prefixstargate explore [Coordonnées]\n".
                     ":prefixstargate colonize [Coordonnées]\n".
-                    ":prefixstargate move [NuméroDeColonie] [Res1] [Qté1]\n".
-                    ":prefixstargate move [Coordonnées] [Res1] [Qté1]\n".
+                    ":prefixstargate move [NuméroDeColonie/Coordonnées] [Res1] [Qté1]\n".
+                    ":prefixstargate trade [Coordonnées] [Res1] [Qté1]\n".
                     ":prefixstargate spy [Coordonnées]\n".
                     ":prefixstargate attack [Coordonnées] military [Qté] [Unit1] [Qté1]\n".
                     ":prefixstargate bury"

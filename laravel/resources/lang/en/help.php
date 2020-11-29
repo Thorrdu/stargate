@@ -79,8 +79,8 @@ return [
                         "However, at Lvl 4 you'll be able to receive gate dialing",
         'usage' => ":prefixstargate explore [coordinates]\n".
                     ":prefixstargate colonize [coordinates]\n".
-                    ":prefixstargate move [colonyNumber] [Res1] [Qty1]\n".
-                    ":prefixstargate move [coordinates] [Res1] [Qty1]\n".
+                    ":prefixstargate move [colonyNumber/coordinates] [Res1] [Qty1]\n".
+                    ":prefixstargate trade [coordinates] [Res1] [Qty1]\n".
                     ":prefixstargate spy [coordinates]\n".
                     ":prefixstargate attack [coordinates] military [Qty] [Unit1] [Qty1]\n".
                     ":prefixstargate bury\n"
