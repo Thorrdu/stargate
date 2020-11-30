@@ -143,7 +143,7 @@ class CommandHandler
                         $reminder->player_id = $this->player->id;
                         $reminder->save();
                     }
-                    elseif($lastCommand[0]->command_flag == 1)
+                    elseif($lastCommands[0]->command_flag == 1)
                     {
                         $log->command_flag = true;
                         $this->player->captcha = true;
