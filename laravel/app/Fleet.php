@@ -314,9 +314,7 @@ class Fleet extends Model
                             {
                                 $tradeLog = new Trade;
                                 $tradeLog->player_id_source = $this->sourcePlayer->id;
-                                $tradeLog->colony_source_id = $this->sourceColony->id;
                                 $tradeLog->player_id_dest = $this->destinationPlayer->id;
-                                $tradeLog->colony_destination_id = $this->destinationColony->id;
                                 $tradeLog->trade_value_player1 = 0;
                                 $tradeLog->trade_value_player2 = 0;
                                 $tradeLog->save();

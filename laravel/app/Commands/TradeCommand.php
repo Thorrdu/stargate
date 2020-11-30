@@ -351,7 +351,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                 }
                 elseif(Str::startsWith($this->args[0], 'ratio'))
                 {
-                    $this->message->channel->sendMessage("1 Iron\n1 Gold = 1.5 Iron\n1 Quartz = 3 Iron\n1 Naqahdah = 3 Iron\n".trans('generic.e2pz', [], $this->player->lang)." = 10.000 Iron");
+                    $this->message->channel->sendMessage("1 Iron\n1 Gold = 1.5 Iron\n1 Quartz = 3 Iron\n1 Naqahdah = 3 Iron\n1 ".trans('generic.military', [], $this->player->lang)." = 0.2 Iron\n".trans('generic.e2pz', [], $this->player->lang)." = 10.000 Iron");
                 }
                 else
                 {
