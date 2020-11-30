@@ -1519,7 +1519,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     $defence->pivot->save();
                                                 }
                                                 else
-                                                    $this->coordinateDestination->defences()->detach($defence->id);
+                                                    $this->coordinateDestination->colony->defences()->detach($defence->id);
                                             }
                                         }
 
