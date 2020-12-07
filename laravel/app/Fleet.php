@@ -91,13 +91,13 @@ class Fleet extends Model
                 if($this->$availableResource > 0)
                 {
                     $destinationColony->$availableResource += $this->$availableResource;
-                    if(isset($destinationColony->{'storage_'.$availableResource}) && $destinationColony->{'storage_'.$availableResource} < $destinationColony->$availableResource)
-                        $destinationColony->$availableResource = $destinationColony->{'storage_'.$availableResource};
+                    if(isset($destinationColony->{'storage_'.$availableResource}) && ($destinationColony->{'storage_'.$availableResource}*1.25) < $destinationColony->$availableResource)
+                        $destinationColony->$availableResource = $destinationColony->{'storage_'.$availableResource}*1.25;
                 }
-                //crew => colony
-                if(!is_null($this->crew) && $this->crew > 0)
-                    $destinationColony->military += $this->crew;
             }
+            //crew => colony
+            if(!is_null($this->crew) && $this->crew > 0)
+                $destinationColony->military += $this->crew;
 
             //vaisseaux -> colony
             foreach($this->ships as $ship)
@@ -333,8 +333,8 @@ class Fleet extends Model
                         if($this->$availableResource > 0)
                         {
                             $this->destinationColony->$availableResource += $this->$availableResource;
-                            if(isset($this->destinationColony->{'storage_'.$availableResource}) && $this->destinationColony->{'storage_'.$availableResource} < $this->destinationColony->$availableResource)
-                                $this->destinationColony->$availableResource = $this->destinationColony->{'storage_'.$availableResource};
+                            if(isset($this->destinationColony->{'storage_'.$availableResource}) && ($this->destinationColony->{'storage_'.$availableResource}*1.25) < $this->destinationColony->$availableResource)
+                                $this->destinationColony->$availableResource = $this->destinationColony->{'storage_'.$availableResource}*1.25;
 
                             if($this->player_source_id != $this->player_destination_id)
                             {
@@ -500,28 +500,54 @@ class Fleet extends Model
         return $unitCount;
     }
 
-    public function shipsToString(){
+    public function shipsToString($withClass = false,$lang = 'en'){
         $fleetString = '';
-        foreach($this->ships as $ship)
+        try{
+            foreach($this->ships as $ship)
+            {
+                $shipClass = '';
+                if($withClass)
+                {
+                    $shipType = shipPart::
+                    leftJoin('ship_part_technologies', 'ship_part_technologies.ship_part_id', '=', 'ship_parts.id')
+                    ->where([['level',$ship->required_blueprint],['ship_part_technologies.required_technology_id', 6]])
+
+                    ->get()->first();
+                    if(!is_null($shipType))
+                        $shipClass = '(Class '.trans('shipyard.'.$shipType->slug.'.name', [], $lang).')';
+                    else
+                        $shipClass = 'ERROR';
+                }
+                $fleetString .= $ship->pivot->number.' '.$ship->name." ".$shipClass."\n";
+            }
+            return $fleetString;
+        }catch(\Exception $e)
         {
-            $fleetString .= $ship->pivot->number.' '.$ship->name."\n";
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
-        return $fleetString;
     }
 
-    public function resourcesToString($lang='fr',$withUnit = true){
+    public function resourcesToString($lang='fr',$withUnit = true, $withResources = true){
         $resourcesString = '';
 
-        $availableResources = config('stargate.resources');
-        $availableResources[] = 'E2PZ';
-        $availableResources[] = 'military';
-        foreach($availableResources as $availableResource)
+        if($withResources)
         {
-            if($this->$availableResource > 0)
+            $availableResources = config('stargate.resources');
+            $availableResources[] = 'E2PZ';
+            $availableResources[] = 'military';
+            foreach($availableResources as $availableResource)
             {
-                $resourcesString .= config('stargate.emotes.'.strtolower($availableResource))." ".ucfirst($availableResource).': '.number_format($this->$availableResource)."\n";
+                if($this->$availableResource > 0)
+                {
+                    if($availableResource == 'E2PZ')
+                        $resQty = number_format($this->$availableResource,2);
+                    else
+                        $resQty = number_format($this->$availableResource);
+                    $resourcesString .= config('stargate.emotes.'.strtolower($availableResource))." ".ucfirst($availableResource).': '.$resQty."\n";
+                }
             }
         }
+
         if($withUnit)
         {
             foreach($this->units as $unit)
@@ -597,20 +623,47 @@ class Fleet extends Model
             );
         }
 
+        $defenderMilitary = $this->destinationColony->military;
+        $totalDefenderCrewNeeded = 0;
+
         $defenceForces = array();
         foreach($this->destinationColony->ships as $ship)
         {
+            $totalDefenderCrewNeeded = $ship->crew * $ship->pivot->number;
+        }
+
+        foreach($this->destinationColony->ships as $ship)
+        {
+            $firepower = $ship->fire_power * $defenderFireCoef;
+            $shield = $ship->shield * $defenderShieldCoef;
+            $hull = $ship->hull * $defenderHullCoef;
+
+            if($totalDefenderCrewNeeded >= $defenderMilitary)
+            {
+                $defenderMalus = $defenderMilitary / $totalDefenderCrewNeeded;
+                $firepower *= $defenderMalus;
+                $shield *= $defenderMalus;
+                $hull *= $defenderMalus;
+                if($firepower < 1)
+                    $firepower = 1;
+                if($shield < 1)
+                    $shield = 1;
+                if($hull < $ship->hull)
+                    $hull = $ship->hull;
+            }
+
             $defenceForces[] = array(
                 'type' => 'ship',
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
-                'fire_power' => $ship->fire_power * $defenderFireCoef,
-                'total_fire_power' => $ship->fire_power * $defenderFireCoef * $ship->pivot->number,
-                'shield' => $ship->shield * $defenderShieldCoef,
-                'hull' => $ship->hull * $defenderHullCoef,
-                'shield_left' => $ship->shield * $defenderShieldCoef,
-                'hull_left' => $ship->hull * $defenderHullCoef
+                'fire_power' => ceil($firepower),
+                'total_fire_power' => $firepower * $ship->pivot->number,
+                'shield' => ceil($shield),
+                'hull' => ceil($hull),
+                'shield_left' => ceil($shield),
+                'hull_left' => ceil($hull)
             );
+
         }
 
         foreach($this->destinationColony->defences as $defence)
@@ -910,12 +963,14 @@ class Fleet extends Model
                         }
                     }
 
-
                     if($defenceForces[$key]['quantity'] <= 0)
                     {
                         if($forceUnit['type'] == 'ship')
                         {
-                            $this->destinationColony->military -= $nbrShipDestroyed * $forceUnit['item']->crew;
+                            if($this->destinationColony->military >= ($nbrShipDestroyed * $forceUnit['item']->crew))
+                                $this->destinationColony->military -= $nbrShipDestroyed * $forceUnit['item']->crew;
+                            else
+                                $this->destinationColony->military = 0;
                             $this->destinationColony->ships()->detach($forceUnit['item']->id);
                         }
                         else
@@ -1061,7 +1116,7 @@ class Fleet extends Model
                 $totalResource += $this->destinationColony->$resource;
             }
             $claimAll = false;
-            if($this->capacity >= ($totalResource*0.4))
+            if($this->capacity >= ($totalResource*0.5))
                 $claimAll = true;
 
             foreach(config('stargate.resources') as $resource)
@@ -1069,7 +1124,7 @@ class Fleet extends Model
                 if($this->destinationColony->$resource > 1)
                 {
                     $ratio = $this->destinationColony->$resource / $totalResource;
-                    $maxClaimable = ceil($this->destinationColony->$resource * 0.4);
+                    $maxClaimable = ceil($this->destinationColony->$resource * 0.5);
 
                     $claimed = 0;
                     if($claimAll)

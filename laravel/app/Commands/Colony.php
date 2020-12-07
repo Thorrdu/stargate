@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Artifact;
 use Illuminate\Database\Eloquent\Model;
 use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
@@ -24,7 +25,6 @@ class Colony extends CommandHandler implements CommandInterface
     {
         if(!is_null($this->player))
         {
-
             try{
                 echo PHP_EOL.'Execute Colony';
                 if($this->player->ban)
@@ -47,7 +47,183 @@ class Colony extends CommandHandler implements CommandInterface
                         $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
                         $colonyIndex++;
                     }
-                    return "\n__".trans('generic.colonies',[],$this->player->lang)."__\n".$coloniesString;
+
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                        ],
+                       // 'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
+                        "title" => trans('generic.colonies',[],$this->player->lang),
+                        "description" => $coloniesString,
+                        'fields' => [],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+
+                    $this->closed = false;
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $embed)->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closed', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
+                    return;
+                }
+                elseif(isset($this->args[0]) && Str::startsWith('reroll',$this->args[0]))
+                {
+                    if($this->player->activeColony->artifact_rerolled)
+                        return trans('colony.noRerollAvailable', [], $this->player->lang);
+                    else
+                    {
+                        $artifactToDelete = Artifact::Where([['colony_id',$this->player->activeColony->id]])->whereNull('bonus_end')->get()->first();
+                        if(is_null($artifactToDelete))
+                            return trans('colony.noArtefactDetected', [], $this->player->lang);
+                        else
+                        {
+                            $artifactColony = $artifactToDelete->colony;
+
+                            if($artifactToDelete->bonus_category == 'ColonyMax')
+                            {
+                                $maxColonies = config('stargate.maxColonies') + 1;
+                                $ownedColonyMax = Artifact::whereIn('colony_id',$this->player->colonies->pluck('id')->toArray())->where('bonus_category','ColonyMax')->count();
+                                if($ownedColonyMax == 1 && $this->player->colonies->count() == $maxColonies)
+                                    return trans('colony.cannotRerollColoniesLow', [], $this->player->lang);
+                            }
+                            elseif($artifactToDelete->bonus_category == 'maxSpace')
+                            {
+                                $newSpace = $artifactColony->space_max - $artifactToDelete->bonus_coef;
+                                $usedSpace = $artifactColony->space_used;
+                                if($newSpace < $usedSpace)
+                                    return trans('colony.cannotRerollSpaceLow', [], $this->player->lang);
+                            }
+
+                            //CONFIRM
+                            $rerollConfirm = trans('colony.artifactRerollConfirm', [], $this->player->lang);
+                            $embed = [
+                                'author' => [
+                                    'name' => $this->player->user_name,
+                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                ],
+                                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif1.gif'],
+                                "title" => "Stargate",
+                                "description" => $rerollConfirm,
+                                'fields' => [
+                                ],
+                                'footer' => array(
+                                    'text'  => 'Stargate',
+                                ),
+                            ];
+                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+
+                            $this->maxTime = time()+180;
+                            $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($artifactColony,$artifactToDelete){
+
+                                $this->closed = false;
+                                $this->paginatorMessage = $messageSent;
+                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                    });
+                                });
+
+                                $filter = function($messageReaction){
+                                    return $messageReaction->user_id == $this->player->user_id;
+                                };
+                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($artifactColony,$artifactToDelete){
+                                    $messageReaction = $collector->first();
+                                    try{
+                                        if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                        {
+                                            $artifactColony->refresh();
+                                            if($this->player->activeColony->artifact_rerolled)
+                                            {
+                                                $newEmbed = $this->discord->factory(Embed::class,[
+                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                    'description' => trans('colony.noRerollAvailable', [], $this->player->lang)
+                                                    ]);
+                                                $messageReaction->message->addEmbed($newEmbed);
+                                                return;
+                                            }
+
+                                            if($artifactToDelete->bonus_category == 'Production')
+                                            {
+                                                $artifactColony->checkProd();
+                                                $artifactToDelete->delete();
+                                                $artifactColony->refresh();
+                                                $artifactColony->calcProd();
+                                            }
+                                            else
+                                                $artifactToDelete->delete();
+
+                                            $artifactColony->artifact_check = Carbon::now()->add('1h');
+                                            $artifactColony->artifact_rerolled = true;
+                                            $artifactColony->save();
+
+                                            $embed = [
+                                                'author' => [
+                                                    'name' => $this->player->user_name,
+                                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                ],
+                                                'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif2.gif'],
+                                                "title" => "Stargate",
+                                                "description" => trans('colony.artefactRerolled', [], $this->player->lang),
+                                                'fields' => [
+                                                ],
+                                                'footer' => array(
+                                                    'text'  => 'Stargate',
+                                                ),
+                                            ];
+                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                    }
+                                });
+                            });
+                            return;
+
+
+
+                        }
+                    }
                 }
                 elseif(count($this->args) >= 2 && strlen($this->args[0]) > 2 && Str::startsWith('rename',$this->args[0]))
                 {
@@ -214,7 +390,10 @@ class Colony extends CommandHandler implements CommandInterface
                             if($this->player->active_technology_colony_id == $this->player->colonies[(int)$this->args[1]-1]->id)
                                 return trans('colony.activeLaboratoryError', [], $this->player->lang);
 
-                            $colonyName = $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates().']';
+                            $colonyCoordinates = '?';
+                            if(!is_null($this->player->colonies[(int)$this->args[1]-1]->coordinates))
+                                $colonyCoordinates = $this->player->colonies[(int)$this->args[1]-1]->coordinates->humanCoordinates();
+                            $colonyName = $this->player->colonies[(int)$this->args[1]-1]->name.' ['.$colonyCoordinates.']';
                             $removeConfirm = trans('colony.removeRequest', ['name' => $colonyName], $this->player->lang);
 
                             $this->maxTime = time()+180;
@@ -287,6 +466,13 @@ class Colony extends CommandHandler implements CommandInterface
                     $colonyName .= $this->player->activeColony->name;
                 }
 
+                $warning = '';
+
+                $incomingFleets = Fleet::Where([['player_source_id','!=',$this->player->id],['fleets.returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']])->count();
+                if($incomingFleets > 0)
+                    $warning = "\n\n".trans('colony.incomingFleetWarning', [], $this->player->lang)."\n\n";
+
+
                 $embed = [
                     'author' => [
                         'name' => $this->player->user_name,
@@ -294,7 +480,7 @@ class Colony extends CommandHandler implements CommandInterface
                     ],
                    // 'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
                     "title" => $colonyName,
-                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinatesDisplay,
+                    "description" => trans('generic.coordinates', [], $this->player->lang).": ".$coordinatesDisplay.$warning,
                     'fields' => [],
                     'footer' => array(
                         'text'  => 'Stargate',
@@ -503,11 +689,16 @@ class Colony extends CommandHandler implements CommandInterface
                     else
                         $wantedLvl = $currentLevel + 1;
 
+                    $buildingQueued = '';
+                    if($this->player->activeColony->buildingQueue->count() > 0)
+                        $buildingQueued = "\n".trans('colony.queuedBuildings', ['number' => $this->player->activeColony->buildingQueue->count()], $this->player->lang);
+
                     $embed['fields'][] = array(
                         'name' => trans('colony.buildingUnderConstruction', [], $this->player->lang),
-                        'value' => "Lvl ".$wantedLvl." - ".trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime,
+                        'value' => "Lvl ".$wantedLvl." - ".trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime.$buildingQueued,
                         'inline' => true
                     );
+
                 }
 
                 if(!is_null($this->player->active_technology_end)){

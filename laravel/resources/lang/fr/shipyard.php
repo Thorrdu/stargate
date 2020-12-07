@@ -149,4 +149,11 @@ return [
                               "`!ship create jumper projectileturret 1 taurihull 1 combustionreactor 5`\n".
                               "Les composants pouvant servir à la fabrication d'un vaisseau peuvent être consultés via `!shipyard parts`\n",
     'componentList' => 'Liste des composants',
+    'shipRecyclingQueue' => 'Vaisseaux en cours de recyclage',
+    'recyclingQueueIsFull' => 'La file d\'attente est pleine.',
+    'recyclingConfirm' => "Voulez-vous vraiment recycler **:qtyx :shipName** ?".
+                          "\n\nVous récupérerez alors 80% de la valeur initiale investie.".
+                          "\nUne fois commencée, l'opération ne peut être arrêtée.",
+    'reyclingStarted' => 'Recyclage de **:qtyx :shipName** commencé. Terminé dans **:time**.',
+
 ];

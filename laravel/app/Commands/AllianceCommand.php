@@ -280,7 +280,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 $allianceId = $this->player->alliance->id;
                                 $allianceName = $this->player->alliance->name;
 
-                                DB::table('players')->where('alliance_id', $allianceId)->update(['alliance_id' => null,'role_id' => null, 'user_name' => $this->player->untagged_user_name]);
+                                DB::table('players')->where('alliance_id', $allianceId)->update(['alliance_id' => null,'role_id' => null, 'user_name' => 'players.untagged_user_name']);
                                 DB::table('alliance_roles')->where('alliance_id', $allianceId)->delete();
                                 DB::table('alliances')->where('id', $allianceId)->delete();
 
@@ -680,7 +680,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                         }
                                         elseif(Str::startsWith('demote', $this->args[0]))
                                         {
-                                            if(!$roleCheck->right_promote)
+                                            if(!$roleCheck->right_promote || $memberEdit->allianceRole->right_level >= 4)
                                                 return trans('generic.missingPermission',[],$this->player->lang);
 
                                             if($memberEdit->allianceRole->right_level > 1)
@@ -694,7 +694,7 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                         }
                                         elseif(Str::startsWith('kick', $this->args[0]))
                                         {
-                                            if(!$roleCheck->right_kick)
+                                            if(!$roleCheck->right_kick || $this->player->id == $memberEdit->id || $this->player->alliance->leader->id == $memberEdit->id)
                                                 return trans('generic.missingPermission',[],$this->player->lang);
 
                                             DB::table('players')->where('id', $memberEdit->id)->update(['alliance_id' => null,'role_id' => null,'user_name' => $memberEdit->untagged_user_name]);

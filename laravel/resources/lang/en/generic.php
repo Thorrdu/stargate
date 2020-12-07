@@ -93,6 +93,7 @@ return [
     'inactive' => 'INACTIVE',
     'empty' => 'Empty',
     'closed' => 'Ended',
+    'endedf' => 'Ended',
     'activities' => 'Activities',
     'adminrestricted' => 'This command require admin permission',
     'noCustomChannelInDM' => "No custom channel in dm...",

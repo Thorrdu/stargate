@@ -17,6 +17,7 @@ use App\Colony;
 use App\Technology;
 use App\Defence;
 use App\Artifact;
+use App\Coordinate;
 use App\Fleet;
 use App\ShipPart;
 use App\Unit;
@@ -30,11 +31,25 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
-$a = '_';
+$try =                 $coordinate = Coordinate::leftJoin('colonies', function($join) {
+	$join->on('coordinates.id', '=', 'colonies.coordinate_id');
+  })
+  ->whereNull('colonies.id')
+  ->inRandomOrder()->limit(1)->first([
+	'coordinates.*',
+]);
+var_dump($try);
+
+echo PHP_EOL.$try->id;
+
+die();
+
+$a = 'eval(10)';
 if(is_numeric($a))
 	echo $a;
 else
 	echo 'no';
+
 
 
 die();

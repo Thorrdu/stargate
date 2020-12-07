@@ -9,4 +9,5 @@ return [
     'voteBoxOpening' => "Ouverture d'une vote box...\n:artifact",
     'tooManyArtifacts' => "Il y a actuellement trop d'artefacts sur cette colonie.",
     'reminder' => 'Votre vote est à nouveau disponible.',
+    'premiumWin' => '🎊 Félicitation, la votebox contenait 24h de **statut Premium !!!**🎊',
 ];

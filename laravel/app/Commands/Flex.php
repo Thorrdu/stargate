@@ -34,6 +34,7 @@ class Flex extends CommandHandler implements CommandInterface
             $availableResources[] = 'E2PZ';
             $availableResources[] = 'military';
 
+            $resFound = false;
             $resourceName = $this->args[0];
             if(Str::startsWith('e2pz',$resourceName) || Str::startsWith('zpm',$resourceName) || Str::startsWith('ZPM',$resourceName))
                 $resourceName = 'E2PZ';

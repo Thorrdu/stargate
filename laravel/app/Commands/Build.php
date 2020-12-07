@@ -146,14 +146,33 @@ class Build extends CommandHandler implements CommandInterface
                                 if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
                                 {
                                     $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
-                                    if($this->player->activeColony->{'storage_'.$resource} <= $newResource)
-                                        $newResource = $this->player->activeColony->{'storage_'.$resource};
+                                    if(($this->player->activeColony->{'storage_'.$resource}*1.25) <= $newResource)
+                                        $newResource = $this->player->activeColony->{'storage_'.$resource}*1.25;
                                     $this->player->activeColony->$resource = $newResource;
                                 }
                             }
+                            $bufferedId = $this->player->activeColony->active_building_id;
                             $this->player->activeColony->active_building_id = null;
                             $this->player->activeColony->active_building_end = null;
                             $this->player->activeColony->save();
+
+                            if(!is_null($this->player->premium_expiration))
+                            {
+
+                                foreach($this->player->activeColony->buildingQueue as $buildinQueued)
+                                {
+                                    if($buildinQueued->id == $bufferedId)
+                                    {
+                                        echo PHP_EOL.$buildinQueued->pivot->level;
+                                        /*$buildinQueued->pivot->level--;
+                                        $buildinQueued->save();*/
+                                        //$this->player->activeColony->buildingQueue()->where('buildings.id', $buildinQueued->id)->wherePivot('level', $buildinQueued->pivot->level)->detach();
+
+                                    }
+                                }
+                                $this->player->activeColony->checkBuildingQueue();
+                            }
+
 
                             return trans('building.buildingCanceled',[],$this->player->lang);
                         }
@@ -163,9 +182,82 @@ class Build extends CommandHandler implements CommandInterface
                         echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
                     }
                 }
+                elseif(Str::startsWith('queue', $this->args[0]))
+                {
+                    if(is_null($this->player->premium_expiration))
+                        return trans('premium.restrictedCommand', [], $this->player->lang);
+
+                    echo PHP_EOL.'Execute Building Queue';
+                    if($this->player->activeColony->buildingQueue->count() == 0)
+                        return trans('building.emptyQueue', [], $this->player->lang);
+
+                    if(isset($this->args[1]) && Str::startsWith('clear', $this->args[1]))
+                    {
+                        $this->player->activeColony->buildingQueue()->detach();
+                        return trans('building.clearedQueue', [], $this->player->lang);
+                    }
+
+                    $buildingQueueString = "";
+                    $queueIndex = 1;
+                    foreach($this->player->activeColony->buildingQueue as $queuedBuilding)
+                    {
+                        $buildingQueueString .= $queueIndex.'. Lvl '.$queuedBuilding->pivot->level.' - '.trans('building.'.$queuedBuilding->slug.'.name', [], $this->player->lang)."\n";
+                        $queueIndex++;
+                    }
+
+                    $embed = [
+                        'author' => [
+                            'name' => $this->player->user_name,
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                        ],
+                       // 'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
+                        "title" => trans('building.queueList',[],$this->player->lang),
+                        "description" => $buildingQueueString."\n".trans('building.howToClearQueue', [], $this->player->lang),
+                        'fields' => [],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+
+                    $this->closed = false;
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $embed)->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closed', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                    }
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
+                    return;
+
+                }
                 elseif(!empty(trim($this->args[0])))
                 {
-                    if(is_numeric($this->args[0]))
+                    if(is_numeric($this->args[0]) && $this->args[0] > 0)
                         $building = Building::where('id', (int)$this->args[0])->first();
                     else
                         $building = Building::where('slug', 'LIKE', $this->args[0].'%')->first();
@@ -208,24 +300,42 @@ class Build extends CommandHandler implements CommandInterface
                                 $wantedLvl = $currentLvl;
 
                             //if construction en cours, return
-                            if(!is_null($this->player->activeColony->active_building_end))
+                            if(!is_null($this->player->activeColony->active_building_end) && !$removal)
                             {
-                                $wantedLvl = 1;
-                                $currentLvl = $this->player->activeColony->hasBuilding($this->player->activeColony->activeBuilding);
-                                if($this->player->activeColony->active_building_remove)
-                                    $wantedLvl = $currentLvl-1;
-                                elseif($currentLvl)
-                                    $wantedLvl += $currentLvl;
+                                if(!is_null($this->player->premium_expiration))
+                                {
+                                    if($this->player->activeColony->buildingQueue->count() >= 5)
+                                        return trans('building.queueIsFull', [], $this->player->lang);
 
-                                $now = Carbon::now();
-                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->active_building_end);
-                                $buildingTime = $now->diffForHumans($buildingEnd,[
-                                    'parts' => 3,
-                                    'short' => true, // short syntax as per current locale
-                                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                                ]);
-                                //:level :name will be done in :time
-                                return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
+                                    $levelToQueue = $wantedLvl;
+                                    if($this->player->activeColony->active_building_id == $building->id)
+                                        $levelToQueue++;
+                                    foreach($this->player->activeColony->buildingQueue as $queuedBuilding)
+                                        if($queuedBuilding->id == $building->id)
+                                            $levelToQueue++;
+
+                                    $this->player->activeColony->buildingQueue()->attach([$building->id => ['level' => $levelToQueue]]);
+                                    return trans('building.buildingQueueAdded', ['buildingName' => 'Lvl '.$levelToQueue.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
+                                }
+                                else
+                                {
+                                    $wantedLvl = 1;
+                                    $currentLvl = $this->player->activeColony->hasBuilding($this->player->activeColony->activeBuilding);
+                                    if($this->player->activeColony->active_building_remove)
+                                        $wantedLvl = $currentLvl-1;
+                                    elseif($currentLvl)
+                                        $wantedLvl += $currentLvl;
+
+                                    $now = Carbon::now();
+                                    $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->active_building_end);
+                                    $buildingTime = $now->diffForHumans($buildingEnd,[
+                                        'parts' => 3,
+                                        'short' => true, // short syntax as per current locale
+                                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                    ]);
+                                    //:level :name will be done in :time
+                                    return trans('building.alreadyBuilding', ['level' => $wantedLvl, 'name' => trans('building.'.$this->player->activeColony->activeBuilding->slug.'.name', [], $this->player->lang), 'time' => $buildingTime], $this->player->lang);
+                                }
                             }
 
                             if(!$removal)
@@ -239,7 +349,6 @@ class Build extends CommandHandler implements CommandInterface
                                     return trans('building.missingSpace', [], $this->player->lang);
 
                                 $hasEnough = true;
-
                                 $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                                 $buildingPrices = $building->getPrice($wantedLvl, $coef);
@@ -255,7 +364,7 @@ class Build extends CommandHandler implements CommandInterface
                                 if(!$hasEnough)
                                     return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                                if($building->energy_base > 0)
+                                if($building->energy_base > 0 && $building->id != 10 /*Reacteur au Naqahdah*/)
                                 {
                                     $energyPrice = $building->getEnergy($wantedLvl);
                                     if($wantedLvl > 1)
@@ -273,7 +382,7 @@ class Build extends CommandHandler implements CommandInterface
                             if( $this->player->activeColony->defenceQueues->count() > 0 && $building->id == 15 )
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
-                            if( $this->player->activeColony->craftQueues->count() > 0 && $building->id == 9 )
+                            if( $building->id == 9 && ( $this->player->activeColony->craftQueues->count() > 0 || $this->player->activeColony->shipQueues->count() > 0 || $this->player->activeColony->reyclingQueue->count() > 0 ))
                                 return trans('generic.busyBuilding', [], $this->player->lang);
 
                             $now = Carbon::now();
@@ -344,7 +453,7 @@ class Build extends CommandHandler implements CommandInterface
                                             $buildingPrice .= ' '.config('stargate.emotes.cancel');
                                     }
                                 }
-                                if($building->energy_base > 0 && $building->slug != 'naqahdahreactor')
+                                if($building->energy_base > 0 && $building->id != 10 /*Reacteur au Naqahdah*/)
                                 {
                                     $energyRequired = $building->getEnergy($wantedLvl);
                                     if($wantedLvl > 1)
@@ -573,7 +682,7 @@ class Build extends CommandHandler implements CommandInterface
                             $buildingPrice .= ' '.config('stargate.emotes.cancel');
                     }
                 }
-                if($building->energy_base > 0)
+                if($building->energy_base > 0 && $building->id != 10 /*Reacteur au Naqahdah*/)
                 {
                     $energyRequired = $building->getEnergy($wantedLvl);
                     if($wantedLvl > 1)

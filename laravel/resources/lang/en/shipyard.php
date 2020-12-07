@@ -149,6 +149,11 @@ return [
                               "`!ship create jumper projectileturret 1 taurihull 1 combustionreactor 5`\n".
                               "The list of all components wich can be used to create a new model can be found via `!shipyard parts`\n",
     'componentList' => 'Components list',
-
+    'shipRecyclingQueue' => 'Recycling queue',
+    'recyclingQueueIsFull' => 'Recycling queue is full',
+    'recyclingConfirm' => "Do you realy want to recycle **:qtyx :shipName** ?".
+                          "\n\nYou'll recover 80% of the invested value.".
+                          "\nOnce started, the operation cannot be stopped.",
+    'reyclingStarted' => 'Recycling of **:qtyx :shipName** started. Done in **:time**.',
 ];
 

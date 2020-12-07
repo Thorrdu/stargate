@@ -39,7 +39,8 @@ class CreateFleetsTable extends Migration
             $table->bigInteger('quartz')->length(25)->unsigned()->nullable();
             $table->bigInteger('naqahdah')->length(25)->unsigned()->nullable();
             $table->bigInteger('military')->length(25)->unsigned()->nullable();
-            $table->integer('E2PZ')->lenght(10)->unsigned()->nullable();
+            $table->decimal('E2PZ', 25, 2)->length(25)->unsigned()->nullable();
+
             $table->timestamps();
         });
     }

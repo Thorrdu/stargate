@@ -93,6 +93,7 @@ return [
     'inactive' => 'INACTIF',
     'empty' => 'Vide',
     'closed' => 'Clôs',
+    'endedf' => 'Terminée',
     'activities' => 'Activités',
     'adminrestricted' => 'Cette demande requière la permission admin',
     'noCustomChannelInDM' => "Pas de channel custom en dm...",

@@ -101,4 +101,11 @@ return [
     'buildingMaxed' => 'This Building is already maxed...',
     'buildingRemoved' => 'The removal of **:name** has been done on :colony',
     'cantCancelRemove' => 'You can\'t cancel a demolition once started...',
+    'queueIsFull' => 'Building queue is full on this colony. Manage the queue with `!building queue`.',
+    'buildingQueueAdded' => '**:buildingName** has been added to the queue.',
+    'emptyQueue' => 'Building queue is empty.',
+    'queueList' => 'Building queue',
+    'clearedQueue' => 'The queue has been cleared.',
+    'howToClearQueue' => "`!building queue clear` to clear the queue.",
+    'queueCanceled' => ":colony - **:buildingName** could not be built. Reason: :reason.\nAs a result, the building queue has been cleared."
 ];

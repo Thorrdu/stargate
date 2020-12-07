@@ -19,4 +19,13 @@ return [
     'activeFleetError' => 'Vous ne pouvez abandonner cette colonie. Une flotte active est toujours liée à cette colonie. Merci de réessayer plus tard.',
     'activeLaboratoryError' => 'Vous ne pouvez abandonner cette colonie. Une recherche est en cours sur cette colonie. Merci de réessayer plus tard.',
     'maxSpaceBonus' => 'Espace supplémentaire',
+    'incomingFleetWarning' => "**⚠️ Attention: Flotte étrangère détectée ⚠️**\nPlus d'infos via `!fleet`.",
+    'queuedBuildings' => '+:number bâtiment(s) en attente',
+    'noRerollAvailable' => 'Aucune altération possible de votre artefact pour le moment.',
+    'noArtefactDetected' => 'Aucun artefact permanent détecté.',
+    'cannotRerollColoniesLow' => "Impossible d'altérer cet artefact, votre nombre de colonies est trop important.",
+    'cannotRerollSpaceLow' => "Impossible d'altérer cet artefact, espace constructible occupé trop important.",
+    'artifactRerollConfirm' => "Êtes vous certain de vouloir altérer cet artefact ?".
+                                "\nL'opération prendra 1h.",
+    'artefactRerolled' => "L'artefact est en cours d'altération, le nouveau résultat sera connu dans 1h.",
 ];

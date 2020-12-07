@@ -19,7 +19,10 @@ return [
         ],
     'ia' => [
         'name' => "Artificial intelligence",
-        'description' => "Allows you to develop an artificial intelligence capable of helping you on a daily basis in your colony",
+        'description' => "Develop an artificial intelligence capable of helping you on a daily basis in your colony".
+                        "\nAllows you to alterate you permanent artifact every 4 levels. (`!colony reroll`)".
+                        "\nThe more advanced the technology is, the better the artifact will be( 1% every 4 levels. )".
+                        "\nBut remember, the new artifact has still 4% chance to be negative.",
         ],
     'blueprint' => [
         'name' => "Ship blueprint",

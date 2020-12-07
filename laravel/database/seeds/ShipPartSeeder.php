@@ -262,7 +262,7 @@ class ShipPartSeeder extends Seeder
         DB::table('ship_part_technologies')->insert([
             'ship_part_id' => 5,
             'required_technology_id' => 6,
-            'level' => 7
+            'level' => 9
         ]);
 
 

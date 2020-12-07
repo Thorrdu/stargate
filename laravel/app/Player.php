@@ -48,7 +48,7 @@ class Player extends Model
 
     public function explorations()
     {
-        return $this->hasMany('App\Exploration');
+        return $this->hasMany('App\Exploration')->orderBy('explorations.id','DESC');
     }
 
     public function commandLogs()
@@ -83,7 +83,7 @@ class Player extends Model
 
     public function incomingFleets()
     {
-        return $this->hasMany('App\Fleet','player_destination_id','id')->where([['returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']]);
+        return $this->hasMany('App\Fleet','player_destination_id','id')->where([['fleets.player_source_id','!=',$this->id],['fleets.returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']]);
     }
 
     public function activeFleets()
@@ -110,7 +110,13 @@ class Player extends Model
 
             if($choosedCoordinate == null)
             {
-                $coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
+                //$coordinate = Coordinate::where('colony_id', null)->inRandomOrder()->limit(1)->first();
+                $coordinate = Coordinate::leftJoin('colonies', function($join) {
+                    $join->on('coordinates.id', '=', 'colonies.coordinate_id');
+                  })
+                  ->whereNull('colonies.id')
+                  ->inRandomOrder()->limit(1)->first(['coordinates.*']);
+
                 $newColony->coordinate_id = $coordinate->id;
                 $newColony->space_max = 180;
             }
@@ -148,8 +154,8 @@ class Player extends Model
             }
             $newColony->save();
 
-            $coordinate->colony_id = $newColony->id;
-            $coordinate->save();
+            /*$coordinate->colony_id = $newColony->id;
+            $coordinate->save();*/
 
             $this->colonies->push($newColony);
             $this->active_colony_id = $newColony->id;
@@ -164,28 +170,31 @@ class Player extends Model
     public function removeColony(Colony $colony)
     {
         try{
-            $colony->buildings()->detach();
-            $colony->units()->detach();
-            $colony->defences()->detach();
-            $colony->ships()->detach();
-            $colony->craftQueues()->detach();
-            $colony->shipQueues()->detach();
-            $colony->defenceQueues()->detach();
-
             $gateFigthts = GateFight::where('colony_id_source', $colony->id)->orWhere('colony_id_dest', $colony->id)->get();
             foreach($gateFigthts as $gateFight)
                 $gateFight->delete();
-
-            $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
-            foreach($spyLogs as $spyLog)
-                $spyLog->delete();
 
             $fleets = Fleet::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
             foreach($fleets as $fleet)
             {
                 $fleet->ships()->detach();
+                $fleet->units()->detach();
                 $fleet->delete();
             }
+
+            $colony->buildings()->detach();
+            $colony->units()->detach();
+            $colony->defences()->detach();
+            $colony->ships()->detach();
+            $colony->reyclingQueue()->detach();
+            $colony->craftQueues()->detach();
+            $colony->shipQueues()->detach();
+            $colony->defenceQueues()->detach();
+            $colony->buildingQueue()->detach();
+
+            $spyLogs = SpyLog::where('colony_source_id', $colony->id)->orWhere('colony_destination_id', $colony->id)->get();
+            foreach($spyLogs as $spyLog)
+                $spyLog->delete();
 
             $explorationLogs = Exploration::where('colony_source_id', $colony->id)->get();
             foreach($explorationLogs as $explorationLog)
@@ -200,15 +209,18 @@ class Player extends Model
                 $this->active_colony_id = $this->colonies[0]->id;
                 $this->save();
             }
-            $coordinates = $colony->coordinates;
-            $coordinates->colony_id = null;
-            $coordinates->save();
+            /*if(!is_null($colony->coordinates)){
+                $coordinates = $colony->coordinates;
+                $coordinates->colony_id = null;
+                $coordinates->save();
+            }*/
             $colony->coordinates = null;
+            $colony->activeBuilding = null;
             $colony->delete();
         }
         catch(\Exception $e)
         {
-            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            echo 'COOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
     }
 
@@ -307,6 +319,8 @@ class Player extends Model
             foreach($this->colonies as $colony)
             {
                 $colony->calcProd();
+                if($technology->id == 5 && $newLvl % 4 == 0)
+                    $colony->artifact_rerolled = false;
                 $colony->save();
             }
             //$this->activeColony->saveWithoutEvents();

@@ -65,7 +65,6 @@ class PlayerUtility
                     'value' => trans('stargate.technologyTooLow', [], $colonySource->player->lang),
                 ];
             }
-
             elseif($spyLvl <= $counterSpyLvl && ($counterSpyLvl-$spyLvl) >= 0)
                 $showResources = true;
             elseif($spyLvl > $counterSpyLvl)
@@ -217,6 +216,25 @@ class PlayerUtility
             $colonyBuildingEnded->buildingIsDone($colonyBuildingEnded->activeBuilding);
             //CHECK QUEUE
         }
+    }
+
+
+    public static function rngWeighted($values, $weights){
+        $count = count($values);
+        $i = 0;
+        $n = 0;
+        $randWeights = [];
+        foreach($values as $value)
+            $randWeights[] = $weights[$value];
+        $num = mt_rand(0, array_sum($randWeights));
+        while($i < $count){
+            $n += $randWeights[$i];
+            if($n >= $num){
+                break;
+            }
+            $i++;
+        }
+        return $values[$i];
     }
 
     public static function sendDm($discord, $playerId, $message, $type = 'text')

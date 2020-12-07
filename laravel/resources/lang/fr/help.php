@@ -18,7 +18,7 @@ return [
     'build' => [
         'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment."
                         ."\nAnnuler une construction fait perdre 25% des ressources investies.",
-        'usage' => ":prefixbuild\n:prefixbuild [id/slug]\n:prefixbuild [id/slug] confirm\n:prefixbuild [id/slug] remove\n:prefixbuild cancel"
+        'usage' => ":prefixbuild\n:prefixbuild [id/slug]\n:prefixbuild [id/slug] confirm\n:prefixbuild queue\n:prefixbuild [id/slug] remove\n:prefixbuild cancel"
     ],
     'research' => [
         'description' => "Permet de lister les technologies disponible, d'afficher le détails d'une technologie ou encore rechercher/upgrade une technologie."
@@ -27,7 +27,7 @@ return [
     ],
     'colony' => [
         'description' => 'Affiche les informations essentielles sur votre colonie (Ressources, Bâtiments, Production, ... ) et permet de changer de colonie.',
-        'usage' => ":prefixcolony\n:prefixcolony list\n:prefixcolony switch [numéro]\n:prefixcolony remove [numéro]\n:prefixcolony rename [nouveau nom]"
+        'usage' => ":prefixcolony\n:prefixcolony list\n:prefixcolony switch [numéro]\n:prefixcolony remove [numéro]\n:prefixcolony reroll\n:prefixcolony rename [nouveau nom]"
     ],
     'craft' => [
         'description' => "Construit des appareils tels que des sondes permettant d'espionner les autres joueurs ou des transporteur pour acheminer vos ressources à travers la porte",
@@ -89,6 +89,7 @@ return [
         'description' => "Permet de construire des vaisseaux spatiaux ou d'établir de nouveaux plans personnalisés".
                         "\n\nPour en savoir plus sur la création d'un modèle personnalisé, consultez `:prefixshipyard create`",
         'usage' => ":prefixshipyard [Slug] [Quantité]\n".
+                    ":prefixshipyard [Slug] recycle [Quantité]\n".
                     ":prefixshipyard queue\n".
                     ":prefixshipyard parts\n".
                     ":prefixshipyard create [blueprint] [...Composants]\n".
@@ -105,7 +106,7 @@ return [
                     "**transport** (`:prefixfleet transport [Coordonnées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
                     "**spy** (`:prefixfleet spy [Coordonnées]`)\n".
                     "**attack** (`:prefixfleet attack [Coordonnées] [Vaisseaux] [Qté]`)\n".
-                    "**scavenge** (`:prefixfleet scavenge [Recycleurs] [Qté]`)\n".
+                    "**scavenge** (`:prefixfleet scavenge [Coordonnées] [Recycleurs] [Qté]`)\n".
                     "**history** (`:prefixfleet history`)"
     ],
     'infos' => [
@@ -129,20 +130,21 @@ return [
         'usage' => ':prefixping'
     ],
     'profile' => [
-        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,..."
-                        ."\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
+        'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,...".
+                        "\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
                         "\nSi vous le souhaitez, vous pouvez cacher les coordonnées lors de l'affichage de `!colony`".
                         "\nCette commande permet également d'activer ou désactiver le mode vacance.",
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
-        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paypal, contactez Thorrdu en DM)\n".
+        'description' => "Si vous désirez apporter votre soutien au bot, vous pouvez acheter un premium via ce lien: **[Utip](https://utip.io/thorrdu)** (Pour payer par Paypal ou Paysafecard, contactez Thorrdu en DM)\n".
                         "Prix: 5 Euros = 1 Mois / 5 Premium achetés = 1 Premium offert.\n".
                         "\nUne fois acheté, vous pouvez également utiliser ou offrir un premium\n\nAvantage du premium:\n".
                         "=> +30% de production\n".
                         "=> -20% de temps de construction/recherche\n".
                         "=> Possibilité de renommer vos colonies\n".
-                        "=> Accès à la commande `:prefixempire`",
+                        "=> Accès à la commande `:prefixempire\n`".
+                        "=> Construction de bâtiments à la chaîne\n",
         'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention\n:prefixpremium give @mention [quantité]"
     ],
     'empire' => [

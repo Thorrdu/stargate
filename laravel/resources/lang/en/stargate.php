@@ -66,10 +66,10 @@ return [
     "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] from :planetNameSource [:coordinateSource]\n".
                             "Troops:\n:militaryUnits".
                             "\nCost: :consumption",
-    "exploreConfirmation" => "Send an exploration team to :coordinateDestination ?\n".
+    "exploreConfirmation" => "Send an exploration team to [:coordinateDestination] ?\n".
                             "Troops: :militaryUnits".
                             "\nCost: :consumption",
-    "colonizeConfirmation" => "Send a colonization team to :coordinateDestination ?\n".
+    "colonizeConfirmation" => "Send a colonization team to [:coordinateDestination] ?\n".
                             "Troops: :militaryUnits".
                             "\nCost: :consumption",
     "attackSent" => "Your troops have been send on :planet [:coordinateDestination].\nA report will arrive soon.",
@@ -114,5 +114,7 @@ return [
     'sameColony' => 'Destination coordonates are the same as origin...',
     'trade_ban' => 'You are banned from the trading system. If it\'s not already done, you can ask for an extention delay of 12h to regularize the trad. See `!trade [ID]`',
     "probeSpySending" => "You started a spy mission on :planetDest [:coordinateDestination] !\nCost: :consumption\nYour probe will arrive in **:fleetDuration**\n\n",
-
+    'explorationList' => 'Explorations list',
+    'emptyExploHistory' => 'Empty exploration history',
+    'explorationOngoing' => 'EXPLORING',
 ];

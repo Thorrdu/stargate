@@ -141,8 +141,8 @@ class Research extends CommandHandler implements CommandInterface
                             if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
                             {
                                 $newResource = $this->player->activeTechnologyColony->$resource + ceil($buildingPrices[$resource]*0.75);
-                                if($this->player->activeTechnologyColony->{'storage_'.$resource} <= $newResource)
-                                    $newResource = $this->player->activeTechnologyColony->{'storage_'.$resource};
+                                if(($this->player->activeTechnologyColony->{'storage_'.$resource}*1.25) <= $newResource)
+                                    $newResource = $this->player->activeTechnologyColony->{'storage_'.$resource}*1.25;
                                 $this->player->activeTechnologyColony->$resource = $newResource;
                             }
                         }
@@ -158,7 +158,7 @@ class Research extends CommandHandler implements CommandInterface
                 }
                 elseif(!empty(trim($this->args[0])))
                 {
-                    if(is_numeric($this->args[0]))
+                    if(is_numeric($this->args[0]) && $this->args[0] > 0)
                         $technology = Technology::where('id', (int)$this->args[0])->first();
                     else
                         $technology = Technology::where('slug', 'LIKE', $this->args[0].'%')->first();
@@ -341,22 +341,22 @@ class Research extends CommandHandler implements CommandInterface
                             if(!is_null($technology->ship_speed_bonus))
                             {
                                 $bonus = 100-($technology->ship_speed_bonus*100);
-                                $bonusString .= "+{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
+                                $bonusString .= "{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->fire_power_bonus))
                             {
                                 $bonus = 100-($technology->fire_power_bonus*100);
-                                $bonusString .= "+{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
+                                $bonusString .= "{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->hull_bonus))
                             {
                                 $bonus = 100-($technology->hull_bonus*100);
-                                $bonusString .= "+{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
+                                $bonusString .= "{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->shield_bonus))
                             {
                                 $bonus = 100-($technology->shield_bonus*100);
-                                $bonusString .= "+{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
+                                $bonusString .= "{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
                             }
 
                             if(empty($bonusString))

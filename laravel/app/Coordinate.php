@@ -10,9 +10,10 @@ class Coordinate extends Model
     {
         return $this->belongsTo('App\Colony');
     }
+
     public function colony()
     {
-        return $this->hasOne('App\Colony');
+        return $this->belongsTo('App\Colony','id','coordinate_id');
     }
 
     public function humanCoordinates()

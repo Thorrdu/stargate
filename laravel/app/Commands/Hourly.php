@@ -74,7 +74,7 @@ class Hourly extends CommandHandler implements CommandInterface
 
                     if($this->player->hr_combo > config('stargate.maxHourly'))
                     {
-                        $displayMultiplier = config('stargate.maxHourly') * 10;
+                        $displayMultiplier = (config('stargate.maxHourly') * 10) + $this->player->hr_combo;
                         $multiplier = 1+($displayMultiplier / 100);
                     }
                     else
@@ -83,15 +83,18 @@ class Hourly extends CommandHandler implements CommandInterface
                         $multiplier = 1+($displayMultiplier / 100);
                     }
 
-
                     if($this->player->hr_combo > $this->player->hr_max_combo)
                         $this->player->hr_max_combo = $this->player->hr_combo;
 
-                    $resValue = ($this->player->activeColony->$varProd / 60)* rand(15,25) * $multiplier;
+                    $resValue = ($this->player->activeColony->$varProd / 60)* rand(15,30) * $multiplier;
 
                     $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: '.$this->player->hr_combo.' (+'.$displayMultiplier.'%))';
 
-                    $this->player->activeColony->$resType += $resValue;
+                    $newResValue = $this->player->activeColony->$resType + $resValue;
+                    if(($this->player->activeColony->{'storage_'.$resType}*1.25) <= $newResValue)
+                        $newResValue = $this->player->activeColony->{'storage_'.$resType}*1.25;
+
+                    $this->player->activeColony->$resType = $newResValue;
                     $this->player->activeColony->save();
 
                     $this->player->last_hourly = Carbon::now();

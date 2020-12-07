@@ -19,7 +19,10 @@ return [
         ],
     'ia' => [
         'name' => "Intelligence artificielle",
-        'description' => "Permet de déveloper une intelligence artificielle capable de vous aider au quotidien sur votre colonie",
+        'description' => "Permet de déveloper une intelligence artificielle capable de vous aider au quotidien sur votre colonie.".
+                        "\nPermet d'altérer les effet de votre artefact permanent tous les 4 niveaux. (`!colony reroll`)".
+                        "\nPlus votre niveau d'Intelligence artificielle sera élevé, plus le bonus obtenu sera potentiellement conséquent ( 1% supplémentaire tous les 4 niveaux. )".
+                        "\nMais attention, le nouvel artefact à toujours 4% de chance d'être négatif.",
         ],
     'blueprint' => [
         'name' => "Plans de vaisseaux",

@@ -32,6 +32,9 @@ class Stargate extends CommandHandler implements CommandInterface
     public $attackMilitaries;
     public $attackUnits;
     public $closed;
+    public $page;
+    public $maxPage;
+
 
     public function execute()
     {
@@ -182,6 +185,83 @@ class Stargate extends CommandHandler implements CommandInterface
                     return;
                 }
 
+                if(count($this->args) >= 2 && Str::startsWith('explore',$this->args[0]) && Str::startsWith('list',$this->args[1]))
+                {
+                    if($this->player->explorations->count() == 0)
+                        return trans('stargate.emptyExploHistory', [], $this->player->lang);
+
+                    $this->closed = false;
+                    $this->page = 1;
+                    $this->maxPage = ceil($this->player->explorations->count()/10);
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage('', false, $this->getPageExplo())->then(function ($messageSent){
+                        $this->paginatorMessage = $messageSent;
+
+                        $this->paginatorMessage->react('⏪')->then(function(){
+                            $this->paginatorMessage->react('◀️')->then(function(){
+                                $this->paginatorMessage->react('▶️')->then(function(){
+                                    $this->paginatorMessage->react('⏩')->then(function(){
+                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                    });
+                                });
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            if($messageReaction->user_id != $this->player->user_id || $this->closed == true)
+                                return false;
+
+                            if($messageReaction->user_id == $this->player->user_id)
+                            {
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,['title' => trans('generic.closedList', [], $this->player->lang)]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                        $this->closed = true;
+                                        return;
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏪')
+                                    {
+                                        $this->page = 1;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPageExplo());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
+                                    {
+                                        $this->page--;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPageExplo());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
+                                    {
+                                        $this->page++;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPageExplo());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    elseif($messageReaction->emoji->name == '⏩')
+                                    {
+                                        $this->page = $this->maxPage;
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPageExplo());
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                                return true;
+                            }
+                            else
+                                return false;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter);
+                    });
+                    return;
+                }
+
                 if($this->player->activeColony->stargate_buried || ($this->player->activeColony->stargate_burying && !$this->player->activeColony->stargate_buried))
                 {
                     return trans('stargate.buriedStargate', [], $this->player->lang);
@@ -320,6 +400,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                         return;
                                     }
 
+                                    //Check Consommation E2PZ
+                                    if($this->player->activeColony->E2PZ < $travelCost)
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                            'title' => trans('generic.cancelled', [], $this->player->lang),
+                                            'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                            ]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                        return;
+                                    }
+
                                     $currentExplo = Exploration::where([['player_id', $this->player->id],['exploration_result', null]])->count();
                                     if($currentExplo > 0)
                                     {
@@ -414,14 +506,19 @@ class Stargate extends CommandHandler implements CommandInterface
                     {
                         if(isset($this->args[$cptRes+1]))
                         {
-                            if((int)$this->args[$cptRes+1] > 0)
-                                $qty = (int)$this->args[$cptRes+1];
+                            if(is_numeric($this->args[$cptRes+1]) && $this->args[$cptRes+1] > 0)
+                                $qty = $this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             $resource = $this->args[$cptRes];
                             if(Str::startsWith('e2pz',$resource) || Str::startsWith('zpm',$resource) || Str::startsWith('ZPM',$resource))
                                 $resource = 'E2PZ';
+
+                            if($resource == 'E2PZ')
+                                $qty = round($qty,2);
+                            else
+                                $qty = (int)$qty;
 
                             $resFound = $bypass = false;
                             foreach($availableResources as $availableResource)
@@ -433,7 +530,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resFound = true;
                                     if(!in_array($resource,array('military','E2PZ')))
                                         $capacityNeeded += $qty;
-                                    $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
+
+                                    $resQty = number_format($qty);
+                                    if($resource == 'E2PZ')
+                                        $resQty = number_format($qty,2);
+
+                                    $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.$resQty."\n";
 
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
                                         return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
@@ -523,7 +625,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                         {
                                             if($tradeResource == 'E2PZ')
                                                 $qty += $travelCost;
-                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(ceil($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
+
+                                            $resQty = number_format(ceil($qty-$this->player->activeColony->$tradeResource));
+                                            if($tradeResource == 'E2PZ')
+                                                $resQty = number_format(($qty-$this->player->activeColony->$tradeResource),2);
+
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.$resQty], $this->player->lang));
                                             $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                             $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                             return;
@@ -531,11 +638,26 @@ class Stargate extends CommandHandler implements CommandInterface
                                         else
                                         {
                                             $tradeObjets[] = ['resource' => $tradeResource,'quantity'=>$qty];
-                                            $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
+                                            $resQty = number_format($qty);
+                                            if($tradeResource == 'E2PZ')
+                                                $resQty = number_format($qty,2);
+                                            $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.$resQty."\n";
                                         }
                                     }
 
                                     try{
+                                        //Check Consommation E2PZ
+                                        if($this->player->activeColony->E2PZ < $travelCost)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+
                                         foreach($tradeObjets as $tradeObject)
                                         {
                                             $tradeObject['quantity'] = $tradeObject['quantity'];
@@ -649,14 +771,19 @@ class Stargate extends CommandHandler implements CommandInterface
                     {
                         if(isset($this->args[$cptRes+1]))
                         {
-                            if((int)$this->args[$cptRes+1] > 0)
-                                $qty = (int)$this->args[$cptRes+1];
+                            if(is_numeric($this->args[$cptRes+1]) && $this->args[$cptRes+1] > 0)
+                                $qty = $this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             $resource = $this->args[$cptRes];
                             if(Str::startsWith('e2pz',$resource) || Str::startsWith('zpm',$resource) || Str::startsWith('ZPM',$resource))
                                 $resource = 'E2PZ';
+
+                            if($resource == 'E2PZ')
+                                $qty = round($qty,2);
+                            else
+                                $qty = (int)$qty;
 
                             $resFound = $bypass = false;
                             foreach($availableResources as $availableResource)
@@ -668,7 +795,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $resFound = true;
                                     if(!in_array($resource,array('military','E2PZ')))
                                         $capacityNeeded += $qty;
-                                    $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format($qty)."\n";
+
+                                    $resQty = number_format($availableResource);
+                                    if($availableResource == 'E2PZ')
+                                        $resQty = number_format($availableResource,2);
+
+                                    $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.$resQty."\n";
 
                                     if($resource != 'E2PZ' && $resource != 'military' && $this->coordinateDestination->colony->{'storage_'.$resource} < ($this->coordinateDestination->colony->$resource + $qty))
                                         return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource)], $this->player->lang);
@@ -727,6 +859,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $this->player->activeColony->refresh();
                                     $this->coordinateDestination->colony->refresh();
 
+                                    //Check Consommation E2PZ
+                                    if($this->player->activeColony->E2PZ < $travelCost)
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                            'title' => trans('generic.cancelled', [], $this->player->lang),
+                                            'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                            ]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                        return;
+                                    }
+
                                     echo 'CONFIRMED';
                                     $receivedString = "";
                                     $tradeObjets = [];
@@ -755,10 +899,14 @@ class Stargate extends CommandHandler implements CommandInterface
                                         }
                                         elseif($this->player->activeColony->$tradeResource < $qty || ($tradeResource == 'E2PZ' && $this->player->activeColony->$tradeResource < ($qty+$travelCost)))
                                         {
+                                            $resQty = number_format(ceil($qty-$this->player->activeColony->$tradeResource));
                                             if($tradeResource == 'E2PZ')
+                                            {
                                                 $qty += $travelCost;
+                                                $resQty = number_format(($qty-$this->player->activeColony->$tradeResource),2);
+                                            }
 
-                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format(round($qty-$this->player->activeColony->$tradeResource))], $this->player->lang));
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.$resQty], $this->player->lang));
                                             $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                             $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                             return;
@@ -766,7 +914,11 @@ class Stargate extends CommandHandler implements CommandInterface
                                         else
                                         {
                                             $tradeObjets[] = ['resource' => $tradeResource,'quantity'=>$qty];
-                                            $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.number_format($qty)."\n";
+                                            $resQty = number_format($qty);
+                                            if($tradeResource == 'E2PZ')
+                                                $resQty = number_format($qty,2);
+
+                                            $receivedString .= config('stargate.emotes.'.strtolower($tradeResource))." ".ucfirst($tradeResource).': '.$resQty."\n";
                                         }
                                     }
 
@@ -984,6 +1136,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                     {
                                         $this->player->activeColony->refresh();
 
+                                        //Check Consommation E2PZ
+                                        if($this->player->activeColony->E2PZ < $travelCost)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+
                                         $current = Carbon::now();
                                         $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
                                         if($current->diffInMinutes($lastClaim) > 720){
@@ -1116,6 +1280,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                     {
                                         $this->player->refresh();
 
+                                        //Check Consommation E2PZ
+                                        if($this->player->activeColony->E2PZ < $travelCost)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
+
                                         if($this->player->colonies->count() < $possibleColonies)
                                         {
                                             $this->player->activeColony->refresh();
@@ -1200,7 +1376,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     {
                         if(isset($this->args[$cptRes+1]))
                         {
-                            if((int)$this->args[$cptRes+1] > 0)
+                            if(is_numeric($this->args[$cptRes+1]) && $this->args[$cptRes+1] > 0)
                                 $qty = (int)$this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
@@ -1298,6 +1474,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
                                         if($raidCapability['result'] == false)
                                             $messageReaction->message->channel->sendMessage($raidCapability['message']);
+
+                                        //Check Consommation E2PZ
+                                        if($this->player->activeColony->E2PZ < $travelCost)
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round(($travelCost-$this->player->activeColony->E2PZ),4)], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
 
                                         $this->player->activeColony->refresh();
                                         foreach($this->attackUnits as $attackUnit)
@@ -1668,10 +1856,25 @@ class Stargate extends CommandHandler implements CommandInterface
     {
         //0.03 * system
         //3 * galaxy
+
         if($source->galaxy != $destination->galaxy)
-            return abs($source->galaxy - $destination->galaxy)*2;
+            return abs($source->galaxy - $destination->galaxy)*1;
         elseif($source->system != $destination->system)
-            return abs($source->system - $destination->system)*0.03;
+        {
+            $sysDiff = abs($source->system - $destination->system);
+            if($sysDiff >= 0 && $sysDiff <= 5)
+                return 0.04;
+            elseif($sysDiff >= 0 && $sysDiff <= 5)
+                return 0.04;
+            elseif($sysDiff >= 6 && $sysDiff <= 10)
+                return 0.08;
+            elseif($sysDiff >= 11 && $sysDiff <= 20)
+                return 0.16;
+            elseif($sysDiff >= 21 && $sysDiff <= 50)
+                return 0.32;
+            elseif($sysDiff >= 51 && $sysDiff <= 10000)
+                return 0.5;
+        }
         else
             return 0.02;
     }
@@ -1749,5 +1952,41 @@ class Stargate extends CommandHandler implements CommandInterface
             }
         }
         return array('result' => true);
+    }
+
+    public function getPageExplo()
+    {
+        $displayList = $this->player->explorations->skip(10*($this->page -1))->take(10);
+
+        $exploList = '';
+        //SOURCE -
+        $exploList .= "DATE - DESTINATION - REWARD\n";
+        foreach($displayList as $exploration)
+        {
+            $explorationDate = substr($exploration->created_at,0,10);
+            if(is_null($exploration->exploration_result))
+                $reward = trans('stargate.explorationOngoing', [], $this->player->lang);
+            elseif(!$exploration->exploration_result)
+                $reward = "FAILED";
+            else
+                $reward = str_replace('Unit','Craft',$exploration->exploration_outcome);
+            // ".$exploration->colonySource->name." [".$exploration->colonySource->coordinates->humanCoordinates()."] -
+            $exploList .= $explorationDate." - [".$exploration->coordinateDestination->humanCoordinates()."] - ".$reward."\n";
+        }
+
+        $embed = [
+            'author' => [
+                'name' => $this->player->user_name,
+                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+            ],
+            "title" => trans('stargate.explorationList', [], $this->player->lang),
+            "description" => $exploList,
+            'fields' => [],
+            'footer' => array(
+                'text'  => 'Stargate - '.trans('generic.page', [], $this->player->lang).' '.$this->page.' / '.$this->maxPage,
+            ),
+        ];
+
+        return $embed;
     }
 }

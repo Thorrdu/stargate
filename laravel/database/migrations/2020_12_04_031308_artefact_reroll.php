@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCoordinates extends Migration
+class ArtefactReroll extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,9 @@ class AddCoordinates extends Migration
      */
     public function up()
     {
-        /*
         Schema::table('colonies', function (Blueprint $table) {
-            $table->integer('coordinate_id')->unsigned()->after('player_id');
-            $table->foreign('coordinate_id')->references('id')->on('coordinates');
-        });*/
-
-
-
+            $table->boolean('artifact_rerolled')->default(true)->after('artifact_check');
+        });
     }
 
     /**
@@ -30,6 +25,8 @@ class AddCoordinates extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('colonies', function (Blueprint $table) {
+            //
+        });
     }
 }

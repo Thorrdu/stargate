@@ -43,7 +43,7 @@ class Exploration extends Model
             $this->colonySource->save();
 
             $this->save();
-            $newArtifact = $this->colonySource->generateArtifact(array('maxEnding'=> 72))->toString($this->player->lang);
+            $newArtifact = $this->colonySource->generateArtifact(array('minEnding' => 72, 'maxEnding' => 72))->toString($this->player->lang);
 
             return trans('stargate.exploreSucessArtifact', ['coordinates' => $this->coordinateDestination->humanCoordinates(), 'artifact' => $newArtifact], $this->player->lang);
         }
@@ -89,10 +89,11 @@ class Exploration extends Model
                         'naqahdah' => 1,
                         'E2PZ' => 1);
             $resNumberWeight = array(
-                1 => 4,
-                2 => 3,
-                3 => 2,
-                4 => 1,
+                1 => 5,
+                2 => 4,
+                3 => 3,
+                4 => 2,
+                5 => 1,
             );
             $resNumber = FuncUtility::rand_with_weight($resNumberWeight);
 
@@ -106,9 +107,13 @@ class Exploration extends Model
                 if($resType == 'E2PZ')
                     $resValue = rand(2,6);
                 else
-                    $resValue = $this->colonySource->$varProd * rand(2,4);
+                    $resValue = $this->colonySource->$varProd * rand(1,3);
 
-                $this->colonySource->$resType += $resValue;
+                $newResValue = $this->colonySource->$resType + $resValue;
+                if(($this->colonySource->{'storage_'.$resType}*1.25) <= $newResValue)
+                    $newResValue = $this->colonySource->{'storage_'.$resType}*1.25;
+
+                $this->colonySource->$resType = $newResValue;
 
                 if(isset($refounds[$resType]))
                     $refounds[$resType] += $resValue;

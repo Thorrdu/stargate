@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use App\Coordinate;
+use App\Fleet;
 
 class Empire extends CommandHandler implements CommandInterface
 {
@@ -45,11 +46,15 @@ class Empire extends CommandHandler implements CommandInterface
                         $prefix = $guildConfig['prefix'];
                 }
 
+                $warning = '';
+                $incomingFleets = Fleet::Where([['player_source_id','!=',$this->player->id],['fleets.returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']])->count();
+                if($incomingFleets > 0)
+                    $warning = "\n\n".trans('colony.incomingFleetWarning', [], $this->player->lang)."\n\n";
+
                 if(empty($this->args))
                 {
                     return $this->message->reply("`{$prefix}empire [production/buildings/activities/fleet/artifacts]`");
                 }
-
                 elseif(Str::startsWith('production', $this->args[0]))
                 {
                     $embed = [
@@ -363,6 +368,9 @@ class Empire extends CommandHandler implements CommandInterface
 
                 if(isset($embed))
                 {
+                    if(!empty($warning))
+                        $embed['description'] = $warning;
+
                     $this->closed = false;
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $embed)->then(function ($messageSent){

@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Events\Event;
+use App\Utility\PlayerUtility;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -72,7 +73,7 @@ class Colony extends Model
 
     public function buildings()
     {
-        return $this->belongsToMany('App\Building')->withPivot('level')->orderBy('buildings.id','ASC');;
+        return $this->belongsToMany('App\Building')->withPivot('level')->orderBy('buildings.id','ASC');
     }
 
     public function artifacts()
@@ -85,9 +86,14 @@ class Colony extends Model
         return $this->hasOne('App\Building','id','active_building_id');
     }
 
+    public function buildingQueue()
+    {
+        return $this->belongsToMany('App\Building','colony_buildings_queue','colony_id','building_id')->withPivot('level');
+    }
+
     public function coordinates()
     {
-        return $this->hasOne('App\Coordinate');
+        return $this->hasOne('App\Coordinate','id','coordinate_id');
     }
 
     public function craftQueues()
@@ -117,7 +123,12 @@ class Colony extends Model
 
     public function ships()
     {
-        return $this->belongsToMany('App\Ship')->withPivot('number');
+        return $this->belongsToMany('App\Ship','colony_ship','colony_id','ship_id')->withPivot('number');
+    }
+
+    public function reyclingQueue()
+    {
+        return $this->belongsToMany('App\Ship','colony_reycling_queue','colony_id','ship_id')->withPivot('ship_end');
     }
 
     public function hasBuilding(Building $building)
@@ -468,6 +479,34 @@ class Colony extends Model
         return $buildingEnd;
     }
 
+    public function startRecyclingShip(Ship $ship, int $qty)
+    {
+        $current = Carbon::now();
+
+        $buildingTime = $ship->base_time;
+
+        /** Application des bonus */
+        $buildingTime *= $this->getShipbuildBonus();
+        $buildingTime /= 4;
+
+        if($this->reyclingQueue->count() > 0)
+        {
+            $lastQueue = $this->reyclingQueue->last();
+            $lastQueueCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$lastQueue->pivot->ship_end);
+            if(!$lastQueueCarbon->isPast())
+                $current = $lastQueueCarbon;
+        }
+
+        for($cptQueue = 0; $cptQueue <= $qty ; $cptQueue++ )
+        {
+            $buildingEnd = $current->addSeconds($buildingTime);
+            $this->reyclingQueue()->attach([$ship->id => ['ship_end' => $buildingEnd]]);
+        }
+
+        $this->save();
+        return $buildingEnd;
+    }
+
 
     public function startBuilding(Building $building,Int $wantedLvl, Bool $removal)
     {
@@ -596,6 +635,42 @@ class Colony extends Model
         }
     }
 
+    public function checkShipRecyclingQueues()
+    {
+        try{
+            if($this->reyclingQueue->count() > 0)
+            {
+                $endedShips = $this->reyclingQueue->filter(function ($value){
+                    return Carbon::createFromFormat("Y-m-d H:i:s",$value->pivot->ship_end)->isPast();
+                });
+
+                foreach($endedShips as $endedShip)
+                {
+                    $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Ship']);
+                    $buildingPrices = $endedShip->getPrice(1,$coef);
+                    foreach (config('stargate.resources') as $resource)
+                    {
+                        if($endedShip->$resource > 0)
+                        {
+                            $newResource = $this->$resource + ceil($buildingPrices[$resource]*0.80);
+                            if($this->{'storage_'.$resource} <= $newResource)
+                                $newResource = $this->{'storage_'.$resource};
+                            $this->$resource = $newResource;
+                        }
+                    }
+                }
+                $this->save();
+                DB::table('colony_reycling_queue')->where([['ship_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
+                $this->load('shipQueues');
+            }
+        }
+        catch(\Exception $e)
+        {
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+        }
+    }
+
     public function checkShipQueues()
     {
         try{
@@ -647,7 +722,7 @@ class Colony extends Model
 
             if($minuteToClaim > config('stargate.maxProdTime'))
                 $minuteToClaim = config('stargate.maxProdTime');
-            if($minuteToClaim >= 1)
+            if($minuteToClaim >= 5)
             {
                 foreach (config('stargate.resources') as $resource)
                 {
@@ -655,18 +730,24 @@ class Colony extends Model
                     $varNameStorage = 'storage_'.$resource;
                     $varNameConsumption = 'consumption_'.$resource;
 
-                    $this->$resource += ($this->$varNameProd / 60) * $minuteToClaim;
-
                     if(!is_null($this->$varNameConsumption))
-                        $this->$resource -= ($this->$varNameConsumption / 60) * $minuteToClaim;
+                            $this->$resource -= ($this->$varNameConsumption / 60) * $minuteToClaim;
 
-                    if($this->$varNameStorage < $this->$resource)
+                    $producedResources = ($this->$varNameProd / 60) * $minuteToClaim;
+                    if(($this->$resource + $producedResources) <= $this->$varNameStorage)
+                        $this->$resource += $producedResources;
+                    elseif($this->$resource < $this->$varNameStorage && ($this->$resource + $producedResources) > $this->$varNameStorage)
                         $this->$resource = $this->$varNameStorage;
+
+                    if(($this->$varNameStorage*1.25) < $this->$resource)
+                        $this->$resource = $this->$varNameStorage*1.25;
                     elseif($this->$resource < 0)
                         $this->$resource = 0;
                 }
                 $this->military += ($this->production_military / 60) * $minuteToClaim;
                 $this->E2PZ += ($this->production_e2pz / 10080) * $minuteToClaim;
+                if($this->E2PZ < 0)
+                    $this->E2PZ = 0;
 
                 $this->last_claim = date("Y-m-d H:i:s");
 
@@ -698,7 +779,7 @@ class Colony extends Model
 
         foreach($this->buildings as $building)
         {
-            if($building->slug == 'naqahdahreactor')
+            if($building->id == 10 /*Reacteur au Naqahdah*/)
                 $this->consumption_naqahdah += floor($building->getConsumption($building->pivot->level));
             else
                 $this->energy_used += floor($building->getEnergy($building->pivot->level));
@@ -751,12 +832,13 @@ class Colony extends Model
                 $this->production_e2pz = config('stargate.base_prod.e2pz');
             $this->production_e2pz += $e2pzBuilding->getProductionE2PZ($e2pzBuilding->pivot->level);
         }
-        $this->production_e2pz *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'E2PZ']);
+        $this->production_e2pz *= $this->getArtifactBonus(['bonus_category' => 'Production', 'bonus_resource' => 'e2pz']);
         if(!is_null($this->player->premium_expiration))
             $this->production_e2pz *= config('stargate.premium.bonusProduction');
     }
 
     public function checkColony(){
+        $this->checkShipRecyclingQueues();
         $this->checkProd();
         $this->player->checkTechnology();
         $this->checkBuilding();
@@ -833,7 +915,7 @@ class Colony extends Model
                 $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
                 $wantedLvl = 1;
-                $currentLvl = $this->player->activeColony->hasBuilding($building);
+                $currentLvl = $this->hasBuilding($building);
                 if($currentLvl)
                     $wantedLvl = $currentLvl;
 
@@ -874,6 +956,9 @@ class Colony extends Model
             $this->calcProd();
             $this->save();
 
+            if(!is_null($this->player->premium_expiration))
+                $this->checkBuildingQueue();
+
             if($this->player->notification)
             {
                 try{
@@ -899,34 +984,99 @@ class Colony extends Model
         }
     }
 
-    public function rndWeightedArtifact($values, $weights){
-        $count = count($values);
-        $i = 0;
-        $n = 0;
-        $randWeights = [];
-        foreach($values as $value)
-            $randWeights[] = $weights[$value];
-        $num = mt_rand(0, array_sum($randWeights));
-        while($i < $count){
-            $n += $randWeights[$i];
-            if($n >= $num){
-                break;
+    public function checkBuildingQueue()
+    {
+        try{
+            if($this->buildingQueue->count() > 0)
+            {
+                $buildingToBuild = $this->buildingQueue[0];
+
+                $wantedLvl = 1;
+                $currentLvl = $this->hasBuilding($buildingToBuild);
+                if($currentLvl)
+                    $wantedLvl += $currentLvl;
+
+                $canceledReason = '';
+                if(!is_null($buildingToBuild->level_max) && $wantedLvl > $buildingToBuild->level_max)
+                    $canceledReason = trans('building.buildingMaxed', [], $this->player->lang);
+                elseif(($this->space_max - $this->space_used) <= 0 && $buildingToBuild->id != 20)
+                    $canceledReason = trans('building.missingSpace', [], $this->player->lang);
+                else
+                {
+                    $hasEnough = true;
+                    $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
+
+                    $buildingPrices = $buildingToBuild->getPrice($wantedLvl, $coef);
+                    $missingResString = "";
+                    foreach (config('stargate.resources') as $resource)
+                    {
+                        if($buildingToBuild->$resource > 0 && $buildingPrices[$resource] > $this->$resource)
+                        {
+                            $hasEnough = false;
+                            $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($buildingPrices[$resource]-$this->$resource));
+                        }
+                    }
+                    if(!$hasEnough)
+                        $canceledReason = trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+                    else
+                    {
+                        if($buildingToBuild->energy_base > 0 && $buildingToBuild->id != 10 /*Reacteur au Naqahdah*/)
+                        {
+                            $energyPrice = $buildingToBuild->getEnergy($wantedLvl);
+                            if($wantedLvl > 1)
+                                $energyPrice -= $buildingToBuild->getEnergy($wantedLvl-1);
+                            $energyLeft = ($this->energy_max - $this->energy_used);
+                            $missingEnergy = $energyPrice - $energyLeft;
+                            if($missingEnergy > 0)
+                                $canceledReason = trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
+                        }
+
+                        if( !is_null($this->player->active_technology_id) && $buildingToBuild->id == 7 && $this->id == $this->player->active_technology_colony_id)
+                            $canceledReason = trans('generic.busyBuilding', [], $this->player->lang);
+                        elseif( $this->defenceQueues->count() > 0 && $buildingToBuild->id == 15 )
+                            $canceledReason = trans('generic.busyBuilding', [], $this->player->lang);
+                        elseif( $this->craftQueues->count() > 0 && $buildingToBuild->id == 9 )
+                            $canceledReason = trans('generic.busyBuilding', [], $this->player->lang);
+                        elseif(empty($canceledReason))
+                        {
+                            $this->startBuilding($buildingToBuild,$wantedLvl,false);
+                            $this->buildingQueue()->where('buildings.id', $buildingToBuild->id)->wherePivot('level', $buildingToBuild->pivot->level)->detach();
+                        }
+                    }
+                }
+
+                if(!empty($canceledReason))
+                {
+                    $this->buildingQueue()->detach();
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans("building.queueCanceled", [
+                        'colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']',
+                        'buildingName' => trans('building.'.$buildingToBuild->slug.'.name', [], $this->player->lang),
+                        'reason'=>[$canceledReason]
+                    ], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
             }
-            $i++;
         }
-        return $values[$i];
+        catch(\Exception $e)
+        {
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+        }
     }
 
     public function generateArtifact($options = [])
     {
         try{
             $categoryWeights = [
-                'Time' => 35,
-                'Production' => 20,
+                'Time' => 20,
+                'Production' => 15,
                 'maxSpace' => 15,
-                'Price' => 9,
                 'ColonyMax' => 10,
                 'DefenceLure' => 5,
+                'Price' => 3,
             ];
 
             if(isset($options['bonusCategories']))
@@ -956,13 +1106,21 @@ class Colony extends Model
                 $isBonus = $options['forceBonus'];
             else
             {
-                if(rand(0,100) > 90)
+                if(rand(0,100) >= 96)
                     $isBonus = false;
                 else
                     $isBonus = true;
             }
 
-            $newArtifact->bonus_category = $this->rndWeightedArtifact($bonusCategories,$categoryWeights);
+            $iaTech = Technology::find(5);
+            $iaTechLvl = $this->player->hasTechnology($iaTech);
+            if(!$iaTechLvl)
+                $iaTechLvl = 0;
+            $iaTechBonus = floor($iaTechLvl/4);
+            $maxBonus = 5 + $iaTechBonus;
+            $minBonus = 2 + $iaTechBonus;
+
+            $newArtifact->bonus_category = PlayerUtility::rngWeighted($bonusCategories,$categoryWeights);
 
             if(in_array($newArtifact->bonus_category,['Price']))
             {
@@ -971,16 +1129,16 @@ class Colony extends Model
                 {
                     case 'Research':
                     case 'Building':
-                        $bonusCoef = rand(1,15)/100;
+                        $bonusCoef = rand($minBonus,$maxBonus)/100;
                     case 'Ship':
-                        $bonusCoef = rand(1,10)/100;
+                        $bonusCoef = rand($minBonus,$maxBonus)/100;
                     break;
                     case 'Defence':
                     case 'Craft':
-                        $bonusCoef = rand(1,20)/100;
+                        $bonusCoef = rand($minBonus,$maxBonus)/100;
                     break;
                     default:
-                        $bonusCoef = rand(1,15)/100;
+                        $bonusCoef = rand($minBonus,$maxBonus)/100;
                     break;
                 }
                 if($isBonus)
@@ -991,7 +1149,7 @@ class Colony extends Model
             if(in_array($newArtifact->bonus_category,['Time']))
             {
                 $newArtifact->bonus_type = $bonusTypes[rand(0,count($bonusTypes)-1)];
-                $bonusCoef = rand(5,25)/100;
+                $bonusCoef = rand($minBonus,$maxBonus)/100;
                 if($isBonus)
                     $newArtifact->bonus_coef = 1-$bonusCoef;
                 else
@@ -1007,7 +1165,7 @@ class Colony extends Model
             elseif(in_array($newArtifact->bonus_category,['Production']))
             {
                 $newArtifact->bonus_resource = $bonusResources[rand(0,count($bonusResources)-1)];
-                $bonusCoef = rand(5,25)/100;
+                $bonusCoef = rand($minBonus,$maxBonus)/100;
                 if($isBonus)
                     $newArtifact->bonus_coef = 1+$bonusCoef;
                 else
@@ -1015,7 +1173,7 @@ class Colony extends Model
             }
             elseif(in_array($newArtifact->bonus_category,['maxSpace']))
             {
-                $additionalSpace = rand(20,60);
+                $additionalSpace = rand((20+$iaTechBonus),(45+$iaTechBonus));
                 if($isBonus)
                 {
                     $newArtifact->bonus_coef = $additionalSpace;

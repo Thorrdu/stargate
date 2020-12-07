@@ -18,7 +18,7 @@ return [
     'build' => [
         'description' => "List available buildings, Show building details or build/upgrade some building."
                         ."\nCanceling a building makes you loose 25% of invested resources.",
-        'usage' => ":prefixbuild\n:prefixbuild [id/slug]\n:prefixbuild [id/slug] confirm\n:prefixbuild [id/slug] remove\n:prefixbuild cancel"
+        'usage' => ":prefixbuild\n:prefixbuild [id/slug]\n:prefixbuild [id/slug] confirm\n:prefixbuild queue\n:prefixbuild [id/slug] remove\n:prefixbuild cancel"
     ],
     'research' => [
         'description' => "List available technologies, Show research details start/upgrade some research."
@@ -27,7 +27,7 @@ return [
     ],
     'colony' => [
         'description' => 'Display some esential information about your colony (Resources, Buildings, Production, ... ). Also allows to switch between your colonies.',
-        'usage' => ":prefixcolony\n:prefixcolony list\n:prefixcolony switch [number]\n:prefixcolony remove [number]\n:prefixcolony rename [new name]"
+        'usage' => ":prefixcolony\n:prefixcolony list\n:prefixcolony switch [number]\n:prefixcolony remove [number]\n:prefixcolony reroll\n:prefixcolony rename [new name]"
     ],
     'craft' => [
         'description' => "List available crafts such as probes to spy your oponants, transports to move resources through the gate, ...",
@@ -89,6 +89,7 @@ return [
         'description' => "Allows you to build spaceships or making new custom models".
                          "\n\nTo learn more about custom spaceship models use `:prefixshipyard create`",
         'usage' => ":prefixshipyard [Slug] [Quantity]\n".
+                    ":prefixshipyard [Slug] recycle [Quantity]\n".
                     ":prefixshipyard queue\n".
                     ":prefixshipyard parts\n".
                     ":prefixshipyard create [blueprint] [...Components]\n".
@@ -105,7 +106,7 @@ return [
                     "**transport** (`:prefixfleet transport [coordinates] [Ship] [Qty] [Res] [Qty]`)\n".
                     "**spy** (`:prefixfleet spy [coordinates]`) \n".
                     "**attack** (`:prefixfleet attack [coordinates] [Ship] [Qty]`)\n".
-                    "**scavenge** (`:prefixfleet scavenge [Scavengers] [Qty]`)\n".
+                    "**scavenge** (`:prefixfleet scavenge [coordinates] [Scavengers] [Qty]`)\n".
                     "**history** (`:prefixfleet history`)"
     ],
     'infos' => [
@@ -136,14 +137,14 @@ return [
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"
     ],
     'premium' => [
-        'description' => "If you want to support the bot, you can buy a premium through this link: **[Utip](https://utip.io/thorrdu)** (For payement with Paypal, contact Thorrdu in DM)\n".
+        'description' => "If you want to support the bot, you can buy a premium through this link: **[Utip](https://utip.io/thorrdu)** (For payement with Paypal or Paysafecard, contact Thorrdu in DM)\n".
                         "Price: 5 Euros = 1 Month / 5 Premium bought = 1 Premium offered.\n".
                         "\nYou can also use or give a premium once you bought it.\n\nPremium advantages:\n".
-
                         "=> +30% production\n".
                         "=> -20% building/research time\n".
                         "=> Possibility to rename your colonies\n".
-                        "=> Access to the `:prefixempire` command",
+                        "=> Access to the `:prefixempire` command\n".
+                        "=> Building construction queue\n",
         'usage' => ":prefixpremium\n:prefixpremium use\n:prefixpremium give @mention\n:prefixpremium give @mention [quantité]"
     ],
     'empire' => [

@@ -9,7 +9,7 @@ return [
                         "**transport** (`!fleet transport [coordinates] [Ship] [Qty] [Res] [Qty]`)\n".
                         "**spy** (`!fleet spy [coordinates]`) \n".
                         "**attack** (`!fleet attack [coordinates] [Ship] [Qty]`)\n".
-                        "**scavenge** (`!fleet scavenge [Scavengers] [Qty]`)\n".
+                        "**scavenge** (`!fleet scavenge [coordinates] [Scavengers] [Qty]`)\n".
                         "**history** (`!fleet history`)\n".
                         "Optional parameter: speed [10-100]",
     "fleetMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
@@ -24,7 +24,7 @@ return [
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
-    "fleetAttackMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
+    "fleetAttackMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
                         "Mission: **:mission**\n\n".
                         "**Fleet**\n".
@@ -99,7 +99,7 @@ return [
                     "No resource have been stolen",
     'fleetHistory' => 'Fleets history',
     'historyHowTo' => 'Display fleet details with `!fleet history [ID]`',
-    'historyLine' => ':fleetId - :date - :mission - :destination',
+    'historyLine' => ':fleetId - :arrival - :destination - :mission - :status',
     'emptyHistory' => 'No fleet history...',
     'ruinFieldGenerated' => 'Ruin field generated: :resources',
     'noScavengerSelected' => 'No scavenger selected',
@@ -123,4 +123,19 @@ return [
         .":fleet\n"
         ."__Freight__\n"
         .":resources\n",
+    "fleetDetailOwned" => "__Fleet from :source__\n".
+                    "Destination: :destination\n".
+                    "Mission: **:mission**\n".
+                    "Status: **:status**\n\n".
+                    "**Fleet**\n".
+                    ":fleet\n".
+                    "**Freight (Capacity: :freightCapacity)**\n".
+                    ":resources\n".
+                    "Flight duration: **:duration**\n",
+    "fleetDetailArriving" => "__Fleet from :source__\n".
+                    "Destination: :destination\n".
+                    "Mission: **:mission**\n\n".
+                    "**Fleet**\n".
+                    ":fleet\n".
+                    "Flight duration: **:duration**\n",
 ];

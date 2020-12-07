@@ -102,4 +102,11 @@ return [
     'buildingMaxed' => 'Ce bâtiment est déjà au niveau maximum...',
     'buildingRemoved' => 'La destruction de **:name** s\'est terminée sur :colony',
     'cantCancelRemove' => 'Vous ne pouvez annulez la destruction une fois commencée...',
+    'queueIsFull' => 'La fille d\'attente de cette colonie est pleine. Gérez la file d\'attente via `!building queue`.',
+    'buildingQueueAdded' => '**:buildingName** à été ajouté à la file d\'attente.',
+    'emptyQueue' => 'La file d\'attente est vide.',
+    'queueList' => 'File d\'attente',
+    'clearedQueue' => 'File d\'attente à été vidée.',
+    'howToClearQueue' => "`!building queue clear` pour vider la file d'attente.",
+    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Rasion: :reason.\nSuite à cela, la liste d'attente à été vidée."
 ];

@@ -9,7 +9,7 @@ return [
                             "**transport** (`!fleet transport [Coordonnées] [Vaisseaux] [Nombre] [Ressource] [Qté]`)\n".
                             "**spy** (`!fleet spy [Coordonnées]`)\n".
                             "**attack** (`!fleet attack [Coordonnées] [Vaisseau] [Qté]`)\n".
-                            "**scavenge** (`!fleet scavenge [Recycleurs] [Qté]`)\n".
+                            "**scavenge** (`!fleet scavenge [Coordonnées] [Recycleurs] [Qté]`)\n".
                             "**history** (`!fleet history`)\n".
                             "Paramètre optionel: speed [10-100]",
     "fleetMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
@@ -88,7 +88,7 @@ return [
                     "Le défenseur fait un dégât total de :defenderDamageDone (dont :attackerAbsorbedDamage absorbé(s) par les boucliers).\n\n".
                     "__Pertes de l'attaquant__\n:lostAttackerUnits\n".
                     "__Pertes du défenseur__\n:lostDefenderUnits\n",
-    'battleWin' => "\n__Résultat du combat__\n\n".
+    'battleWin' => "\n__Résultat de la bataille__\n\n".
                     "L'attaquant a perdu :lostAttackUnit unité(s)\n".
                     "Le défenseur a perdu :lostDefenceUnit unité(s)\n\n".
                     "__Ressources pillées__\n".
@@ -99,7 +99,7 @@ return [
                     "Aucune ressource n'a été pillée",
     'fleetHistory' => 'Historique des fleets',
     'historyHowTo' => 'Consultez le détail d\'une fleet avec `!fleet history [ID]`',
-    'historyLine' => ':fleetId - :date - :mission - :destination',
+    'historyLine' => ':fleetId - :arrival - :destination - :mission - :status',
     'emptyHistory' => 'Aucun historique actuellement...',
     'ruinFieldGenerated' => 'Champ de ruine généré: :resources',
     'noScavengerSelected' => 'Aucun recycleur sélectionné',
@@ -123,4 +123,19 @@ return [
                     .":fleet\n"
                     ."__Transport__\n"
                     .":resources\n",
+    "fleetDetailOwned" => "__Voyage depuis :source__\n".
+                    "Destination: :destination\n".
+                    "Mission: **:mission**\n".
+                    "Statut: **:status**\n\n".
+                    "**Flotte**\n".
+                    ":fleet\n".
+                    "**Transport (Capacité de soute: :freightCapacity)**\n".
+                    ":resources\n".
+                    "Durée avant destination: **:duration**\n",
+    "fleetDetailArriving" => "__Arrivée d'une flotte depuis :source__\n".
+                    "Destination: :destination\n".
+                    "Mission: **:mission**\n\n".
+                    "**Flotte**\n".
+                    ":fleet\n".
+                    "Temps avant arrivée: **:duration**\n",
 ];

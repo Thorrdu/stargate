@@ -19,4 +19,13 @@ return [
     'activeFleetError' => 'Cannot remove this colony. An active fleet is still bound to this colony. Please retry later.',
     'activeLaboratoryError' => 'Cannot remove this colony. The laboratory of this colony is busy. Please retry later.',
     'maxSpaceBonus' => 'Max space',
+    'incomingFleetWarning' => "**⚠️ Warning: Incoming fleet detected ⚠️**\nUse `!fleet` for more info.",
+    'queuedBuildings' => '+:number building(s) queued',
+    'noRerollAvailable' => 'No possible alteration for this artifact at the moment.',
+    'noArtefactDetected' => 'No permanent artifact detected.',
+    'cannotRerollColoniesLow' => "No possible alteration for this artifact, your amount of colonies is too high.",
+    'cannotRerollSpaceLow' => "No possible alteration for this artifact, your amount of building space occupied is too high.",
+    'artifactRerollConfirm' => "Do you realy want to alterate this artifact ?".
+                                "\nThe operation will take 1h.",
+    'artefactRerolled' => "Your artifact is under alteration, The result will be known in 1h.",
 ];

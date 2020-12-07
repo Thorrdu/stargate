@@ -56,7 +56,7 @@ return [
     "technologyTooLow" => "Aucune donnée n'a pu être récupérée , votre niveau d'espionnage est trop faible.",
     "spyReportDescription" => "Rapport d'espionnage de la planète :planetDest [:coordinateDestination] (:player)",
     'fleet' => 'Flotte',
-    'emptyFleet' => 'Aucun flotte à quai',
+    'emptyFleet' => 'Aucune flotte à quai',
     'defences' => 'Défenses',
     'emptydefences' => 'Aucune défense',
     'buildings' => 'Bâtiments',
@@ -66,10 +66,10 @@ return [
     "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] depuis :planetNameSource [:coordinateSource]\n".
                             "Troupes:\n:militaryUnits".
                             "\nCoût: :consumption",
-    "exploreConfirmation" => "Envoyer une équipe explorer :coordinateDestination ?\n".
+    "exploreConfirmation" => "Envoyer une équipe explorer [:coordinateDestination] ?\n".
                             "Troupes: :militaryUnits".
                             "\nCoût: :consumption",
-    "colonizeConfirmation" => "Envoyer une équipe coloniser :coordinateDestination ?\n".
+    "colonizeConfirmation" => "Envoyer une équipe coloniser [:coordinateDestination] ?\n".
                             "Troupes: :militaryUnits".
                             "\nCoût: :consumption",
     "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination].\nUn rapport arrivera sous peu.",
@@ -114,4 +114,7 @@ return [
     'trade_ban' => 'Vous êtes banni du système de trade. Vérifiez vos trades via `!trade`',
     'sameColony' => 'Les coordonnées de destination sont les mêmes que celles de départ...',
     "probeSpySending" => "Vous avez lancé une mission d'espionnage sur :planetDest [:coordinateDestination] !\nCoût: :consumption\nVotre sonde arrivera dans **:fleetDuration**\n\n",
+    'explorationList' => 'Liste des explorations',
+    'emptyExploHistory' => 'Aucune exploration.',
+    'explorationOngoing' => 'EN COURS',
 ];

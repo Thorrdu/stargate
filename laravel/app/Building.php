@@ -8,7 +8,7 @@ class Building extends Model
 {
     public function colonies()
     {
-        return $this->belongsToMany('App\Colony')->withPivot('level');
+        return $this->belongsToMany('App\Colony','building_colony','building_id','building_id')->withPivot('level');
     }
 
     public function requiredBuildings()
@@ -39,7 +39,6 @@ class Building extends Model
         //$level--; //Du au coeficient
         //return floor($this->energy_base * pow($this->energy_coefficient, $level));
         return floor($this->coefCalc($this->energy_base,$this->energy_coefficient,$level));
-
     }
 
     public function getTime(int $level)

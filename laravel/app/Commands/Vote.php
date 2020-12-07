@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Utility\PlayerUtility;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
@@ -22,16 +23,52 @@ class Vote extends CommandHandler implements CommandInterface
             if($this->player->vote_boxes > 0)
             {
                 try{
-
-                    if($this->player->activeColony->artifacts->count() < 10)
-                    {
-                        $this->player->vote_boxes--;
-                        $this->player->save();
-                        $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 6, 'maxEnding' => 6])->toString($this->player->lang);
-                        return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
-                    }
-                    else
+                    if($this->player->activeColony->artifacts->count() >= 10)
                         return trans('vote.tooManyArtifacts', [], $this->player->lang);
+
+                    $bonusTypes = ['Artifact', 'Premium'];
+                    $bonusWeights = [
+                        'Artifact' => 99,
+                        'Premium' => 1
+                    ];
+                    $bonusType = PlayerUtility::rngWeighted($bonusTypes,$bonusWeights);
+
+                    switch($bonusType)
+                    {
+                        case 'Premium':
+                            $this->player->vote_boxes--;
+
+                            if(!is_null($this->player->premium_expiration))
+                            {
+                                $this->player->premium_expiration = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->premium_expiration)->add('24h');
+                                $this->player->save();
+                            }
+                            else
+                            {
+                                $this->player->premium_expiration = Carbon::now()->add('24h');
+                                $this->player->save();
+
+                                foreach($this->player->colonies as $colony)
+                                {
+                                    $colony->calcProd(); //reload Prods
+                                    $colony->save();
+                                }
+                            }
+
+                            $newArtifact = trans('vote.premiumWin',[], $this->player->lang);
+                            return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
+                        break;
+                        case 'Artifact':
+                            $this->player->vote_boxes--;
+                            $this->player->save();
+                            $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 12, 'maxEnding' => 12])->toString($this->player->lang);
+                            return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
+                        default:
+
+                        break;
+                    }
+
+
 
                 }
                 catch(\Exception $e)

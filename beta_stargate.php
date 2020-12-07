@@ -171,6 +171,7 @@ $discord->on('ready', function ($discord) use($beta){
                 {
                     $colony->calcProd(); //reload Prods
                     $colony->save(); 
+                    $colony->buildingQueue()->detach();
                 }
             }
 
@@ -229,6 +230,10 @@ $discord->on('ready', function ($discord) use($beta){
                     $newday = '0'.$newday;
                 $nextTopRegen = date("Y-m-").($newday).' 00:00:00';
                 $topRegen = DB::table('configuration')->Where([['key','top_regen']])->update(['value' => $nextTopRegen]);
+
+                $newLimit = ceil(DB::table('players')->Where([['npc',0],['id','!=',1],['points_total','>',0]])->avg('points_total')/2);
+                Config::set('stargate.gateFight.StrongWeak', $newLimit);
+                echo PHP_EOL.'New Limit: '.config('stargate.gateFight.StrongWeak');
             }
 
             $artifactAutoDeleted = 0;
@@ -733,7 +738,7 @@ $discord->on('ready', function ($discord) use($beta){
     $discord->registerCommand('test', function ($message, $args) use($discord) {
         $replyMess = "";
         foreach ($discord->guilds as $guild) {
-            $replyMess .= "\n" . $guild->name." :: ".count($guild->members)." members";;
+            $replyMess .= "\n" . $guild->name." :: ".count($guild->members)." members";
         }    
         echo $replyMess;
 

@@ -28,6 +28,7 @@ class Shipyard extends CommandHandler implements CommandInterface
     public $componentSelectedType;
     public $shipQueue;
     public $closed;
+    public $queueType;
     public $blueprintMaker;
 
     public function execute()
@@ -545,13 +546,26 @@ class Shipyard extends CommandHandler implements CommandInterface
                 elseif(Str::startsWith('queue', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Shipyard Queue';
-                    if($this->player->activeColony->shipQueues->count() == 0)
-                        return trans('shipyard.emptyQueue', [], $this->player->lang);
-                    $this->shipQueue = $this->player->activeColony->shipQueues;
+
+                    if(count($this->args) > 1 && Str::startsWith('recycling', $this->args[1]))
+                    {
+                        if($this->player->activeColony->reyclingQueue->count() == 0)
+                            return trans('shipyard.emptyRecyclingQueue', [], $this->player->lang);
+                        $this->shipQueue = $this->player->activeColony->reyclingQueue;
+                        $this->maxPage = ceil($this->reyclingQueue->count()/5);
+                        $this->queueType = 'recycling';
+                    }
+                    else
+                    {
+                        if($this->player->activeColony->shipQueues->count() == 0)
+                            return trans('shipyard.emptyQueue', [], $this->player->lang);
+                        $this->shipQueue = $this->player->activeColony->shipQueues;
+                        $this->maxPage = ceil($this->shipQueue->count()/5);
+                        $this->queueType = 'building';
+                    }
 
                     $this->closed = false;
                     $this->page = 1;
-                    $this->maxPage = ceil($this->shipQueue->count()/5);
                     $this->maxTime = time()+180;
                     $this->message->channel->sendMessage('', false, $this->getQueue())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
@@ -583,25 +597,25 @@ class Shipyard extends CommandHandler implements CommandInterface
                                     elseif($messageReaction->emoji->name == '⏪')
                                     {
                                         $this->page = 1;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                     {
                                         $this->page--;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '▶️' && $this->maxPage > $this->page)
                                     {
                                         $this->page++;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     elseif($messageReaction->emoji->name == '⏩')
                                     {
                                         $this->page = $this->maxPage;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
+                                        $newEmbed = $this->discord->factory(Embed::class,$this->getQueue());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
                                     $messageReaction->message->deleteReaction(Message::REACT_DELETE_ID, urlencode($messageReaction->emoji->name), $messageReaction->user_id);
@@ -623,6 +637,160 @@ class Shipyard extends CommandHandler implements CommandInterface
                     $ship = Ship::where([['player_id', $this->player->id],['slug', 'LIKE', $this->args[0].'%']])->first();
                     if(!is_null($ship))
                     {
+
+                        if(count($this->args) >= 2 && Str::startsWith('recycle', $this->args[1]))
+                        {
+                            if(count($this->args) >= 3 && is_numeric($this->args[2]) && $this->args[2] > 0)
+                                $qty = (int)$this->args[2];
+                            else
+                                return trans('generic.wrongQuantity', [], $this->player->lang);
+
+                            if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
+                                return trans('generic.busyBuilding', [], $this->player->lang);
+
+                            if($this->player->activeColony->reyclingQueue->count() >= 5)
+                                return trans('shipyard.recyclingQueueIsFull', [], $this->player->lang);
+
+                            if(($this->player->activeColony->reyclingQueue->count() + $qty) > 5)
+                                $qty = 5 - $this->player->activeColony->reyclingQueue->count();
+
+                            $shipCheck = $this->player->activeColony->hasShipById($ship->id);
+                            if($shipCheck)
+                            {
+                                if($qty > $shipCheck->pivot->number)
+                                {
+                                    $missingResString = " ".$ship->name.": ".number_format($qty-$shipCheck->pivot->number);
+                                        return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+                                }
+                                else
+                                {
+                                    //CONFIRM
+                                    $rerollConfirm = trans('shipyard.recyclingConfirm', ['shipName' => $ship->name, 'qty' => $qty], $this->player->lang);
+                                    $embed = [
+                                        'author' => [
+                                            'name' => $this->player->user_name,
+                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                        ],
+                                        //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif1.gif'], //GIF A TROUVER
+                                        "title" => "Stargate",
+                                        "description" => $rerollConfirm,
+                                        'fields' => [
+                                        ],
+                                        'footer' => array(
+                                            'text'  => 'Stargate',
+                                        ),
+                                    ];
+                                    $newEmbed = $this->discord->factory(Embed::class,$embed);
+
+                                    $this->maxTime = time()+180;
+                                    $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($shipCheck,$qty){
+
+                                        $this->closed = false;
+                                        $this->paginatorMessage = $messageSent;
+                                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                            });
+                                        });
+
+                                        $filter = function($messageReaction){
+                                            return $messageReaction->user_id == $this->player->user_id;
+                                        };
+                                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($shipCheck,$qty){
+                                            $messageReaction = $collector->first();
+                                            try{
+                                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                                {
+                                                    $cannotReycleString = '';
+                                                    $this->player->activeColony->ships();
+                                                    $this->player->activeColony->load('reyclingQueue');
+
+                                                    if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
+                                                        $cannotReycleString = trans('generic.busyBuilding', [], $this->player->lang);
+
+                                                    if($this->player->activeColony->reyclingQueue->count() >= 5)
+                                                        $cannotReycleString = trans('shipyard.recyclingQueueIsFull', [], $this->player->lang);
+
+                                                    if(($this->player->activeColony->reyclingQueue->count() + $qty) > 5)
+                                                        $qty = 5 - $this->player->activeColony->reyclingQueue->count();
+
+                                                    $shipCheck = $this->player->activeColony->hasShipById($shipCheck->id);
+                                                    if($shipCheck)
+                                                    {
+                                                        if($qty > $shipCheck->pivot->number)
+                                                        {
+                                                            $missingResString = " ".$shipCheck->name.": ".number_format($qty-$shipCheck->pivot->number);
+                                                            $cannotReycleString = trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+                                                        }
+                                                    }
+
+                                                    if(!empty($cannotReycleString))
+                                                    {
+                                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                                            'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                            "description" => $cannotReycleString
+                                                            ]);
+                                                        $messageReaction->message->addEmbed($newEmbed);
+                                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                                        return;
+                                                    }
+
+                                                    $shipCheck->pivot->number -= $qty;
+                                                    if($shipCheck->pivot->number <= 0)
+                                                        $this->player->activeColony->ships()->detach($shipCheck->id);
+                                                    else
+                                                        $shipCheck->pivot->save();
+
+                                                    $now = Carbon::now();
+                                                    $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startRecyclingShip($shipCheck,$qty));
+                                                    $buildingTime = $now->diffForHumans($endingDate,[
+                                                        'parts' => 3,
+                                                        'short' => true, // short syntax as per current locale
+                                                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                                    ]);
+
+                                                    $embed = [
+                                                        'author' => [
+                                                            'name' => $this->player->user_name,
+                                                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                        ],
+                                                        //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif2.gif'],
+                                                        "title" => "Stargate",
+                                                        "description" => trans('shipyard.reyclingStarted', ['shipName' => $shipCheck->name, 'qty' => $qty, 'time' => $buildingTime], $this->player->lang),
+                                                        'fields' => [
+                                                        ],
+                                                        'footer' => array(
+                                                            'text'  => 'Stargate',
+                                                        ),
+                                                    ];
+                                                    $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                                    $messageReaction->message->addEmbed($newEmbed);
+                                                }
+                                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                                {
+                                                    $newEmbed = $this->discord->factory(Embed::class,[
+                                                        'title' => trans('generic.cancelled', [], $this->player->lang)
+                                                        ]);
+                                                    $messageReaction->message->addEmbed($newEmbed);
+                                                }
+                                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            }
+                                            catch(\Exception $e)
+                                            {
+                                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                            }
+                                        });
+                                    });
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                $missingResString = " ".$ship->name.": ".number_format($qty);
+                                return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+                            }
+                            return;
+                        }
+
                         //Requirement
                         $hasRequirements = true;
 
@@ -639,7 +807,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                         if(!$hasRequirements)
                             return trans('generic.missingRequirements', [], $this->player->lang);
 
-                        if(count($this->args) >= 2 && (int)$this->args[1] > 0)
+                        if(count($this->args) >= 2 && is_numeric($this->args[1]) && $this->args[1] > 0)
                             $qty = (int)$this->args[1];
                         else
                             return trans('generic.wrongQuantity', [], $this->player->lang);
@@ -959,12 +1127,23 @@ class Shipyard extends CommandHandler implements CommandInterface
                 $shipQueueString .= "1x ".$queuedShip->name." - ".$buildTime."\n";
             }
 
+            switch($this->queueType)
+            {
+                case 'recycling':
+                    $embedTitle = trans('shipyard.shipRecyclingQueue', [], $this->player->lang);
+                break;
+                case 'building':
+                    $embedTitle = trans('shipyard.shipQueue', [], $this->player->lang);
+                default:
+                break;
+            }
+
             $embed = [
                 'author' => [
                     'name' => $this->player->user_name,
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
-                "title" => trans('shipyard.shipQueue', [], $this->player->lang),
+                "title" => $embedTitle,
                 "description" => $shipQueueString,
                 'fields' => [],
                 'footer' => array(

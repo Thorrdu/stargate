@@ -75,18 +75,167 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     if(isset($this->args[1]) && (int)$this->args[1] > 0)
                     {
                         $fleet = Fleet::find((int)$this->args[1]);
-                        if(!is_null($fleet) && ($fleet->mission == 'attack' && !is_null($fleet->gateFight)) && ($fleet->player_source_id == $this->player->id || $fleet->player_destination_id == $this->player->id))
+                        if(!is_null($fleet) && (!$fleet->ended || $fleet->mission == 'attack') && (config('stargate.ownerId') == $this->player->id || $fleet->player_source_id == $this->player->id || $fleet->player_destination_id == $this->player->id))
                         {
                             //Specific history
                             switch($fleet->mission)
                             {
                                 case 'attack':
-                                    $this->displayFight($fleet);
+                                    $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleet->arrival_date);
+                                    $now = Carbon::now();
+                                    $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                                        'parts' => 3,
+                                        'short' => true, // short syntax as per current locale
+                                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                    ]);
+
+                                    if(!is_null($fleet->gateFight) && ($fleet->ended || $fleet->returning))
+                                        $this->displayFight($fleet);
+                                    elseif(
+                                        $this->player->id == $fleet->sourcePlayer->id && !$fleet->ended
+                                        ||
+                                        ($this->player->id == $fleet->destinationPlayer->id && !is_null($fleet->gateFight))
+                                    )
+                                    {
+                                        $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleet->arrival_date);
+                                        $now = Carbon::now();
+                                        $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                                            'parts' => 3,
+                                            'short' => true, // short syntax as per current locale
+                                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                        ]);
+
+                                        if($this->player->id == $fleet->sourcePlayer->id)
+                                        {
+                                            if($fleet->returning)
+                                                $status = trans('fleet.returningStatus', [], $this->player->lang);
+                                            else
+                                                $status = trans('fleet.ongoingStatus', [], $this->player->lang);
+
+                                            $fleetDetail = trans('fleet.fleetDetailOwned', [
+                                                'source' => $fleet->sourceColony->name.' ['.$fleet->sourceColony->coordinates->humanCoordinates().'] ('.$fleet->sourcePlayer->user_name.')',
+                                                'destination' => $fleet->destinationColony->name.' ['.$fleet->destinationColony->coordinates->humanCoordinates().'] ('.$fleet->destinationPlayer->user_name.')',
+                                                'mission' => $fleet->mission,
+                                                'status' => $status,
+                                                'fleet' => $fleet->shipsToString(),
+                                                'freightCapacity' => $fleet->capacity,
+                                                'resources' => $fleet->resourcesToString($this->player->lang),
+                                                'duration' => $arrivalDate
+                                            ], $this->player->lang);
+                                        }
+                                        else
+                                        {
+                                            $spy = Technology::where('slug', 'spy')->first();
+                                            $counterSpy = Technology::where('slug', 'counterspy')->first();
+
+                                            $spyLvl = $fleet->sourcePlayer->hasTechnology($spy);
+                                            $counterSpyLvl = $fleet->destinationPlayer->hasTechnology($counterSpy);
+
+                                            if(!$spyLvl)
+                                                $spyLvl = 0;
+                                            if(!$counterSpyLvl)
+                                                $counterSpyLvl = 0;
+
+                                            $fleetString = "\nUNKNOWN";
+                                            if($spyLvl > $counterSpyLvl && ($spyLvl-$counterSpyLvl) >= 1)
+                                                $fleetString = $fleet->shipsToString();
+                                            elseif($spyLvl > $counterSpyLvl && ($spyLvl-$counterSpyLvl) >= 2)
+                                                $fleetString = $fleet->shipsToString(true,$this->player->lang);
+
+                                            $fleetDetail = trans('fleet.fleetDetailArriving', [
+                                                'source' => $fleet->sourceColony->name.' ['.$fleet->sourceColony->coordinates->humanCoordinates().'] ('.$fleet->sourcePlayer->user_name.')',
+                                                'destination' => $fleet->destinationColony->name.' ['.$fleet->destinationColony->coordinates->humanCoordinates().'] ('.$fleet->destinationPlayer->user_name.')',
+                                                'mission' => $fleet->mission,
+                                                'fleet' => $fleetString,
+                                                'duration' => $arrivalDate
+                                            ], $this->player->lang);
+                                        }
+                                        return $fleetDetail;
+                                    }
+                                    else
+                                        return trans('fleet.unknownFleet', [], $this->player->lang);
                                 break;
                                 case 'base':
                                 case 'transport':
                                 case 'scavenge':
                                 case 'spy':
+                                    if(($fleet->returning || $fleet->mission == 'scavenge') && $this->player->id != $fleet->sourcePlayer->id)
+                                        return trans('fleet.unknownFleet', [], $this->player->lang);
+                                    else
+                                    {
+                                        $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleet->arrival_date);
+                                        $now = Carbon::now();
+                                        $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                                            'parts' => 3,
+                                            'short' => true, // short syntax as per current locale
+                                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                        ]);
+                                        if($fleet->returning)
+                                            $status = trans('fleet.returningStatus', [], $this->player->lang);
+                                        else
+                                            $status = trans('fleet.ongoingStatus', [], $this->player->lang);
+
+                                        if($this->player->id == $fleet->sourcePlayer->id)
+                                        {
+                                            if(in_array($fleet->mission,array('spy','scavenge')))
+                                            {
+                                                $fleetString = $fleet->resourcesToString($this->player->lang,true,false);
+                                                $resString = $fleet->resourcesToString($this->player->lang,false,true);
+                                            }
+                                            else
+                                            {
+                                                $fleetString = $fleet->shipsToString();
+                                                $resString = $fleet->resourcesToString($this->player->lang);
+                                            }
+
+                                            $fleetDetail = trans('fleet.fleetDetailOwned', [
+                                                'source' => $fleet->sourceColony->name.' ['.$fleet->sourceColony->coordinates->humanCoordinates().'] ('.$fleet->sourcePlayer->user_name.')',
+                                                'destination' => $fleet->destinationColony->name.' ['.$fleet->destinationColony->coordinates->humanCoordinates().'] ('.$fleet->destinationPlayer->user_name.')',
+                                                'mission' => $fleet->mission,
+                                                'status' => $status,
+                                                'fleet' => $fleetString,
+                                                'freightCapacity' => number_format($fleet->capacity),
+                                                'resources' => $resString,
+                                                'duration' => $arrivalDate
+                                            ], $this->player->lang);
+
+                                        }
+                                        else
+                                        {
+                                            if(in_array($fleet->mission,array('spy')))
+                                                $fleetString = $fleet->resourcesToString($this->player->lang,true,false);
+                                            else
+                                            {
+                                                $spy = Technology::where('slug', 'spy')->first();
+                                                $counterSpy = Technology::where('slug', 'counterspy')->first();
+
+                                                $spyLvl = $fleet->sourcePlayer->hasTechnology($spy);
+                                                $counterSpyLvl = $fleet->destinationPlayer->hasTechnology($counterSpy);
+
+                                                if(!$spyLvl)
+                                                    $spyLvl = 0;
+                                                if(!$counterSpyLvl)
+                                                    $counterSpyLvl = 0;
+
+                                                $fleetString = "UNKNOWN\n";
+                                                if($spyLvl > $counterSpyLvl && ($spyLvl-$counterSpyLvl) >= 1)
+                                                    $fleetString = $fleet->shipsToString();
+                                                elseif($spyLvl > $counterSpyLvl && ($spyLvl-$counterSpyLvl) >= 2)
+                                                    $fleetString = $fleet->shipsToString(true,$this->player->lang);
+                                            }
+
+                                            $fleetDetail = trans('fleet.fleetDetailArriving', [
+                                                'source' => $fleet->sourceColony->name.' ['.$fleet->sourceColony->coordinates->humanCoordinates().'] ('.$fleet->sourcePlayer->user_name.')',
+                                                'destination' => $fleet->destinationColony->name.' ['.$fleet->destinationColony->coordinates->humanCoordinates().'] ('.$fleet->destinationPlayer->user_name.')',
+                                                'mission' => $fleet->mission,
+                                                'status' => $status,
+                                                'fleet' => $fleetString,
+                                                'duration' => $arrivalDate
+                                            ], $this->player->lang);
+                                        }
+                                        return $fleetDetail;
+                                    }
+                                break;
                                 default:
                                     return trans('fleet.unknownFleet', [], $this->player->lang);
                                 break;
@@ -97,18 +246,23 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             return trans('fleet.unknownFleet', [], $this->player->lang);
                     }
 
-                    $endedFleets = Fleet::where([['mission', 'attack'],['returning', true],['player_source_id', $this->player->id]])
-                                        ->orWhere([['mission', 'attack'],['returning', true],['player_destination_id', $this->player->id]])
-                                        ->orWhere([['mission', 'attack'],['ended', true],['player_source_id', $this->player->id]])
-                                        ->orWhere([['mission', 'attack'],['ended', true],['player_destination_id', $this->player->id]])->orderBy('updated_at','DESC')
-                                        ->with('gateFight') // bring along details of the friend
-                                        ->join('gate_fights', 'gate_fights.fleet_id', '=', 'fleets.id')
-                                        ->take(100)->get(['fleets.*']);
-                    if($endedFleets->count() == 0)
+                    $fleetHistory = Fleet::where([['mission', '!=', 'attack'],['ended', false],['player_source_id', $this->player->id]])
+                                        ->orWhere([['mission', '!=', 'attack'],['mission', '!=' ,'scavenge'] ,['returning', false],['ended', false],['player_destination_id', $this->player->id]])
+                                        ->orWhere([['mission', 'attack'],['player_source_id', $this->player->id]])
+                                        ->orWhere([['mission', 'attack'],['player_destination_id', $this->player->id]])
+                                        ->orderBy('created_at','DESC')
+                                        ->take(100)->get();
+                    $this->fleetHistory = $fleetHistory->filter(function ($value){
+                        return $value->mission != 'attack'
+                         || ($value->mission == 'attack' && $value->ended && !is_null($value->gateFight))
+                         || ($value->mission == 'attack' && !$value->ended && $value->player_source_id != $this->player->id)
+                         || ($value->mission == 'attack' && !$value->ended && (!$value->returning || !is_null($value->gateFight)) && $value->player_destination_id == $this->player->id);
+                    });
+
+                    if($this->fleetHistory->count() == 0)
                     {
                         return trans('fleet.emptyHistory', [], $this->player->lang);
                     }
-                    $this->fleetHistory = $endedFleets;
 
                     $this->closed = false;
                     $this->page = 1;
@@ -244,37 +398,34 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $incomingFleetString = '';
                     foreach($this->player->incomingFleets as $incomingFleet)
                     {
-                        if($incomingFleet->player_source_id != $incomingFleet->player_destination_id && !$incomingFleet->returning && $incomingFleet->mission != 'scavenge')
+                        $sourceColony = $incomingFleet->sourceColony;
+                        $destinationColony = $incomingFleet->destinationColony;
+
+                        $arrivalDateCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$incomingFleet->arrival_date);
+                        $arrivalDate = $now->diffForHumans($arrivalDateCarbon,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+
+                        $shipType = trans('generic.ships', [], $this->player->lang);
+                        if($incomingFleet->mission == 'spy')
                         {
-                            $sourceColony = $incomingFleet->sourceColony;
-                            $destinationColony = $incomingFleet->destinationColony;
-
-                            $arrivalDateCarbon = Carbon::createFromFormat("Y-m-d H:i:s",$incomingFleet->arrival_date);
-                            $arrivalDate = $now->diffForHumans($arrivalDateCarbon,[
-                                'parts' => 3,
-                                'short' => true, // short syntax as per current locale
-                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                            ]);
-
-                            $shipType = trans('generic.ships', [], $this->player->lang);
-                            if($incomingFleet->mission == 'spy')
-                            {
-                                $shipCount = 1;
-                                $shipType = trans('generic.probe', [], $this->player->lang);
-                            }
-                            else
-                                $shipCount = $incomingFleet->shipCount();
-
-                            $incomingFleetString .= $arrivalDate.' - '.trans('fleet.incomingFleet', [
-                                                                            'mission' => $incomingFleet->mission,
-                                                                            'shipCount' => $shipCount,
-                                                                            'shipType' => $shipType,
-                                                                            'colonySource' => $sourceColony->name,
-                                                                            'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
-                                                                            'colonyDest' => $destinationColony->name,
-                                                                            'coordinatesDest' => $destinationColony->coordinates->humanCoordinates(),
-                                                                            ], $this->player->lang)."\n";
+                            $shipCount = 1;
+                            $shipType = trans('generic.probe', [], $this->player->lang);
                         }
+                        else
+                            $shipCount = $incomingFleet->shipCount();
+
+                        $incomingFleetString .= $arrivalDate.' - '.trans('fleet.incomingFleet', [
+                                                                        'mission' => $incomingFleet->mission,
+                                                                        'shipCount' => $shipCount,
+                                                                        'shipType' => $shipType,
+                                                                        'colonySource' => $sourceColony->name,
+                                                                        'coordinatesSource' => $sourceColony->coordinates->humanCoordinates(),
+                                                                        'colonyDest' => $destinationColony->name,
+                                                                        'coordinatesDest' => $destinationColony->coordinates->humanCoordinates(),
+                                                                        ], $this->player->lang)."\n";
                     } //dest
                     if(empty($incomingFleetString))
                         $incomingFleetString = trans('fleet.noIncomingFleet', [], $this->player->lang)."\n";
@@ -370,12 +521,11 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                     $this->coordinateDestination = Coordinate::where([["galaxy", $coordinates[0]], ["system", $coordinates[1]], ["planet", $coordinates[2]]])->first();
                 }
+                if(is_null($this->coordinateDestination))
+                    return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
                 if(is_null($this->coordinateDestination->colony))
                     return trans('stargate.neverExploredWorld', [], $this->player->lang);
-
-                if(is_null($this->coordinateDestination))
-                    return trans('stargate.unknownCoordinates', [], $this->player->lang);
 
                 if(!is_null($this->coordinateDestination->colony) && $this->player->user_id != 125641223544373248)
                 {
@@ -435,15 +585,15 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     {
                         if(isset($this->args[$cptRes+1]))
                         {
-                            if((int)$this->args[$cptRes+1] > 0)
-                                $qty = (int)$this->args[$cptRes+1];
+                            if(is_numeric($this->args[$cptRes+1]) && $this->args[$cptRes+1] > 0)
+                                $qty = $this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             if(Str::startsWith('speed',$this->args[$cptRes]))
                             {
-                                if((int)$this->args[$cptRes+1] >= 10 && (int)$this->args[$cptRes+1] <= 100)
-                                    $this->fleetSpeed = (int)$this->args[$cptRes+1];
+                                if($qty >= 10 && $qty <= 100)
+                                    $this->fleetSpeed = (int)$qty;
                                 else
                                     $this->fleetSpeed = 100;
                             }
@@ -456,6 +606,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 });
                                 if($shipExists->count() > 0)
                                 {
+                                    $qty = (int)$qty;
                                     $playerShip = $shipExists->first();
 
                                     $alreadyFound = array_search($playerShip->id, array_column($this->fleetShips, 'id'));
@@ -492,6 +643,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         $ressFound = $bypass = false;
                                         if(Str::startsWith('e2pz',$resourceName) || Str::startsWith('zpm',$resourceName) || Str::startsWith('ZPM',$resourceName))
                                             $resourceName = 'E2PZ';
+
+                                        if($resourceName == 'E2PZ')
+                                            $qty = round($qty,2);
+                                        else
+                                            $qty = (int)$qty;
+
                                         foreach($availableResources as $availableResource)
                                         {
                                             if((Str::startsWith($availableResource,$resourceName) || Str::startsWith($availableResource,strtoupper($resourceName))) && !strstr($this->transportString,$availableResource))
@@ -504,7 +661,11 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 if($resourceName != 'E2PZ' && $resourceName != 'military' && $this->coordinateDestination->colony->{'storage_'.$resourceName} < ($this->fleet->$resourceName))
                                                     return trans('stargate.tradeStorageTooLow', ['resource' => config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName)], $this->player->lang);
 
-                                                $this->transportString .= config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName).': '.number_format($qty)."\n";
+                                                $resQty = number_format($qty);
+                                                if($resourceName == 'E2PZ')
+                                                    $resQty = number_format($qty,2);
+
+                                                $this->transportString .= config('stargate.emotes.'.strtolower($resourceName))." ".ucfirst($resourceName).': '.$resQty."\n";
                                             }
                                             elseif(strstr($this->transportString,$availableResource))
                                                 $bypass = true;
@@ -719,7 +880,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                     $this->player->activeColony->$resource -= $qtyNeeded;
                                                 else
                                                 {
-                                                    $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.number_format(ceil($qtyNeeded-$this->player->activeColony->$resource))], $this->player->lang));
+
+                                                    $resQty = number_format(ceil($qtyNeeded-$this->player->activeColony->$resource));
+                                                    if($resource == 'E2PZ')
+                                                        $resQty = number_format(($qtyNeeded-$this->player->activeColony->$resource),2);
+
+                                                    $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.$resQty], $this->player->lang));
                                                     $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                                     $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                     return;
@@ -727,6 +893,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             }
                                         }
 
+                                        $this->player->activeColony->military -= $this->fleet->crew;
                                         $this->player->activeColony->save();
                                         $this->fleet->save();
                                         //addShipToFleet
@@ -802,15 +969,15 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     {
                         if(isset($this->args[$cptRes+1]))
                         {
-                            if((int)$this->args[$cptRes+1] > 0)
+                            if(is_numeric($this->args[$cptRes+1]) && $this->args[$cptRes+1] > 0)
                                 $qty = (int)$this->args[$cptRes+1];
                             else
                                 return trans('generic.wrongQuantity', [], $this->player->lang);
 
                             if(Str::startsWith('speed',$this->args[$cptRes]))
                             {
-                                if((int)$this->args[$cptRes+1] >= 10 && (int)$this->args[$cptRes+1] <= 100)
-                                    $this->fleetSpeed = (int)$this->args[$cptRes+1];
+                                if($qty >= 10 && $qty <= 100)
+                                    $this->fleetSpeed = (int)$qty;
                                 else
                                     $this->fleetSpeed = 100;
                             }
@@ -1047,7 +1214,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         {
                                             $unitToUpdate = $wraithProbeExists->first();
                                             $unitToUpdate->pivot->number -= 1;
-                                            $unitToUpdate->pivot->save();
+                                            if($unitToUpdate->pivot->number <= 0)
+                                                $this->player->activeColony->units->detach($unitToUpdate->id);
+                                            else
+                                                $unitToUpdate->pivot->save();
                                         }
 
                                         $this->fleet = new Fleet;
@@ -1170,6 +1340,15 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     echo 'CONFIRMED';
                                     $this->player->activeColony->refresh();
 
+                                    if($this->player->activeColony->naqahdah >= $this->travelCost)
+                                        $this->player->activeColony->naqahdah -= $this->travelCost;
+                                    else
+                                    {
+                                        $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost-$this->player->activeColony->naqahdah))], $this->player->lang));
+                                        $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        return;
+                                    }
                                     //CHECK SHIPS
                                     try{
                                         foreach($this->fleetShips as $fleetShip)
@@ -1197,6 +1376,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         }
 
                                         $this->fleet->save();
+                                        $this->player->activeColony->military -= $this->fleet->crew;
+                                        $this->player->activeColony->save();
+
                                         //addShipToFleet
                                         foreach($this->fleetShips as $fleetShip)
                                         {
@@ -1388,24 +1570,96 @@ class FleetCommand extends CommandHandler implements CommandInterface
         $displayList = $this->fleetHistory->skip(10*($this->page -1))->take(10);
 
         $fleetList = '';
-        $fleetList .= "ID - DATE - MISSION - PLAYERS\n";
+        $fleetList .= "ID - ARRIVAL - DESTINATION - MISSION - STATUS\n";
         foreach($displayList as $fleetElem)
         {
-            $fleetDate = $fleetElem->created_at;
-            if($fleetElem->mission == 'attack')
-                $fleetDate = $fleetElem->gateFight->updated_at;
+            switch($fleetElem->mission)
+            {
+                case 'attack':
+                    if($this->player->id == $fleetElem->sourcePlayer->id)
+                    {
+                        $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleetElem->arrival_date);
+                        if(!$fleetArrivalDate->isPast())
+                        {
+                            $now = Carbon::now();
+                            $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                        }
+                        else
+                        {
+                            $arrivalDate = substr($fleetElem->arrival_date,0,16);
+                        }
 
-            if($fleetElem->sourcePlayer->id == $this->player->id)
-                $dest = $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')';
-            else
-                $dest = $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->sourcePlayer->user_name.')';
+                        if($fleetElem->ended)
+                            $fleetStatus = trans('generic.endedf', [], $this->player->lang);
+                        elseif($fleetElem->returning)
+                            $fleetStatus = trans('fleet.returningStatus', [], $this->player->lang);
+                        else
+                            $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
 
-            $fleetList .= trans('fleet.historyLine', [
-                'fleetId' => $fleetElem->id,
-                'date' => $fleetDate,
-                'mission' => ucfirst($fleetElem->mission),
-                'destination' => $dest
-            ], $this->player->lang)."\n";
+                        $fleetList .= trans('fleet.historyLine', [
+                            'fleetId' => $fleetElem->id,
+                            'arrival' => $arrivalDate,
+                            'mission' => ucfirst($fleetElem->mission),
+                            'destination' => $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')',
+                            'status' => $fleetStatus
+                        ], $this->player->lang)."\n";
+                    }
+                    else
+                    {
+                        $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
+
+                        $arrivalDate = substr($fleetElem->arrival_date,0,16);
+                        if($fleetElem->returning || $fleetElem->ended)
+                        {
+                            $fleetStatus = trans('generic.endedf', [], $this->player->lang);
+                            $arrivalDate = substr($fleetElem->gateFight->updated_at,0,16);
+                        }
+                        else
+                        {
+                            $now = Carbon::now();
+                            $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleetElem->arrival_date);
+                            $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                                'parts' => 3,
+                                'short' => true, // short syntax as per current locale
+                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                            ]);
+                        }
+
+                        $fleetList .= trans('fleet.historyLine', [
+                            'fleetId' => $fleetElem->id,
+                            'arrival' => $arrivalDate,
+                            'mission' => ucfirst($fleetElem->mission),
+                            'destination' => $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')',
+                            'status' => $fleetStatus
+                        ], $this->player->lang)."\n";
+                    }
+                break;
+                default:
+                    $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
+                    if($fleetElem->returning)
+                        $fleetStatus = trans('fleet.returningStatus', [], $this->player->lang);
+
+                    $now = Carbon::now();
+                    $fleetArrivalDate = Carbon::createFromFormat("Y-m-d H:i:s",$fleetElem->arrival_date);
+                    $arrivalDate = $now->diffForHumans($fleetArrivalDate,[
+                        'parts' => 3,
+                        'short' => true, // short syntax as per current locale
+                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                    ]);
+
+                    $fleetList .= trans('fleet.historyLine', [
+                        'fleetId' => $fleetElem->id,
+                        'arrival' => $arrivalDate,
+                        'mission' => ucfirst($fleetElem->mission),
+                        'destination' => $fleetElem->destinationColony->name.' ['.$fleetElem->destinationColony->coordinates->humanCoordinates().'] ('.$fleetElem->destinationPlayer->user_name.')',
+                        'status' => $fleetStatus
+                    ], $this->player->lang)."\n";
+                break;
+            }
         }
 
         $embed = [
@@ -1439,14 +1693,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if($this->player->lang == 'fr')
                 {
                     $this->fightPages = explode('__Passe n',$fightMessage);
-                    $lastSteps = explode('__Résultat du',$this->fightPages[count($this->fightPages)-1]);
+                    $lastSteps = explode('__Résultat de la',$this->fightPages[count($this->fightPages)-1]);
                     $this->fightPages[count($this->fightPages)-1] = $lastSteps[0];
                     $this->fightPages[] = $lastSteps[1];
                     foreach($this->fightPages as $key => $value){
                         if($key > 0 && $key != count($this->fightPages)-1)
                             $this->fightPages[$key] = '__Passe n'.$value;
                         elseif($key = count($this->fightPages)-1)
-                            $this->fightPages[$key] = '__Résultat du'.$value;
+                            $this->fightPages[$key] = '__Résultat de la'.$value;
                     }
                 }
                 elseif($this->player->lang == 'en')
