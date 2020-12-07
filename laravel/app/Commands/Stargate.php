@@ -796,9 +796,9 @@ class Stargate extends CommandHandler implements CommandInterface
                                     if(!in_array($resource,array('military','E2PZ')))
                                         $capacityNeeded += $qty;
 
-                                    $resQty = number_format($availableResource);
+                                    $resQty = number_format($qty);
                                     if($availableResource == 'E2PZ')
-                                        $resQty = number_format($availableResource,2);
+                                        $resQty = number_format($qty,2);
 
                                     $tradeString .= config('stargate.emotes.'.strtolower($resource))." ".ucfirst($resource).': '.$resQty."\n";
 
