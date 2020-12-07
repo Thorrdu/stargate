@@ -110,7 +110,7 @@ class Exploration extends Model
                     $resValue = $this->colonySource->$varProd * rand(1,3);
 
                 $newResValue = $this->colonySource->$resType + $resValue;
-                if(($this->colonySource->{'storage_'.$resType}*1.25) <= $newResValue)
+                if(isset($this->colonySource->{'storage_'.$resType}) && ($this->colonySource->{'storage_'.$resType}*1.25) <= $newResValue)
                     $newResValue = $this->colonySource->{'storage_'.$resType}*1.25;
 
                 $this->colonySource->$resType = $newResValue;
