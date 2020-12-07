@@ -468,7 +468,7 @@ class Colony extends CommandHandler implements CommandInterface
 
                 $warning = '';
 
-                $incomingFleets = Fleet::Where([['player_source_id','!=',$this->player->id],['fleets.returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']])->count();
+                $incomingFleets = Fleet::Where([['player_source_id','!=',$this->player->id],['player_destination_id',$this->player->id],['fleets.returning', false],['fleets.ended', false],['fleets.mission', '!=' , 'scavenge']])->count();
                 if($incomingFleets > 0)
                     $warning = "\n\n".trans('colony.incomingFleetWarning', [], $this->player->lang)."\n\n";
 

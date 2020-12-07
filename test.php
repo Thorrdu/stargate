@@ -31,6 +31,18 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+$colonies = Colony::all();
+foreach($colonies as $colony)
+{
+
+	$colonyToRefresh->calcProd();
+	$colonyToRefresh->save();
+
+}
+
+
+
+die();
 $try =                 $coordinate = Coordinate::leftJoin('colonies', function($join) {
 	$join->on('coordinates.id', '=', 'colonies.coordinate_id');
   })
