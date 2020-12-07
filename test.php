@@ -35,9 +35,9 @@ $colonies = Colony::all();
 foreach($colonies as $colony)
 {
 
-	$colonyToRefresh->calcProd();
-	$colonyToRefresh->save();
-
+	$colony->calcProd(); 
+	$colony->save();
+ 
 }
 
 
