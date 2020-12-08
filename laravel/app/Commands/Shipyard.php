@@ -177,7 +177,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                         ->where([['fleet_ship.ship_id', $ship->id],['fleets.ended', false]])
                         ->count();
 
-                        if($shipOnColonies > 0 && $shipInFleet > 0)
+                        if($shipOnColonies > 0 || $shipInFleet > 0)
                             return trans('shipyard.impossibleRemoval', [], $this->player->lang);
                         else
                         {
