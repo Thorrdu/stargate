@@ -1075,7 +1075,7 @@ class Colony extends Model
         $forceMax = false;
 
         try{
-            if($source = 'vote')
+            if($source == 'vote')
             {
                 $forceMax = true;
                 $categoryWeights = [
