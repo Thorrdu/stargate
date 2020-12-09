@@ -50,8 +50,29 @@ class Exploration extends Model
         elseif($randomEvent <= 65)
         {
             //Craft aléatoire
-            $randomUnit = Unit::where('id','<', 6)->get()->random();
-            $resValue = rand(1,4);
+            if($this->player->points_total > 25000)
+            {
+                $maxValue = 15;
+                $maxUnit = 7;
+            }
+            if($this->player->points_total > 10000)
+            {
+                $maxValue = 10;
+                $maxUnit = 7;
+            }
+            elseif($this->player->points_total > 5000)
+            {
+                $maxValue = 6;
+                $maxUnit = 7;
+            }
+            else
+            {
+                $maxValue = 4;
+                $maxUnit = 6;
+            }
+            $randomUnit = Unit::where('id','<', $maxUnit)->get()->random();
+
+            $resValue = rand(1,$maxValue);
             $resourceString = ucfirst(trans('craft.'.$randomUnit->slug.'.name', [], $this->player->lang)).': '.number_format($resValue);
 
             $this->exploration_result = true;
@@ -85,6 +106,7 @@ class Exploration extends Model
             //Ressource aléatoire
             $resources = array( 'iron' => 3,
                         'gold' => 2,
+                        'military' => 1,
                         'quartz' => 1,
                         'naqahdah' => 1,
                         'E2PZ' => 1);

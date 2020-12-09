@@ -61,7 +61,7 @@ class Vote extends CommandHandler implements CommandInterface
                         case 'Artifact':
                             $this->player->vote_boxes--;
                             $this->player->save();
-                            $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 12, 'maxEnding' => 12])->toString($this->player->lang);
+                            $newArtifact = $this->player->activeColony->generateArtifact(['forceBonus' => true,'minEnding' => 12, 'maxEnding' => 12, 'source' => 'vote'])->toString($this->player->lang);
                             return trans('vote.voteBoxOpening', ['artifact' => $newArtifact], $this->player->lang);
                         default:
 

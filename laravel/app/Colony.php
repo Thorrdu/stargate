@@ -66,7 +66,6 @@ class Colony extends Model
         });
     }
 
-
     public function player(){
         return $this->belongsTo('App\Player');
     }
@@ -1069,15 +1068,35 @@ class Colony extends Model
 
     public function generateArtifact($options = [])
     {
+        if(isset($options['source']))
+            $source = $options['source'];
+        else
+            $source = 'any';
+        $forceMax = false;
+
         try{
-            $categoryWeights = [
-                'Time' => 20,
-                'Production' => 15,
-                'maxSpace' => 15,
-                'ColonyMax' => 10,
-                'DefenceLure' => 5,
-                'Price' => 3,
-            ];
+            if($source = 'vote')
+            {
+                $forceMax = true;
+                $categoryWeights = [
+                    'Time' => 10,
+                    'Production' => 15,
+                    'DefenceLure' => 5,
+                    'Price' => 15,
+                ];
+            }
+            else
+            {
+                $categoryWeights = [
+                    'Time' => 20,
+                    'Production' => 15,
+                    'maxSpace' => 15,
+                    'ColonyMax' => 10,
+                    'DefenceLure' => 5,
+                    'Price' => 3,
+                ];
+            }
+
 
             if(isset($options['bonusCategories']))
                 $bonusCategories = $options['bonusCategories'];
@@ -1120,6 +1139,9 @@ class Colony extends Model
             $maxBonus = 5 + $iaTechBonus;
             $minBonus = 2 + $iaTechBonus;
 
+            if($forceMax)
+                $maxBonus += 2;
+
             $newArtifact->bonus_category = PlayerUtility::rngWeighted($bonusCategories,$categoryWeights);
 
             if(in_array($newArtifact->bonus_category,['Price']))
@@ -1141,6 +1163,9 @@ class Colony extends Model
                         $bonusCoef = rand($minBonus,$maxBonus)/100;
                     break;
                 }
+                if($forceMax)
+                    $bonusCoef = $maxBonus/100;
+
                 if($isBonus)
                     $newArtifact->bonus_coef = 1-$bonusCoef;
                 else
@@ -1150,6 +1175,9 @@ class Colony extends Model
             {
                 $newArtifact->bonus_type = $bonusTypes[rand(0,count($bonusTypes)-1)];
                 $bonusCoef = rand($minBonus,$maxBonus)/100;
+                if($forceMax)
+                    $bonusCoef = $maxBonus/100;
+
                 if($isBonus)
                     $newArtifact->bonus_coef = 1-$bonusCoef;
                 else
@@ -1166,6 +1194,8 @@ class Colony extends Model
             {
                 $newArtifact->bonus_resource = $bonusResources[rand(0,count($bonusResources)-1)];
                 $bonusCoef = rand($minBonus,$maxBonus)/100;
+                if($forceMax)
+                    $bonusCoef = $maxBonus/100;
                 if($isBonus)
                     $newArtifact->bonus_coef = 1+$bonusCoef;
                 else
