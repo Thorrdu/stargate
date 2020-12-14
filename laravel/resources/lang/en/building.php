@@ -106,6 +106,6 @@ return [
     'emptyQueue' => 'Building queue is empty.',
     'queueList' => 'Building queue',
     'clearedQueue' => 'The queue has been cleared.',
-    'howToClearQueue' => "`!building queue clear` to clear the queue.",
+    'howToClearQueue' => "`!build queue clear` to clear the queue.",
     'queueCanceled' => ":colony - **:buildingName** could not be built. Reason: :reason.\nAs a result, the building queue has been cleared."
 ];

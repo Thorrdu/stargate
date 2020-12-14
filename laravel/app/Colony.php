@@ -1053,7 +1053,7 @@ class Colony extends Model
                     $reminder->reminder = trans("building.queueCanceled", [
                         'colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']',
                         'buildingName' => trans('building.'.$buildingToBuild->slug.'.name', [], $this->player->lang),
-                        'reason'=>[$canceledReason]
+                        'reason'=> $canceledReason
                     ], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
