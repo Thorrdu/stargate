@@ -1229,10 +1229,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             else
                                                 $unitToUpdate->pivot->save();
                                         }
-                                        else
-                                        {
-                                            echo 'aa';
-                                        }
 
                                         $this->fleet = new Fleet;
                                         $this->fleet->mission = 'spy';
