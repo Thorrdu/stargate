@@ -36,10 +36,11 @@ use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Discord\Parts\Channel\Message;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Discord\Parts\User\Activity;
-
+use Discord\Parts\User\User;
 
 global $upTimeStart;
 $upTimeStart = Carbon::now();
