@@ -1137,7 +1137,7 @@ class Colony extends Model
                             if($wantedLvl > 1)
                                 $energyPrice -= $buildingToBuild->getEnergy($wantedLvl-1);
                             $energyLeft = ($this->energy_max - $this->energy_used);
-                            $missingEnergy = $energyPrice - $energyLeft;
+                            $missingEnergy = number_format($energyPrice - $energyLeft);
                             if($missingEnergy > 0)
                                 $canceledReason = trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
                         }

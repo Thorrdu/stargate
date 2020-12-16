@@ -108,5 +108,5 @@ return [
     'queueList' => 'File d\'attente',
     'clearedQueue' => 'File d\'attente à été vidée.',
     'howToClearQueue' => "`!build queue clear` pour vider la file d'attente.",
-    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Rasion: :reason.\nSuite à cela, la liste d'attente à été vidée."
+    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Cause: :reason.\nSuite à cela, la liste d'attente à été vidée."
 ];
