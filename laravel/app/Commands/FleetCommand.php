@@ -1218,7 +1218,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         $this->player->activeColony->save();
 
                                         $wraithProbeExists = $this->player->activeColony->units->filter(function ($value) use($wraithProbe){
-                                            return $value->slug == $wraithProbe->id;
+                                            return $value->id == $wraithProbe->id;
                                         });
                                         if($wraithProbeExists->count() > 0)
                                         {
@@ -1228,6 +1228,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 $this->player->activeColony->units->detach($unitToUpdate->id);
                                             else
                                                 $unitToUpdate->pivot->save();
+                                        }
+                                        else
+                                        {
+                                            echo 'aa';
                                         }
 
                                         $this->fleet = new Fleet;
