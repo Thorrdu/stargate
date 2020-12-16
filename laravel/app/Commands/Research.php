@@ -330,7 +330,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             if(!is_null($technology->ship_bonus))
                             {
-                                $bonus = 10($technology->ship_bonus*100);
+                                $bonus = 100-($technology->ship_bonus*100);
                                 $bonusString .= "-{$bonus}% ".trans('generic.shipTime', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->ship_consumption_bonus))
