@@ -330,7 +330,7 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             if(!is_null($technology->ship_bonus))
                             {
-                                $bonus = 100-($technology->ship_bonus*100);
+                                $bonus = 10($technology->ship_bonus*100);
                                 $bonusString .= "-{$bonus}% ".trans('generic.shipTime', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->ship_consumption_bonus))
@@ -340,22 +340,22 @@ class Research extends CommandHandler implements CommandInterface
                             }
                             if(!is_null($technology->ship_speed_bonus))
                             {
-                                $bonus = 100-($technology->ship_speed_bonus*100);
+                                $bonus = ($technology->ship_speed_bonus*100)-100;
                                 $bonusString .= "{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->fire_power_bonus))
                             {
-                                $bonus = 100-($technology->fire_power_bonus*100);
+                                $bonus = ($technology->fire_power_bonus*100)-100;
                                 $bonusString .= "{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->hull_bonus))
                             {
-                                $bonus = 100-($technology->hull_bonus*100);
+                                $bonus = ($technology->hull_bonus*100)-100;
                                 $bonusString .= "{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->shield_bonus))
                             {
-                                $bonus = 100-($technology->shield_bonus*100);
+                                $bonus = ($technology->shield_bonus*100)-100;
                                 $bonusString .= "{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
                             }
 
