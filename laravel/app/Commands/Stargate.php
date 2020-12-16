@@ -457,7 +457,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $exploration->player_id = $this->player->id;
                                     $exploration->colony_source_id = $this->player->activeColony->id;
                                     $exploration->coordinate_destination_id = $this->coordinateDestination->id;
-                                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(60,240));
+                                    $exploration->exploration_end = Carbon::now()->addMinutes(rand(120,240));
                                     $exploration->save();
 
                                     $embed = [
@@ -1660,12 +1660,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                             {
                                                 $totalResource = 0;
                                                 foreach(config('stargate.resources') as $resource)
-                                                {
                                                     $totalResource += $this->coordinateDestination->colony->$resource;
-                                                }
-                                                $claimAll = false;
-                                                if($totalCapacity >= ($totalResource*0.5))
-                                                    $claimAll = true;
 
                                                 foreach(config('stargate.resources') as $resource)
                                                 {
@@ -1673,12 +1668,12 @@ class Stargate extends CommandHandler implements CommandInterface
                                                     {
                                                         $ratio = $this->coordinateDestination->colony->$resource / $totalResource;
                                                         $maxClaimable = ceil($this->coordinateDestination->colony->$resource * 0.5);
+                                                        $stealable = floor($totalCapacity*$ratio);
 
-                                                        $claimed = 0;
-                                                        if($claimAll)
-                                                            $claimed = $maxClaimable;
+                                                        if($stealable <= $maxClaimable)
+                                                            $claimed = $stealable;
                                                         else
-                                                            $claimed = floor($totalCapacity*$ratio);
+                                                            $claimed = $maxClaimable;
 
                                                         if($claimed > 0)
                                                         {

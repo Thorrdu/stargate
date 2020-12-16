@@ -68,7 +68,7 @@ class Player extends Model
 
     public function reminders()
     {
-        return $this->hasMany('App\Reminder');
+        return $this->hasMany('App\Reminder')->orderBy('reminders.reminder_date','ASC');
     }
 
     public function alliance()

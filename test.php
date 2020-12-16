@@ -22,6 +22,7 @@ use App\Fleet;
 use App\ShipPart;
 use App\Unit;
 use App\Utility\FuncUtility;
+use App\Utility\PlayerUtility;
 use Faker\Factory as Faker;
 use App\Utility\TopUpdater;
 use Carbon\Carbon;
@@ -30,15 +31,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
-
-$colonies = Colony::all();
-foreach($colonies as $colony)
-{
-
-	$colony->calcProd(); 
-	$colony->save();
- 
-}
 
 
 

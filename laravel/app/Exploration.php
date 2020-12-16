@@ -25,7 +25,7 @@ class Exploration extends Model
     {
         $randomEvent = rand(1,100);
 
-        if($randomEvent <= 14)
+        if($randomEvent <= 20)
         {
             $this->exploration_result = false;
             $this->save();
@@ -47,28 +47,18 @@ class Exploration extends Model
 
             return trans('stargate.exploreSucessArtifact', ['coordinates' => $this->coordinateDestination->humanCoordinates(), 'artifact' => $newArtifact], $this->player->lang);
         }
-        elseif($randomEvent <= 65)
+        elseif($randomEvent <= 55)
         {
             //Craft aléatoire
             if($this->player->points_total > 25000)
             {
-                $maxValue = 15;
-                $maxUnit = 7;
-            }
-            if($this->player->points_total > 10000)
-            {
-                $maxValue = 10;
-                $maxUnit = 7;
-            }
-            elseif($this->player->points_total > 5000)
-            {
                 $maxValue = 6;
-                $maxUnit = 7;
+                $maxUnit = 3;
             }
             else
             {
                 $maxValue = 4;
-                $maxUnit = 6;
+                $maxUnit = 2;
             }
             $randomUnit = Unit::where('id','<', $maxUnit)->get()->random();
 
@@ -111,11 +101,10 @@ class Exploration extends Model
                         'naqahdah' => 1,
                         'E2PZ' => 1);
             $resNumberWeight = array(
-                1 => 5,
-                2 => 4,
-                3 => 3,
-                4 => 2,
-                5 => 1,
+                1 => 4,
+                2 => 3,
+                3 => 2,
+                4 => 1,
             );
             $resNumber = FuncUtility::rand_with_weight($resNumberWeight);
 
@@ -127,7 +116,7 @@ class Exploration extends Model
                 $varProd = 'production_'.$resType;
 
                 if($resType == 'E2PZ')
-                    $resValue = rand(2,6);
+                    $resValue = rand(2,5);
                 else
                     $resValue = $this->colonySource->$varProd * rand(1,3);
 

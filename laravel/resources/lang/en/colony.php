@@ -28,4 +28,9 @@ return [
     'artifactRerollConfirm' => "Do you realy want to alterate this artifact ?".
                                 "\nThe operation will take 1h.",
     'artefactRerolled' => "Your artifact is under alteration, The result will be known in 1h.",
+    'buildingQueueEnded' => 'The building queue is now empty on :colony',
+    'recyclingQueueEnded' => 'The ship recycling queue is now empty on :colony',
+    'shipQueueEnded' => 'The ship queue is now empty on :colony',
+    'defenceQueueEnded' => 'The defence queue is now empty on :colony',
+    'craftQueueEnded' => 'The craft queue is now empty on :colony',
 ];

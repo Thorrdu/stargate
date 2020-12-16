@@ -163,11 +163,10 @@ class Build extends CommandHandler implements CommandInterface
                                 {
                                     if($buildinQueued->id == $bufferedId)
                                     {
-                                        echo PHP_EOL.$buildinQueued->pivot->level;
+                                        //echo PHP_EOL.$buildinQueued->pivot->level;
                                         /*$buildinQueued->pivot->level--;
                                         $buildinQueued->save();*/
                                         //$this->player->activeColony->buildingQueue()->where('buildings.id', $buildinQueued->id)->wherePivot('level', $buildinQueued->pivot->level)->detach();
-
                                     }
                                 }
                                 $this->player->activeColony->checkBuildingQueue();
@@ -272,26 +271,6 @@ class Build extends CommandHandler implements CommandInterface
                             if(Str::startsWith('remove', $this->args[1]))
                                 $removal = true;
 
-                            if(!$removal)
-                            {
-                                //Requirement
-                                $hasRequirements = true;
-                                foreach($building->requiredTechnologies as $requiredTechnology)
-                                {
-                                    $currentLvl = $this->player->hasTechnology($requiredTechnology);
-                                    if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
-                                        $hasRequirements = false;
-                                }
-                                foreach($building->requiredBuildings as $requiredBuilding)
-                                {
-                                    $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
-                                    if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
-                                        $hasRequirements = false;
-                                }
-                                if(!$hasRequirements)
-                                    return trans('generic.missingRequirements', [], $this->player->lang);
-                            }
-
                             $wantedLvl = 1;
                             $currentLvl = $this->player->activeColony->hasBuilding($building);
                             if($currentLvl && !$removal)
@@ -340,6 +319,23 @@ class Build extends CommandHandler implements CommandInterface
 
                             if(!$removal)
                             {
+                                //Requirement
+                                $hasRequirements = true;
+                                foreach($building->requiredTechnologies as $requiredTechnology)
+                                {
+                                    $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                                    if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                                        $hasRequirements = false;
+                                }
+                                foreach($building->requiredBuildings as $requiredBuilding)
+                                {
+                                    $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                                    if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                                        $hasRequirements = false;
+                                }
+                                if(!$hasRequirements)
+                                    return trans('generic.missingRequirements', [], $this->player->lang);
+
                                 if(!is_null($building->level_max) && $wantedLvl > $building->level_max)
                                 {
                                     return trans('building.buildingMaxed', [], $this->player->lang);

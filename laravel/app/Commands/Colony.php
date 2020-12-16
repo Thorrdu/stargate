@@ -260,9 +260,6 @@ class Colony extends CommandHandler implements CommandInterface
                                 $this->player->active_colony_id = $coordinateSwitch->colony->id;
                                 $this->player->save();
 
-                                $colony = $this->player->activeColony->buildings->filter(function ($value) {
-                                    return $value->id == $this->player->activeColony->id;
-                                });
                                 $colonyArr = array_filter(
                                     $this->player->colonies->toArray(),
                                     function ($colony) {

@@ -68,7 +68,7 @@ class TopUpdater
                 $player->points_military = round($militaryPoint/1000);
                 $player->points_defence = round($defencePoints/1000);
                 $player->points_building = round($buildingPoints/1000);
-                $player->points_total += $player->points_building + $player->points_defence + $player->points_military;
+                $player->points_total += $player->points_building + $player->points_craft + $player->points_defence + $player->points_military;
 
                 $researchPoints = 0;
                 foreach($player->technologies as $technology)

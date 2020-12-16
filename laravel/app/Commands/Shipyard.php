@@ -1060,6 +1060,10 @@ class Shipyard extends CommandHandler implements CommandInterface
                         $requirementString .= ' '.config('stargate.emotes.cancel').")\n";
                 }
 
+                $ownedUnits = $this->player->activeColony->hasShip($ship);
+                if(!$ownedUnits)
+                    $ownedUnits = 0;
+
                 if($hasRequirements)
                 {
                     $firePower = $ship->fire_power;
@@ -1082,7 +1086,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                     $speedString = trans('shipyard.speed', ['speed' => config('stargate.emotes.speed').' '.number_format($ship->speed*$speedBonus,2)], $this->player->lang);
 
                     $embed['fields'][] = array(
-                        'name' => $ship->name,
+                        'name' => $ship->name.' ('.number_format($ownedUnits).')',
                         'value' => "\nSlug: `".$ship->slug."`\n - ".
                                 trans('generic.duration', [], $this->player->lang).": ".$shipTime."\n".trans('generic.price', [], $this->player->lang).": ".
                                 $shipPrice."\n".$firePowerString."\n".$shieldString."\n".$hullString."\n".$capacityString."\n".$speedString."\n".$crewString,
@@ -1092,7 +1096,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                 else
                 {
                     $embed['fields'][] = array(
-                        'name' => $ship->name,
+                        'name' => $ship->name.' ('.number_format($ownedUnits).')',
                         'value' => $requirementString,
                         'inline' => true
                     );

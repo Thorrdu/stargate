@@ -28,4 +28,9 @@ return [
     'artifactRerollConfirm' => "Êtes vous certain de vouloir altérer cet artefact ?".
                                 "\nL'opération prendra 1h.",
     'artefactRerolled' => "L'artefact est en cours d'altération, le nouveau résultat sera connu dans 1h.",
+    'buildingQueueEnded' => "La file d'attente des constructions est désormais vide sur :colony",
+    'recyclingQueueEnded' => "La file d'attente des recyclages est terminée sur :colony",
+    'shipQueueEnded' => "La file d'attente des vaisseaux est terminée sur :colony",
+    'defenceQueueEnded' => "La file d'attente des défenses est terminée sur :colony",
+    'craftQueueEnded' => "La file d'attente des crafts est terminée sur :colony",
 ];

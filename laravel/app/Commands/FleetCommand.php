@@ -1205,10 +1205,20 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             return;
                                         }
 
+                                        $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
+                                        $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
+                                        if(!$wraithProbeNumber || $wraithProbeNumber == 0)
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+
                                         $this->player->activeColony->save();
 
-                                        $wraithProbeExists = $this->player->activeColony->units->filter(function ($value){
-                                            return $value->slug == 'wraithProbe';
+                                        $wraithProbeExists = $this->player->activeColony->units->filter(function ($value,$wraithProbe){
+                                            return $value->slug == $wraithProbe->id;
                                         });
                                         if($wraithProbeExists->count() > 0)
                                         {
@@ -1229,11 +1239,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         $this->fleet->departure_date = Carbon::now();
                                         $this->fleet->crew = 0;
                                         $this->fleet->capacity = 0;
-
                                         //Get arrivalDate
                                         $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, 50);
                                         $this->fleet->arrival_date = Carbon::now()->add($travelTime.'s');
                                         $this->fleet->save();
+
+                                        $this->fleet->units()->attach([$unitToUpdate->id => ['number' => 1]]);
 
                                         $now = Carbon::now();
                                         $fleetDuration = $now->diffForHumans($this->fleet->arrival_date,[

@@ -385,8 +385,12 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                     $firePowerString = trans('defence.firePower', ['firepower' => number_format($firePower)], $this->player->lang);
                     $hullString = trans('defence.hull', ['hull' => number_format($hull)], $this->player->lang);
 
+                    $ownedUnits = $this->player->activeColony->hasDefence($defence);
+                    if(!$ownedUnits)
+                        $ownedUnits = 0;
+
                     $embed['fields'][] = array(
-                        'name' => $defence->id.' - '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
+                        'name' => $defence->id.' - '.trans('defence.'.$defence->slug.'.name', [], $this->player->lang).' ('.number_format($ownedUnits).')',
                         'value' => trans('defence.'.$defence->slug.'.description', [], $this->player->lang)."\nSlug: `".$defence->slug."`\n - ".
                                    trans('generic.duration', [], $this->player->lang).": ".$defenceTime."\n".trans('generic.price', [], $this->player->lang).": ".
                                    $defencePrice."\n".$firePowerString."\n".$hullString,

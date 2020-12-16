@@ -59,7 +59,7 @@ class Fleet extends Model
 
         $travelTime /= $speed;
 
-        return $travelTime*1.2;
+        return $travelTime*1.5;
     }
 
     public function outcome()
@@ -469,7 +469,8 @@ class Fleet extends Model
                     }
                     else
                     {
-                        $this->ended = true;
+                        if(!$this->ended)
+                            $this->arrival_date = $now->addSeconds($newArrivalDate);
                         $this->save();
                     }
                 break;
@@ -739,7 +740,7 @@ class Fleet extends Model
 
         $defenceForces = FuncUtility::array_orderby($defenceForces, 'fire_power', SORT_DESC, 'shield', SORT_DESC, 'hull', SORT_DESC); //'type', SORT_ASC,
 
-        $winState = false;
+        $winState = $draw = false;
 
         $fleetReportFR = trans('fleet.battleSummary', [
             'playerSource' => $this->sourcePlayer->user_name,
@@ -770,16 +771,8 @@ class Fleet extends Model
 
         for( $phase = 1 ; $phase <= 14 ; $phase++ )
         {
-            if(empty($attackForces))
-            {
-                $winState = false;
+            if(empty($attackForces) || empty($defenceForces))
                 break;
-            }
-            if(empty($defenceForces))
-            {
-                $winState = true;
-                break;
-            }
 
             $fleetDamage = floor(array_sum(array_column($attackForces, 'total_fire_power')));
             $defenceDamage = floor(array_sum(array_column($defenceForces, 'total_fire_power')));
@@ -1052,6 +1045,14 @@ class Fleet extends Model
                 'lostDefenderUnits' => $this->summarizeForces($lostDefenceForces, 'en', false)
             ], 'en');
         }
+        if(empty($attackForces))
+            $winState = false;
+        elseif(empty($defenceForces))
+            $winState = true;
+        else{
+            $winState = false;
+            $draw = true;
+        }
 
         //final update fleet ships
         $newCapacity = 0;
@@ -1115,9 +1116,6 @@ class Fleet extends Model
             {
                 $totalResource += $this->destinationColony->$resource;
             }
-            $claimAll = false;
-            if($this->capacity >= ($totalResource*0.5))
-                $claimAll = true;
 
             foreach(config('stargate.resources') as $resource)
             {
@@ -1125,12 +1123,12 @@ class Fleet extends Model
                 {
                     $ratio = $this->destinationColony->$resource / $totalResource;
                     $maxClaimable = ceil($this->destinationColony->$resource * 0.5);
+                    $stealable = floor($this->capacity*$ratio);
 
-                    $claimed = 0;
-                    if($claimAll)
-                        $claimed = $maxClaimable;
+                    if($stealable <= $maxClaimable)
+                        $claimed = $stealable;
                     else
-                        $claimed = floor($this->capacity*$ratio);
+                        $claimed = $maxClaimable;
 
                     if($claimed > 0)
                     {
@@ -1160,7 +1158,6 @@ class Fleet extends Model
             $attackLog->save();
 
             $this->destinationColony->save();
-            $this->save();
 
             $winReport = trans('fleet.attackArrived', [
                 'playerDest' => $this->destinationPlayer->user_name,
@@ -1240,7 +1237,8 @@ class Fleet extends Model
             $attackLog->save();
 
             $this->destinationColony->save();
-            $this->save();
+            if(!$draw)
+                $this->ended = true;
 
             $fleetLostReport = trans('fleet.attackArrived', [
                 'playerDest' => $this->destinationPlayer->user_name,

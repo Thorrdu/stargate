@@ -380,8 +380,12 @@ class Craft extends CommandHandler implements CommandInterface
 
                 if($hasRequirements == true)
                 {
+                    $ownedUnits = $this->player->activeColony->hasCraft($unit);
+                    if(!$ownedUnits)
+                        $ownedUnits = 0;
+
                     $embed['fields'][] = array(
-                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang),
+                        'name' => $unit->id.' - '.trans('craft.'.$unit->slug.'.name', [], $this->player->lang).' ('.number_format($ownedUnits).')',
                         'value' => trans('craft.'.$unit->slug.'.description', [], $this->player->lang)."\nSlug: `".$unit->slug."`\n - ".trans('generic.duration', [], $this->player->lang).": ".$unitTime."\n".trans('generic.price', [], $this->player->lang).": ".$unitPrice."\n".$capacityString.$speedString,
                         'inline' => true
                     );

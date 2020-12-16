@@ -72,6 +72,7 @@ class Empire extends CommandHandler implements CommandInterface
                     foreach (config('stargate.resources') as $resource)
                     {
                         ${$resource.'TotalProduction'} = 0;
+                        ${$resource.'Total'} = 0;
                     }
                     ${'militaryTotalProduction'} = 0;
                     ${'e2pzTotalProduction'} = 0;
@@ -95,6 +96,7 @@ class Empire extends CommandHandler implements CommandInterface
                                 $resourcesValue .= "\n";
 
                             ${$resource.'TotalProduction'} += $colony['production_'.$resource];
+                            ${$resource.'Total'} += $colony->$resource;
                             $resourcesValue .= config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($colony->$resource)." (".number_format($colony['production_'.$resource])."/h)";
                         }
 
@@ -120,9 +122,12 @@ class Empire extends CommandHandler implements CommandInterface
 
                     $totalHourlyProdString = "";
                     $totalDailyProdString = "";
+                    $totalResourcesString = "";
                     foreach (config('stargate.resources') as $resource)
                     {
                         $totalProd = ${$resource.'TotalProduction'};
+                        $totalRes = ${$resource.'Total'};
+                        $totalResourcesString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalRes);
                         $totalHourlyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd)."/h";
                         $totalDailyProdString .= "\n".config('stargate.emotes.'.$resource).' '.ucfirst($resource).": ".number_format($totalProd*24)."/d";
                     }
@@ -135,6 +140,11 @@ class Empire extends CommandHandler implements CommandInterface
                     $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60),2)."/h";
                     $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
 
+                    $embed['fields'][] = array(
+                        'name' => 'Total',
+                        'value' => $totalResourcesString,
+                        'inline' => true
+                    );
                     $embed['fields'][] = array(
                         'name' => 'Hourly',
                         'value' => $totalHourlyProdString,
@@ -170,7 +180,7 @@ class Empire extends CommandHandler implements CommandInterface
                         else
                             $colonyName .= $colony->name.' ['.$colony->coordinates->humanCoordinates().']';
 
-                        $colonyString = '';
+                        $colonyString = trans('generic.buildingSpace', [], $this->player->lang).": ".($colony->space_max - $colony->space_used).' / '.$colony->space_max."\n";
                         foreach($colony->buildings as $building)
                         {
                             $colonyString .= 'Lvl '.$building->pivot->level.' - '.trans('building.'.$building->slug.'.name', [], $this->player->lang)."\n";
@@ -223,6 +233,16 @@ class Empire extends CommandHandler implements CommandInterface
                                 $currentLevel = 0;
                             $colonyString .= "\n".trans('colony.buildingUnderConstruction', [], $this->player->lang)."\n"."Lvl ".($currentLevel+1)." - ".trans('building.'.$colony->activeBuilding->slug.'.name', [], $this->player->lang)."\n".$buildingTime."\n";
 
+                            $buildingQueueString = "";
+                            $queueIndex = 1;
+                            foreach($colony->buildingQueue as $queuedBuilding)
+                            {
+                                $buildingQueueString .= "\n".$queueIndex.'. Lvl '.$queuedBuilding->pivot->level.' - '.trans('building.'.$queuedBuilding->slug.'.name', [], $this->player->lang);
+                                $queueIndex++;
+                            }
+                            if(!empty($buildingQueueString))
+                                $colonyString .= "\n".trans('building.queueList',[],$this->player->lang).$buildingQueueString."\n";
+
                         }
 
                         if($colony->craftQueues->count() > 0){
@@ -240,7 +260,20 @@ class Empire extends CommandHandler implements CommandInterface
                         }
 
                         if($colony->defenceQueues->count() > 0){
-                            $queueString = "";
+                            $queuedShips = $colony->shipQueues()->limit(1)->get();
+                            foreach($queuedShips as $queuedShip)
+                            {
+                                $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$queuedShip->pivot->ship_end);
+                                $buildingTime = $now->diffForHumans($buildingEnd,[
+                                    'parts' => 3,
+                                    'short' => true, // short syntax as per current locale
+                                    'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                ]);
+                                $colonyString .= "\n".trans('colony.shipQueue', [], $this->player->lang)."\n".$queuedShip->name." - ".$buildingTime."\n";
+                            }
+                        }
+
+                        if($colony->defenceQueues->count() > 0){
                             $queuedDefences = $colony->defenceQueues()->limit(1)->get();
                             foreach($queuedDefences as $queuedDefence)
                             {

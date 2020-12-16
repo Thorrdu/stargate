@@ -185,13 +185,34 @@ class Colony extends Model
     public function hasDefence(Defence $defence)
     {
         try{
-            $defenceExists = $this->units->filter(function ($value) use($defence){
+            $defenceExists = $this->defences->filter(function ($value) use($defence){
                 return $value->id == $defence->id;
             });
             if($defenceExists->count() > 0)
             {
                 $foundDefence = $defenceExists->first();
                 return $foundDefence->pivot->number;
+            }
+            else
+                return false;
+        }
+        catch(\Exception $e)
+        {
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            return false;
+        }
+    }
+
+    public function hasShip(Ship $ship)
+    {
+        try{
+            $shipExists = $this->ships->filter(function ($value) use($ship){
+                return $value->id == $ship->id;
+            });
+            if($shipExists->count() > 0)
+            {
+                $foundShip = $shipExists->first();
+                return $foundShip->pivot->number;
             }
             else
                 return false;
@@ -586,6 +607,22 @@ class Colony extends Model
                 DB::table('craft_queues')->where([['craft_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('craftQueues');
 
+                if($this->player->notification && $this->craftQueues->count() == 0)
+                {
+                    $colonyArr = array_filter(
+                        $this->player->colonies->toArray(),
+                        function ($colony) {
+                            return $colony['id'] == $this->id;
+                        }
+                    );
+                    $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans('colony.craftQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
             }
         }
         catch(\Exception $e)
@@ -625,6 +662,22 @@ class Colony extends Model
                 DB::table('defence_queues')->where([['defence_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('defenceQueues');
 
+                if($this->player->notification && $this->defenceQueues->count() == 0)
+                {
+                    $colonyArr = array_filter(
+                        $this->player->colonies->toArray(),
+                        function ($colony) {
+                            return $colony['id'] == $this->id;
+                        }
+                    );
+                    $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans('colony.defenceQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
             }
         }
         catch(\Exception $e)
@@ -660,7 +713,24 @@ class Colony extends Model
                 }
                 $this->save();
                 DB::table('colony_reycling_queue')->where([['ship_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
-                $this->load('shipQueues');
+                $this->load('reyclingQueue');
+
+                if($this->player->notification && $this->reyclingQueue->count() == 0)
+                {
+                    $colonyArr = array_filter(
+                        $this->player->colonies->toArray(),
+                        function ($colony) {
+                            return $colony['id'] == $this->id;
+                        }
+                    );
+                    $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans('colony.recyclingQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
             }
         }
         catch(\Exception $e)
@@ -700,6 +770,22 @@ class Colony extends Model
                 DB::table('ship_queues')->where([['ship_end', '<=', Carbon::now()],['colony_id',$this->id]])->delete();
                 $this->load('shipQueues');
 
+                if($this->player->notification && $this->shipQueues->count() == 0)
+                {
+                    $colonyArr = array_filter(
+                        $this->player->colonies->toArray(),
+                        function ($colony) {
+                            return $colony['id'] == $this->id;
+                        }
+                    );
+                    $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans('colony.shipQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
             }
         }
         catch(\Exception $e)
@@ -942,8 +1028,8 @@ class Colony extends Model
                 else
                 {
                     $this->buildings()->attach([$building->id => ['level' => 1]]);
-                    $this->load('buildings');
                 }
+                $this->load('buildings');
 
                 if($building->id == 20) //terraformeur
                     $this->space_max += 30;
@@ -960,13 +1046,21 @@ class Colony extends Model
 
             if($this->player->notification)
             {
+                $colonyArr = array_filter(
+                    $this->player->colonies->toArray(),
+                    function ($colony) {
+                        return $colony['id'] == $this->id;
+                    }
+                );
+                $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
                 try{
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
                     if($removal)
-                        $reminder->reminder = trans("building.buildingRemoved", ['colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
+                        $reminder->reminder = trans("building.buildingRemoved", ['colony' => $colonyNumber.' '.$this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
                     else
-                        $reminder->reminder = $this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$newLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
+                        $reminder->reminder = $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] **Lvl ".$newLvl." - ".trans('building.'.$building->slug.'.name', [], $this->player->lang)."** ".trans("reminder.isDone", [], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
                 }
@@ -1002,6 +1096,24 @@ class Colony extends Model
                     $canceledReason = trans('building.missingSpace', [], $this->player->lang);
                 else
                 {
+
+                    //Requirement
+                    $hasRequirements = true;
+                    foreach($buildingToBuild->requiredTechnologies as $requiredTechnology)
+                    {
+                        $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                        if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    foreach($buildingToBuild->requiredBuildings as $requiredBuilding)
+                    {
+                        $currentLvl = $this->hasBuilding($requiredBuilding);
+                        if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                            $hasRequirements = false;
+                    }
+                    if(!$hasRequirements)
+                        $canceledReason = trans('generic.missingRequirements', [], $this->player->lang);
+
                     $hasEnough = true;
                     $coef = $this->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
 
@@ -1030,7 +1142,7 @@ class Colony extends Model
                                 $canceledReason = trans('building.notEnoughEnergy', ['missingEnergy' => $missingEnergy], $this->player->lang);
                         }
 
-                        if( !is_null($this->player->active_technology_id) && $buildingToBuild->id == 7 && $this->id == $this->player->active_technology_colony_id)
+                        if(!is_null($this->player->active_technology_id) && $buildingToBuild->id == 7 && $this->id == $this->player->active_technology_colony_id)
                             $canceledReason = trans('generic.busyBuilding', [], $this->player->lang);
                         elseif( $this->defenceQueues->count() > 0 && $buildingToBuild->id == 15 )
                             $canceledReason = trans('generic.busyBuilding', [], $this->player->lang);
@@ -1040,6 +1152,7 @@ class Colony extends Model
                         {
                             $this->startBuilding($buildingToBuild,$wantedLvl,false);
                             $this->buildingQueue()->where('buildings.id', $buildingToBuild->id)->wherePivot('level', $buildingToBuild->pivot->level)->detach();
+                            $this->load('buildingQueue');
                         }
                     }
                 }
@@ -1055,6 +1168,22 @@ class Colony extends Model
                         'buildingName' => trans('building.'.$buildingToBuild->slug.'.name', [], $this->player->lang),
                         'reason'=> $canceledReason
                     ], $this->player->lang);
+                    $reminder->player_id = $this->player->id;
+                    $reminder->save();
+                }
+                elseif($this->player->notification && $this->buildingQueue->count() == 0)
+                {
+                    $colonyArr = array_filter(
+                        $this->player->colonies->toArray(),
+                        function ($colony) {
+                            return $colony['id'] == $this->id;
+                        }
+                    );
+                    $colonyNumber = trans('generic.colony', [], $this->player->lang).' n° '.(key($colonyArr)+1).':';
+
+                    $reminder = new Reminder;
+                    $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->reminder = trans('colony.buildingQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
                 }
