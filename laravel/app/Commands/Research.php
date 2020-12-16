@@ -341,22 +341,22 @@ class Research extends CommandHandler implements CommandInterface
                             if(!is_null($technology->ship_speed_bonus))
                             {
                                 $bonus = ($technology->ship_speed_bonus*100)-100;
-                                $bonusString .= "{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
+                                $bonusString .= "+{$bonus}% ".trans('generic.shipSpeed', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->fire_power_bonus))
                             {
                                 $bonus = ($technology->fire_power_bonus*100)-100;
-                                $bonusString .= "{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
+                                $bonusString .= "+{$bonus}% ".trans('generic.firePower', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->hull_bonus))
                             {
                                 $bonus = ($technology->hull_bonus*100)-100;
-                                $bonusString .= "{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
+                                $bonusString .= "+{$bonus}% ".trans('generic.hull', [], $this->player->lang)."\n";
                             }
                             if(!is_null($technology->shield_bonus))
                             {
                                 $bonus = ($technology->shield_bonus*100)-100;
-                                $bonusString .= "{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
+                                $bonusString .= "+{$bonus}% ".trans('generic.shield', [], $this->player->lang)."\n";
                             }
 
                             if(empty($bonusString))
