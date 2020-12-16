@@ -36,7 +36,6 @@ use Discord\Parts\User\Game;
 use Discord\Parts\Embed\Embed;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
-use Discord\Parts\Channel\Message;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Discord\Parts\User\Activity;
@@ -345,23 +344,21 @@ $discord->on('ready', function ($discord) use($beta){
                 $reminder->delete();
             else
             {
-                $userExist = $discord->users->get('id',$reminder->player->user_id);
+                $userExist = $discord->factory(\Discord\Parts\User\User::class, [
+                    'id' => $reminder->player->user_id,
+                ]);
+                //$userExist = $discord->users->get('id',$reminder->player->user_id);
                 if(!is_null($userExist))
                 {
                     if(!is_null($reminder->embed))
                     {
                         $reminderEmbed = json_decode($reminder->embed,true);
                         $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
-                        $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
-                            if(!is_null($message))
-                                $reminder->delete();
-                        });
+                        $userExist->sendMessage('', false, $newEmbed);
                     }
                     else
-                        $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
-                            if(!is_null($message))
-                                $reminder->delete();
-                        });
+                        $userExist->sendMessage($reminder->reminder);
+                    $reminder->delete();
                 }
             }
         }
