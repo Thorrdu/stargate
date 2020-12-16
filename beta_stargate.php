@@ -40,7 +40,7 @@ use Discord\Parts\Channel\Message;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Discord\Parts\User\Activity;
-
+use Discord\Parts\User\User;
 
 global $upTimeStart;
 $upTimeStart = Carbon::now();
@@ -278,7 +278,7 @@ $discord->on('ready', function ($discord) use($beta){
         });
     }
 
-    $discord->loop->addPeriodicTimer(30, function () use ($discord,$beta) {   
+    $discord->loop->addPeriodicTimer(5, function () use ($discord,$beta) {   
 
         $playersVoted = Player::Where('vote_flag',true)->get();
         foreach($playersVoted as $playerVoted)
@@ -345,24 +345,25 @@ $discord->on('ready', function ($discord) use($beta){
                 $reminder->delete();
             else
             {
-                $userExist = $discord->users->get('id',$reminder->player->user_id);
-                if(!is_null($userExist))
-                {
-                    if(!is_null($reminder->embed))
+                $discord->users->fetch($reminder->player->user_id)->done(function(User $userExist) use($reminder,$discord){
+                    if(!is_null($userExist))
                     {
-                        $reminderEmbed = json_decode($reminder->embed,true);
-                        $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
-                        $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
-                            if(!is_null($message))
-                                $reminder->delete();
-                        });
+                        if(!is_null($reminder->embed))
+                        {
+                            $reminderEmbed = json_decode($reminder->embed,true);
+                            $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
+                            $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
+                                if(!is_null($message))
+                                    $reminder->delete();
+                            });
+                        }
+                        else
+                            $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
+                                if(!is_null($message))
+                                    $reminder->delete();
+                            });
                     }
-                    else
-                        $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
-                            if(!is_null($message))
-                                $reminder->delete();
-                        });
-                }
+                });
             }
         }
     });
