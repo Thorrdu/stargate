@@ -615,12 +615,12 @@ class Fleet extends Model
                 'type' => 'ship',
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
-                'fire_power' => $ship->fire_power * $attackerFireCoef,
-                'total_fire_power' => $ship->fire_power * $attackerFireCoef * $ship->pivot->number,
-                'shield' => $ship->shield * $attackerShieldCoef,
-                'hull' => $ship->hull * $attackerHullCoef,
-                'shield_left' => $ship->shield * $attackerShieldCoef,
-                'hull_left' => $ship->hull * $attackerHullCoef
+                'fire_power' => ceil($ship->fire_power * $attackerFireCoef),
+                'total_fire_power' => ceil($ship->fire_power * $attackerFireCoef) * $ship->pivot->number,
+                'shield' => ceil($ship->shield * $attackerShieldCoef),
+                'hull' => ceil($ship->hull * $attackerHullCoef),
+                'shield_left' => ceil($ship->shield * $attackerShieldCoef),
+                'hull_left' => ceil($ship->hull * $attackerHullCoef)
             );
         }
 
@@ -658,7 +658,7 @@ class Fleet extends Model
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
                 'fire_power' => ceil($firepower),
-                'total_fire_power' => $firepower * $ship->pivot->number,
+                'total_fire_power' => ceil($firepower) * $ship->pivot->number,
                 'shield' => ceil($shield),
                 'hull' => ceil($hull),
                 'shield_left' => ceil($shield),
@@ -673,12 +673,12 @@ class Fleet extends Model
                 'type' => 'defence',
                 'item' => $defence,
                 'quantity' => $defence->pivot->number,
-                'fire_power' => $defence->fire_power * $defenderFireCoef,
-                'total_fire_power' => $defence->fire_power * $defenderFireCoef * $defence->pivot->number,
+                'fire_power' => ceil($defence->fire_power * $defenderFireCoef),
+                'total_fire_power' => ceil($defence->fire_power * $defenderFireCoef) * $defence->pivot->number,
                 'shield' => 0,
-                'hull' => $defence->hull * $defenderHullCoef,
+                'hull' => ceil($defence->hull * $defenderHullCoef),
                 'shield_left' => 0,
-                'hull_left' => $defence->hull * $defenderHullCoef
+                'hull_left' => ceil($defence->hull * $defenderHullCoef)
             );
         }
 
