@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '1.1.5',
+    'version' => '1.1.6',
     'ownerId' => '125641223544373248',
     'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
