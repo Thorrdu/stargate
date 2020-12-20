@@ -1151,7 +1151,11 @@ class Colony extends Model
                         elseif(empty($canceledReason))
                         {
                             $this->startBuilding($buildingToBuild,$wantedLvl,false);
-                            $this->buildingQueue()->where('buildings.id', $buildingToBuild->id)->wherePivot('level', $buildingToBuild->pivot->level)->detach();
+
+                            DB::table('colony_buildings_queue')
+                            ->where([['colony_id', $this->id], ['building_id', $buildingToBuild->id], ['level', $buildingToBuild->pivot->level]])
+                            ->delete();
+
                             $this->load('buildingQueue');
                         }
                     }
