@@ -172,12 +172,21 @@ class Shipyard extends CommandHandler implements CommandInterface
                         ->where('ship_id', $ship->id)
                         ->count();
 
+                        $shipQueue = DB::table('ship_queues')
+                        ->where('ship_id', $ship->id)
+                        ->count();
+
                         $shipInFleet = DB::table('fleet_ship')
                         ->join('fleets', 'fleets.id', '=', 'fleet_ship.fleet_id')
                         ->where([['fleet_ship.ship_id', $ship->id],['fleets.ended', false]])
                         ->count();
 
-                        if($shipOnColonies > 0 || $shipInFleet > 0)
+                        $shipInFleet = DB::table('fleet_ship')
+                        ->join('fleets', 'fleets.id', '=', 'fleet_ship.fleet_id')
+                        ->where([['fleet_ship.ship_id', $ship->id],['fleets.ended', false]])
+                        ->count();
+
+                        if($shipOnColonies > 0 || $shipInFleet > 0 || $shipQueue > 0)
                             return trans('shipyard.impossibleRemoval', [], $this->player->lang);
                         else
                         {
