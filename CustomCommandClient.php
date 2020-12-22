@@ -87,6 +87,9 @@ class myDiscordCommandClient extends Discord
                     return;
                 }
 
+                if(!is_null($message->channel->guild_id) && ($message->channel->guild_id >> 22) % $this->commandClientOptions['discordOptions']['shardCount'] != $this->commandClientOptions['discordOptions']['shardId'])
+                    return;
+
                 $dmChannel = false;
                 $prefix = $this->commandClientOptions['prefix'];
                 if(!is_null($message->channel->guild_id))

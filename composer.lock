@@ -1749,12 +1749,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/teamreflex/DiscordPHP.git",
-                "reference": "ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4"
+                "reference": "044e4cac82c3c4a65aaac7449551b2965b6632f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/teamreflex/DiscordPHP/zipball/ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4",
-                "reference": "ac9cc84edcf689dd156c81e38bd1b098c8d0d9a4",
+                "url": "https://api.github.com/repos/teamreflex/DiscordPHP/zipball/044e4cac82c3c4a65aaac7449551b2965b6632f4",
+                "reference": "044e4cac82c3c4a65aaac7449551b2965b6632f4",
                 "shasum": ""
             },
             "require": {
@@ -1807,7 +1807,7 @@
                 }
             ],
             "description": "An unofficial API to interact with the voice and text service Discord.",
-            "time": "2020-11-22T22:51:16+00:00"
+            "time": "2020-11-27T04:58:16+00:00"
         },
         {
             "name": "trafficcophp/bytebuffer",
