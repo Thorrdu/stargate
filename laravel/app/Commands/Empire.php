@@ -75,6 +75,7 @@ class Empire extends CommandHandler implements CommandInterface
                         ${$resource.'Total'} = 0;
                     }
                     ${'militaryTotalProduction'} = 0;
+                    ${'militaryTotal'} = 0;
                     ${'e2pzTotalProduction'} = 0;
 
                     foreach($this->player->colonies as $key => $colony)
@@ -106,6 +107,7 @@ class Empire extends CommandHandler implements CommandInterface
 
                             ${'militaryTotalProduction'} += $colony->production_military;
                             ${'e2pzTotalProduction'} += $colony->production_e2pz;
+                            ${'militaryTotal'} += $colony->military;
 
                             $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format(floor($colony->military))." (".number_format($colony->production_military)."/h)";
                             $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($colony->E2PZ,2)." (".number_format($colony->production_e2pz)."/w)";
@@ -133,6 +135,7 @@ class Empire extends CommandHandler implements CommandInterface
                     }
 
                     $totalMilProd = ${'militaryTotalProduction'};
+                    $totalResourcesString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format(${'militaryTotal'});
                     $totalHourlyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd)."/h";
                     $totalDailyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd*24)."/d";
 
