@@ -101,8 +101,6 @@ $discord->on('ready', function ($discord) use($beta){
         if($rowExists == 0)
         {
             $usrCount = $discord->users->count();
-            //if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
-                //$usrCount += 135000;
 
             DB::table('configuration')->insert([
                 'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
@@ -278,7 +276,7 @@ $discord->on('ready', function ($discord) use($beta){
         });
     }
 
-    $discord->loop->addPeriodicTimer(30, function () use ($discord,$beta) {   
+    $discord->loop->addPeriodicTimer(15, function () use ($discord,$beta) {   
 
         $playersVoted = Player::Where('vote_flag',true)->get();
         foreach($playersVoted as $playerVoted)
@@ -335,35 +333,44 @@ $discord->on('ready', function ($discord) use($beta){
         $discord->updatePresence($game);*/
 
         $dateNow = Carbon::now();
-        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
+        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get()->take(10);
         $totalReminders = $reminders->count();
         echo PHP_EOL."CHECK REMINDER: {$totalReminders}";
 
         foreach($reminders as $reminder)
         {  
-            if($reminder->player->npc == 1)
+            if($reminder->tried)
                 $reminder->delete();
             else
             {
-                $discord->users->fetch($reminder->player->user_id)->done(function(User $userExist) use($reminder,$discord){
-                    if(!is_null($userExist))
-                    {
-                        if(!is_null($reminder->embed))
+                $reminder->tried = true;
+                $reminder->save();
+                if($reminder->player->npc == 1)
+                    $reminder->delete();
+                else
+                {
+                    $discord->users->fetch($reminder->player->user_id)->done(function(User $userExist) use($reminder,$discord){
+                        if(!is_null($userExist))
                         {
-                            $reminderEmbed = json_decode($reminder->embed,true);
-                            $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
-                            $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
-                                if(!is_null($message))
-                                    $reminder->delete();
-                            });
+                            if(!is_null($reminder->embed))
+                            {
+                                $reminderEmbed = json_decode($reminder->embed,true);
+                                $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
+                                $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
+                                    //if(!is_null($message))
+                                        $reminder->delete();
+                                });
+                            }
+                            else
+                                $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
+                                    //if(!is_null($message))
+                                        $reminder->delete();
+                                });
                         }
                         else
-                            $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
-                                if(!is_null($message))
-                                    $reminder->delete();
-                            });
-                    }
-                });
+                            $reminder->delete();
+                    });
+                }
             }
         }
     });

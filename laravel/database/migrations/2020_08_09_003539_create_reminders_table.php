@@ -17,6 +17,7 @@ class CreateRemindersTable extends Migration
             $table->increments('id');
             $table->integer('player_id')->unsigned()->nullable();
             $table->foreign('player_id')->references('id')->on('players');
+            $table->boolean('tried')->default(false);
             $table->longText('reminder')->nullable();
             $table->json('embed')->nullable();
             $table->timestamp('reminder_date')->nullable();
