@@ -84,7 +84,7 @@ class Dakara extends CommandHandler implements CommandInterface
                             'name' => $this->player->user_name,
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
-                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/enabledStargate.jpg'],
+                        'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/dakara-inactive.png'],
                         "title" => trans('building.dakara-super-weapon.name', [], $this->player->lang),
                         "description" => trans('dakara.howTo', [], $this->player->lang),
                         'fields' => [
