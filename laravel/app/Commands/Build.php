@@ -44,10 +44,7 @@ class Build extends CommandHandler implements CommandInterface
                 if(empty($this->args) || Str::startsWith('list', $this->args[0]))
                 {
                     echo PHP_EOL.'Execute Build';
-                    if($this->player->activeColony->id == $this->player->colonies[0]->id)
-                        $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
-                    else
-                        $this->buildingList = Building::Where('type', 'Energy')->orWhere([['type','Production'],['id','!=',19]])->orderBy('Type','ASC')->get();//Pas l usine Asuran
+                    $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
                     $this->buildingListType = trans('generic.productionBuildings',[],$this->player->lang);
 
                     $this->closed = false;
@@ -117,7 +114,10 @@ class Build extends CommandHandler implements CommandInterface
                                                 $this->buildingListType = trans('generic.storageBuildings',[],$this->player->lang);
                                             break;
                                             case 'researchBuilding':
-                                                $this->buildingList = Building::where('type','Science')->get();
+                                                if($this->player->activeColony->id == $this->player->colonies[0]->id)
+                                                    $this->buildingList = Building::where('type','Science')->get();
+                                                else
+                                                    $this->buildingList = Building::where([['type','Science'],['id','!=',19]])->get();//Pas l usine Asuran
                                                 $this->buildingListType = trans('generic.scienceBuildings',[],$this->player->lang);
                                             break;
                                             case 'military':
