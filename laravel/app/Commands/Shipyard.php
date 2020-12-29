@@ -710,8 +710,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                                 {
                                                     $cannotReycleString = '';
-                                                    $this->player->activeColony->ships->refresh();
-                                                    $this->player->activeColony->reyclingQueue->refresh();
+                                                    $this->player->activeColony->refresh();
 
                                                     if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
                                                         $cannotReycleString = trans('generic.busyBuilding', [], $this->player->lang);
