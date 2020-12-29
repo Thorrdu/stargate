@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '1.1.6',
+    'version' => '1.2',
     'ownerId' => '125641223544373248',
     'resources' => ['iron','gold','quartz','naqahdah'],
     'base_prod' => ['iron' => 20, 'gold' => 10, 'quartz' => 5, 'naqahdah' => 2, 'e2pz' => 10],
@@ -35,7 +35,7 @@ return [
     ],
     'galaxy' => ['maxGalaxies' => 7, 'maxSystems' => 100, 'maxPlanets' => 10],
     'travelCost' => ['sameSystem' => 0.2, 'perSystem' => 0.5, 'perGalaxy' => 2],
-    'maxProdTime' => 720, //12h
+    'maxProdTime' => 1440, //24h
     'maxColonies' => 7,
     'maxHourly' => 24,
     'gateFight' => ['StrongWeak' => 0],
@@ -46,4 +46,5 @@ return [
         'bonusProduction' => 1.30,
         'bonusTime' => 0.8,
     ],
+    'maxCollectionTime' => 300000,
 ];

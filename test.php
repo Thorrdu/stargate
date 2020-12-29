@@ -33,6 +33,45 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 
 
+$gateFights = DB::table('gate_fights')
+            ->groupBy('player_id_source')
+            ->orderBy(DB::raw('count(player_id_source)', 'DESC'))
+            ->get('*');
+            //->lists('player_id_source');
+
+echo '<pre>';
+print_r($gateFights);
+echo '</pre>';
+
+die();
+
+$forceUnit = array('shield' => 112539, 'shield_left' => 112539);
+
+$damTaken = 0;
+$damage = 43108;
+for($phase = 1; $phase < 15 ; $phase++)
+{
+
+	if($forceUnit['shield_left'] < $forceUnit['shield'] && $phase > 1 && $phase < 12)
+		$forceUnit['shield_left'] += (($forceUnit['shield']-$forceUnit['shield_left']) * 0.1) * (12-$phase);
+
+	echo PHP_EOL;
+	print_r($forceUnit);
+
+	if($forceUnit['shield_left'] > 0)
+	{
+		if($forceUnit['shield_left'] < $damage)
+			$damTaken = $forceUnit['shield_left'];
+		else
+			$damTaken = $damage;
+	}
+	else
+		$damTaken = 0;
+
+		echo PHP_EOL.'Passe: '.$phase.' '.$damTaken;
+		
+	$forceUnit['shield_left'] -= $damTaken;
+}
 
 die();
 $try =                 $coordinate = Coordinate::leftJoin('colonies', function($join) {
@@ -299,7 +338,7 @@ foreach ($players as $player) {
 /*
 
 $newPlayer = new Player;
-$newPlayer->user_id = 125641223544373248;
+$newPlayer->user_id = config('stargate.ownerId');
 $newPlayer->user_name = 'Thorrdu';
 $newPlayer->ban = false;
 $newPlayer->votes = 0;
@@ -310,10 +349,10 @@ echo $newPlayer->id;
 $newPlayer->addColony();*/
 
 //$post = Player::find(1);
-//$playerByDiscord = Player::where('user_id', 125641223544373248);
+//$playerByDiscord = Player::where('user_id', config('stargate.ownerId'));
 /*
 try{
-	$player = Player::where('user_id', 125641223544373248)->firstOrFail();
+	$player = Player::where('user_id', config('stargate.ownerId'))->firstOrFail();
 	$buildingToBuild = Building::find(2);
 	$player->activeColony->startBuilding($buildingToBuild);
 }
@@ -324,7 +363,7 @@ catch(\Exception $e)
 
 /*
 try{
-	$player = Player::where('user_id', 125641223544373248)->firstOrFail();
+	$player = Player::where('user_id', config('stargate.ownerId'))->firstOrFail();
 	//print_r($player->activeColony->buildings[0]->attributesToArray());
 
 	foreach($player->activeColony->buildings as $building)
@@ -421,7 +460,7 @@ catch(\Exception $e)
 }
 /*
 try{
-	$playerByDiscordost = Player::where('user_id', 125641223544373248)->firstOrFail();
+	$playerByDiscordost = Player::where('user_id', config('stargate.ownerId'))->firstOrFail();
 
 	//print_r($playerByDiscordost->attributesToArray());
 	//echo count($playerByDiscordost->colonies).' colonies';
@@ -442,7 +481,7 @@ catch(\Exception $e)
 }*/
 
 /*
-$player = Player::with('colonies')->where('user_id', 125641223544373248)->firstOrFail();
+$player = Player::with('colonies')->where('user_id', config('stargate.ownerId'))->firstOrFail();
 $player->votes = $player->votes+1;
 $player->save();*/
 /*

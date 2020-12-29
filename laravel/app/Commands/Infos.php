@@ -25,7 +25,7 @@ class Infos extends CommandHandler implements CommandInterface
                 'name' => "Stargate",
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
-            "title" => "Stargate",
+            "title" => "Infos",
             "description" => trans('infos.description', [], 'en'),
             'fields' => [
                 [
@@ -45,7 +45,7 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Shards',
-                    'value' => "{$shardDisplay}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
+                    'value' => "{($shardDisplay+1)}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
                     'inline' => true
                 ],
                 [

@@ -25,7 +25,7 @@ class Profile extends CommandHandler implements CommandInterface
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
             /*
-            if($this->player->user_id == 125641223544373248 && count($this->args) >= 1)
+            if($this->player->user_id == config('stargate.ownerId') && count($this->args) >= 1)
             {
                 $player = Player::where('user_id', $this->args[0])->first();
                 $this->player = $player;
@@ -134,7 +134,7 @@ class Profile extends CommandHandler implements CommandInterface
                             $filter = function($messageReaction){
                                 return $messageReaction->user_id == $this->player->user_id;
                             };
-                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                                 $messageReaction = $collector->first();
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -189,7 +189,7 @@ class Profile extends CommandHandler implements CommandInterface
                             $filter = function($messageReaction){
                                 return $messageReaction->user_id == $this->player->user_id;
                             };
-                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                                 $messageReaction = $collector->first();
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.confirm'))

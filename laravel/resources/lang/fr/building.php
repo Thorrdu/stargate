@@ -82,16 +82,23 @@ return [
         'name' => 'Terraformeur',
         'description' => "Par procédé de terraformation, cette usine modifie l'aspect de votre planète pour agrandir l'espace constructible"
     ],
-
+    'dakara-super-weapon' => [
+        'name' => 'Super-arme de Dakara',
+        'description' => "En utilisant le réseau des portes des étoiles comme catalyseur, la super-arme de Dakara envoi une puissante impulsion destructrice, capable de réduire toute matière à ses éléments les plus basiques et ce, peu importe où dans l'univers."
+                        ."\nAvec la bonne configuration, cette arme peut vous permettre de réduire les défenses adverses en poussière."
+                        ."\nIl va de soit qu'un tel système requiert une quantité astronomique de puissance."
+                        ."\n\nDistance d'action: 2 systèmes ^ niveau du bâtiment."
+                        ."\nConsultez `!help dakara` pour plus d'informations sur les effets de la super-arme."
+    ],
     'hiddenBuilding' => '-- Bâtiment caché --',
     'unDiscovered' => 'Non découvert',
     'unknownBuilding' => 'Bâtiment inconnu...',
-    'asuranRestriction' => 'Ce bâtiment n\'est disponbile que sur votre planète mère.',
+    'asuranRestriction' => 'Ce bâtiment n\'est disponible que sur votre planète mère.',
     'noActiveBuilding' => 'Aucun bâtiment en cours de construction...',
     'buildingCanceled' => 'Construction annulée, la majorité des ressources ont pu être récupérées. 25% des ressources ont été perdues.',
     'howTo' => "Construisez avec `!build :id confirm` ou `!build :slug confirm`\n\n:description",
     'buildingList' => 'Liste des bâtiments',
-    'genericHowTo' => "Pour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
+    'genericHowTo' => "Utilisez les réactions sous ce message pour accéder aux bâtiments des autres types.\nPour voir le détail d'un bâtiment: `!build [ID/Slug]`\nPour commencer la construction d\'un bâtiment utilisez `!build [ID/Slug] confirm`\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
     'notEnoughEnergy' => "Il vous manque :missingEnergy énergie pour allimenter ce bâtiment.",
     'alreadyBuilding' => 'Un bâtiment est déjà en construction. **Lvl :level :name** sera terminé dans **:time**',
@@ -108,5 +115,7 @@ return [
     'queueList' => 'File d\'attente',
     'clearedQueue' => 'File d\'attente à été vidée.',
     'howToClearQueue' => "`!build queue clear` pour vider la file d'attente.",
-    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Cause: :reason.\nSuite à cela, la liste d'attente à été vidée."
+    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Cause: :reason.\nSuite à cela, la liste d'attente à été vidée.",
+    'estimatedQueuedTotal' => 'Temps total estimé: :totalTime',
+    'cancelBuildConfirm' => "Etes vous certain de vouloir annuler la construction en cours ?\n25% des ressources investies lors de la construction seront perdues."
 ];

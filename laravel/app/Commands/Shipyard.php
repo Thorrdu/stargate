@@ -133,7 +133,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith('rename', $this->args[0]) && count($this->args) >= 2)
@@ -415,7 +415,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                             $filter = function($messageReaction){
                                 return $messageReaction->user_id == $this->player->user_id;
                             };
-                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                                 $messageReaction = $collector->first();
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -549,7 +549,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith('queue', $this->args[0]))
@@ -638,7 +638,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 else
@@ -681,7 +681,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                         ],
                                         //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif1.gif'], //GIF A TROUVER
-                                        "title" => "Stargate",
+                                        "title" => "Shipyard",
                                         "description" => $rerollConfirm,
                                         'fields' => [
                                         ],
@@ -704,14 +704,14 @@ class Shipyard extends CommandHandler implements CommandInterface
                                         $filter = function($messageReaction){
                                             return $messageReaction->user_id == $this->player->user_id;
                                         };
-                                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($shipCheck,$qty){
+                                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($shipCheck,$qty){
                                             $messageReaction = $collector->first();
                                             try{
                                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                                 {
                                                     $cannotReycleString = '';
-                                                    $this->player->activeColony->ships();
-                                                    $this->player->activeColony->load('reyclingQueue');
+                                                    $this->player->activeColony->ships->refresh();
+                                                    $this->player->activeColony->reyclingQueue->refresh();
 
                                                     if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
                                                         $cannotReycleString = trans('generic.busyBuilding', [], $this->player->lang);
@@ -763,7 +763,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                                                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                                         ],
                                                         //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif2.gif'],
-                                                        "title" => "Stargate",
+                                                        "title" => "Shipyard",
                                                         "description" => trans('shipyard.reyclingStarted', ['shipName' => $shipCheck->name, 'qty' => $qty, 'time' => $buildingTime], $this->player->lang),
                                                         'fields' => [
                                                         ],
@@ -827,7 +827,7 @@ class Shipyard extends CommandHandler implements CommandInterface
 
                         $shipPrices = $ship->getPrice($qty, $coef);
 
-                        $missingResString = "";
+                        $missingResString = $crafPrice = "";
                         foreach (config('stargate.resources') as $resource)
                         {
                             if($ship->$resource > 0 && $shipPrices[$resource] > $this->player->activeColony->$resource)
@@ -835,21 +835,153 @@ class Shipyard extends CommandHandler implements CommandInterface
                                 $hasEnough = false;
                                 $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($shipPrices[$resource]-$this->player->activeColony->$resource));
                             }
+                            elseif($ship->$resource > 0)
+                                $crafPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($shipPrices[$resource]));
                         }
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
                         if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
-                        return trans('generic.busyBuilding', [], $this->player->lang);
+                            return trans('generic.busyBuilding', [], $this->player->lang);
 
+
+                        $unitTime = $ship->base_time;
+                        /** Application des bonus */
+                        $unitTime *= $this->player->activeColony->getShipbuildBonus();
                         $now = Carbon::now();
-                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startShip($ship,$qty));
-                        $buildingTime = $now->diffForHumans($endingDate,[
+                        $unitEnd = $now->copy()->addSeconds($unitTime*$qty);
+                        $unitTime = $now->diffForHumans($unitEnd,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('shipyard.buildingStarted', ['name' => $ship->name, 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+
+                        //CONFIRM
+                        $craftConfirm = trans('generic.genericBuildConfirmDesc', [
+                            'qty' => $qty,
+                            'stuffToBuild' => $ship->name,
+                            'resources' => $crafPrice,
+                            'time' => $unitTime,
+                        ], $this->player->lang);
+                        $embed = [
+                            'author' => [
+                                'name' => $this->player->user_name,
+                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                            ],
+                            "title" => trans('generic.genericBuildConfirmTitle', [], $this->player->lang),
+                            "description" => $craftConfirm,
+                            'fields' => [
+                            ],
+                            'footer' => array(
+                                'text'  => 'Stargate',
+                            ),
+                        ];
+                        $newEmbed = $this->discord->factory(Embed::class,$embed);
+
+                        $this->maxTime = time()+180;
+                        $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($ship,$qty,$shipPrices){
+
+                            $this->closed = false;
+                            $this->paginatorMessage = $messageSent;
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                });
+                            });
+
+                            $filter = function($messageReaction){
+                                return $messageReaction->user_id == $this->player->user_id;
+                            };
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($ship,$qty,$shipPrices){
+                                $messageReaction = $collector->first();
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                    {
+                                        $this->player->activeColony->refresh();
+
+                                        $cancelReason = "";
+
+                                        //Requirement
+                                        $hasRequirements = true;
+                                        $blueprintTechnology = Technology::find(6);
+                                        $currentBlueprintLvl = $this->player->hasTechnology($blueprintTechnology);
+                                        if(!$currentBlueprintLvl || $currentBlueprintLvl < $ship->required_blueprint)
+                                            $hasRequirements = false;
+
+                                        $shipyard = Building::find(9); // Shipyard
+                                        $currentShipyardLvl = $this->player->activeColony->hasBuilding($shipyard);
+                                        if(!$currentShipyardLvl || $currentShipyardLvl < $ship->required_shipyard)
+                                            $hasRequirements = false;
+                                        if(!$hasRequirements)
+                                            $cancelReason = trans('generic.missingRequirements', [], $this->player->lang);
+
+                                        $hasEnough = true;
+                                        $missingResString = "";
+                                        foreach (config('stargate.resources') as $resource)
+                                        {
+                                            if($ship->$resource > 0 && $shipPrices[$resource] > $this->player->activeColony->$resource)
+                                            {
+                                                $hasEnough = false;
+                                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($shipPrices[$resource]-$this->player->activeColony->$resource));
+                                            }
+                                        }
+                                        if(!$hasEnough)
+                                            $cancelReason = trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+
+                                        if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 9)
+                                            $cancelReason = trans('generic.busyBuilding', [], $this->player->lang);
+
+                                        if(!empty($cancelReason))
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => $cancelReason
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        else
+                                        {
+                                            $now = Carbon::now();
+                                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startShip($ship,$qty));
+                                            $buildingTime = $now->diffForHumans($endingDate,[
+                                                'parts' => 3,
+                                                'short' => true, // short syntax as per current locale
+                                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                            ]);
+                                            $confirmMessage = trans('shipyard.buildingStarted', ['name' => $ship->name, 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+
+                                            $embed = [
+                                                'author' => [
+                                                    'name' => $this->player->user_name,
+                                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                ],
+                                                "title" => trans('generic.genericBuildConfirmTitle', [], $this->player->lang),
+                                                "description" => $confirmMessage,
+                                                'fields' => [
+                                                ],
+                                                'footer' => array(
+                                                    'text'  => 'Stargate',
+                                                ),
+                                            ];
+                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                            'title' => trans('generic.cancelled', [], $this->player->lang)
+                                            ]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                            });
+                        });
+                        return;
                     }
                     else
                         return trans('shipyard.unknownShip', [], $this->player->lang);

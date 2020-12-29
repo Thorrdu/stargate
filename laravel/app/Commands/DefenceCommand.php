@@ -111,7 +111,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith('queue', $this->args[0]))
@@ -187,7 +187,7 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 else
@@ -218,12 +218,10 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                             return trans('generic.wrongQuantity', [], $this->player->lang);
 
                         $hasEnough = true;
-
                         $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Defence']);
-
                         $defencePrices = $defence->getPrice($qty, $coef);
 
-                        $missingResString = "";
+                        $missingResString = $crafPrice = "";
                         foreach (config('stargate.resources') as $resource)
                         {
                             if($defence->$resource > 0 && $defencePrices[$resource] > $this->player->activeColony->$resource)
@@ -231,22 +229,155 @@ class DefenceCommand extends CommandHandler implements CommandInterface
                                 $hasEnough = false;
                                 $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($defencePrices[$resource]-$this->player->activeColony->$resource));
                             }
+                            elseif($defence->$resource > 0)
+                                $crafPrice .= "\n".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($defencePrices[$resource]));
                         }
                         if(!$hasEnough)
                             return trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
 
-                            if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 15)
+                        if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 15)
                             return trans('generic.busyBuilding', [], $this->player->lang);
 
+                        $unitTime = $defence->base_time;
+                        /** Application des bonus */
+                        $unitTime *= $this->player->activeColony->getDefencebuildBonus();
                         $now = Carbon::now();
-                        $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startDefence($defence,$qty));
-                        $buildingTime = $now->diffForHumans($endingDate,[
+                        $unitEnd = $now->copy()->addSeconds($unitTime*$qty);
+                        $unitTime = $now->diffForHumans($unitEnd,[
                             'parts' => 3,
                             'short' => true, // short syntax as per current locale
                             'syntax' => CarbonInterface::DIFF_ABSOLUTE
                         ]);
-                        return trans('defence.buildingStarted', ['name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
 
+                        //CONFIRM
+                        $craftConfirm = trans('generic.genericBuildConfirmDesc', [
+                            'qty' => $qty,
+                            'stuffToBuild' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang),
+                            'resources' => $crafPrice,
+                            'time' => $unitTime,
+                        ], $this->player->lang);
+                        $embed = [
+                            'author' => [
+                                'name' => $this->player->user_name,
+                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                            ],
+                            "title" => trans('generic.genericBuildConfirmTitle', [], $this->player->lang),
+                            "description" => $craftConfirm,
+                            'fields' => [
+                            ],
+                            'footer' => array(
+                                'text'  => 'Stargate',
+                            ),
+                        ];
+                        $newEmbed = $this->discord->factory(Embed::class,$embed);
+
+                        $this->maxTime = time()+180;
+                        $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent) use($defence,$qty,$defencePrices){
+
+                            $this->closed = false;
+                            $this->paginatorMessage = $messageSent;
+                            $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                });
+                            });
+
+                            $filter = function($messageReaction){
+                                return $messageReaction->user_id == $this->player->user_id;
+                            };
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($defence,$qty,$defencePrices){
+                                $messageReaction = $collector->first();
+                                try{
+                                    if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                    {
+                                        $this->player->activeColony->refresh();
+
+                                        $cancelReason = "";
+
+                                        //Requirement
+                                        $hasRequirements = true;
+                                        foreach($defence->requiredTechnologies as $requiredTechnology)
+                                        {
+                                            $currentLvl = $this->player->hasTechnology($requiredTechnology);
+                                            if(!($currentLvl && $currentLvl >= $requiredTechnology->pivot->level))
+                                                $hasRequirements = false;
+                                        }
+                                        foreach($defence->requiredBuildings as $requiredBuilding)
+                                        {
+                                            $currentLvl = $this->player->activeColony->hasBuilding($requiredBuilding);
+                                            if(!($currentLvl && $currentLvl >= $requiredBuilding->pivot->level))
+                                                $hasRequirements = false;
+                                        }
+                                        if(!$hasRequirements)
+                                            $cancelReason = trans('generic.missingRequirements', [], $this->player->lang);
+
+                                        $hasEnough = true;
+                                        $missingResString = "";
+                                        foreach (config('stargate.resources') as $resource)
+                                        {
+                                            if($defence->$resource > 0 && $defencePrices[$resource] > $this->player->activeColony->$resource)
+                                            {
+                                                $hasEnough = false;
+                                                $missingResString .= " ".config('stargate.emotes.'.$resource)." ".ucfirst($resource)." ".number_format(ceil($defencePrices[$resource]-$this->player->activeColony->$resource));
+                                            }
+                                        }
+                                        if(!$hasEnough)
+                                            $cancelReason = trans('generic.notEnoughResources', ['missingResources' => $missingResString], $this->player->lang);
+
+                                        if(!is_null($this->player->activeColony->active_building_id) && $this->player->activeColony->active_building_id == 15)
+                                            $cancelReason = trans('generic.busyBuilding', [], $this->player->lang);
+
+                                        if(!empty($cancelReason))
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => $cancelReason
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        else
+                                        {
+                                            $now = Carbon::now();
+                                            $endingDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->startDefence($defence,$qty));
+                                            $buildingTime = $now->diffForHumans($endingDate,[
+                                                'parts' => 3,
+                                                'short' => true, // short syntax as per current locale
+                                                'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                            ]);
+                                            $confirmMessage = trans('defence.buildingStarted', ['name' => trans('defence.'.$defence->slug.'.name', [], $this->player->lang), 'qty' => $qty, 'time' => $buildingTime], $this->player->lang);
+
+                                            $embed = [
+                                                'author' => [
+                                                    'name' => $this->player->user_name,
+                                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                ],
+                                                "title" => trans('generic.genericBuildConfirmTitle', [], $this->player->lang),
+                                                "description" => $confirmMessage,
+                                                'fields' => [
+                                                ],
+                                                'footer' => array(
+                                                    'text'  => 'Stargate',
+                                                ),
+                                            ];
+                                            $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                    }
+                                    elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                    {
+                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                            'title' => trans('generic.cancelled', [], $this->player->lang)
+                                            ]);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                }
+                                catch(\Exception $e)
+                                {
+                                    echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                }
+                            });
+                        });
+                        return;
                     }
                     else
                         return trans('defence.unknownDefence', [], $this->player->lang);

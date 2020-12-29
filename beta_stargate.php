@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Dakara, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\PlayerUtility;
@@ -79,7 +79,7 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting upp!", PHP_EOL;
 
-    /*$userExist = $discord->users->get('id','125641223544373248');
+    /*$userExist = $discord->users->get('id',config('stargate.ownerId'));
     $userExist->sendMessage('test');*/
     //$shardUpDisplay = $discord->commandClientOptions['discordOptions']['shardId'] + 1;
 
@@ -101,8 +101,6 @@ $discord->on('ready', function ($discord) use($beta){
         if($rowExists == 0)
         {
             $usrCount = $discord->users->count();
-            //if($discord->commandClientOptions['discordOptions']['shardId'] == 0 && !$beta)
-                //$usrCount += 135000;
 
             DB::table('configuration')->insert([
                 'key' => 'shardServer'.$discord->commandClientOptions['discordOptions']['shardId'],
@@ -278,7 +276,7 @@ $discord->on('ready', function ($discord) use($beta){
         });
     }
 
-    $discord->loop->addPeriodicTimer(5, function () use ($discord,$beta) {   
+    $discord->loop->addPeriodicTimer(15, function () use ($discord,$beta) {   
 
         $playersVoted = Player::Where('vote_flag',true)->get();
         foreach($playersVoted as $playerVoted)
@@ -335,35 +333,44 @@ $discord->on('ready', function ($discord) use($beta){
         $discord->updatePresence($game);*/
 
         $dateNow = Carbon::now();
-        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get();
+        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get()->take(10);
         $totalReminders = $reminders->count();
         echo PHP_EOL."CHECK REMINDER: {$totalReminders}";
 
         foreach($reminders as $reminder)
         {  
-            if($reminder->player->npc == 1)
+            if($reminder->tried)
                 $reminder->delete();
             else
             {
-                $discord->users->fetch($reminder->player->user_id)->done(function(User $userExist) use($reminder,$discord){
-                    if(!is_null($userExist))
-                    {
-                        if(!is_null($reminder->embed))
+                $reminder->tried = true;
+                $reminder->save();
+                if($reminder->player->npc == 1)
+                    $reminder->delete();
+                else
+                {
+                    $discord->users->fetch($reminder->player->user_id)->done(function(User $userExist) use($reminder,$discord){
+                        if(!is_null($userExist))
                         {
-                            $reminderEmbed = json_decode($reminder->embed,true);
-                            $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
-                            $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
-                                if(!is_null($message))
-                                    $reminder->delete();
-                            });
+                            if(!is_null($reminder->embed))
+                            {
+                                $reminderEmbed = json_decode($reminder->embed,true);
+                                $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
+                                $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
+                                    //if(!is_null($message))
+                                        $reminder->delete();
+                                });
+                            }
+                            else
+                                $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
+                                    //if(!is_null($message))
+                                        $reminder->delete();
+                                });
                         }
                         else
-                            $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
-                                if(!is_null($message))
-                                    $reminder->delete();
-                            });
-                    }
-                });
+                            $reminder->delete();
+                    });
+                }
             }
         }
     });
@@ -481,8 +488,6 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 5
     ]);	
 
-
-
     $discord->registerCommand('galaxy', function ($message, $args) use($discord){
         $command = new Galaxy($message, $args, $discord);
         return $command->execute();
@@ -490,7 +495,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		//'aliases' => array('g','ga','gal'),
-        'cooldown' => 35
+        'cooldown' => 20
     ]);	
 
     $discord->registerCommand('fleet', function ($message, $args) use($discord){
@@ -533,6 +538,15 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 5
     ]);
 
+    $discord->registerCommand('dakara', function ($message, $args) use($discord){
+        $command = new Dakara($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.dakara.description', [], 'fr'),
+		'usage' => trans('help.dakara.usage', [], 'fr'),
+		//'aliases' => array('d'),
+        'cooldown' => 5
+    ]);
     /*
     $discord->registerCommand('refresh', function ($message, $args) use($discord){
         $command = new Refresh($message,$args,$discord);

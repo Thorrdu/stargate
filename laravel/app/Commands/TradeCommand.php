@@ -121,7 +121,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith($this->args[0], 'pact'))
@@ -205,7 +205,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                                 else
                                     return false;
                             };
-                            $this->paginatorMessage->createReactionCollector($filter);
+                            $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                         });
 
 
@@ -246,7 +246,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                                     $filter = function($messageReaction) use($playerInvited){
                                         return $messageReaction->user_id == $this->player->user_id;
                                     };
-                                    $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($playerInvited){
+                                    $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($playerInvited){
                                         $messageReaction = $collector->first();
                                         try{
                                             if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -299,7 +299,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                                 $filter = function($messageReaction) use($playerInvited){
                                     return $messageReaction->user_id == $playerInvited->user_id;
                                 };
-                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($playerInvited){
+                                $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($playerInvited){
                                     $messageReaction = $collector->first();
                                     try{
                                         if($messageReaction->emoji->name == config('stargate.emotes.confirm'))

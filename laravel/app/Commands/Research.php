@@ -114,7 +114,7 @@ class Research extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith('cancel', $this->args[0]))

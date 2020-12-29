@@ -33,7 +33,7 @@ class CommandHandler
     public function __construct1(array $args) {
         $this->message = null; //Factory message?
         $this->args = $args;
-        $this->player = Player::where('user_id', 125641223544373248)->first();
+        $this->player = Player::where('user_id', config('stargate.ownerId'))->first();
     }
 
     //BASIC CALL
@@ -52,11 +52,14 @@ class CommandHandler
 
         if(!is_null($this->player))
         {
-            if($this->player->untagged_user_name != $discordUsername || $this->player->untagged_user_name == "not loaded")
+            $clearName = str_replace(array("||","**","!!"),'',$discordUsername);
+            if(empty($clearName))
+                $clearName = "Unknown";
+            if($this->player->untagged_user_name != $clearName || $this->player->untagged_user_name == "not loaded")
             {
-                echo PHP_EOL.'News name: '.$this->message->author->user->username ;
+                echo PHP_EOL.'News name: '.$clearName ;
                 echo PHP_EOL.'DIFFERENT';
-                $this->player->user_name = $this->player->untagged_user_name = $discordUsername ;
+                $this->player->user_name = $this->player->untagged_user_name = $clearName ;
 
                 if(!is_null($this->player->alliance))
                     $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->untagged_user_name;
@@ -89,11 +92,14 @@ class CommandHandler
 
         if(!is_null($this->player))
         {
-            if($this->player->untagged_user_name != $discordUsername || $this->player->untagged_user_name == "not loaded")
+            $clearName = str_replace(array("||","**","!!"),'',$discordUsername);
+            if(empty($clearName))
+                $clearName = "Unknown";
+            if($this->player->untagged_user_name != $clearName || $this->player->untagged_user_name == "not loaded")
             {
-                echo PHP_EOL.'News name: '.$discordUsername ;
+                echo PHP_EOL.'News name: '.$clearName ;
                 echo PHP_EOL.'DIFFERENT';
-                $this->player->user_name = $this->player->untagged_user_name = $discordUsername ;
+                $this->player->user_name = $this->player->untagged_user_name = $clearName ;
 
                 if(!is_null($this->player->alliance))
                     $this->player->user_name = '['.$this->player->alliance->tag.'] '.$this->player->untagged_user_name;

@@ -73,6 +73,14 @@ return [
         'description' => "Allows you to show to flex your resources to other players.",
         'usage' => ":prefixflex [resource] [quantity/all]"
     ],
+    'dakara' => [
+        'description' => "With the momentum garnered by Dakara's superweapon traveling through subspace and spreading to the orbit of the destination planet, you can cause instant damage to the entire defensive system of an opposing colony and this, even if his stargate is buried.".
+                        "\n\nThe damage caused is 10% of defenses and 1 hour of military production per level of difference between yours and your opponent's. (Maximum destruction rate: 30%)".
+                        "\nThe base range of your superweapon is 2 systems and doubles at each level (2 systems ^ level). Every 128 systems range you gain access to an additional galaxy.".
+
+                        "\n\nOne use of Dakara's superweapon counts as one attack made through the door in your daily attack cycle.",
+        'usage' => ':prefixdakara [Coordinates]'
+    ],
     'stargate' => [
         'description' => "Access to the Stargate on your planet\nStart exploration missions on distant planets to obtain information, resources or more, Spy people or trade resources with other players".
                         "\n**Lvl 5 - Research Laboratory** required to use the gate to contact other planets.\n".

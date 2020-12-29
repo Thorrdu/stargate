@@ -44,7 +44,11 @@ class Colony extends CommandHandler implements CommandInterface
                     $colonyIndex = 1;
                     foreach($this->player->colonies as $colony)
                     {
+                        if($colony->id == $this->player->activeColony->id)
+                            $coloniesString .= "**";
                         $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
+                        if($colony->id == $this->player->activeColony->id)
+                            $coloniesString .= "**";
                         $colonyIndex++;
                     }
 
@@ -93,7 +97,7 @@ class Colony extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                     return;
                 }
@@ -119,10 +123,13 @@ class Colony extends CommandHandler implements CommandInterface
                             }
                             elseif($artifactToDelete->bonus_category == 'maxSpace')
                             {
-                                $newSpace = $artifactColony->space_max - $artifactToDelete->bonus_coef;
-                                $usedSpace = $artifactColony->space_used;
-                                if($newSpace < $usedSpace)
-                                    return trans('colony.cannotRerollSpaceLow', [], $this->player->lang);
+                                if($artifactToDelete->bonus_coef > 0)
+                                {
+                                    $newSpace = $artifactColony->space_max - $artifactToDelete->bonus_coef;
+                                    $usedSpace = $artifactColony->space_used;
+                                    if($newSpace < $usedSpace)
+                                        return trans('colony.cannotRerollSpaceLow', [], $this->player->lang);
+                                }
                             }
 
                             //CONFIRM
@@ -133,7 +140,7 @@ class Colony extends CommandHandler implements CommandInterface
                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                 ],
                                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif1.gif'],
-                                "title" => "Stargate",
+                                "title" => "Colony",
                                 "description" => $rerollConfirm,
                                 'fields' => [
                                 ],
@@ -156,7 +163,7 @@ class Colony extends CommandHandler implements CommandInterface
                                 $filter = function($messageReaction){
                                     return $messageReaction->user_id == $this->player->user_id;
                                 };
-                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($artifactColony,$artifactToDelete){
+                                $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($artifactColony,$artifactToDelete){
                                     $messageReaction = $collector->first();
                                     try{
                                         if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -179,6 +186,33 @@ class Colony extends CommandHandler implements CommandInterface
                                                 $artifactColony->refresh();
                                                 $artifactColony->calcProd();
                                             }
+                                            elseif($artifactToDelete->bonus_category == 'maxSpace')
+                                            {
+                                                if($artifactToDelete->bonus_coef > 0)
+                                                {
+                                                    $newSpace = $artifactColony->space_max - $artifactToDelete->bonus_coef;
+                                                    $usedSpace = $artifactColony->space_used;
+                                                    if($newSpace < $usedSpace)
+                                                    {
+                                                        $newEmbed = $this->discord->factory(Embed::class,[
+                                                            'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                            'description' => trans('colony.cannotRerollSpaceLow', [], $this->player->lang)
+                                                            ]);
+                                                        $messageReaction->message->addEmbed($newEmbed);
+                                                        return;
+                                                    }
+                                                    else
+                                                    {
+                                                        $artifactColony->space_max = round($newSpace);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $newSpace = $artifactColony->space_max + abs($artifactToDelete->bonus_coef);
+                                                    $artifactColony->space_max = round($newSpace);
+                                                }
+                                                $artifactToDelete->delete();
+                                            }
                                             else
                                                 $artifactToDelete->delete();
 
@@ -192,7 +226,7 @@ class Colony extends CommandHandler implements CommandInterface
                                                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                                                 ],
                                                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/rerollGif2.gif'],
-                                                "title" => "Stargate",
+                                                "title" => "Colony",
                                                 "description" => trans('colony.artefactRerolled', [], $this->player->lang),
                                                 'fields' => [
                                                 ],
@@ -219,9 +253,6 @@ class Colony extends CommandHandler implements CommandInterface
                                 });
                             });
                             return;
-
-
-
                         }
                     }
                 }
@@ -230,7 +261,7 @@ class Colony extends CommandHandler implements CommandInterface
                     if(is_null($this->player->premium_expiration))
                         return trans('premium.restrictedCommand', [], $this->player->lang);
 
-                    $newColonyName = trim(join(' ', array_slice($this->args, 1)));
+                    $newColonyName = str_replace(array("||","**","!!","[S]","[W]"),'',trim(join(' ', array_slice($this->args, 1))));
 
                     if(strlen($newColonyName) < 2)
                         return trans('generic.nameTooShort',[],$this->player->lang);
@@ -341,7 +372,7 @@ class Colony extends CommandHandler implements CommandInterface
                                         $filter = function($messageReaction){
                                             return $messageReaction->user_id == $this->player->user_id;
                                         };
-                                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($coordinateSwitch){
+                                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($coordinateSwitch){
                                             $messageReaction = $collector->first();
                                             try{
                                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -406,7 +437,7 @@ class Colony extends CommandHandler implements CommandInterface
                                 $filter = function($messageReaction){
                                     return $messageReaction->user_id == $this->player->user_id;
                                 };
-                                $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                                     $messageReaction = $collector->first();
                                     try{
                                         if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -843,7 +874,7 @@ class Colony extends CommandHandler implements CommandInterface
                         else
                             return false;
                     };
-                    $this->paginatorMessage->createReactionCollector($filter);
+                    $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                 });
 
 

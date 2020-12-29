@@ -331,7 +331,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                     return;
                 }
@@ -436,7 +436,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/fleet.jpg'],
-                        "title" => "Stargate",
+                        "title" => "Fleet",
                         "description" => trans('fleet.activeFleets', ['fleets' => $activeFleetsString], $this->player->lang)."\n".trans('fleet.incomingFleets', ['fleets' => $incomingFleetString], $this->player->lang)."\n".trans('fleet.askBaseParameter', [], $this->player->lang),
                         'fields' => [
                         ],
@@ -527,20 +527,20 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if(is_null($this->coordinateDestination->colony))
                     return trans('stargate.neverExploredWorld', [], $this->player->lang);
 
-                if(!is_null($this->coordinateDestination->colony) && $this->player->user_id != 125641223544373248)
+                if(!is_null($this->coordinateDestination->colony) && $this->player->user_id != config('stargate.ownerId'))
                 {
                     if(!is_null($this->coordinateDestination->colony->player->vacation))
                         return trans('profile.playerVacation', [], $this->player->lang);
                 }
 
-                //&& $this->player->user_id != 125641223544373248
+                //&& $this->player->user_id != config('stargate.ownerId')
                 if( !(Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0]) || Str::startsWith('scavenge',$this->args[0])) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->id != 1 )
                     return trans('stargate.samePlayerAction', [], $this->player->lang);
 
                 if(Str::startsWith('base',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     return trans('stargate.notAColonyOfYour', [], $this->player->lang);
 
-                if(!Str::startsWith('scavenge',$this->args[0]) && $this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != 125641223544373248)
+                if(!Str::startsWith('scavenge',$this->args[0]) && $this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != config('stargate.ownerId'))
                     return trans('stargate.sameColony', [], $this->player->lang);
 
                 //Base Fuel Consumption
@@ -553,7 +553,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     if(Str::startsWith('transport',$this->args[0]) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     {
                         $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
-                        if(is_null($pactExists) && $this->player->user_id != 125641223544373248)
+                        if(is_null($pactExists) && $this->player->user_id != config('stargate.ownerId'))
                             return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
                     }
 
@@ -580,6 +580,8 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->fleetSpeed = 100;
                     $this->fleetShips = array();
                     $this->fleetUnits = array();
+
+                    $withScav = false;
 
                     for($cptRes = 2; $cptRes < count($this->args); $cptRes += 2)
                     {
@@ -682,8 +684,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 {
                                                     $this->fleetUnits[] = array('id' => $unit->id,'qty' => $qty);
                                                     $this->transportString .= trans('craft.'.$unit->slug.'.name', [], $this->player->lang).': '.number_format($qty)."\n";
-                                                    if($unit->capacity > 0)
+                                                    if($unit->capacity > 0 && !strstr($unit->slug,'scav'))
                                                         $this->usedCapacity += $unit->capacity * $qty;
+                                                    if(strstr($unit->slug,'scav'))
+                                                    {
+                                                        $withScav = true;
+                                                        $unitSpeed = $unit->speed * $this->fleetSpeedBonus;
+                                                        if($this->fleetMaxSpeed > $unitSpeed)
+                                                            $this->fleetMaxSpeed = round($unitSpeed,2);
+                                                        $this->travelCost += floor($this->baseTravelCost * $qty);
+                                                    }
                                                 }
                                             }
                                         }
@@ -703,8 +713,16 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             $this->transportString = "/\n";
                     }
 
-                    if(empty($this->fleetShips))
+                    if(empty($this->fleetShips) && !$withScav)
                         return trans('fleet.noShipSelected', [], $this->player->lang);
+                    elseif(empty($this->fleetShips) && $withScav)
+                    {
+                        foreach($this->fleetUnits as $fleetUnit)
+                        {
+                            if(!in_array($fleetUnit['id'],array(5,6,7,8)))
+                                return trans('fleet.noShipSelected', [], $this->player->lang);
+                        }
+                    }
 
                     //check crew capacity
                     if($this->fleet->crew > $this->player->activeColony->military)
@@ -720,7 +738,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->usedCapacity += $this->travelCost;
                     //check fret capacity
 
-                    if($this->fleet->capacity < $this->usedCapacity)
+                    if($this->fleet->capacity < $this->usedCapacity && !(empty($this->fleetShips) && $withScav))
                         return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
 
                     //check Carburant
@@ -741,7 +759,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                             return trans('stargate.trade_ban', [], $this->player->lang);
                         elseif($this->coordinateDestination->colony->player->ban)
                             return trans('stargate.playerTradeBan', [], $this->player->lang);
-                        elseif($this->player->user_id != config('stargate.ownerId'))
+                        elseif($this->player->user_id != config('stargate.ownerId') && $this->coordinateDestination->colony->player->id != $this->player->id)
                         {
                             $activeTradeCheck = Trade::where([["player_id_source", $this->player->id], ["player_id_dest", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])
                                                 ->orWhere([["player_id_dest", $this->player->id], ["player_id_source", '!=', $this->coordinateDestination->colony->player->id], ["active", true]])->count();
@@ -776,6 +794,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         'syntax' => CarbonInterface::DIFF_ABSOLUTE
                     ]);
 
+                    if(empty($this->fleetShips) && $withScav)
+                        $this->usedCapacity = 0;
+
                     $baseMsg = trans('fleet.fleetMessage', [ 'mission' => ucfirst($this->fleet->mission),
                                                                 'coordinateDestination' => $destCoordinates,
                                                                 'planetDest' => $this->coordinateDestination->colony->name,
@@ -804,7 +825,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -857,10 +878,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 else
                                                 {
                                                     $unit = Unit::find($fleetUnit['id']);
-                                                    $resource = $unit->name;
+                                                    $resource = trans('craft.'.$unit->slug.'.name', [], $this->player->lang);
                                                 }
 
-                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$resource.'.name', [], $this->player->lang).': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
+                                                $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => $resource.': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
                                                 $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
                                                 $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
                                                 return;
@@ -891,6 +912,14 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                     return;
                                                 }
                                             }
+                                        }
+
+                                        if($this->player->activeColony->military < $this->fleet->crew)
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".ucfirst($resource).': '.number_format($this->fleet->crew-$this->player->activeColony->military)], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
                                         }
 
                                         $this->player->activeColony->military -= $this->fleet->crew;
@@ -945,6 +974,160 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     });
 
                     return;
+                }
+
+                if(Str::startsWith('spy',$this->args[0]))
+                {
+                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
+                        return trans('stargate.weakOrStrong', [], $this->player->lang);
+
+                    $spyLast2Hours = SpyLog::Where([['source_player_id',$this->player->id],['colony_destination_id',$this->coordinateDestination->colony->id],['created_at', '>=', Carbon::now()->sub('2h')]])->orderBy('created_at','DESC')->get();
+                    if($spyLast2Hours->count() > 0)
+                    {
+                        $nextSpy = Carbon::createFromFormat("Y-m-d H:i:s",$spyLast2Hours->first()->created_at)->add('2h');
+                        $nextVacationString = Carbon::now()->diffForHumans($nextSpy,[
+                            'parts' => 3,
+                            'short' => true, // short syntax as per current locale
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                        ]);
+                        return trans('stargate.alreadySpied', ['time' => $nextVacationString], $this->player->lang);
+                    }
+
+                    $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
+                    $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
+                    if(!$wraithProbeNumber || $wraithProbeNumber == 0)
+                        return trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
+
+                    $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
+                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
+
+                    $this->maxTime = time()+180;
+                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($sourceCoordinates,$destCoordinates,$wraithProbe){
+
+                        $this->paginatorMessage = $messageSent;
+                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                            });
+                        });
+
+                        $filter = function($messageReaction){
+                            return $messageReaction->user_id == $this->player->user_id;
+                        };
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector)  use($sourceCoordinates,$destCoordinates,$wraithProbe){
+                            $messageReaction = $collector->first();
+                            try{
+
+                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                {
+                                    try
+                                    {
+                                        $this->player->activeColony->refresh();
+
+                                        $current = Carbon::now();
+                                        $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
+                                        if($current->diffInMinutes($lastClaim) > 720){
+                                            $this->coordinateDestination->colony->checkColony();
+                                            $this->coordinateDestination->load('colony');
+                                        }
+
+                                        if($this->player->activeColony->naqahdah >= $this->travelCost)
+                                            $this->player->activeColony->naqahdah -= $this->travelCost;
+                                        else
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost-$this->player->activeColony->naqahdah))], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+
+                                        $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
+                                        $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
+                                        if(!$wraithProbeNumber || $wraithProbeNumber == 0)
+                                        {
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+
+                                        $this->player->activeColony->save();
+
+                                        $wraithProbeExists = $this->player->activeColony->units->filter(function ($value) use($wraithProbe){
+                                            return $value->id == $wraithProbe->id;
+                                        });
+                                        if($wraithProbeExists->count() > 0)
+                                        {
+                                            $unitToUpdate = $wraithProbeExists->first();
+                                            $unitToUpdate->pivot->number -= 1;
+                                            if($unitToUpdate->pivot->number <= 0)
+                                                $this->player->activeColony->units->detach($unitToUpdate->id);
+                                            else
+                                                $unitToUpdate->pivot->save();
+                                        }
+
+                                        $this->fleet = new Fleet;
+                                        $this->fleet->mission = 'spy';
+                                        $this->fleet->player_source_id = $this->player->id;
+                                        $this->fleet->colony_source_id = $this->player->activeColony->id;
+                                        $this->fleet->player_destination_id = $this->coordinateDestination->colony->player->id;
+                                        $this->fleet->colony_destination_id = $this->coordinateDestination->colony->id;
+                                        $this->fleet->departure_date = Carbon::now();
+                                        $this->fleet->crew = 0;
+                                        $this->fleet->capacity = 0;
+                                        //Get arrivalDate
+                                        $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, 50);
+                                        $this->fleet->arrival_date = Carbon::now()->add($travelTime.'s');
+                                        $this->fleet->save();
+
+                                        $this->fleet->units()->attach([$unitToUpdate->id => ['number' => 1]]);
+
+                                        $now = Carbon::now();
+                                        $fleetDuration = $now->diffForHumans($this->fleet->arrival_date,[
+                                            'parts' => 3,
+                                            'short' => true, // short syntax as per current locale
+                                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                                        ]);
+
+                                        $destCoordinates = $this->coordinateDestination->humanCoordinates();
+                                        $spyConfirmedMessage = trans('stargate.probeSpySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => $wraithProbe->name.': 1', 'fleetDuration' => $fleetDuration], $this->player->lang);
+
+                                        $embed = [
+                                            'author' => [
+                                                'name' => $this->player->user_name,
+                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                            ],
+                                            //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
+                                            "title" => "Fleet",
+                                            "description" => $spyConfirmedMessage,
+                                            'fields' => [
+                                            ],
+                                            'footer' => array(
+                                                'text'  => 'Stargate',
+                                            ),
+                                        ];
+                                        $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                        $messageReaction->message->addEmbed($newEmbed);
+                                    }
+                                    catch(\Exception $e)
+                                    {
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                    }
+                                }
+                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                {
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
+                                    $messageReaction->message->addEmbed($newEmbed);
+                                }
+
+                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                            }
+                            catch(\Exception $e)
+                            {
+                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                            }
+                        });
+                    });
                 }
 
                 if(Str::startsWith('scavenge',$this->args[0]))
@@ -1059,7 +1242,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -1093,7 +1276,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                 else
                                                 {
                                                     $unit = Unit::find($fleetUnit['id']);
-                                                    $resource = $unit->name;
+                                                    $resource = trans('craft.'.$unit->slug.'.name', [], $this->player->lang);
                                                 }
 
                                                 $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => $resource.': '.number_format(ceil($fleetUnit['qty']-$qtyOwned))], $this->player->lang));
@@ -1130,160 +1313,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
                                     $messageReaction->message->addEmbed($newEmbed);
                                 }
-                                $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
-                            }
-                            catch(\Exception $e)
-                            {
-                                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-                            }
-                        });
-                    });
-                }
-
-                if(Str::startsWith('spy',$this->args[0]))
-                {
-                    if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
-                        return trans('stargate.weakOrStrong', [], $this->player->lang);
-
-                    $spyLast2Hours = SpyLog::Where([['source_player_id',$this->player->id],['colony_destination_id',$this->coordinateDestination->colony->id],['created_at', '>=', Carbon::now()->sub('2h')]])->orderBy('created_at','DESC')->get();
-                    if($spyLast2Hours->count() > 0)
-                    {
-                        $nextSpy = Carbon::createFromFormat("Y-m-d H:i:s",$spyLast2Hours->first()->created_at)->add('2h');
-                        $nextVacationString = Carbon::now()->diffForHumans($nextSpy,[
-                            'parts' => 3,
-                            'short' => true, // short syntax as per current locale
-                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                        ]);
-                        return trans('stargate.alreadySpied', ['time' => $nextVacationString], $this->player->lang);
-                    }
-
-                    $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
-                    $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
-                    if(!$wraithProbeNumber || $wraithProbeNumber == 0)
-                        return trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
-
-                    $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
-                    $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $spyMessage = trans('stargate.spyConfirmation', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang);
-
-                    $this->maxTime = time()+180;
-                    $this->message->channel->sendMessage($spyMessage)->then(function ($messageSent) use($sourceCoordinates,$destCoordinates,$wraithProbe){
-
-                        $this->paginatorMessage = $messageSent;
-                        $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
-                            $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
-                            });
-                        });
-
-                        $filter = function($messageReaction){
-                            return $messageReaction->user_id == $this->player->user_id;
-                        };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector)  use($sourceCoordinates,$destCoordinates,$wraithProbe){
-                            $messageReaction = $collector->first();
-                            try{
-
-                                if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
-                                {
-                                    try
-                                    {
-                                        $this->player->activeColony->refresh();
-
-                                        $current = Carbon::now();
-                                        $lastClaim = Carbon::createFromFormat("Y-m-d H:i:s",$this->coordinateDestination->colony->last_claim);
-                                        if($current->diffInMinutes($lastClaim) > 720){
-                                            $this->coordinateDestination->colony->checkColony();
-                                            $this->coordinateDestination->load('colony');
-                                        }
-
-                                        if($this->player->activeColony->naqahdah >= $this->travelCost)
-                                            $this->player->activeColony->naqahdah -= $this->travelCost;
-                                        else
-                                        {
-                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost-$this->player->activeColony->naqahdah))], $this->player->lang));
-                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
-                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
-                                            return;
-                                        }
-
-                                        $wraithProbe = Unit::where('slug', 'wraithProbe')->first();
-                                        $wraithProbeNumber = $this->player->activeColony->hasCraft($wraithProbe);
-                                        if(!$wraithProbeNumber || $wraithProbeNumber == 0)
-                                        {
-                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1'], $this->player->lang));
-                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
-                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
-                                            return;
-                                        }
-
-                                        $this->player->activeColony->save();
-
-                                        $wraithProbeExists = $this->player->activeColony->units->filter(function ($value) use($wraithProbe){
-                                            return $value->id == $wraithProbe->id;
-                                        });
-                                        if($wraithProbeExists->count() > 0)
-                                        {
-                                            $unitToUpdate = $wraithProbeExists->first();
-                                            $unitToUpdate->pivot->number -= 1;
-                                            if($unitToUpdate->pivot->number <= 0)
-                                                $this->player->activeColony->units->detach($unitToUpdate->id);
-                                            else
-                                                $unitToUpdate->pivot->save();
-                                        }
-
-                                        $this->fleet = new Fleet;
-                                        $this->fleet->mission = 'spy';
-                                        $this->fleet->player_source_id = $this->player->id;
-                                        $this->fleet->colony_source_id = $this->player->activeColony->id;
-                                        $this->fleet->player_destination_id = $this->coordinateDestination->colony->player->id;
-                                        $this->fleet->colony_destination_id = $this->coordinateDestination->colony->id;
-                                        $this->fleet->departure_date = Carbon::now();
-                                        $this->fleet->crew = 0;
-                                        $this->fleet->capacity = 0;
-                                        //Get arrivalDate
-                                        $travelTime = $this->fleet->getFleetTime($this->player->activeColony->coordinates, $this->coordinateDestination, 50);
-                                        $this->fleet->arrival_date = Carbon::now()->add($travelTime.'s');
-                                        $this->fleet->save();
-
-                                        $this->fleet->units()->attach([$unitToUpdate->id => ['number' => 1]]);
-
-                                        $now = Carbon::now();
-                                        $fleetDuration = $now->diffForHumans($this->fleet->arrival_date,[
-                                            'parts' => 3,
-                                            'short' => true, // short syntax as per current locale
-                                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                                        ]);
-
-                                        $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                        $spyConfirmedMessage = trans('stargate.probeSpySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => $wraithProbe->name.': 1', 'fleetDuration' => $fleetDuration], $this->player->lang);
-
-                                        $embed = [
-                                            'author' => [
-                                                'name' => $this->player->user_name,
-                                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
-                                            ],
-                                            //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpSending.gif'],
-                                            "title" => "Stargate",
-                                            "description" => $spyConfirmedMessage,
-                                            'fields' => [
-                                            ],
-                                            'footer' => array(
-                                                'text'  => 'Stargate',
-                                            ),
-                                        ];
-                                        $newEmbed = $this->discord->factory(Embed::class,$embed);
-                                        $messageReaction->message->addEmbed($newEmbed);
-                                    }
-                                    catch(\Exception $e)
-                                    {
-                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-                                    }
-                                }
-                                elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
-                                {
-                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
-                                    $messageReaction->message->addEmbed($newEmbed);
-                                }
-
                                 $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
                             }
                             catch(\Exception $e)
@@ -1343,7 +1372,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -1473,7 +1502,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                             ],
                             'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/colonize.gif'],
-                            "title" => "Stargate",
+                            "title" => "Fleet",
                             "description" => trans('stargate.colonizeDone', ['destination' => $destCoordinates], $this->player->lang),
                             'fields' => [
                             ],
@@ -1624,7 +1653,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         $fleetStatus = trans('fleet.ongoingStatus', [], $this->player->lang);
 
                         $arrivalDate = substr($fleetElem->arrival_date,0,16);
-                        if($fleetElem->returning || $fleetElem->ended)
+                        if(!is_null($fleetElem->gateFight) && ($fleetElem->returning || $fleetElem->ended))
                         {
                             $fleetStatus = trans('generic.endedf', [], $this->player->lang);
                             $arrivalDate = substr($fleetElem->gateFight->updated_at,0,16);
@@ -1783,7 +1812,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         else
                             return false;
                     };
-                    $this->paginatorMessage->createReactionCollector($filter);
+                    $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                 });
             }
         }

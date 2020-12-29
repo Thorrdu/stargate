@@ -82,6 +82,14 @@ return [
         'name' => 'Terraformer',
         'description' => "By terraforming process, this factory modifies the appearance of your planet to enlarge the constructible space"
     ],
+    'dakara-super-weapon' => [
+        'name' => "Dakara's superweapon",
+        'description' => "By using the stargate network as catalyst, Dakara's superweapon sends a powerfull destructive impulse, capable of reducing any matter to its most basic components and this, anywhere in the universe."
+                        ."\nWith the right configuration, this weapon can reduce any enemy defence to dust."
+                        ."\nIt goes without saying that such a system requires an astronomical amount of power."
+                        ."\n\nAction distance: 2 systems ^ building level."
+                        ."\nCheck `!help dakara` for more informations about the effects of the superweapon."
+    ],
     'hiddenBuilding' => '-- Hidden building --',
     'unDiscovered' => 'Undiscovered',
     'noActiveBuilding' => 'No building under construction...',
@@ -90,7 +98,7 @@ return [
     'asuranRestriction' => 'This building is only available on your home planet.',
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
     'buildingList' => "Building's list",
-    'genericHowTo' => "To display some building detail: `!build [ID/Slug]`\nTo start a building: `!build [ID/Slug] confirm`\n",
+    'genericHowTo' => "Use the reactions below this message to access other building types.\nTo display some building detail: `!build [ID/Slug]`\nTo start a building: `!build [ID/Slug] confirm`\n",
     'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
     'notEnoughEnergy' => "You miss :missingEnergy energy to power this building.",
     'alreadyBuilding' => 'A building is already under construction. **Lvl :level :name** will be done in **:time**',
@@ -107,5 +115,7 @@ return [
     'queueList' => 'Building queue',
     'clearedQueue' => 'The queue has been cleared.',
     'howToClearQueue' => "`!build queue clear` to clear the queue.",
-    'queueCanceled' => ":colony - **:buildingName** could not be built. Reason: :reason.\nAs a result, the building queue has been cleared."
+    'queueCanceled' => ":colony - **:buildingName** could not be built. Reason: :reason.\nAs a result, the building queue has been cleared.",
+    'estimatedQueuedTotal' => 'Estimated time: :totalTime',
+    'cancelBuildConfirm' => "Do you realy want to cancel the active building ?\n25% of the invested resources have been lost."
 ];

@@ -17,6 +17,7 @@ class CreateDefencesTable extends Migration
             $table->increments('id');
             $table->string('name', 50);
             $table->string('slug', 50);
+            $table->enum('type', ['Ground', 'Space']);
             $table->bigInteger('iron')->length(25)->unsigned()->nullable();
             $table->bigInteger('gold')->length(25)->unsigned()->nullable();
             $table->bigInteger('quartz')->length(25)->unsigned()->nullable();

@@ -95,7 +95,7 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     'inline' => false
                 );
 
-                if(!is_null($this->player) && $this->player->user_id == 125641223544373248)
+                if(!is_null($this->player) && $this->player->user_id == config('stargate.ownerId'))
                 {
                     $embed['fields'][] = array(
                         'name' => 'Admin',
@@ -174,18 +174,50 @@ class HelpCommand extends CommandHandler implements CommandInterface
                         else
                             return false;
                     };
-                    $this->paginatorMessage->createReactionCollector($filter);
+                    $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     return;
                 });
             }
             else
             {
-
                 $commandString = implode(' ', $this->args);
                 $command = $this->discord->getCommand($commandString);
 
                 if (is_null($command)) {
-                    return "The command {$commandString} does not exist...";
+
+                    $commandsFound = [];
+                    $commandKeys = array_keys($this->discord->commands);
+
+                    foreach($commandKeys as $key)
+                    {
+                        $len = strlen($commandString);
+                        if((substr($key, 0, $len) === $commandString))
+                        {
+                            if($key != 'ban' || $message->author->id == config('stargate.ownerId'))
+                                $commandsFound[] = $key;
+                        }
+                    }
+
+                    if(array_key_exists($commandString, $this->discord->aliases)) {
+                        $command = $this->discord->commands[$this->discord->aliases[$commandString]];
+                    }elseif(empty($commandsFound))
+                    {
+                        return "The command {$commandString} does not exist...";
+                    }
+                    elseif(count($commandsFound) > 1)
+                    {
+                        //var_dump($commandsFound);
+                        $returnString = '';
+                        foreach($commandsFound as $commandFound){
+                            if(!empty($returnString))
+                                $returnString .= ', ';
+                            $returnString .= "`{$commandFound}`";
+                        }
+                        return $returnString;
+                    }
+                    else
+                        $command = $this->discord->commands[$commandsFound[0]];
+
                 }
 
                 $help = $command->getHelp($this->prefix);

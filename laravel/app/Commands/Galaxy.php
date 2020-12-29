@@ -198,7 +198,7 @@ class Galaxy extends CommandHandler implements CommandInterface
                             return false;
                     };
                     if(!$this->systemRestriction)
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => 600000]);
                 });
 
             }

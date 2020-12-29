@@ -77,6 +77,7 @@ class Empire extends CommandHandler implements CommandInterface
                     ${'militaryTotalProduction'} = 0;
                     ${'militaryTotal'} = 0;
                     ${'e2pzTotalProduction'} = 0;
+                    ${'e2pzTotal'} = 0;
 
                     foreach($this->player->colonies as $key => $colony)
                     {
@@ -108,7 +109,7 @@ class Empire extends CommandHandler implements CommandInterface
                             ${'militaryTotalProduction'} += $colony->production_military;
                             ${'e2pzTotalProduction'} += $colony->production_e2pz;
                             ${'militaryTotal'} += $colony->military;
-
+                            ${'e2pzTotal'} += $colony->E2PZ;
                             $resourcesValue .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format(floor($colony->military))." (".number_format($colony->production_military)."/h)";
                             $resourcesValue .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format($colony->E2PZ,2)." (".number_format($colony->production_e2pz)."/w)";
                         }
@@ -140,6 +141,7 @@ class Empire extends CommandHandler implements CommandInterface
                     $totalDailyProdString .= "\n".config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang).": ".number_format($totalMilProd*24)."/d";
 
                     $totalE2pzProd = ${'e2pzTotalProduction'};
+                    $totalResourcesString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(${'e2pzTotal'},2);
                     $totalHourlyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format((($totalE2pzProd / 10080) * 60),2)."/h";
                     $totalDailyProdString .= "\n".config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).": ".number_format(($totalE2pzProd / 10080)*1440,2)."/d";
 
@@ -438,7 +440,7 @@ class Empire extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
 

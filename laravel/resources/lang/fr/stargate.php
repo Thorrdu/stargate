@@ -63,7 +63,7 @@ return [
     "colonizeDone" => "Vos troupes accompagnées de quelques scientifiques sont arrivé sur votre nouvelle colonie en [:destination].\nAffichez `!colony` pour découvrir votre nouvelle colonie et `!colony switch [Numéro]` pour changer de colonie ou `!colony remove [Number]` pour en abandonner une.\n(Liste visible via `!colony list`).",
     "toManyColonies" => 'Vous avez atteint le nombre maximal de colonies.',
     "neverExploredWorld" => "Monde inhabité.",
-    "AttackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] depuis :planetNameSource [:coordinateSource]\n".
+    "attackConfirmation" => "Envoyer une attaque sur :planetName [:coordinateDestination] depuis :planetNameSource [:coordinateSource]\n".
                             "Troupes:\n:militaryUnits".
                             "\nCoût: :consumption",
     "exploreConfirmation" => "Envoyer une équipe explorer [:coordinateDestination] ?\n".
@@ -74,20 +74,20 @@ return [
                             "\nCoût: :consumption",
     "attackSent" => "Vos troupes ont été envoyées sur :planet [:coordinateDestination].\nUn rapport arrivera sous peu.",
     "attackCancelled" => "Attaque annulée",
-    "attackerWinReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
+    "attackerWinReport" => "Attaque par la porte des étoiles **:planetDest [:destination] (:player)**\n\n".
                             "Vos troupes sont sorties victorieuses du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
                             "Bilan des gains:\n:raidReward",
-    "attackerLostReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
+    "attackerLostReport" => "Attaque par la porte des étoiles **:planetDest [:destination] (:player)**\n\n".
                             "Vos troupes ont été décimées lors du combat contre **:player** sur la planète **:planetDest [:destination]**\n\n".
                             "Bilan des pertes:\n:loostTroops\n",
-    "defenderWinReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
+    "defenderWinReport" => "Attaque par la porte des étoiles **:planetDest [:destination] (:player)**\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Fort heureusement, vos troupes ont pu contenir l'attaque et repousser l'envahisseur.\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
                             "Estimation des troupes ennemies:\n:estimatedAttackTroops\n".
                             "Bilan des gains:\n:raidReward",
-    "defenderLostReport" => "Attaque par la porte des étoiles :planetDest [:destination] (:player)\n\n".
+    "defenderLostReport" => "Attaque par la porte des étoiles **:planetDest [:destination] (:player)**\n\n".
                             "Une attaque est survenue en provenance de la planète **:sourcePLanet [:sourceDestination] (:sourcePlayer)**.\n".
                             "Malheureusement, vos troupes n'ont pas réussi à contenir l'attaque.\n\n".
                             "Bilan des pertes:\n:loostTroops\n".
@@ -104,7 +104,7 @@ return [
     'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource',
     'alreadySpied' => 'Vous avez espionné cette colonie trop récement. Vous pourrez à nouveau envoyer une sonde dans **:time**',
     'digingStarted' => 'Vous avez commencé les travaux d\'excavation de votre Stargate, elle sera de nouveau opérationelle dans **48h**.',
-    'burialStarted' => 'Vous avez commencé l\'inhumation de votre Stargate. Elle sera complètement inopérante dans **24h**.\nCependant, tant qu\'elle ne sera pas complètement ensevelie, des activations extérieures sont encore possible.',
+    'burialStarted' => "Vous avez commencé l'inhumation de votre Stargate. Elle sera complètement inopérante dans **24h**.\nCependant, tant qu'elle ne sera pas complètement ensevelie, des activations extérieures sont encore possible.",
     'digUpConfirm' => 'Souhaitez-vous déterrer votre Stargate ? Cette action prendra **48h**.',
     'burryConfirm' => "Souhaitez-vous enterrer votre Stargate ? Cette action prendra **24h**.\nAttention, dès que le processus aura commencé, vous ne pourrez plus l'utiliser mais des activations exétieures peuvent encore survenir durant l'inhumation.",
     'digingActive' => 'Des travaux d\'excavation sont actuellement en cours. Stargate opérationelle dans: **:time**',

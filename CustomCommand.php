@@ -119,7 +119,7 @@ class CustomCommand
         $this->group = $group;
         $this->description = $description;
         $this->longDescription = $longDescription;
-        $this->usage = $usage;
+        $this->usage = $usage; 
         $this->cooldown = $cooldown;
         $this->cooldownMessage = $cooldownMessage;
     }
@@ -213,7 +213,7 @@ class CustomCommand
         $currentTime = round(microtime(true) * 1000);
         if (isset($this->cooldowns[$message->author->id])) {
             if ($this->cooldowns[$message->author->id] < $currentTime) {
-                $this->cooldowns[$message->author->id] = $currentTime + $this->cooldown;
+                $this->cooldowns[$message->author->id] = $currentTime + $this->cooldown*1000;
             } else {
                 return sprintf($this->cooldownMessage, (($this->cooldowns[$message->author->id] - $currentTime) / 1000));
             }

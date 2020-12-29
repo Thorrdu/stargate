@@ -156,7 +156,7 @@ class Top extends CommandHandler implements CommandInterface
                         else
                             return false;
                     };
-                    $this->paginatorMessage->createReactionCollector($filter);
+                    $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                 });
 
             }

@@ -18,6 +18,7 @@ class DefenceSeeder extends Seeder
             'id' => 1,
             'name' => "Tourelle mitrailleuse",
             'slug' => 'gatlingturret',
+            'type' => 'Ground',
             'iron' => 500,
             'gold' => 0,
             'quartz' => 0,
@@ -38,6 +39,7 @@ class DefenceSeeder extends Seeder
             'id' => 2,
             'name' => "Tourelle laser",
             'slug' => 'laserturret',
+            'type' => 'Ground',
             'iron' => 3000,
             'gold' => 1500,
             'quartz' => 0,
@@ -65,6 +67,7 @@ class DefenceSeeder extends Seeder
             'id' => 3,
             'name' => "Tourelle ECM",
             'slug' => 'ecmturret',
+            'type' => 'Ground',
             'iron' => 5000,
             'gold' => 3500,
             'quartz' => 3000,
@@ -105,6 +108,7 @@ class DefenceSeeder extends Seeder
             'id' => 4,
             'name' => "Ion Satelite",
             'slug' => 'ionsatellite',
+            'type' => 'Space',
             'iron' => 40000,
             'gold' => 35000,
             'quartz' => 10000,
@@ -132,6 +136,7 @@ class DefenceSeeder extends Seeder
             'id' => 5,
             'name' => "Plasma turret",
             'slug' => 'plasmaturret',
+            'type' => 'Ground',
             'iron' => 200000,
             'gold' => 50000,
             'quartz' => 100000,
@@ -158,6 +163,7 @@ class DefenceSeeder extends Seeder
             'id' => 6,
             'name' => "Canon ECM",
             'slug' => 'ecmcannon',
+            'type' => 'Ground',
             'iron' => 400000,
             'gold' => 500000,
             'quartz' => 2000000,
@@ -179,11 +185,11 @@ class DefenceSeeder extends Seeder
             'level' => 7
         ]);
 
-
         DB::table('defences')->insert([
             'id' => 7,
             'name' => "Laser cannon",
             'slug' => 'lasercannon',
+            'type' => 'Ground',
             'iron' => 5000000,
             'gold' => 5000000,
             'quartz' => 500000,
@@ -217,6 +223,44 @@ class DefenceSeeder extends Seeder
             'level' => 12
         ]);
 
+
+        DB::table('defences')->insert([
+            'id' => 8,
+            'name' => "Satellite Lantien",
+            'slug' => 'lantean-satellite',
+            'type' => 'Space',
+            'iron' => 10000000,
+            'gold' => 5000000,
+            'quartz' => 2000000,
+            'naqahdah' => 450000,
+            'base_time' => 75000,
+            'fire_power' => 750000,
+            'hull' => 100000,
+        ]);
+        //Centre de defense 16
+        DB::table('defence_buildings')->insert([
+            'defence_id' => 8,
+            'required_building_id' => 15,
+            'level' => 16
+        ]);
+        //IA 10
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 8,
+            'required_technology_id' => 5,
+            'level' => 10
+        ]);
+        //Energie 16
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 8,
+            'required_technology_id' => 4,
+            'level' => 16
+        ]);
+        //Bouclier 16
+        DB::table('defence_technologies')->insert([
+            'defence_id' => 8,
+            'required_technology_id' => 9,
+            'level' => 16
+        ]);
 
     }
 }

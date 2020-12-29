@@ -61,7 +61,12 @@ class Daily extends CommandHandler implements CommandInterface
                         $resType = 'naqahdah';
 
                     $varProd = 'production_'.$resType;
-                    $resValue = $this->player->activeColony->$varProd * rand(2,5);
+
+                    $totalProd = 0;
+                    foreach($this->player->colonies as $colony)
+                        $totalProd += $colony->$varProd;
+                    $totalProd /= $this->player->colonies->count();
+                    $resValue = $totalProd * rand(2,5);
                     $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue);
 
                     $newResValue = $this->player->activeColony->$resType + $resValue;

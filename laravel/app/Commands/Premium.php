@@ -114,7 +114,7 @@ class Premium extends CommandHandler implements CommandInterface
                                     $filter = function($messageReaction){
                                         return $messageReaction->user_id == $this->player->user_id;
                                     };
-                                    $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                                    $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                                         $messageReaction = $collector->first();
                                         try{
                                             if($messageReaction->emoji->name == config('stargate.emotes.confirm'))

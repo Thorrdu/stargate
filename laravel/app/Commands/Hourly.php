@@ -86,7 +86,12 @@ class Hourly extends CommandHandler implements CommandInterface
                     if($this->player->hr_combo > $this->player->hr_max_combo)
                         $this->player->hr_max_combo = $this->player->hr_combo;
 
-                    $resValue = ($this->player->activeColony->$varProd / 60)* rand(15,30) * $multiplier;
+                    $totalProd = 0;
+                    foreach($this->player->colonies as $colony)
+                        $totalProd += $colony->$varProd;
+                    $totalProd /= $this->player->colonies->count();
+
+                    $resValue = ($totalProd / 60)* rand(15,30) * $multiplier;
 
                     $reward = config('stargate.emotes.'.strtolower($resType))." ".ucfirst($resType).': '.number_format($resValue).' (Combo: '.$this->player->hr_combo.' (+'.$displayMultiplier.'%))';
 

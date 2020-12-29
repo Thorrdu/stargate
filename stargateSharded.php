@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Dakara, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\PlayerUtility;
@@ -79,7 +79,7 @@ $discord = new DiscordCommandClient([
 $discord->on('ready', function ($discord) use($beta){
     echo "Bot is starting upp!", PHP_EOL;
 
-    /*$userExist = $discord->users->get('id','125641223544373248');
+    /*$userExist = $discord->users->get('id',config('stargate.ownerId'));
     $userExist->sendMessage('test');*/
     //$shardUpDisplay = $discord->commandClientOptions['discordOptions']['shardId'] + 1;
 
@@ -488,8 +488,6 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 5
     ]);	
 
-
-
     $discord->registerCommand('galaxy', function ($message, $args) use($discord){
         $command = new Galaxy($message, $args, $discord);
         return $command->execute();
@@ -497,7 +495,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		//'aliases' => array('g','ga','gal'),
-        'cooldown' => 35
+        'cooldown' => 20
     ]);	
 
     $discord->registerCommand('fleet', function ($message, $args) use($discord){
@@ -540,6 +538,15 @@ $discord->on('ready', function ($discord) use($beta){
         'cooldown' => 5
     ]);
 
+    $discord->registerCommand('dakara', function ($message, $args) use($discord){
+        $command = new Dakara($message,$args,$discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.dakara.description', [], 'fr'),
+		'usage' => trans('help.dakara.usage', [], 'fr'),
+		//'aliases' => array('d'),
+        'cooldown' => 5
+    ]);
     /*
     $discord->registerCommand('refresh', function ($message, $args) use($discord){
         $command = new Refresh($message,$args,$discord);

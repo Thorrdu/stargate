@@ -21,6 +21,7 @@ class Build extends CommandHandler implements CommandInterface
     public $paginatorMessage;
     public $listner;
     public $buildingList;
+    public $buildingListType;
     public $closed;
 
     public function execute()
@@ -44,9 +45,10 @@ class Build extends CommandHandler implements CommandInterface
                 {
                     echo PHP_EOL.'Execute Build';
                     if($this->player->activeColony->id == $this->player->colonies[0]->id)
-                        $this->buildingList = Building::all();
+                        $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
                     else
-                        $this->buildingList = Building::where('id', '!=', 19)->get(); //Pas l usine Asuran
+                        $this->buildingList = Building::Where('type', 'Energy')->orWhere([['type','Production'],['id','!=',19]])->orderBy('Type','ASC')->get();//Pas l usine Asuran
+                    $this->buildingListType = trans('generic.productionBuildings',[],$this->player->lang);
 
                     $this->closed = false;
                     $this->page = 1;
@@ -55,11 +57,15 @@ class Build extends CommandHandler implements CommandInterface
                     $this->message->channel->sendMessage('', false, $this->getPage())->then(function ($messageSent){
                         $this->paginatorMessage = $messageSent;
 
-                        $this->paginatorMessage->react('⏪')->then(function(){
-                            $this->paginatorMessage->react('◀️')->then(function(){
-                                $this->paginatorMessage->react('▶️')->then(function(){
-                                    $this->paginatorMessage->react('⏩')->then(function(){
-                                        $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                        $this->paginatorMessage->react('◀️')->then(function(){
+                            $this->paginatorMessage->react('▶️')->then(function(){
+                                $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.productionBuilding')))->then(function(){
+                                    $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.researchBuilding')))->then(function(){
+                                        $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.military')))->then(function(){
+                                            $this->paginatorMessage->react(str_replace(array('<','>',),'',config('stargate.emotes.storage')))->then(function(){
+                                                $this->paginatorMessage->react(config('stargate.emotes.cancel'));
+                                            });
+                                        });
                                     });
                                 });
                             });
@@ -80,12 +86,6 @@ class Build extends CommandHandler implements CommandInterface
                                         $this->closed = true;
                                         return;
                                     }
-                                    elseif($messageReaction->emoji->name == '⏪')
-                                    {
-                                        $this->page = 1;
-                                        $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
-                                        $messageReaction->message->addEmbed($newEmbed);
-                                    }
                                     elseif($messageReaction->emoji->name == '◀️' && $this->page > 1)
                                     {
                                         $this->page--;
@@ -98,9 +98,35 @@ class Build extends CommandHandler implements CommandInterface
                                         $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
-                                    elseif($messageReaction->emoji->name == '⏩')
+                                    elseif($messageReaction->emoji->name == 'productionBuilding'
+                                        || $messageReaction->emoji->name == 'storage'
+                                        || $messageReaction->emoji->name == 'researchBuilding'
+                                        || $messageReaction->emoji->name == 'military')
                                     {
-                                        $this->page = $this->maxPage;
+                                        switch($messageReaction->emoji->name)
+                                        {
+                                            case 'productionBuilding':
+                                                if($this->player->activeColony->id == $this->player->colonies[0]->id)
+                                                    $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
+                                                else
+                                                    $this->buildingList = Building::Where('type', 'Energy')->orWhere([['type','Production'],['id','!=',19]])->orderBy('Type','ASC')->get();//Pas l usine Asuran
+                                                $this->buildingListType = trans('generic.productionBuildings',[],$this->player->lang);
+                                            break;
+                                            case 'storage':
+                                                $this->buildingList = Building::where('type','Storage')->get();
+                                                $this->buildingListType = trans('generic.storageBuildings',[],$this->player->lang);
+                                            break;
+                                            case 'researchBuilding':
+                                                $this->buildingList = Building::where('type','Science')->get();
+                                                $this->buildingListType = trans('generic.scienceBuildings',[],$this->player->lang);
+                                            break;
+                                            case 'military':
+                                                $this->buildingList = Building::where('type','Military')->get();
+                                                $this->buildingListType = trans('generic.militaryBuildings',[],$this->player->lang);
+                                            break;
+                                        }
+                                        $this->page = 1;
+                                        $this->maxPage = ceil($this->buildingList->count()/5);
                                         $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
@@ -115,7 +141,7 @@ class Build extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                 }
                 elseif(Str::startsWith('cancel', $this->args[0]))
@@ -131,49 +157,136 @@ class Build extends CommandHandler implements CommandInterface
                         }
                         else
                         {
-                            $cancelledBuilding = $this->player->activeColony->activeBuilding;
+                            //CONFIRM
+                            $cancelConfirm = trans('building.cancelBuildConfirm', [], $this->player->lang);
+                            $embed = [
+                                'author' => [
+                                    'name' => $this->player->user_name,
+                                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                ],
+                                "title" => "Build",
+                                "description" => $cancelConfirm,
+                                'fields' => [
+                                ],
+                                'footer' => array(
+                                    'text'  => 'Stargate',
+                                ),
+                            ];
+                            $newEmbed = $this->discord->factory(Embed::class,$embed);
 
-                            $wantedLvl = 1;
-                            $currentLvl = $this->player->activeColony->hasBuilding($cancelledBuilding);
-                            if($currentLvl)
-                                $wantedLvl += $currentLvl;
+                            $this->maxTime = time()+180;
+                            $this->message->channel->sendMessage('', false, $newEmbed)->then(function ($messageSent){
 
-                            $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
+                                $this->closed = false;
+                                $this->paginatorMessage = $messageSent;
+                                $this->paginatorMessage->react(config('stargate.emotes.confirm'))->then(function(){
+                                    $this->paginatorMessage->react(config('stargate.emotes.cancel'))->then(function(){
+                                    });
+                                });
 
-                            $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
-                            foreach(config('stargate.resources') as $resource)
-                            {
-                                if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
-                                {
-                                    $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
-                                    if(($this->player->activeColony->{'storage_'.$resource}*1.25) <= $newResource)
-                                        $newResource = $this->player->activeColony->{'storage_'.$resource}*1.25;
-                                    $this->player->activeColony->$resource = $newResource;
-                                }
-                            }
-                            $bufferedId = $this->player->activeColony->active_building_id;
-                            $this->player->activeColony->active_building_id = null;
-                            $this->player->activeColony->active_building_end = null;
-                            $this->player->activeColony->save();
+                                $filter = function($messageReaction){
+                                    return $messageReaction->user_id == $this->player->user_id;
+                                };
+                                $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
+                                    $messageReaction = $collector->first();
+                                    try{
+                                        if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
+                                        {
+                                            $this->player->load('activeColony');
+                                            if($this->player->activeColony->active_building_remove)
+                                            {
+                                                $newEmbed = $this->discord->factory(Embed::class,[
+                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                    'description' => trans('building.cantCancelRemove',[],$this->player->lang)
+                                                    ]);
+                                                $messageReaction->message->addEmbed($newEmbed);
+                                            }
+                                            if(is_null($this->player->activeColony->active_building_end))
+                                            {
+                                                return ;
+                                                $newEmbed = $this->discord->factory(Embed::class,[
+                                                    'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                    'description' => trans('building.noActiveBuilding',[],$this->player->lang)
+                                                    ]);
+                                                $messageReaction->message->addEmbed($newEmbed);
+                                            }
+                                            else
+                                            {
+                                                $cancelledBuilding = $this->player->activeColony->activeBuilding;
 
-                            if(!is_null($this->player->premium_expiration))
-                            {
+                                                $wantedLvl = 1;
+                                                $currentLvl = $this->player->activeColony->hasBuilding($cancelledBuilding);
+                                                if($currentLvl)
+                                                    $wantedLvl += $currentLvl;
 
-                                foreach($this->player->activeColony->buildingQueue as $buildinQueued)
-                                {
-                                    if($buildinQueued->id == $bufferedId)
-                                    {
-                                        //echo PHP_EOL.$buildinQueued->pivot->level;
-                                        /*$buildinQueued->pivot->level--;
-                                        $buildinQueued->save();*/
-                                        //$this->player->activeColony->buildingQueue()->where('buildings.id', $buildinQueued->id)->wherePivot('level', $buildinQueued->pivot->level)->detach();
+                                                $coef = $this->player->activeColony->getArtifactBonus(['bonus_category' => 'Price', 'bonus_type' => 'Building']);
+
+                                                $buildingPrices = $cancelledBuilding->getPrice($wantedLvl, $coef);
+                                                foreach(config('stargate.resources') as $resource)
+                                                {
+                                                    if(isset($buildingPrices[$resource]) && $buildingPrices[$resource] > 0)
+                                                    {
+                                                        $newResource = $this->player->activeColony->$resource + ceil($buildingPrices[$resource]*0.75);
+                                                        if(($this->player->activeColony->{'storage_'.$resource}*1.25) <= $newResource)
+                                                            $newResource = $this->player->activeColony->{'storage_'.$resource}*1.25;
+                                                        $this->player->activeColony->$resource = $newResource;
+                                                    }
+                                                }
+                                                $bufferedId = $this->player->activeColony->active_building_id;
+                                                $this->player->activeColony->active_building_id = null;
+                                                $this->player->activeColony->active_building_end = null;
+                                                $this->player->activeColony->save();
+
+                                                if(!is_null($this->player->premium_expiration))
+                                                {
+
+                                                    foreach($this->player->activeColony->buildingQueue as $buildinQueued)
+                                                    {
+                                                        if($buildinQueued->id == $bufferedId)
+                                                        {
+                                                            //echo PHP_EOL.$buildinQueued->pivot->level;
+                                                            /*$buildinQueued->pivot->level--;
+                                                            $buildinQueued->save();*/
+                                                            //$this->player->activeColony->buildingQueue()->where('buildings.id', $buildinQueued->id)->wherePivot('level', $buildinQueued->pivot->level)->detach();
+                                                        }
+                                                    }
+                                                    $this->player->activeColony->checkBuildingQueue();
+                                                }
+
+                                                $embed = [
+                                                    'author' => [
+                                                        'name' => $this->player->user_name,
+                                                        'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                                                    ],
+                                                    "title" => "Build",
+                                                    "description" => trans('building.buildingCanceled',[],$this->player->lang),
+                                                    'fields' => [
+                                                    ],
+                                                    'footer' => array(
+                                                        'text'  => 'Stargate',
+                                                    ),
+                                                ];
+                                                $newEmbed = $this->discord->factory(Embed::class,$embed);
+                                                $messageReaction->message->addEmbed($newEmbed);
+                                            }
+                                        }
+                                        elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang)
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                        }
+                                        $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
                                     }
-                                }
-                                $this->player->activeColony->checkBuildingQueue();
-                            }
+                                    catch(\Exception $e)
+                                    {
+                                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                                    }
+                                });
+                            });
+                            return;
 
-
-                            return trans('building.buildingCanceled',[],$this->player->lang);
                         }
                     }
                     catch(\Exception $e)
@@ -198,11 +311,26 @@ class Build extends CommandHandler implements CommandInterface
 
                     $buildingQueueString = "";
                     $queueIndex = 1;
+                    $buildingEnd = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->activeColony->active_building_end);
+
                     foreach($this->player->activeColony->buildingQueue as $queuedBuilding)
                     {
                         $buildingQueueString .= $queueIndex.'. Lvl '.$queuedBuilding->pivot->level.' - '.trans('building.'.$queuedBuilding->slug.'.name', [], $this->player->lang)."\n";
+
+                        $buildingTime = $queuedBuilding->getTime($queuedBuilding->pivot->level);
+                        /** Application des bonus */
+                        $buildingTime *= $this->player->activeColony->getBuildingBonus($queuedBuilding->id);
+                        $buildingEnd->addSeconds($buildingTime);
+
                         $queueIndex++;
                     }
+
+                    $now = Carbon::now();
+                    $totalBuildingTime = $now->diffForHumans($buildingEnd,[
+                        'parts' => 3,
+                        'short' => true, // short syntax as per current locale
+                        'syntax' => CarbonInterface::DIFF_ABSOLUTE
+                    ]);
 
                     $embed = [
                         'author' => [
@@ -211,7 +339,7 @@ class Build extends CommandHandler implements CommandInterface
                         ],
                        // 'thumbnail' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planets/'.$this->player->activeColony->image],
                         "title" => trans('building.queueList',[],$this->player->lang),
-                        "description" => $buildingQueueString."\n".trans('building.howToClearQueue', [], $this->player->lang),
+                        "description" => $buildingQueueString."\n".trans('building.estimatedQueuedTotal', ['totalTime' => $totalBuildingTime], $this->player->lang)."\n".trans('building.howToClearQueue', [], $this->player->lang),
                         'fields' => [],
                         'footer' => array(
                             'text'  => 'Stargate',
@@ -249,7 +377,7 @@ class Build extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                     return;
 
@@ -630,7 +758,7 @@ class Build extends CommandHandler implements CommandInterface
                 'name' => $this->player->user_name,
                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
             ],
-            "title" => trans('building.buildingList', [], $this->player->lang),
+            "title" => $this->buildingListType,
             "description" => trans('building.genericHowTo', [], $this->player->lang),
             'fields' => [],
             'footer' => array(

@@ -18,7 +18,7 @@ class PlayerUtility
 
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
-            $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $colonyDest->name, 'coordinate' => $destCoordinates, 'planetSource' => $colonySource->name, 'sourceCoordinates' => $sourceCoordinates], $colonySource->player->lang);
+            $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $colonyDest->name, 'coordinate' => $destCoordinates, 'planetSource' => $colonySource->name, 'sourceCoordinates' => $sourceCoordinates], $colonyDest->player->lang);
             $reminder->player_id = $colonyDest->player->id;
             $reminder->save();
 

@@ -53,7 +53,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                 $researchCenter = Building::find(7);
                 $centerLevel = $this->player->activeColony->hasBuilding($researchCenter);
-                if(!$centerLevel || $centerLevel < 5)
+                if((!$centerLevel || $centerLevel < 5) && !(count($this->args) > 0 && Str::startsWith('bury',$this->args[0])))
                 {
                     $embed = [
                         'author' => [
@@ -129,7 +129,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -138,13 +138,13 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $this->player->activeColony->stargate_burying = true;
                                     if($this->player->activeColony->stargate_buried)
                                     {
-                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('48h');
+                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('24h');
                                         $burialMessage = trans('stargate.digingStarted', [], $this->player->lang);
                                         $imgBury = 'http://bot.thorr.ovh/stargate/laravel/public/images/digStargate.jpg';
                                     }
                                     else
                                     {
-                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('24h');
+                                        $this->player->activeColony->stargate_action_date = Carbon::now()->add('12h');
                                         $burialMessage = trans('stargate.burialStarted', [], $this->player->lang);
                                         $imgBury = 'http://bot.thorr.ovh/stargate/laravel/public/images/buryStargate.png';
                                     }
@@ -257,7 +257,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             else
                                 return false;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter);
+                        $this->paginatorMessage->createReactionCollector($filter,['time' => config('stargate.maxCollectionTime')]);
                     });
                     return;
                 }
@@ -301,13 +301,13 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('profile.playerVacation', [], $this->player->lang);
                 }
 
-                if(!Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->user_id != 125641223544373248)
+                if(!Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id == $this->player->id && $this->player->user_id != config('stargate.ownerId'))
                     return trans('stargate.samePlayerAction', [], $this->player->lang);
 
                 if(Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     return trans('stargate.notAColonyOfYour', [], $this->player->lang);
 
-                if($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != 125641223544373248)
+                if($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != config('stargate.ownerId'))
                     return trans('stargate.failedDialing', [], $this->player->lang);
 
                 //Check Consommation E2PZ
@@ -377,7 +377,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($travelCost){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -586,7 +586,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($travelCost){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -734,7 +734,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         return trans('stargate.tradeNpcImpossible', [], $this->player->lang);
 
                     $pactExists = Pact::Where([['player_1_id', $this->player->id], ['player_2_id', $this->coordinateDestination->colony->player->id]])->orWhere([['player_2_id', $this->player->id], ['player_1_id', $this->coordinateDestination->colony->player->id]])->get()->first();
-                    if(is_null($pactExists) && $this->player->user_id != 125641223544373248)
+                    if(is_null($pactExists) && $this->player->user_id != config('stargate.ownerId'))
                         return trans('trade.noPactWithThisPlayer', [] , $this->player->lang);
 
                     if($this->player->trade_ban)
@@ -854,7 +854,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($travelCost){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.confirm'))
@@ -1132,7 +1132,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector)  use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector)  use($travelCost,$sourceCoordinates,$destCoordinates,$malp){
                             $messageReaction = $collector->first();
                             try{
 
@@ -1277,7 +1277,7 @@ class Stargate extends CommandHandler implements CommandInterface
                             $filter = function($messageReaction){
                                 return $messageReaction->user_id == $this->player->user_id;
                             };
-                            $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost,$possibleColonies){
+                            $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($travelCost,$possibleColonies){
                                 $messageReaction = $collector->first();
                                 try{
                                     if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -1438,7 +1438,7 @@ class Stargate extends CommandHandler implements CommandInterface
 
                     $sourceCoordinates = $this->player->activeColony->coordinates->humanCoordinates();
                     $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                    $attackConfirmation = trans('stargate.AttackConfirmation', ['militaryUnits' => $attackConfirmPower,'planetName' => $this->coordinateDestination->colony->name, 'coordinateDestination' => $destCoordinates,'planetNameSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
+                    $attackConfirmation = trans('stargate.attackConfirmation', ['militaryUnits' => $attackConfirmPower,'planetName' => $this->coordinateDestination->colony->name, 'coordinateDestination' => $destCoordinates,'planetNameSource' => $this->player->activeColony->name, 'coordinateSource' => $sourceCoordinates, 'consumption' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.round($travelCost,3)], $this->player->lang);
 
                     $embed = [
                         'author' => [
@@ -1468,7 +1468,7 @@ class Stargate extends CommandHandler implements CommandInterface
                         $filter = function($messageReaction){
                             return $messageReaction->user_id == $this->player->user_id;
                         };
-                        $this->paginatorMessage->createReactionCollector($filter,['limit'=>1])->then(function ($collector) use($travelCost){
+                        $this->paginatorMessage->createReactionCollector($filter,['limit' => 1,'time' => config('stargate.maxCollectionTime')])->then(function ($collector) use($travelCost){
                             $messageReaction = $collector->first();
                             try{
                                 if($messageReaction->emoji->name == config('stargate.emotes.cancel'))
@@ -1479,6 +1479,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.confirm'))
                                 {
                                     try{
+                                        $this->player->activeColony->refresh();
 
                                         $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
                                         if($raidCapability['result'] == false)
@@ -1496,7 +1497,6 @@ class Stargate extends CommandHandler implements CommandInterface
                                             return;
                                         }
 
-                                        $this->player->activeColony->refresh();
                                         foreach($this->attackUnits as $attackUnit)
                                         {
                                             $unit = $attackUnit['unit'];
@@ -1551,7 +1551,8 @@ class Stargate extends CommandHandler implements CommandInterface
                                         $defencesAttackPoint = 0;
                                         foreach($this->coordinateDestination->colony->defences as $defence)
                                         {
-                                            $defencesAttackPoint += $defence->fire_power * $defence->pivot->number;
+                                            if($defence->type == 'Ground')
+                                                $defencesAttackPoint += $defence->fire_power * $defence->pivot->number;
                                         }
                                         $armamentTec = Technology::Where('slug', 'LIKE', 'armament')->first();
                                         $armamentLvl = $this->coordinateDestination->colony->player->hasTechnology($armamentTec);
@@ -1870,8 +1871,6 @@ class Stargate extends CommandHandler implements CommandInterface
         {
             $sysDiff = abs($source->system - $destination->system);
             if($sysDiff >= 0 && $sysDiff <= 5)
-                return 0.04;
-            elseif($sysDiff >= 0 && $sysDiff <= 5)
                 return 0.04;
             elseif($sysDiff >= 6 && $sysDiff <= 10)
                 return 0.08;

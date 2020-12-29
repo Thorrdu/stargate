@@ -20,7 +20,7 @@ class ThorrSeeder extends Seeder
     public function run()
     {
         $thorrdu = new Player;
-        $thorrdu->user_id = 125641223544373248;
+        $thorrdu->user_id = config('stargate.ownerId');
         $thorrdu->user_name = 'Thorrdu';
         $thorrdu->ban = false;
         $thorrdu->lang = 'fr';

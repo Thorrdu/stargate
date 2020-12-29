@@ -73,6 +73,14 @@ return [
         'description' => "Vous permet de flex vos ressources aux autres joueurs.",
         'usage' => ":prefixflex [resource] [quantité/all]"
     ],
+    'dakara' => [
+        'description' => "L'impulsion engrangée par la super-arme de Dakara voyageant dans le sub-espace et se répendant jusqu'à l'orbite d'une planète, vous pouvez causer des dégâts instantannés à l'ensemble du système défensif d'une colonie adverse et ce, même si sa porte des étoiles est enterrée.".
+                        "\n\nLes dégâts causées s'élèvent à 10% des défenses et 1h de production de militaires par niveau de différence entre la votre et celle de votre adversaire. (Taux de destruction maximal: 30%)".
+                        "\nLa portée de base de votre super-arme est de 2 système et double à chaque niveau (2 systèmes ^ niveau). Chaque 128 systèmes de portée, vous accédez à une galaxie supplémentaire.".
+
+                        "\n\nUne utilisation de la super-arme de Dakara compte comme une attaque effectuée par la porte dans votre cycle d'attaque journalier.",
+        'usage' => ':prefixdakara [Coordonnées]'
+    ],
     'stargate' => [
         'description' => "Accès à la porte des étoiles de votre colonie\nPermet de partir explorer d'autres planètes afin d'obtenir informations et ressources, d'espionner ou commercer avec les autres joueur voir de les attaquer".
                         "**Lvl 5 - Laboratoire de recherche** est requis pour activer la porte vers d'autres planètes..\n".
@@ -131,7 +139,7 @@ return [
     ],
     'profile' => [
         'description' => "Affiche les informations de votre profile tel que vote langue, nombre de vote,...".
-                        "\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponbible.".
+                        "\nPermet également de configurer la réception de notifications lors de la fin de construction/recherche ou quand votre vote est de nouveau disponible.".
                         "\nSi vous le souhaitez, vous pouvez cacher les coordonnées lors de l'affichage de `!colony`".
                         "\nCette commande permet également d'activer ou désactiver le mode vacance.",
         'usage' => ":prefixprofile\n:prefixprofile notification [on/off]\n:prefixprofile hide [on/off]\n:prefixprofile vacation"

@@ -58,8 +58,12 @@ class Fleet extends Model
             $travelTime = 420 + $planetDifference * 30;
 
         $travelTime /= $speed;
+        $travelTime *= 1.5;
 
-        return $travelTime*1.5;
+        if($travelTime < 60)
+            $travelTime = 60;
+
+        return $travelTime;
     }
 
     public function outcome()
@@ -166,7 +170,7 @@ class Fleet extends Model
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
-                "title" => "Stargate",
+                "title" => "Fleet",
                 "description" => $fleetMessage,
                 'fields' => [
                 ],
@@ -409,7 +413,10 @@ class Fleet extends Model
                     }
 
                     $this->destinationColony->save();
-                    $this->returning = true;
+                    if($this->units->count() == 0 && $this->ships->count() == 0)
+                        $this->ended = true;
+                    else
+                        $this->returning = true;
                     $this->save();
 
                     if($this->player_source_id != $this->player_destination_id)
@@ -420,7 +427,7 @@ class Fleet extends Model
                                 'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                             ],
                             //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
-                            "title" => "Stargate",
+                            "title" => "Fleet",
                             "description" => $fleetMessage,
                             'fields' => [
                             ],
@@ -443,7 +450,7 @@ class Fleet extends Model
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         //'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/malpScreen.jpg'],
-                        "title" => "Stargate",
+                        "title" => "Fleet",
                         "description" => $transportMission,
                         'fields' => [
                         ],
@@ -512,7 +519,6 @@ class Fleet extends Model
                     $shipType = shipPart::
                     leftJoin('ship_part_technologies', 'ship_part_technologies.ship_part_id', '=', 'ship_parts.id')
                     ->where([['level',$ship->required_blueprint],['ship_part_technologies.required_technology_id', 6]])
-
                     ->get()->first();
                     if(!is_null($shipType))
                         $shipClass = '(Class '.trans('shipyard.'.$shipType->slug.'.name', [], $lang).')';
@@ -973,12 +979,19 @@ class Fleet extends Model
                         }
                         else
                         {
-                            $newDefNumber = floor($defenceForces[$key]['item']->pivot->number*0.95);
-                            if($newDefNumber > 0)
+                            $lostDef = ceil($defenceForces[$key]['item']->pivot->number*0.05);
+                            if($forceUnit['item']->type == 'Space')
                             {
-                                $defenceForces[$key]['item']->pivot->number = floor($defenceForces[$key]['item']->pivot->number * 0.95);
-                                $defenceForces[$key]['item']->pivot->save();
+                                $defPrice = $forceUnit['item']->getPrice($lostDef);
+                                foreach(config('stargate.resources') as $resource)
+                                {
+                                    if($resource != 'naqahdah')
+                                        $ruinfield[$resource] += floor($defPrice[$resource]*0.75);
+                                }
                             }
+                            $defenceForces[$key]['item']->pivot->number -= $lostDef;
+                            if($defenceForces[$key]['item']->pivot->number > 0)
+                                $defenceForces[$key]['item']->pivot->save();
                             else
                                 $this->destinationColony->defences()->detach($forceUnit['item']->id);
                         }
@@ -1088,8 +1101,23 @@ class Fleet extends Model
                     if($forceUnit['type'] == 'ship')
                         $forceUnit['item']->pivot->number = $forceUnit['quantity'];
                     else
-                        $forceUnit['item']->pivot->number -= ceil(($forceUnit['item']->pivot->number-$forceUnit['quantity'])*0.05);
-                    $forceUnit['item']->pivot->save();
+                    {
+                        $lostDef = ceil(($forceUnit['item']->pivot->number-$forceUnit['quantity'])*0.05);
+                        $forceUnit['item']->pivot->number -= $lostDef;
+                        if($forceUnit['item']->type == 'Space')
+                        {
+                            $defPrice = $forceUnit['item']->getPrice($lostDef);
+                            foreach(config('stargate.resources') as $resource)
+                            {
+                                if($resource != 'naqahdah')
+                                    $ruinfield[$resource] += floor($defPrice[$resource]*0.75);
+                            }
+                        }
+                    }
+                    if($forceUnit['item']->pivot->number > 0)
+                        $forceUnit['item']->pivot->save();
+                    else
+                        $this->destinationColony->defences()->detach($forceUnit['item']->id);
                 }
             }
         }
@@ -1180,7 +1208,7 @@ class Fleet extends Model
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planetAttack.gif'],
-                "title" => "Stargate",
+                "title" => "Fleet",
                 "description" => $winReport,
                 'fields' => [
                 ],
@@ -1209,7 +1237,7 @@ class Fleet extends Model
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/planetAttack.gif'],
-                "title" => "Stargate",
+                "title" => "Fleet",
                 "description" => $defenceLostReport,
                 'fields' => [
                 ],
@@ -1261,7 +1289,7 @@ class Fleet extends Model
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/shiplost.png'],
-                "title" => "Stargate",
+                "title" => "Fleet",
                 "description" => $fleetLostReport,
                 'fields' => [
                 ],
@@ -1290,7 +1318,7 @@ class Fleet extends Model
                     'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                 ],
                 'image' => ["url" => 'http://bot.thorr.ovh/stargate/laravel/public/images/spacedebris.png'],
-                "title" => "Stargate",
+                "title" => "Fleet",
                 "description" => $defenceSuccessReport,
                 'fields' => [
                 ],

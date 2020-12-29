@@ -908,7 +908,7 @@ class Colony extends Model
             $this->production_military *= config('stargate.premium.bonusProduction');
 
         $e2pzBuildings = $this->buildings->filter(function ($value){
-            return $value->production_type == 'e2pz' && $value->type == 'Science';
+            return $value->production_type == 'e2pz' && $value->type == 'Production';
         });
         $this->production_e2pz = 0;
         foreach($e2pzBuildings as $e2pzBuilding)
@@ -1039,6 +1039,7 @@ class Colony extends Model
             $this->active_building_id = null;
             $this->active_building_end = null;
             $this->calcProd();
+            $this->checkProd();
             $this->save();
 
             if(!is_null($this->player->premium_expiration))
@@ -1229,7 +1230,6 @@ class Colony extends Model
                     'Price' => 3,
                 ];
             }
-
 
             if(isset($options['bonusCategories']))
                 $bonusCategories = $options['bonusCategories'];

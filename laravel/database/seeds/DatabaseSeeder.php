@@ -266,11 +266,11 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.5
         ]);
         //Mine de fer
-        DB::table('building_buildings')->insert([
+        /*DB::table('building_buildings')->insert([
             'building_id' => 11,
             'required_building_id' => 2,
             'level' => 5
-        ]);
+        ]);*/
 
         DB::table('buildings')->insert([
             'id' => 12,
@@ -292,11 +292,11 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.5
         ]);
         //Mine d'or
-        DB::table('building_buildings')->insert([
+        /*DB::table('building_buildings')->insert([
             'building_id' => 12,
             'required_building_id' => 3,
             'level' => 5
-        ]);
+        ]);*/
 
         DB::table('buildings')->insert([
             'id' => 13,
@@ -318,11 +318,11 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.5
         ]);
         //Mine de quartz
-        DB::table('building_buildings')->insert([
+        /*DB::table('building_buildings')->insert([
             'building_id' => 13,
             'required_building_id' => 4,
             'level' => 5
-        ]);
+        ]);*/
 
         DB::table('buildings')->insert([
             'id' => 14,
@@ -344,11 +344,11 @@ class DatabaseSeeder extends Seeder
             'time_coefficient' => 1.5
         ]);
         //Mine de naqahdah
-        DB::table('building_buildings')->insert([
+        /*DB::table('building_buildings')->insert([
             'building_id' => 14,
             'required_building_id' => 5,
             'level' => 5
-        ]);
+        ]);*/
 
         DB::table('buildings')->insert([
             'id' => 15,
@@ -658,7 +658,7 @@ class DatabaseSeeder extends Seeder
             'slug' => Str::slug('commandcenter'),
             'description' => "Centre de commandement équipé d'une intelligence articifielle hors du commun. Votre vie sur cette colonie sera désormais bien plus aisée.",
             //et moins 30% les vaisseaux
-            'type' => 'Military',
+            'type' => 'Science',
             'iron' => 900000,
             'gold' => 900000,
             'quartz' => 500000,
@@ -750,7 +750,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Usine Asuran',
             'slug' => Str::slug('asuranfactory'),
             'description' => "Après de longues analyses, vos chercheurs réussissent à réactiver cette vieille usine Asuran de production d'E2PZ. vous ouvrant la voie vers le voyage interplanétaire",
-            'type' => 'Science',
+            'type' => 'Production',
             'iron' => 200,
             'gold' => 0,
             'quartz' => 500,

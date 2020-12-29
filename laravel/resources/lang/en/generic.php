@@ -23,7 +23,8 @@ return [
     'productionBuildings' => 'Production buildings',
     'scienceBuildings' => 'Science buildings',
     'militaryBuildings' => 'Military buildings',
-    'storageCapacity' => 'Storage capcity',
+    'storageBuildings' => 'Storage buildings',
+    'storageCapacity' => 'Storage capacity',
     'technologies' => 'Technologies',
     'laboratory' => 'Laboratory',
     'ship' => 'Ship',
@@ -102,4 +103,8 @@ return [
     'wrongParameter' => 'Wrong Parameters.',
     'availableRessources' => 'Available resources',
     'hidden' => 'Hidden',
+    "genericBuildConfirmTitle" => 'Building confirmation',
+    "genericBuildConfirmDesc" => "Build: **:qtyx :stuffToBuild**".
+                        "\nCost: :resources".
+                        "\nRequired time: **:time**",
 ];

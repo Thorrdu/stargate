@@ -125,7 +125,7 @@ class myDiscordCommandClient extends Discord
                             $len = strlen($command);
                             if((substr($key, 0, $len) === $command)) 
                             {
-                                if($key != 'ban' || $message->author->id == 125641223544373248)
+                                if($key != 'ban' || $message->author->id == config('stargate.ownerId'))
                                     $commandsFound[] = $key;
                             }
                         }

@@ -63,7 +63,7 @@ return [
     "colonizeDone" => "You troops joined with some scientists have reached your new colony on [:destination].\nUse `!colony` to discover your new colony and `!colony switch [Number]` switch between your colonies or `!colony remove [Number]` to remove one.\n(The list can be seen with `!colony list`).",
     "toManyColonies" => 'You reached the maximum amount of colonies.',
     "neverExploredWorld" => "Empty planet.",
-    "AttackConfirmation" => "Send an attack on :planetName [:coordinateDestination] from :planetNameSource [:coordinateSource]\n".
+    "attackConfirmation" => "Send an attack on :planetName [:coordinateDestination] from :planetNameSource [:coordinateSource]\n".
                             "Troops:\n:militaryUnits".
                             "\nCost: :consumption",
     "exploreConfirmation" => "Send an exploration team to [:coordinateDestination] ?\n".
@@ -104,7 +104,7 @@ return [
     'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource',
     'alreadySpied' => 'You spied this colony too recently. You\'ll be able to spy this colony again in **:time**',
     'digingStarted' => 'You stargate diging up, your stargate will be fully operational again in **48h**.',
-    'burialStarted' => 'You stargate your stargate burial. Your stargate will be fully inoperant in **24h**.\nHowever, external activation can still occur until the process is complete.',
+    'burialStarted' => "You stargate your stargate burial. Your stargate will be fully inoperant in **24h**.\nHowever, external activation can still occur until the process is complete.",
     'digUpConfirm' => 'Do you want to dig up your Stargate ? This action will take **48h**.',
     'burryConfirm' => "Do you want to bury your Stargate? This action will take **24h**.\nWarning, As soon as the process starts, your Stargate will be out of service but external activation can occur until the process is complete.",
     'digingActive' => 'You are already diging up. Stargate operational in: **:time**',
