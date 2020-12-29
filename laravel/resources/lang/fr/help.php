@@ -74,7 +74,7 @@ return [
         'usage' => ":prefixflex [resource] [quantité/all]"
     ],
     'dakara' => [
-        'description' => "L'impulsion engrangée par la super-arme de Dakara voyageant dans le sub-espace et se répendant jusqu'à l'orbite d'une planète, vous pouvez causer des dégâts instantannés à l'ensemble du système défensif d'une colonie adverse et ce, même si sa porte des étoiles est enterrée.".
+        'description' => "L'impulsion engrangée par la super-arme de Dakara voyageant dans le sub-espace et se répand jusqu'à l'orbite d'une planète, vous pouvez causer des dégâts instantannés à l'ensemble du système défensif d'une colonie adverse et ce, même si sa porte des étoiles est enterrée.".
                         "\n\nLes dégâts causées s'élèvent à 10% des défenses et 1h de production de militaires par niveau de différence entre la votre et celle de votre adversaire. (Taux de destruction maximal: 30%)".
                         "\nLa portée de base de votre super-arme est de 2 système et double à chaque niveau (2 systèmes ^ niveau). Chaque 128 systèmes de portée, vous accédez à une galaxie supplémentaire.".
 
