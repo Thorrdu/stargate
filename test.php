@@ -32,18 +32,19 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
-$players = Player::where('npc',0)->get();
+$players = Player::all();
 foreach($players as $player)
 {
 
-	$defIds = [1,2,3];
 
 
 
 	foreach($player->colonies as $colony)
 	{
+
 		$colony->calcProd();
 		$colony->save();
+		echo PHP_EOL.$colony->id;
 	}
 }
 die();
