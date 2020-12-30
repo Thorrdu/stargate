@@ -425,7 +425,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.colony.description', [], 'fr'),
 		'usage' => trans('help.colony.usage', [], 'fr'),
 		'aliases' => array('c'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {
@@ -475,7 +475,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.empire.description', [], 'fr'),
 		'usage' => trans('help.empire.usage', [], 'fr'),
 		//'aliases' => array('e'),
-        'cooldown' => 30
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('premium', function ($message, $args) use($discord){
@@ -495,7 +495,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		//'aliases' => array('g','ga','gal'),
-        'cooldown' => 20
+        'cooldown' => 10
     ]);	
 
     $discord->registerCommand('fleet', function ($message, $args) use($discord){
@@ -505,7 +505,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.fleet.description', [], 'fr'),
 		'usage' => trans('help.fleet.usage', [], 'fr'),
 		'aliases' => array('f'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('flex', function ($message, $args) use($discord){

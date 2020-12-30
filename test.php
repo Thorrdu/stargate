@@ -32,6 +32,21 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+$players = Player::where('npc',1)->get();
+foreach($players as $player)
+{
+
+	$defIds = [1,2,3];
+
+
+
+	foreach($player->colonies as $colony)
+	{
+		$colony->calcProd();
+		$colony->save();
+	}
+}
+die();
 
 $gateFights = DB::table('gate_fights')
             ->groupBy('player_id_source')
