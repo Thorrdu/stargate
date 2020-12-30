@@ -95,14 +95,14 @@ class Build extends CommandHandler implements CommandInterface
                                         $newEmbed = $this->discord->factory(Embed::class,$this->getPage());
                                         $messageReaction->message->addEmbed($newEmbed);
                                     }
-                                    elseif($messageReaction->emoji->name == 'productionBuilding'
+                                    elseif($messageReaction->emoji->name == 'production'
                                         || $messageReaction->emoji->name == 'storage'
                                         || $messageReaction->emoji->name == 'researchBuilding'
                                         || $messageReaction->emoji->name == 'military')
                                     {
                                         switch($messageReaction->emoji->name)
                                         {
-                                            case 'productionBuilding':
+                                            case 'production':
                                                 $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
                                                 $this->buildingListType = trans('generic.productionBuildings',[],$this->player->lang);
                                             break;
