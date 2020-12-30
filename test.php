@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
-$players = Player::where('npc',1)->get();
+$players = Player::where('npc',0)->get();
 foreach($players as $player)
 {
 
