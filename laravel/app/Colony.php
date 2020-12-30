@@ -517,7 +517,7 @@ class Colony extends Model
                 $current = $lastQueueCarbon;
         }
 
-        for($cptQueue = 0; $cptQueue <= $qty ; $cptQueue++ )
+        for($cptQueue = 1; $cptQueue <= $qty ; $cptQueue++ )
         {
             $buildingEnd = $current->addSeconds($buildingTime);
             $this->reyclingQueue()->attach([$ship->id => ['ship_end' => $buildingEnd]]);
