@@ -103,10 +103,7 @@ class Build extends CommandHandler implements CommandInterface
                                         switch($messageReaction->emoji->name)
                                         {
                                             case 'productionBuilding':
-                                                if($this->player->activeColony->id == $this->player->colonies[0]->id)
-                                                    $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
-                                                else
-                                                    $this->buildingList = Building::Where('type', 'Energy')->orWhere([['type','Production'],['id','!=',19]])->orderBy('Type','ASC')->get();//Pas l usine Asuran
+                                                $this->buildingList = Building::Where('type', 'Energy')->orWhere('type','Production')->orderBy('Type','ASC')->get();
                                                 $this->buildingListType = trans('generic.productionBuildings',[],$this->player->lang);
                                             break;
                                             case 'storage':
