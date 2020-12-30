@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Config;
 
+die();
 $players = Player::all();
 foreach($players as $player)
 {
