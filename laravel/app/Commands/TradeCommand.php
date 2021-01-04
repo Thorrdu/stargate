@@ -380,7 +380,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
 
                         $now = Carbon::now();
                         $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-                        $closingDate = $tradeCreation->add('24h');
+                        $closingDate = $tradeCreation->add('72h');
 
                         if($trade->active && $closingDate->isPast() && $trade->getFairness())
                         {
@@ -497,7 +497,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
         {
             $now = Carbon::now();
             $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-            $closingDate = $tradeCreation->add('24h');
+            $closingDate = $tradeCreation->add('72h');
             if($closingDate->isPast())
             {
 

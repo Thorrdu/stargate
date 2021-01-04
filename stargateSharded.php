@@ -254,10 +254,10 @@ $discord->on('ready', function ($discord) use($beta){
             }
             echo PHP_EOL.$artifactAutoDeleted.' Artefact deleted';
 
-            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('24h')]])->get();
+            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('72h')]])->get();
             foreach($expiredTrades as $expiredTrade)
             {
-                if(!$expiredTrade->getFairness())
+                if($expiredTrade->getFairness())
                 {
                     $expiredTrade->active = false;
                     $expiredTrade->save();
