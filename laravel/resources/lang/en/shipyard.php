@@ -145,7 +145,7 @@ return [
                               "-A weapon system\n".
                               "-A hull\n".
                               "-A propulsion system\n\n".
-                              "Command exemple to create a new custom model: \n".
+                              "Command example to create a new custom model: \n".
                               "`!ship create jumper projectileturret 1 taurihull 1 combustionreactor 5`\n".
                               "The list of all components wich can be used to create a new model can be found via `!shipyard parts`\n",
     'componentList' => 'Components list',
