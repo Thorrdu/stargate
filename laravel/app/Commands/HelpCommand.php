@@ -245,6 +245,15 @@ class HelpCommand extends CommandHandler implements CommandInterface
                     );
                 }
 
+                if(!empty($help['cooldown']))
+                {
+                    $embed['fields'][] = array(
+                        'name' => 'Cooldown',
+                        'value' => $help['cooldown'].'s',
+                        'inline' => true
+                    );
+                }
+
                 if(!empty($this->discord->aliases))
                 {
                     $aliasesString = "";
