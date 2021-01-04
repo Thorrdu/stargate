@@ -17,7 +17,7 @@ class Infos extends CommandHandler implements CommandInterface
 
         $totalServer = number_format(DB::table('configuration')->Where([['key','LIKE','shardServer%']])->sum('value'));
         //$totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
-        $shardDisplay = $this->discord->commandClientOptions['discordOptions']['shardId'];
+        $shardDisplay = $this->discord->commandClientOptions['discordOptions']['shardId']+1;
 
         $totalPlayers = DB::table('players')->count();
         $embed = [
@@ -45,7 +45,7 @@ class Infos extends CommandHandler implements CommandInterface
                 ],
                 [
                     'name' => 'Shards',
-                    'value' => "{($shardDisplay+1)}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
+                    'value' => "{$shardDisplay}/{$this->discord->commandClientOptions['discordOptions']['shardCount']}",
                     'inline' => true
                 ],
                 [
