@@ -256,10 +256,10 @@ $discord->on('ready', function ($discord) use($beta){
             }
             echo PHP_EOL.$artifactAutoDeleted.' Artefact deleted';
 
-            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('24h')]])->get();
+            $expiredTrades = Trade::Where([['active',true],['created_at', '<', Carbon::now()->sub('72h')]])->get();
             foreach($expiredTrades as $expiredTrade)
             {
-                if(!$expiredTrade->getFairness())
+                if($expiredTrade->getFairness())
                 {
                     $expiredTrade->active = false;
                     $expiredTrade->save();
@@ -425,7 +425,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.start.description', [], 'fr'),
         'usage' => trans('help.start.usage', [], 'fr'),
         'aliases' => array('h'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
 
     $discord->registerCommand('tutorial', function ($message, $args) use($discord){
@@ -436,7 +436,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.tutorial.description', [], 'fr'),
         'usage' => trans('help.tutorial.usage', [], 'fr'),
         'aliases' => array('t'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
 
     $discord->registerCommand('start', function ($message, $args) use($discord){
@@ -446,7 +446,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.start.description', [], 'fr'),
 		'usage' => trans('help.start.usage', [], 'fr'),
         //'aliases' => array('start'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
     //trans('generic.missingRequirements', [], $this->player->lang)
 
@@ -517,7 +517,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.empire.description', [], 'fr'),
 		'usage' => trans('help.empire.usage', [], 'fr'),
 		//'aliases' => array('e'),
-        'cooldown' => 10
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('premium', function ($message, $args) use($discord){
@@ -660,7 +660,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.vote.description', [], 'fr'),
 		'usage' => trans('help.vote.usage', [], 'fr'),
 		//'aliases' => array('v','vo'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('daily', function ($message, $args) use($discord){
@@ -675,7 +675,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.daily.description', [], 'fr'),
 		'usage' => trans('help.daily.usage', [], 'fr'),
 		'aliases' => array('day'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
 
     $discord->registerCommand('hourly', function ($message, $args) use($discord){
@@ -690,7 +690,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.hourly.description', [], 'fr'),
 		'usage' => trans('help.hourly.usage', [], 'fr'),
 		'aliases' => array('hr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
 
 
@@ -725,7 +725,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.ban.description', [], 'fr'),
 		'usage' => trans('help.ban.usage', [], 'fr'),
         //'aliases' => array('b')
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('infos', function ($message, $args) use($discord){
@@ -736,7 +736,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.infos.description', [], 'fr'),
 		'usage' => trans('help.infos.usage', [], 'fr'),
         //'aliases' => array('info'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('uptime', function ($message, $args){
@@ -761,7 +761,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.uptime.description', [], 'fr'),
 		'usage' => trans('help.uptime.usage', [], 'fr'),
         //'aliases' => array('up'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('captcha', function ($message, $args) use($discord){
@@ -771,7 +771,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.captcha.description', [], 'fr'),
 		'usage' => trans('help.captcha.usage', [], 'fr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('ping', function ($message, $args) use($discord){
@@ -781,7 +781,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.ping.description', [], 'fr'),
 		'usage' => trans('help.ping.usage', [], 'fr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('prefix', function ($message, $args) use($discord){
@@ -791,7 +791,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.prefix.description', [], 'fr'),
 		'usage' => trans('help.prefix.usage', [], 'fr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('channel', function ($message, $args) use($discord){
@@ -801,7 +801,7 @@ $discord->on('ready', function ($discord) use($beta){
         'group' => 'utility',
         'description' => trans('help.channel.description', [], 'fr'),
 		'usage' => trans('help.channel.usage', [], 'fr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     /*

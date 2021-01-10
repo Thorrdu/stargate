@@ -37,7 +37,7 @@ return [
     'unDiscovered' => 'Undiscovered',
     'buildingStarted' => 'Craft started, **:qtyx :name**. It will be done in **:time**',
     'howTo' => "Craft with `!craft [id] [quantity]` or `!craft [slug] [quantity]`\n\n",
-    'notYetDiscovered' => "Vous n'avez pas encore découvert ce craft.",
+    'notYetDiscovered' => "Craft not yet discovered.",
     'buildingList' => "Craft's list",
     "unknownCraft" => "Unknown craft",
     "craftList" => "Craft list",

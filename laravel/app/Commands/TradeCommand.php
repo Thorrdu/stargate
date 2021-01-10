@@ -380,7 +380,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
 
                         $now = Carbon::now();
                         $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-                        $closingDate = $tradeCreation->add('24h');
+                        $closingDate = $tradeCreation->add('72h');
 
                         if($trade->active && $closingDate->isPast() && $trade->getFairness())
                         {
@@ -499,7 +499,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
         {
             $now = Carbon::now();
             $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
-            $closingDate = $tradeCreation->add('24h');
+            $closingDate = $tradeCreation->add('72h');
 
             $warning = '';
             if($trade->getFairness())
@@ -519,7 +519,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
             }
             else
             {
-                $tradeEnding = $now->diffForHumans($tradeCreation->add('24h'),[
+                $tradeEnding = $now->diffForHumans($tradeCreation->add('72h'),[
                     'parts' => 3,
                     'short' => true, // short syntax as per current locale
                     'syntax' => CarbonInterface::DIFF_ABSOLUTE

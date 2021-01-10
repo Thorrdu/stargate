@@ -99,7 +99,7 @@ return [
     'howTo' => "Build with `!build :id confirm` or `!build :slug confirm`\n\n:description",
     'buildingList' => "Building's list",
     'genericHowTo' => "Use the reactions below this message to access other building types.\nTo display some building detail: `!build [ID/Slug]`\nTo start a building: `!build [ID/Slug] confirm`\n",
-    'notYetDiscovered' => "Vous n'avez pas encore découvert ce bâtiment.",
+    'notYetDiscovered' => "Building not yet discovered.",
     'notEnoughEnergy' => "You miss :missingEnergy energy to power this building.",
     'alreadyBuilding' => 'A building is already under construction. **Lvl :level :name** will be done in **:time**',
     'missingSpace' => 'Insufficient space to start this building.',

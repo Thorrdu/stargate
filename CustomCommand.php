@@ -245,6 +245,7 @@ class CustomCommand
             'description' => $this->description,
             'longDescription' => $this->longDescription,
             'usage' => $this->usage,
+            'cooldown' => $this->cooldown,
             'subCommandsHelp' => $subCommandsHelp,
         ];
     }
