@@ -341,8 +341,45 @@ $discord->on('ready', function ($discord) use($beta){
         echo PHP_EOL.'CHECK ALERTS: '.$alerts->count();
         if($alerts->count() > 0)
         {
-            $mainGuild = $discord->guilds->get('id', 735390211130916904);
-            $channelLogs = $mainGuild->channels->get('id', 735391094908518531); //735391094908518531 bfm //744551047342850179 testicule
+
+            /*
+            $discord->guilds->fetch(735390211130916904)->done(function(Guild $mainGuild) use($alerts,$discord){
+                if(!is_null($mainGuild))
+                {
+                    $channelLogs = $mainGuild->channels->get('id', 735391094908518531); //735391094908518531 bfm //744551047342850179 testicule
+                    foreach($alerts as $alert)
+                    {
+                        $embed = [
+                            'author' => [
+                                'name' => 'Stargate',
+                                'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                            ],
+                            "title" => trans('alert.'.$alert->type.'.title', [], 'fr'),
+                            "description" => $alert->news_fr,
+                            'fields' => [],
+                            'footer' => array(
+                                'text'  => 'Stargate',
+                            ),
+                        ];
+                        try{
+                            $newEmbed = $discord->factory(Embed::class,$embed);
+                            $channelLogs->sendMessage('', false, $newEmbed)->then(function ($logMessage) {
+                                echo PHP_EOL.'Alert posted';
+                            }, function ($e) {
+                            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                            });
+                        }catch(\Exception $e)
+                        {
+                            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                        }
+                        $alert->published = true;
+                        $alert->save();  
+                    }
+                }
+            });*/
+
+            //$mainGuild = $discord->guilds->get('id', 735390211130916904);
+            //$channelLogs = $mainGuild->channels->get('id', 735391094908518531); //735391094908518531 bfm //744551047342850179 testicule
         }
         foreach($alerts as $alert)
         {
@@ -358,17 +395,18 @@ $discord->on('ready', function ($discord) use($beta){
                     'text'  => 'Stargate',
                 ),
             ];
-            try{
-                $newEmbed = $discord->factory(Embed::class,$embed);
-                $channelLogs->sendMessage('', false, $newEmbed)->then(function ($logMessage) {
-                    echo PHP_EOL.'Alert posted';
-                }, function ($e) {
-                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-                });
-            }catch(\Exception $e)
-            {
-                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-            }
+        
+            $newEmbed = $discord->factory(Embed::class,$embed);
+            $channel = $discord->factory(\Discord\Parts\Channel\Channel::class, [
+                'id' => 735391094908518531,
+                'guild_id' => 735390211130916904,
+            ]);
+            $channel->sendMessage('', false, $newEmbed)->then(function ($logMessage) {
+                echo PHP_EOL.'Alert posted';
+            }, function ($e) {
+            echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            });
+
             $alert->published = true;
             $alert->save();  
         }
