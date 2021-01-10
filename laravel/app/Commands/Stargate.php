@@ -554,7 +554,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                     $defence = Defence::Where([['slug', 'LIKE', $resource.'%'],['id',4]])->first();
                                     if(is_null($defence))
                                         return trans('stargate.unknownResource', ['resource' => $resource], $this->player->lang);
-                                    else
+                                    elseif(!isset($this->tradeResources[$defence->slug]))
                                     {
                                         $resFound = true;
                                         $resource = $defence->slug;
