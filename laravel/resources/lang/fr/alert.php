@@ -16,7 +16,7 @@ return [
                         "\nDes débris seraient encore visibles autour du champ de bataille laissé par les 2 empires.",
     ],
     'pirate' => [
-        'title' => "Activité hostiles",
+        'title' => "Activité hostile",
         'description' => "Avis aux empire de la galaxie :galaxy une flotte pirate à été apperçue non loins du système :coordinates",
     ],
     /*'conquest' => [
