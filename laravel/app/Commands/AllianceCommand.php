@@ -280,7 +280,14 @@ class AllianceCommand extends CommandHandler implements CommandInterface
                                 $allianceId = $this->player->alliance->id;
                                 $allianceName = $this->player->alliance->name;
 
-                                DB::table('players')->where('alliance_id', $allianceId)->update(['alliance_id' => null,'role_id' => null, 'user_name' => 'players.untagged_user_name']);
+                                $aMembers = Player::where('alliance_id', $allianceId)->get();
+                                foreach($aMembers as $member){
+                                    $member->user_name = $member->untagged_user_name;
+                                    $member->alliance_id = null;
+                                    $member->role_id = null;
+                                    $member->save();
+                                }
+
                                 DB::table('alliance_roles')->where('alliance_id', $allianceId)->delete();
                                 DB::table('alliances')->where('id', $allianceId)->delete();
 
