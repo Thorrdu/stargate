@@ -619,6 +619,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans('colony.craftQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
@@ -674,6 +675,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans('colony.defenceQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
@@ -727,6 +729,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans('colony.recyclingQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
@@ -782,6 +785,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans('colony.shipQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();
@@ -1058,6 +1062,7 @@ class Colony extends Model
                 try{
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     if($removal)
                         $reminder->reminder = trans("building.buildingRemoved", ['colony' => $colonyNumber.' '.$this->name.' ['.$this->coordinates->humanCoordinates().']','name' => trans('building.'.$building->slug.'.name', [], $this->player->lang)], $this->player->lang);
                     else
@@ -1168,6 +1173,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans("building.queueCanceled", [
                         'colony' => $this->name.' ['.$this->coordinates->humanCoordinates().']',
                         'buildingName' => trans('building.'.$buildingToBuild->slug.'.name', [], $this->player->lang),
@@ -1188,6 +1194,7 @@ class Colony extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->addSecond(1);
+                    $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                     $reminder->reminder = trans('colony.buildingQueueEnded', ['colony' => $colonyNumber.' '.$this->name." [".$this->coordinates->humanCoordinates()."] "], $this->player->lang);
                     $reminder->player_id = $this->player->id;
                     $reminder->save();

@@ -43,6 +43,8 @@ class FleetCommand extends CommandHandler implements CommandInterface
     public $fleetConsumptionBonus;
     public $fleetHistory;
     public $fightPages;
+    public $boosted;
+    public $boostCost;
 
     public function execute()
     {
@@ -571,12 +573,13 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     $this->fleet->crew = 0;
                     $this->fleet->capacity = 0;
 
+                    $this->boosted = false;
                     $availableResources = config('stargate.resources');
                     $availableResources[] = 'E2PZ';
                     $availableResources[] = 'military';
                     $this->transportString = '';
                     $this->usedCapacity = 0;
-                    $this->fleetMaxSpeed = 100;
+                    $this->fleetMaxSpeed = 1000;
                     $this->fleetSpeed = 100;
                     $this->fleetShips = array();
                     $this->fleetUnits = array();
@@ -701,9 +704,22 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 }
                             }
                         }
+                        elseif(Str::startsWith('boost',$this->args[$cptRes]) && (Str::startsWith('attack',$this->args[0]) || Str::startsWith('base',$this->args[0]) || Str::startsWith('transport',$this->args[0])))
+                        {
+                            $this->boosted = true;
+                            $this->fleet->boosted = true;
+                        }
                         else
                             return trans('fleet.wrongParameter', [], $this->player->lang);
                     }
+
+                    if($this->boosted){
+                        $this->boostCost = array_sum(array_column($this->fleetShips, 'qty'))*0.5;
+
+                        if($this->player->activeColony->E2PZ < $this->boostCost)
+                            return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.number_format($this->boostCost - $this->player->activeColony->E2PZ,2)], $this->player->lang);
+                    }
+
 
                     if(empty($this->transportString))
                     {
@@ -732,7 +748,10 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.military')." ".trans('generic.militaries', [], $this->player->lang). ': '. number_format(ceil(($this->fleet->crew + $this->fleet->military) - $this->player->activeColony->military))], $this->player->lang);
 
                     //check Speed
+                    if($this->boosted)
+                        $this->fleetSpeed *= 1.2;
                     $this->fleetMaxSpeed = $this->fleetMaxSpeed * ($this->fleetSpeed/100);
+
                     $this->travelCost = floor($this->travelCost * ($this->fleetSpeed/100));
 
                     $this->usedCapacity += $this->travelCost;
@@ -742,7 +761,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         return trans('fleet.notEnoughCapacity', ['missingCapacity' => number_format(($this->usedCapacity) - $this->fleet->capacity)], $this->player->lang);
 
                     //check Carburant
-                    //die('CORRIGER');
                     if(($this->fleet->naqahdah + $this->travelCost) > $this->player->activeColony->naqahdah)
                         return trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil(($this->fleet->naqahdah + $this->travelCost) - $this->player->activeColony->naqahdah))], $this->player->lang);
 
@@ -797,6 +815,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                     if(empty($this->fleetShips) && $withScav)
                         $this->usedCapacity = 0;
 
+                    $boostedString = '/';
+                    if($this->boosted)
+                    {
+                        $boostedString = config('stargate.emotes.shield').' +15% '.config('stargate.emotes.speed').' +20% ('.config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).' '.number_format($this->boostCost,2).')';
+                    }
+
                     $baseMsg = trans('fleet.fleetMessage', [ 'mission' => ucfirst($this->fleet->mission),
                                                                 'coordinateDestination' => $destCoordinates,
                                                                 'planetDest' => $this->coordinateDestination->colony->name,
@@ -806,8 +830,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                 'freightCapacity' => number_format($this->usedCapacity).' / '.number_format($this->fleet->capacity),
                                                                 'resources' => $this->transportString,
                                                                 'crew' => number_format($this->fleet->crew),
-                                                                'speed' => $this->fleetMaxSpeed,
+                                                                'choosedSpeed' => $this->fleetMaxSpeed,
                                                                 'maxSpeed' => $this->fleetSpeed,
+                                                                'boosted' => $boostedString,
                                                                 'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(floor($this->travelCost)),
                                                                 'duration' => $fleetDuration,
                                                             ], $this->player->lang);
@@ -894,6 +919,8 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $qtyNeeded = $this->fleet->$resource;
                                             if($resource == 'naqahdah')
                                                 $qtyNeeded += $this->travelCost;
+                                            if($this->boosted && $resource == 'E2PZ')
+                                                $qtyNeeded += $this->boostCost;
 
                                             if($qtyNeeded > 0)
                                             {
@@ -901,7 +928,6 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                     $this->player->activeColony->$resource -= $qtyNeeded;
                                                 else
                                                 {
-
                                                     $resQty = number_format(ceil($qtyNeeded-$this->player->activeColony->$resource));
                                                     if($resource == 'E2PZ')
                                                         $resQty = number_format(($qtyNeeded-$this->player->activeColony->$resource),2);
@@ -1090,7 +1116,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                         ]);
 
                                         $destCoordinates = $this->coordinateDestination->humanCoordinates();
-                                        $spyConfirmedMessage = trans('stargate.probeSpySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => $wraithProbe->name.': 1', 'fleetDuration' => $fleetDuration], $this->player->lang);
+                                        $spyConfirmedMessage = trans('stargate.probeSpySending', ['coordinateDestination' => $destCoordinates, 'planetDest' => $this->coordinateDestination->colony->name, 'player' => $this->coordinateDestination->colony->player->user_name, 'consumption' => trans('craft.'.$wraithProbe->slug.'.name', [], $this->player->lang).': 1', 'fleetDuration' => $fleetDuration], $this->player->lang);
 
                                         $embed = [
                                             'author' => [
@@ -1116,7 +1142,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.missionCancelled', [], $this->player->lang)]);
                                     $messageReaction->message->addEmbed($newEmbed);
                                 }
 
@@ -1224,7 +1250,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                 'planetSource' => $this->player->activeColony->name,
                                                                 'coordinateSource' => $sourceCoordinates,
                                                                 'fleet' => $fleetString,
-                                                                'speed' => $this->fleetMaxSpeed,
+                                                                'choosedSpeed' => $this->fleetMaxSpeed,
                                                                 'maxSpeed' => $this->fleetSpeed,
                                                                 'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(floor($this->travelCost)),
                                                                 'duration' => $fleetDuration,
@@ -1310,7 +1336,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 }
                                 elseif($messageReaction->emoji->name == config('stargate.emotes.cancel'))
                                 {
-                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.spyCancelled', [], $this->player->lang)]);
+                                    $newEmbed = $this->discord->factory(Embed::class,['title' => trans('stargate.missionCancelled', [], $this->player->lang)]);
                                     $messageReaction->message->addEmbed($newEmbed);
                                 }
                                 $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
@@ -1326,7 +1352,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                 if(Str::startsWith('attack',$this->args[0]))
                 {
                     if(count($this->args) < 4)
-                        return trans('generic.missingArgs', [], $this->player->lang).' / !fleet attack [Coordinates] [Ship1] [Qty1]';
+                        return trans('generic.missingArgs', [], $this->player->lang)." / check `!help fleet`";
 
                     if(!$this->player->isRaidable($this->coordinateDestination->colony->player) && $this->coordinateDestination->colony->player->npc == 0)
                         return trans('stargate.weakOrStrong', [], $this->player->lang);
@@ -1346,6 +1372,12 @@ class FleetCommand extends CommandHandler implements CommandInterface
                         'syntax' => CarbonInterface::DIFF_ABSOLUTE
                     ]);
 
+                    $boostedString = '/';
+                    if($this->boosted)
+                    {
+                        $boostedString = config('stargate.emotes.shield').' +15% '.config('stargate.emotes.speed').' +20% ('.config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).' '.number_format($this->boostCost,2).')';
+                    }
+
                     $baseMsg = trans('fleet.fleetAttackMessage', [ 'mission' => ucfirst($this->fleet->mission),
                                                                 'coordinateDestination' => $destCoordinates,
                                                                 'planetDest' => $this->coordinateDestination->colony->name,
@@ -1354,8 +1386,9 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                                                 'fleet' => $fleetString,
                                                                 'freightCapacity' => number_format($this->usedCapacity).' / '.number_format($this->fleet->capacity),
                                                                 'crew' => number_format($this->fleet->crew),
-                                                                'speed' => $this->fleetMaxSpeed,
+                                                                'choosedSpeed' => $this->fleetMaxSpeed,
                                                                 'maxSpeed' => $this->fleetSpeed,
+                                                                'boosted' => $boostedString,
                                                                 'fuel' => config('stargate.emotes.naqahdah').' Naqahdah: '.number_format(ceil($this->travelCost)),
                                                                 'duration' => $fleetDuration,
                                                             ], $this->player->lang);
@@ -1379,6 +1412,18 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                 {
                                     echo 'CONFIRMED';
                                     $this->player->activeColony->refresh();
+
+                                    if($this->boosted)
+                                    {
+                                        if($this->player->activeColony->E2PZ > $this->boostCost)
+                                            $this->player->activeColony->E2PZ -= $this->boostCost;
+                                        else{
+                                            $this->paginatorMessage->channel->sendMessage(trans('generic.notEnoughResources', ['missingResources' => config('stargate.emotes.e2pz')." ".trans('generic.e2pz', [], $this->player->lang).': '.number_format($this->boostCost - $this->player->activeColony->E2PZ,2)], $this->player->lang));
+                                            $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                            $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                            return;
+                                        }
+                                    }
 
                                     if($this->player->activeColony->naqahdah >= $this->travelCost)
                                         $this->player->activeColony->naqahdah -= $this->travelCost;

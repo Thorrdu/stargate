@@ -33,8 +33,8 @@ class Top extends CommandHandler implements CommandInterface
             if($this->player->captcha)
                 return trans('generic.captchaMessage',[],$this->player->lang);
 
-            if(!is_null($this->player->vacation))
-                return trans('profile.vacationMode',[],$this->player->lang);
+            /*if(!is_null($this->player->vacation))
+                return trans('profile.vacationMode',[],$this->player->lang);*/
 
             try{
                 if(empty($this->args))
@@ -47,45 +47,45 @@ class Top extends CommandHandler implements CommandInterface
                 if(Str::startsWith('general', $this->args[0])){
                     $this->topType = 'general';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_total');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_total');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total');
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_total');
                 }
                 elseif(Str::startsWith('building', $this->args[0])){
                     $this->topType = 'building';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_building');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_building');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_building');
                 }
                 elseif(Str::startsWith('research', $this->args[0])){
                     $this->topType = 'research';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_research');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_research');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_research');
                 }
                 elseif(Str::startsWith('craft', $this->args[0])){
                     $this->topType = 'craft';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_craft');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_craft');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_craft');
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_craft');
                 }
                 elseif(Str::startsWith('military', $this->args[0])){
                     $this->topType = 'military';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_military');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_military');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_military');
                 }
-                elseif(Str::startsWith('defence', $this->args[0])){
+                /*elseif(Str::startsWith('defence', $this->args[0])){
                     $this->topType = 'defence';
                     if($this->topAlliance)
-                        $this->topList = Alliance::all()->where('id', '!=', 1)->sortByDesc('points_defence');
+                        $this->topList = Alliance::where('id', '!=', 1)->sortByDesc('points_defence');
                     else
-                        $this->topList = Player::all()->where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');
-                }
+                        $this->topList = Player::where('npc', 0)->where('id', '!=', 1)->sortByDesc('points_defence');
+                }*/
                 else
                     return trans('top.choice', [], $this->player->lang);
 
@@ -191,12 +191,12 @@ class Top extends CommandHandler implements CommandInterface
                     $allianceName = "**".$allianceName."**";
                 $topList .= $counter.". ".$allianceName." - ".number_format($listItem->$varName)." Points";
 
-                if($listItem->{'old_'.$varName} == $listItem->$varName)
+                /*if($listItem->{'old_'.$varName} == $listItem->$varName)
                     $topList .= ' (=)';
                 elseif($listItem->{'old_'.$varName} < $listItem->$varName)
                     $topList .= ' (+'.number_format(abs($listItem->$varName - $listItem->{'old_'.$varName})).')';
                 elseif($listItem->{'old_'.$varName} > $listItem->$varName)
-                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';
+                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';*/
 
                 $topList .= "\n";
             }
@@ -208,12 +208,12 @@ class Top extends CommandHandler implements CommandInterface
                     $playerName = "**".$playerName."**";
                 $topList .= $counter.". ".$playerName." - ".number_format($listItem->$varName)." Points";
 
-                if($listItem->{'old_'.$varName} == $listItem->$varName)
+                /*if($listItem->{'old_'.$varName} == $listItem->$varName)
                     $topList .= ' (=)';
                 elseif($listItem->{'old_'.$varName} < $listItem->$varName)
                     $topList .= ' (+'.number_format(abs($listItem->$varName - $listItem->{'old_'.$varName})).')';
                 elseif($listItem->{'old_'.$varName} > $listItem->$varName)
-                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';
+                    $topList .= ' (-'.number_format(abs($listItem->{'old_'.$varName} - $listItem->$varName)).')';*/
 
                 $topList .= "\n";
             }

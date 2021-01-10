@@ -68,7 +68,12 @@ class Player extends Model
 
     public function reminders()
     {
-        return $this->hasMany('App\Reminder')->orderBy('reminders.reminder_date','ASC');
+        return $this->hasMany('App\Reminder')->where('sent',false)->orderBy('reminders.reminder_date','ASC');
+    }
+
+    public function remindersHistory()
+    {
+        return $this->hasMany('App\Reminder')->where('sent',true)->orderBy('reminders.reminder_date','DESC')->limit(100);
     }
 
     public function alliance()
@@ -330,6 +335,7 @@ class Player extends Model
             {
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->addSecond(1);
+                $reminder->title = trans('reminder.titles.notification', [], $this->lang);
                 $reminder->reminder = $this->activeColony->name." [".$this->activeColony->coordinates->humanCoordinates()."] **Lvl ".$newLvl." - ".trans('research.'.$technology->slug.'.name', [], $this->lang)."** ".trans("reminder.isDone", [], $this->lang);
                 $reminder->player_id = $this->id;
                 $reminder->save();

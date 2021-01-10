@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Artifact;
+use App\Building;
 use Illuminate\Database\Eloquent\Model;
 use Discord\myDiscordCommandClient;
 use \Discord\Parts\Channel\Message as Message;
@@ -40,13 +41,20 @@ class Colony extends CommandHandler implements CommandInterface
 
                 if(isset($this->args[0]) && Str::startsWith('list',$this->args[0]))
                 {
+                    //Gate Status: offline
+                    //Gate Status: online
+                    $researchCenter = Building::find(7);
                     $coloniesString = "";
                     $colonyIndex = 1;
                     foreach($this->player->colonies as $colony)
                     {
+                        $centerLevel = $colony->hasBuilding($researchCenter);
+                        $gateStatus = 'Online';
+                        if($colony->stargate_buried || $colony->stargate_burying || (!$centerLevel || $centerLevel < 5))
+                            $gateStatus = 'Offline';
                         if($colony->id == $this->player->activeColony->id)
                             $coloniesString .= "**";
-                        $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."]\n";
+                        $coloniesString .= $colonyIndex.'. '.$colony->name." [".$colony->coordinates->humanCoordinates()."] Gate: $gateStatus\n";
                         if($colony->id == $this->player->activeColony->id)
                             $coloniesString .= "**";
                         $colonyIndex++;

@@ -2,11 +2,23 @@
 
 namespace App\Utility;
 
+use App\Alliance;
 use App\Fleet;
 use App\Player;
 
 class TopUpdater
 {
+    public static function updateAll()
+    {
+        $players = Player::where(['npc' => 0])->get();
+        foreach($players as $player)
+            TopUpdater::update($player);
+
+        $alliances = Alliance::All();
+        foreach($alliances as $alliance)
+            TopUpdater::updateAlliance($alliance);
+    }
+
     public static function update($player){
         if(!is_null($player) && !$player->npc)
         {
@@ -64,22 +76,25 @@ class TopUpdater
                         $craftPoint += TopUpdater::priceMerging($unit->getPrice($unit->pivot->number));
                 }
 
-                $player->points_craft = round($craftPoint/1000);
-                $player->points_military = round($militaryPoint/1000);
-                $player->points_defence = round($defencePoints/1000);
-                $player->points_building = round($buildingPoints/1000);
-                $player->points_total += $player->points_building + $player->points_craft + $player->points_defence + $player->points_military;
-
                 $researchPoints = 0;
                 foreach($player->technologies as $technology)
                 {
-                    for($cptPoint = 1;$cptPoint <= $technology->pivot->level; $cptPoint++)
+                    for($cptPoint = 1; $cptPoint <= $technology->pivot->level; $cptPoint++)
                         $researchPoints += TopUpdater::priceMerging($technology->getPrice($cptPoint));
                 }
+
                 $player->points_research = round($researchPoints/1000);
-                $player->points_total += $player->points_research;
-                $player->last_top_update = date("Y-m-d H:i:s");
-                $player->save();
+                $player->points_craft = round($craftPoint/1000);
+                $player->points_military = round($militaryPoint/1000) + round($defencePoints/1000);
+                $player->points_defence = 0;//round($defencePoints/1000);
+                $player->points_building = round($buildingPoints/1000);
+                $player->points_total += $player->points_building + $player->points_craft + $player->points_defence + $player->points_military + $player->points_research;
+
+                if($player->points_total != $player->old_points_total)
+                {
+                    $player->last_top_update = date("Y-m-d H:i:s");
+                    $player->save();
+                }
             }
             catch(\Exception $e)
             {

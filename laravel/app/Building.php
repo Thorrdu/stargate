@@ -23,7 +23,7 @@ class Building extends Model
 
     public function getPrice(int $level, $coef = 1)
     {
-        if($level == 1)
+        //if($level == 1)
             $level--;
         $buildingPrice = [];
         foreach (config('stargate.resources') as $resource)
@@ -43,7 +43,7 @@ class Building extends Model
 
     public function getTime(int $level)
     {
-        if($level == 1)
+        //if($level == 1)
             $level--; //Du au coeficient
         return $this->time_base * pow($this->time_coefficient, $level);
 

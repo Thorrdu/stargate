@@ -9,7 +9,7 @@ return [
     "UnknownColony" => "Unknown colony",
     'cannotRemoveHomePlanet' => 'You cannot abandon your homeworld...',
     'colonyRemoved' => 'Colonie abandonned...',
-    'colonySwitched' => 'Switch to the colony :colony',
+    'colonySwitched' => 'Switched to colony :colony',
     'defenceDivided' => 'Visible defences divided by 2',
     'defenceDoubled' => 'Visible defences doubled',
     'colonyMaxBonus' => 'Maximum colony number',

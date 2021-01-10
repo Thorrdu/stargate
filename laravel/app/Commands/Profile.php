@@ -229,12 +229,12 @@ class Profile extends CommandHandler implements CommandInterface
 
 
             $totalPlayers = DB::table('players')->where('npc', 0)->count();
-            $generalPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_total', '>' , $this->player->points_total]])->count() + 1;
-            $buildingPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_building', '>' , $this->player->points_building]])->count() + 1;
-            $researchPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_research', '>' , $this->player->points_research]])->count() + 1;
-            $craftPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_craft', '>' , $this->player->points_craft]])->count() + 1;
-            $militaryPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_military', '>' , $this->player->points_military]])->count() + 1;
-            $defencePosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_defence', '>' , $this->player->points_defence]])->count() + 1;
+            $generalPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_total', '>=' , $this->player->points_total]])->count() + 1;
+            $buildingPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_building', '>=' , $this->player->points_building]])->count() + 1;
+            $researchPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_research', '>=' , $this->player->points_research]])->count() + 1;
+            $craftPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_craft', '>=' , $this->player->points_craft]])->count() + 1;
+            $militaryPosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_military', '>=' , $this->player->points_military]])->count() + 1;
+            //$defencePosition = DB::table('players')->where([['id', '!=', 1],['npc', 0],['points_defence', '>=' , $this->player->points_defence]])->count() + 1;
 
             if($this->player->notification)
                 $notificationString = "On";
@@ -254,12 +254,12 @@ class Profile extends CommandHandler implements CommandInterface
                 'fields' => [
                     [
                         'name' => 'Points',
-                        'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." Points (Position: ".number_format($generalPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.productionBuilding')." ".trans('generic.building',[],$this->player->lang).": Points ".number_format($this->player->points_building)." (".number_format($buildingPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.research')." ".trans('generic.research',[],$this->player->lang).": Points ".number_format($this->player->points_research)." (Position: ".number_format($researchPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.craft')." ".trans('generic.unit',[],$this->player->lang).": Points ".number_format($this->player->points_craft)." (Position: ".number_format($craftPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).": Points ".number_format($this->player->points_military)." (Position: ".number_format($militaryPosition)."/{$totalPlayers})\n"
-                                  .config('stargate.emotes.defence')." ".trans('generic.defence',[],$this->player->lang).": Points ".number_format($this->player->points_defence)." (Position: ".number_format($defencePosition)."/{$totalPlayers})\n",
+                        'value' => trans('generic.general',[],$this->player->lang).": ".number_format($this->player->points_total)." Points ".$this->getIndicator('points_total')." (Position: ".number_format($generalPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.productionBuilding')." ".trans('generic.building',[],$this->player->lang).": ".number_format($this->player->points_building)." Points ".$this->getIndicator('points_building')." (".number_format($buildingPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.research')." ".trans('generic.research',[],$this->player->lang).": ".number_format($this->player->points_research)." Points ".$this->getIndicator('points_research')."".$this->getIndicator('points_total')." (Position: ".number_format($researchPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.craft')." ".trans('generic.unit',[],$this->player->lang).": ".number_format($this->player->points_craft)." Points ".$this->getIndicator('points_craft')."(Position: ".number_format($craftPosition)."/{$totalPlayers})\n"
+                                  .config('stargate.emotes.military')." ".trans('generic.military',[],$this->player->lang).": ".number_format($this->player->points_military)." Points ".$this->getIndicator('points_military')." (Position: ".number_format($militaryPosition)."/{$totalPlayers})\n",
+                                  //.config('stargate.emotes.defence')." ".trans('generic.defence',[],$this->player->lang).": ".number_format($this->player->points_defence)." Points ".$this->getIndicator('points_defence')." (Position: ".number_format($defencePosition)."/{$totalPlayers})\n",
                         'inline' => true
                     ]
                 ],
@@ -278,5 +278,17 @@ class Profile extends CommandHandler implements CommandInterface
         }
         else
             return trans('generic.start',[],'en')." / ".trans('generic.start',[],'fr');
+    }
+
+    public function getIndicator($varName)
+    {
+        $retVal = '';
+        if($this->player->{'old_'.$varName} == $this->player->$varName)
+            $retVal = ' (=)';
+        elseif($this->player->{'old_'.$varName} < $this->player->$varName)
+            $retVal = ' (+'.number_format(abs($this->player->$varName - $this->player->{'old_'.$varName})).')';
+        elseif($this->player->{'old_'.$varName} > $this->player->$varName)
+            $retVal = ' (-'.number_format(abs($this->player->{'old_'.$varName} - $this->player->$varName)).')';
+        return $retVal;
     }
 }

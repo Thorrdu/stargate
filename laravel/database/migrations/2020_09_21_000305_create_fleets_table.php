@@ -31,6 +31,7 @@ class CreateFleetsTable extends Migration
             $table->timestamp('arrival_date')->nullable();
             $table->boolean('returning')->default(false);
             $table->boolean('ended')->default(false);
+            $table->boolean('boosted')->default(false);
 
             $table->bigInteger('crew')->lenght(25)->unsigned()->nullable();
             $table->bigInteger('capacity')->lenght(25)->unsigned()->nullable();

@@ -99,7 +99,7 @@ return [
     "weakOrStrong" => "Ce joueur est trop fort ou trop faible pour vous...",
     "AttackLimit" => "Vous avez déjà attaqué cette planète il y a peu. Vous pourrez à nouveau attaquer dans: :time",
     "tradeNpcImpossible" => "Trade impossible avec un NPC",
-    'spyCancelled' => "Mission d'espionnage annulée",
+    'missionCancelled' => "Mission d'espionnage annulée",
     'colonizeCancel' => 'Mission de colonisation annulée',
     'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource',
     'alreadySpied' => 'Vous avez espionné cette colonie trop récement. Vous pourrez à nouveau envoyer une sonde dans **:time**',

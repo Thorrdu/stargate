@@ -99,7 +99,7 @@ return [
     "weakOrStrong" => "This player is too weak or too strong for you...",
     "AttackLimit" => "You already attacked this planet earlier. you'll be able to attack again in: :time",
     "tradeNpcImpossible" => "Impossible to trade with an NPC",
-    'spyCancelled' => "Spy cancelled",
+    'missionCancelled' => "Spy cancelled",
     'colonizeCancel' => 'Colonize Cancelled',
     'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource',
     'alreadySpied' => 'You spied this colony too recently. You\'ll be able to spy this colony again in **:time**',

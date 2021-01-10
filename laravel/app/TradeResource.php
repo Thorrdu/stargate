@@ -16,6 +16,11 @@ class TradeResource extends Model
         return $this->belongsTo('App\Unit');
     }
 
+    public function defence()
+    {
+        return $this->belongsTo('App\Defence');
+    }
+
     public function setValue()
     {
         try
@@ -25,6 +30,27 @@ class TradeResource extends Model
             {
                 $unitPrice = $this->unit->getPrice($this->quantity);
                 foreach($unitPrice as $resource => $price)
+                {
+                    switch ($resource)
+                    {
+                        case 'iron':
+                            $this->trade_value += $price;
+                        break;
+                        case 'gold':
+                            $this->trade_value += $price;
+                        break;
+                        case 'quartz':
+                        case 'naqahdah':
+                            $this->trade_value += $price;
+                        break;
+                    }
+                }
+                return;
+            }
+            elseif(!is_null($this->defence_id))
+            {
+                $defencePrice = $this->defence->getPrice($this->quantity);
+                foreach($defencePrice as $resource => $price)
                 {
                     switch ($resource)
                     {

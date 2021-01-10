@@ -12,7 +12,7 @@ $app = require_once __DIR__.'/laravel/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Http\Kernel')
     ->handle(Illuminate\Http\Request::capture());
 
-
+use App\Alert;
 use App\Building;
 use App\Player;
 use App\Colony;
@@ -22,7 +22,7 @@ use App\Alliance;
 use App\Artifact;
 use Illuminate\Support\Str;
 
-use App\Commands\{HelpCommand as CustomHelp, Flex, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Dakara, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
+use App\Commands\{HelpCommand as CustomHelp, Flex, News, ChannelCommand, Tutorial, Prefix, Captcha, Premium, AllianceCommand, TradeCommand, Dakara, Start, Empire, Colony as ColonyCommand, Build, Refresh, Research, Invite, Vote, Ban, Profile, Top, Lang as LangCommand, Ping, Infos, Galaxy, Craft, Stargate, Shipyard, Reminder as ReminderCommand, Daily as DailyCommand, Hourly as HourlyCommand, DefenceCommand, FleetCommand};
 use App\Fleet;
 use App\Trade;
 use App\Utility\PlayerUtility;
@@ -183,6 +183,9 @@ $discord->on('ready', function ($discord) use($beta){
                 
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->add('1s');
+                $reminder->title = trans('reminder.titles.explorationreport', [
+                    'coordinates' => $exploration->coordinateDestination->humanCoordinates(),
+                ], $exploration->player->lang);
                 $reminder->reminder = $explorationOutcome;
                 $reminder->player_id = $exploration->player->id;
                 $reminder->save();
@@ -206,6 +209,10 @@ $discord->on('ready', function ($discord) use($beta){
                 {
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->add(rand(1,5).'m');
+                    $reminder->title = trans('reminder.titles.artifactdiscovery', [
+                        'planet' => $colonyCheckArtifact->name,
+                        'coordinates' => $colonyCheckArtifact->coordinates->humanCoordinates(),
+                    ], $colonyCheckArtifact->player->lang);
                     $reminder->reminder = trans('colony.artifactDiscovered', ['artifact' => $newArtifact, 'planet' => $colonyCheckArtifact->name, 'coordinate' => $colonyCheckArtifact->coordinates->humanCoordinates()], $colonyCheckArtifact->player->lang);
                     $reminder->player_id = $colonyCheckArtifact->player->id;
                     $reminder->save();
@@ -217,13 +224,8 @@ $discord->on('ready', function ($discord) use($beta){
             {
                 echo PHP_EOL.'Top recalc';
 
-                $players = Player::where(['npc' => 0])->get();
-                foreach($players as $player)
-                    TopUpdater::update($player);
+                TopUpdater::updateAll();
 
-                $alliances = Alliance::All();
-                foreach($alliances as $alliance)
-                    TopUpdater::updateAlliance($alliance);
                 $newday = (int)date("d")+1;
                 if($newday<10)
                     $newday = '0'.$newday;
@@ -286,6 +288,7 @@ $discord->on('ready', function ($discord) use($beta){
             
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.notification', [], $playerVoted->lang);
             $reminder->reminder = trans('vote.thankyou', [], $playerVoted->lang);
             $reminder->player_id = $playerVoted->id;
             $reminder->save();
@@ -294,6 +297,7 @@ $discord->on('ready', function ($discord) use($beta){
             {
                 $reminder = new Reminder;
                 $reminder->reminder_date = Carbon::now()->add('12h');
+                $reminder->title = trans('reminder.titles.notification', [], $playerVoted->lang);
                 $reminder->reminder = trans('vote.reminder', [], $playerVoted->lang);
                 $reminder->player_id = $playerVoted->id;
                 $reminder->save();
@@ -333,13 +337,49 @@ $discord->on('ready', function ($discord) use($beta){
         $discord->updatePresence($game);*/
 
         $dateNow = Carbon::now();
-        $reminders = Reminder::where('reminder_date', '<', $dateNow->format("Y-m-d H:i:s"))->orderBy('player_id','asc')->get()->take(10);
-        $totalReminders = $reminders->count();
-        echo PHP_EOL."CHECK REMINDER: {$totalReminders}";
+        $alerts = Alert::where([['publication_date', '<', $dateNow->format("Y-m-d H:i:s")],['published',false]])->orderBy('publication_date','asc')->get()->take(3);
+        echo PHP_EOL.'CHECK ALERTS: '.$alerts->count();
+        if($alerts->count() > 0)
+        {
+            $mainGuild = $discord->guilds->get('id', 735390211130916904);
+            $channelLogs = $mainGuild->channels->get('id', 735391094908518531); //735391094908518531 bfm //744551047342850179 testicule
+        }
+        foreach($alerts as $alert)
+        {
+            $embed = [
+                'author' => [
+                    'name' => 'Stargate',
+                    'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                ],
+                "title" => trans('alert.'.$alert->type.'.title', [], 'fr'),
+                "description" => $alert->news_fr,
+                'fields' => [],
+                'footer' => array(
+                    'text'  => 'Stargate',
+                ),
+            ];
+            try{
+                $newEmbed = $discord->factory(Embed::class,$embed);
+                $channelLogs->sendMessage('', false, $newEmbed)->then(function ($logMessage) {
+                    echo PHP_EOL.'Alert posted';
+                }, function ($e) {
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                });
+            }catch(\Exception $e)
+            {
+                echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+            }
+            $alert->published = true;
+            $alert->save();  
+        }
+
+        $dateNow = Carbon::now();
+        $reminders = Reminder::where([['reminder_date', '<', $dateNow->format("Y-m-d H:i:s")],['sent', false]])->orderBy('player_id','asc')->get()->take(10);
+        echo PHP_EOL.'CHECK REMINDER: '.$reminders->count();
 
         foreach($reminders as $reminder)
         {  
-            if($reminder->tried)
+            if($reminder->player->npc || $reminder->tried)
                 $reminder->delete();
             else
             {
@@ -358,13 +398,15 @@ $discord->on('ready', function ($discord) use($beta){
                                 $newEmbed = $discord->factory(Embed::class,$reminderEmbed);
                                 $userExist->sendMessage('', false, $newEmbed)->done(function(Message $message) use($reminder){
                                     //if(!is_null($message))
-                                        $reminder->delete();
+                                    $reminder->sent = true;
+                                    $reminder->save();
                                 });
                             }
                             else
                                 $userExist->sendMessage($reminder->reminder)->done(function(Message $message) use($reminder){
                                     //if(!is_null($message))
-                                        $reminder->delete();
+                                    $reminder->sent = true;
+                                    $reminder->save();
                                 });
                         }
                         else
@@ -425,7 +467,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.colony.description', [], 'fr'),
 		'usage' => trans('help.colony.usage', [], 'fr'),
 		'aliases' => array('c'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('build', function ($message, $args) use($discord) {
@@ -435,7 +477,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.build.description', [], 'fr'),
 		'usage' => trans('help.build.usage', [], 'fr'),
 		'aliases' => array('b'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('research', function ($message, $args) use($discord) {
@@ -445,7 +487,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.research.description', [], 'fr'),
 		'usage' => trans('help.research.usage', [], 'fr'),
 		'aliases' => array('r'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);
     
     $discord->registerCommand('craft', function ($message, $args) use($discord){
@@ -455,7 +497,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.craft.description', [], 'fr'),
 		'usage' => trans('help.craft.usage', [], 'fr'),
 		//'aliases' => array('cr','cra','craf'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);
     
     $discord->registerCommand('defence', function ($message, $args) use($discord){
@@ -465,7 +507,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.defence.description', [], 'fr'),
 		'usage' => trans('help.defence.usage', [], 'fr'),
 		//'aliases' => array('d'),
-        'cooldown' => 3
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('empire', function ($message, $args) use($discord){
@@ -475,7 +517,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.empire.description', [], 'fr'),
 		'usage' => trans('help.empire.usage', [], 'fr'),
 		//'aliases' => array('e'),
-        'cooldown' => 30
+        'cooldown' => 10
     ]);	
 
     $discord->registerCommand('premium', function ($message, $args) use($discord){
@@ -485,7 +527,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.premium.description', [], 'fr'),
 		'usage' => trans('help.premium.usage', [], 'fr'),
 		//'aliases' => array('pre','prem'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('galaxy', function ($message, $args) use($discord){
@@ -495,7 +537,17 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.galaxy.description', [], 'fr'),
 		'usage' => trans('help.galaxy.usage', [], 'fr'),
 		//'aliases' => array('g','ga','gal'),
-        'cooldown' => 20
+        'cooldown' => 10
+    ]);	
+
+    $discord->registerCommand('news', function ($message, $args) use($discord){
+        $command = new News($message, $args, $discord);
+        return $command->execute();
+    },[
+        'description' => trans('help.news.description', [], 'fr'),
+		'usage' => trans('help.news.usage', [], 'fr'),
+		//'aliases' => array('g','ga','gal'),
+        'cooldown' => 5
     ]);	
 
     $discord->registerCommand('fleet', function ($message, $args) use($discord){
@@ -505,7 +557,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.fleet.description', [], 'fr'),
 		'usage' => trans('help.fleet.usage', [], 'fr'),
 		'aliases' => array('f'),
-        'cooldown' => 5
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('flex', function ($message, $args) use($discord){
@@ -514,7 +566,7 @@ $discord->on('ready', function ($discord) use($beta){
     },[
         'description' => trans('help.flex.description', [], 'fr'),
 		'usage' => trans('help.flex.usage', [], 'fr'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
 
@@ -525,7 +577,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.shipyard.description', [], 'fr'),
 		'usage' => trans('help.shipyard.usage', [], 'fr'),
 		//'aliases' => array('sh','ship'),
-        'cooldown' => 5
+        'cooldown' => 2
     ]);	
 
     $discord->registerCommand('stargate', function ($message, $args) use($discord){
@@ -535,7 +587,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.stargate.description', [], 'fr'),
 		'usage' => trans('help.stargate.usage', [], 'fr'),
 		'aliases' => array('s','sg'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
 
     $discord->registerCommand('dakara', function ($message, $args) use($discord){
@@ -545,7 +597,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.dakara.description', [], 'fr'),
 		'usage' => trans('help.dakara.usage', [], 'fr'),
 		//'aliases' => array('d'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);
     /*
     $discord->registerCommand('refresh', function ($message, $args) use($discord){
@@ -575,7 +627,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.trade.description', [], 'fr'),
 		'usage' => trans('help.trade.usage', [], 'fr'),
         //'aliases' => array('t','tr','tra'),
-        'cooldown' => 5
+        'cooldown' => 2
 
     ]);	
 
@@ -586,7 +638,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.top.description', [], 'fr'),
 		'usage' => trans('help.top.usage', [], 'fr'),
         //'aliases' => array('t')
-        'cooldown' => 5
+        'cooldown' => 3
 
     ]);	
 
@@ -650,7 +702,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.lang.description', [], 'fr'),
 		'usage' => trans('help.lang.usage', [], 'fr'),
         //'aliases' => array('b')
-        'cooldown' => 5
+        'cooldown' => 3
 
     ]);
 
@@ -662,7 +714,7 @@ $discord->on('ready', function ($discord) use($beta){
         'description' => trans('help.reminder.description', [], 'fr'),
 		'usage' => trans('help.reminder.usage', [], 'fr'),
         'aliases' => array('rmd'),
-        'cooldown' => 5
+        'cooldown' => 3
     ]);	
 
     $discord->registerCommand('ban', function ($message, $args) use($discord) {

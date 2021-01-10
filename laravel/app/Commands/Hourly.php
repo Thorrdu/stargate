@@ -121,6 +121,7 @@ class Hourly extends CommandHandler implements CommandInterface
                     {
                         $reminder = new Reminder;
                         $reminder->reminder_date = Carbon::now()->add('1h');
+                        $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                         $reminder->reminder = trans("hourly.hourlyAvailable", [], $this->player->lang);
                         $reminder->player_id = $this->player->id;
                         $reminder->save();

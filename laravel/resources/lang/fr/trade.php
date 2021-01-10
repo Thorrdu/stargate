@@ -13,7 +13,7 @@ return [
     'tradeValue' => 'Valeur totale: :totalValue',
     'notYourTrade' => 'Ce trade ne vous concerne pas.',
     'tradeList' => 'Liste des trades en cours',
-    'howTo' => "Limite autorisée en cas de trade faible -> fort : 25% en faveur du joueur fort.\nDétails d'un trade avec `!trade [ID]`",
+    'howTo' => "Limite autorisée en cas de trade faible -> fort : 100% en faveur du joueur fort.\nDétails d'un trade avec `!trade [ID]`",
     'warning' => '**_Attention, trade injuste. ajustez le trade avant la clôture automatique sous peine de sanction._**',
     'emptyList' => 'Aucun trade actif.',
     'alreadyExtended' => 'Ce trade à déjà profité d\'une extension',

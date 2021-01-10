@@ -11,7 +11,8 @@ return [
                         "**attack** (`!fleet attack [coordinates] [Ship] [Qty]`)\n".
                         "**scavenge** (`!fleet scavenge [coordinates] [Scavengers] [Qty]`)\n".
                         "**history** (`!fleet history`)\n".
-                        "Optional parameter: speed [10-100]",
+                        "Optional parameter: speed [10-100]\n".
+                        "Optional parameter: boost",
     "fleetMessage" => "__Travel from :planetSource [:coordinateSource]__\n".
                         "Destination: Colony :planetDest [:coordinateDestination]\n".
                         "Mission: **:mission**\n\n".
@@ -20,7 +21,7 @@ return [
                         "**Freight (:freightCapacity)**\n".
                         ":resources\n".
                         "Crew: :crew \n".
-                        "Speed: :speed (:maxSpeed%)\n".
+                        "Speed: :choosedSpeed (:maxSpeed%)\n".
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
@@ -31,7 +32,8 @@ return [
                         ":fleet\n".
                         "Capacity: :freightCapacity\n".
                         "Crew: :crew \n".
-                        "Speed: :speed (:maxSpeed%)\n".
+                        "Speed: :choosedSpeed (:maxSpeed%)\n".
+                        "Boost: :boosted\n".
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",
@@ -108,7 +110,7 @@ return [
                         "Mission: **:mission**\n\n".
                         "**Scavengers**\n".
                         ":fleet\n".
-                        "Speed: :speed (:maxSpeed%)\n".
+                        "Speed: :choosedSpeed (:maxSpeed%)\n".
                         "Fuel: :fuel\n".
                         "Flight duration: :duration\n".
                         "Sending status: **Awaiting**",

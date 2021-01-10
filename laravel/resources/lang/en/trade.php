@@ -13,7 +13,7 @@ return [
     'tradeValue' => 'Total value: :totalValue',
     'notYourTrade' => 'This trade doesn\'t concerns you.',
     'tradeList' => 'Active trades list',
-    'howTo' => "Authorized limit in the weak -> strong case: 25% in favor of the strong player.\nGet trade detail with `!trade [ID]`",
+    'howTo' => "Authorized limit in the weak -> strong case: 100% in favor of the strong player.\nGet trade detail with `!trade [ID]`",
     'warning' => '**_Warning, Unfair trade. Ajust this trade before closure or you\'ll suffer automatic sanction._**',
     'emptyList' => 'No active trade.',
     'alreadyExtended' => 'You already claimed a time extention',

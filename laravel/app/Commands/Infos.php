@@ -19,7 +19,7 @@ class Infos extends CommandHandler implements CommandInterface
         //$totalUsers = number_format(DB::table('configuration')->Where([['key','LIKE','shardUser%']])->sum('value'));
         $shardDisplay = $this->discord->commandClientOptions['discordOptions']['shardId'];
 
-        $totalPlayers = DB::table('players')->count();
+        $totalPlayers = DB::table('players')->where('npc', 0)->count();
         $embed = [
             'author' => [
                 'name' => "Stargate",

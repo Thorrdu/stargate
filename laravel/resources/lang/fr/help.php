@@ -12,8 +12,8 @@ return [
         'usage' => ':prefixban @mention'
     ],
     'reminder' => [
-        'description' => "Permet de créer, lister et supprimer des rappels envoyés en dm.",
-        'usage' => ":prefixreminder [temps] [motif]\nreminder list\n:prefixreminder 1h20m5s va dormir\n:prefixreminder remove [id]"
+        'description' => "Permet de créer, lister et supprimer des rappels envoyés en dm.\nIl est également possible de consulter l'historique des dm reçus.",
+        'usage' => ":prefixreminder [temps] [motif]\nreminder list\n:prefixreminder 1h20m5s va dormir\n:prefixreminder history\n:prefixreminder history [id]\n:prefixreminder remove [id]"
     ],
     'build' => [
         'description' => "Permet de lister les bâtiments disponible, d'afficher le détails d'un bâtiment ou encore construire/upgrade un bâtiment."
@@ -53,6 +53,12 @@ return [
                         ."\nLvl 3: Vous voyez 8 systèmes autour du votre"
                         ."\nLvl 8: Accès à la vision des autres galaxies",
         'usage' => ':prefixgalaxy'
+    ],
+    'news' => [
+        'description' => "Les BFM Galaxic News permettent de se tenir au courant des activités spéciales se tenant au sein de l'univers.\n".
+                         "La ligne éditoriale contient des informations tel que l'arrivée de nouveaux empire ou encore le suivi des échaufourrés entre empires.\n".
+                         "Une fois les scanners longue portée rétablis, le suivi des flottes de pirates pourra également être assuré.",
+        'usage' => ':prefixnews'
     ],
     'alliance' => [
         'description' => "Vous permet de créer ou gérer votre alliance.",
@@ -105,7 +111,12 @@ return [
                     ":prefixshipyard remove [Slug]\n"
     ],
     'fleet' => [
-        'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",
+        'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai.\n\n".
+                        "Exemple pour transporter 100 iron et 50 gold vers la colonie située en [1;1;1] avec 3 vaisseaux nommés 'MonVaisseau' (slug:monvaisseau):".
+                        "\n`!fleet transport 1;1;1 monvaisseau 3 iron 100 gold 50`".
+                        "\n\nParamètres optionels:".
+                        "\nspeed [entre 10 et 100] => réduit la vitesse et consommation de votre flotte au pourcentage souhaité.".
+                        "\nboost => consomme 05 E2PZ par vaisseau et octroie un bonus de +10% bouclier et +20% vitesse",
         'usage' =>  ":prefixfleet \n".
                     "**order** (`:prefixfleet order [id] return`)\n".
                     //"**explore** (`:prefixfleet explore [Coordonnées]`)\n".
@@ -165,7 +176,7 @@ return [
     ],
     'top' => [
         'description' => "Indique les meilleurs joueur par catégories.\n1 point = 1k ressources dépensées",
-        'usage' =>  ":prefixtop [general/building/research/craft/defence/military]\n:prefixtop [general/building/research/craft/defence/military] alliance"
+        'usage' =>  ":prefixtop [general/building/research/craft/military]\n:prefixtop [general/building/research/craft/military] alliance"// /defence
     ],
     'trade'=> [
         'description' => "Liste les trades actifs.\nAfficher le détail d'un trade via `:prefixtrade [id]`\nClôturer un trade en cours avant la date de fin avec `:prefixtrade [id] close`".

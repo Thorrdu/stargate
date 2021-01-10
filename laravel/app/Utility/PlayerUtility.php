@@ -18,6 +18,11 @@ class PlayerUtility
 
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spyreport', [
+                'planet' => $colonyDest->name,
+                'coordinates' => $destCoordinates,
+                'player' => $colonySource->player->user_name,
+            ], $colonyDest->player->lang);
             $reminder->reminder = trans('stargate.messageSpied', ['planetName' => $colonyDest->name, 'coordinate' => $destCoordinates, 'planetSource' => $colonySource->name, 'sourceCoordinates' => $sourceCoordinates], $colonyDest->player->lang);
             $reminder->player_id = $colonyDest->player->id;
             $reminder->save();
@@ -191,6 +196,11 @@ class PlayerUtility
 
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spyreport', [
+                'planet' => $colonyDest->name,
+                'coordinates' => $destCoordinates,
+                'player' => $colonyDest->player->user_name,
+            ], $colonySource->player->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $colonySource->player->id;
             $reminder->save();

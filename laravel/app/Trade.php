@@ -47,7 +47,7 @@ class Trade extends Model
                 ${'p'.$tradeResource->player.'HasPremium'} = true;
         }
 
-        if($this->playerSource->points_total > $this->playerDest->points_total && ($this->trade_value_player2/$diff1) > 1.25)
+        if($this->playerSource->points_total > $this->playerDest->points_total && ($this->trade_value_player2/$diff1) > 2)
         {
             //Si player 1 est plus fort et à reçu plus de 15% en plus que player 2
             if($p1HasGivenPremium && !$p2HasGivenPremium)
@@ -55,7 +55,7 @@ class Trade extends Model
             else
                 return false;
         }
-        elseif($this->playerSource->points_total < $this->playerDest->points_total && ($this->trade_value_player1/$diff2) > 1.25)
+        elseif($this->playerSource->points_total < $this->playerDest->points_total && ($this->trade_value_player1/$diff2) > 2)
         {
             //Si player 2 est plus fort et à reçu plus de 15% en plus que player 1
             if($p2HasGivenPremium && !$p1HasGivenPremium)

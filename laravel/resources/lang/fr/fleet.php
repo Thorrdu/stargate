@@ -11,7 +11,8 @@ return [
                             "**attack** (`!fleet attack [Coordonnées] [Vaisseau] [Qté]`)\n".
                             "**scavenge** (`!fleet scavenge [Coordonnées] [Recycleurs] [Qté]`)\n".
                             "**history** (`!fleet history`)\n".
-                            "Paramètre optionel: speed [10-100]",
+                            "Paramètre optionel: speed [10-100]\n".
+                            "Paramètre optionel: boost",
     "fleetMessage" => "__Voyage depuis :planetSource [:coordinateSource]__\n".
                         "Destination: :planetDest [:coordinateDestination]\n".
                         "Mission: **:mission**\n\n".
@@ -20,7 +21,8 @@ return [
                         "**Transport (:freightCapacity)**\n".
                         ":resources\n".
                         "Equipage: :crew \n".
-                        "Vitesse: :speed (:maxSpeed%)\n".
+                        "Vitesse: :choosedSpeed (:maxSpeed%)\n".
+                        "Boost: :boosted\n".
                         "Carburant: :fuel\n".
                         "Durée de vol: :duration\n".
                         "Statut de l'envoi: **En attente**",
@@ -31,7 +33,8 @@ return [
                         ":fleet\n".
                         "Capacité: :freightCapacity\n".
                         "Equipage: :crew \n".
-                        "Vitesse: :speed (:maxSpeed%)\n".
+                        "Vitesse: :choosedSpeed (:maxSpeed%)\n".
+                        "Boost: :boosted\n".
                         "Carburant: :fuel\n".
                         "Durée de vol: :duration\n".
                         "Statut de l'envoi: **En attente**",
@@ -108,7 +111,7 @@ return [
                             "Mission: **:mission**\n\n".
                             "**Recycleurs**\n".
                             ":fleet\n".
-                            "Vitesse: :speed (:maxSpeed%)\n".
+                            "Vitesse: :choosedSpeed (:maxSpeed%)\n".
                             "Carburant: :fuel\n".
                             "Durée de vol: :duration\n".
                             "Statut de l'envoi: **En attente**",

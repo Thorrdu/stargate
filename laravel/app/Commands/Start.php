@@ -2,7 +2,9 @@
 
 namespace App\Commands;
 
+use App\Alert;
 use App\Player;
+use Carbon\Carbon;
 use Discord\Parts\Embed\Embed;
 use Illuminate\Support\Facades\DB;
 
@@ -113,5 +115,11 @@ class Start extends CommandHandler implements CommandInterface
         {
             return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
+        Alert::create([
+            'type' => 'newplayer',
+            'news_fr' => trans('alert.newplayer', ['player' => $newPlayer->user_name], 'fr'),
+            'news_en' => trans('alert.newplayer', ['player' => $newPlayer->user_name], 'en'),
+            'publication_date' => Carbon::now()
+        ]);
     }
 }

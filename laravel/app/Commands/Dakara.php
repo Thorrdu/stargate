@@ -342,6 +342,11 @@ class Dakara extends CommandHandler implements CommandInterface
                                     $reminder = new Reminder;
                                     $reminder->reminder_date = Carbon::now()->add('1s');
                                     $reminder->embed = json_encode($embed);
+                                    $reminder->title = trans('reminder.titles.gatefightreport', [
+                                        'planet' => $this->coordinateDestination->colony->name,
+                                        'coordinates' => $destCoordinates,
+                                        'player' => $this->coordinateDestination->colony->player->user_name,
+                                    ], $this->coordinateDestination->colony->player->lang);
                                     $reminder->player_id = $this->coordinateDestination->colony->player->id;
                                     $reminder->save();
 

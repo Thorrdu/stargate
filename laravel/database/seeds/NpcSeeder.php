@@ -16,7 +16,7 @@ class NpcSeeder extends Seeder
     public function run()
     {
         $arrayLocales = ['ar_EG', 'ar_PS', 'ar_SA', 'bg_BG', 'bs_BA', 'cs_CZ', 'de_DE', 'dk_DK', 'el_GR', 'en_AU', 'en_CA', 'en_GB', 'en_IN', 'en_NZ', 'en_US', 'es_ES', 'es_MX', 'et_EE', 'fa_IR', 'fi_FI', 'fr_FR', 'hi_IN', 'hr_HR', 'hu_HU', 'hy_AM', 'it_IT', 'ja_JP', 'ka_GE', 'ko_KR', 'lt_LT', 'lv_LV', 'ne_NP', 'nl_NL', 'no_NO', 'pl_PL', 'pt_BR', 'pt_PT', 'ro_RO', 'ru_RU', 'sl_SI', 'sv_SE', 'tr_TR', 'uk_UA', 'zh_CN', 'zh_TW'];
-        
+
         $wraith = ['proudbite', 'dimmaster', 'fall', 'grimflow', 'darkcopper', 'blankfront', 'guide', 'pureedge', 'despair', 'mud'];
         $tokRa = ['khu\'ri', 'su\'dop', 'agashak', 'arrim', 'khosnop', 'jerneec', 'geldoho', 'theldwal', 'zoldostu', 'kor\'suf'];
         $lucian = ['talvu', 'reg', 'tivrun', 'zushog', 'slulevuld', 'innizoz', 'slizifliold', 'tirvit', 'zig', 'nesatac'];
@@ -25,7 +25,7 @@ class NpcSeeder extends Seeder
         $goauld = ['masho', 'jish', 'budekit', 'su\'u', 'ucninek', 'cri', 'hapul', 'grec', 'utha', 'klamehesh'];
         $asgard = ['Isulf', 'Ragnar', 'Haki', 'Blann', 'Agmundr', 'Solvi', 'Hoskuld', 'Skurfa', 'Gavtvid', 'Grani'];
         $randomNames = array_merge($wraith,$tokRa,$lucian,$lantean,$jaffa,$goauld,$asgard);
-        
+
         foreach ($randomNames as $randomName) {
 
 			$faker = Faker::create($arrayLocales[rand(0,count($arrayLocales)-1)]);
@@ -41,42 +41,43 @@ class NpcSeeder extends Seeder
             $npc->lang = 'fr';
             $npc->votes = 0;
             $npc->npc = true;
-            $npc->save();   
+            $npc->save();
             $npc->addColony();
 
             $techToAdd = [
-                1 => rand(3,5),
+                /*1 => rand(3,5),
                 2 => rand(3,6),//spy
                 2 => rand(1,4),//counterSpy,
-                4 => rand(3,5),//energy
+                4 => rand(3,5),//energy*/
             ];
 
             $builToAdd = [
                 /**Centrale et mines */
-                1 => rand(13,15),
+                /* 1 => rand(13,15),
                 2 => rand(9,13),
                 3 => rand(8,12),
                 4 => rand(4,7),
-                5 => rand(3,5),
+                5 => rand(3,5), */
 
                 /**Usine, labo, militaruy, chantier, defence*/
-                6 => 5,
+                // 6 => 5,
                 7 => 5,
-                8 => rand(4,8),
+                /* 8 => rand(4,8),
                 9 => 5,
-                15 => 5,
+                15 => 5, */
             ];
 
             foreach($techToAdd as $techId => $techLevel)
                 $npc->technologies()->attach([$techId => ['level' => $techLevel]]);
-            
+
             foreach($builToAdd as $builId => $builLevel)
                 $npc->activeColony->buildings()->attach([$builId => ['level' => $builLevel]]);
-        
+
             foreach(config('stargate.resources') as $resource)
             {
-                $npc->activeColony->$resource = rand(500,10000);
+                $npc->activeColony->$resource = 10000;
             }
+            $npc->activeColony->military = 1000;
 
             $npc->activeColony->save();
 	    }
@@ -87,6 +88,6 @@ class NpcSeeder extends Seeder
             */
 
 
-            
+
     }
 }

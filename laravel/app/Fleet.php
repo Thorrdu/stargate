@@ -181,6 +181,11 @@ class Fleet extends Model
 
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.fleetreport', [
+                'planet' => $destinationColony->name,
+                'coordinates' => $destCoordinates,
+                'player' => $destinationColony->player->user_name,
+            ], $sourceColony->player->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $destinationColony->player->id;
             $reminder->save();
@@ -256,6 +261,11 @@ class Fleet extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->add('1s');
+                    $reminder->title = trans('reminder.titles.fleetreport', [
+                        'planet' => $this->destinationColony->name,
+                        'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                        'player' => $this->destinationColony->player->user_name,
+                    ], $this->sourcePlayer->lang);
                     $reminder->reminder = $scavengeMission;
                     $reminder->player_id = $this->sourcePlayer->id;
                     $reminder->save();
@@ -438,6 +448,11 @@ class Fleet extends Model
 
                         $reminder = new Reminder;
                         $reminder->reminder_date = Carbon::now()->add('1s');
+                        $reminder->title = trans('reminder.titles.tradereport', [
+                            'planet' => $this->destinationColony->name,
+                            'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                            'player' => $this->sourcePlayer->player->user_name,
+                        ], $this->destinationColony->player->lang);
                         $reminder->embed = json_encode($embed);
                         $reminder->player_id = $this->destinationColony->player->id;
                         $reminder->save();
@@ -461,6 +476,11 @@ class Fleet extends Model
 
                     $reminder = new Reminder;
                     $reminder->reminder_date = Carbon::now()->add('1s');
+                    $reminder->title = trans('reminder.titles.tradereport', [
+                        'planet' => $this->destinationColony->name,
+                        'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                        'player' => $this->destinationPlayer->user_name,
+                    ], $this->sourcePlayer->lang);
                     $reminder->embed = json_encode($embed);
                     $reminder->player_id = $this->sourceColony->player->id;
                     $reminder->save();
@@ -617,15 +637,18 @@ class Fleet extends Model
         $attackForces = array();
         foreach($this->ships as $ship)
         {
+            $shipShield = ceil($ship->shield * $attackerShieldCoef);
+            if($this->boosted)
+                $shipShield = ceil($shipShield * 1.15);
             $attackForces[] = array(
                 'type' => 'ship',
                 'item' => $ship,
                 'quantity' => $ship->pivot->number,
                 'fire_power' => ceil($ship->fire_power * $attackerFireCoef),
                 'total_fire_power' => ceil($ship->fire_power * $attackerFireCoef) * $ship->pivot->number,
-                'shield' => ceil($ship->shield * $attackerShieldCoef),
+                'shield' => $shipShield,
                 'hull' => ceil($ship->hull * $attackerHullCoef),
-                'shield_left' => ceil($ship->shield * $attackerShieldCoef),
+                'shield_left' => $shipShield,
                 'hull_left' => ceil($ship->hull * $attackerHullCoef)
             );
         }
@@ -1218,6 +1241,11 @@ class Fleet extends Model
             ];
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spacefightreport', [
+                'planet' => $this->destinationColony->name,
+                'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                'player' => $this->destinationPlayer->user_name,
+            ], $this->sourcePlayer->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $this->sourcePlayer->id;
             $reminder->save();
@@ -1247,6 +1275,11 @@ class Fleet extends Model
             ];
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spacefightreport', [
+                'planet' => $this->destinationColony->name,
+                'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                'player' => $this->sourcePlayer->user_name,
+            ], $this->destinationPlayer->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $this->destinationPlayer->id;
             $reminder->save();
@@ -1299,6 +1332,11 @@ class Fleet extends Model
             ];
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spacefightreport', [
+                'planet' => $this->destinationColony->name,
+                'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                'player' => $this->destinationPlayer->user_name,
+            ], $this->sourcePlayer->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $this->sourcePlayer->id;
             $reminder->save();
@@ -1328,9 +1366,23 @@ class Fleet extends Model
             ];
             $reminder = new Reminder;
             $reminder->reminder_date = Carbon::now()->add('1s');
+            $reminder->title = trans('reminder.titles.spacefightreport', [
+                'planet' => $this->destinationColony->name,
+                'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
+                'player' => $this->sourcePlayer->user_name,
+            ], $this->destinationPlayer->lang);
             $reminder->embed = json_encode($embed);
             $reminder->player_id = $this->destinationPlayer->id;
             $reminder->save();
+        }
+        if(!empty($ruinFieldString))
+        {
+            Alert::create([
+                'type' => 'battle',
+                'news_fr' => trans('alert.battle.description', ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'fr'),
+                'news_en' => trans('alert.battle.description', ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'en'),
+                'publication_date' => Carbon::now()
+            ]);
         }
 
         return $winState;

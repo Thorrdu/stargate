@@ -12,8 +12,8 @@ return [
         'usage' => ':prefixban @mention'
     ],
     'reminder' => [
-        'description' => 'Allow to create, list and remove reminders wich will be received in dm.',
-        'usage' => ":prefixreminder [time] [reason]\nreminder list\n:prefixreminder 1h20m5s go to sleep\n:prefixreminder remove [id]"
+        'description' => "Allow to create, list and remove reminders wich will be received in dm.It's also possible to consult the history of received dm.\n",
+        'usage' => ":prefixreminder [time] [reason]\nreminder list\n:prefixreminder 1h20m5s go to sleep\n:prefixreminder history\n:prefixreminder history [id]\n:prefixreminder remove [id]"
     ],
     'build' => [
         'description' => "List available buildings, Show building details or build/upgrade some building."
@@ -53,6 +53,12 @@ return [
                         ."\nLvl 3: You can see up to 8 systems around you."
                         ."\nLvl 8: Vision to all galaxies",
         'usage' => ':prefixgalaxy'
+    ],
+    'news' => [
+        'description' => "The BFM Galaxic News keeps abreast of special activities taking place in the universe.\n".
+                        "The editorial line contains information such as the arrival of new empires or the follow-up of escalations between empires.\n".
+                        "Once long-range scanners are restored, tracking of pirate fleets can also be done.",
+        'usage' => ':prefixnews'
     ],
     'alliance' => [
         'description' => "Allows you to create or manage your alliance.",
@@ -105,7 +111,12 @@ return [
                     ":prefixshipyard remove [Slug]\n"
     ],
     'fleet' => [
-        'description' => "Centre de contrôle des flottes\nIndique les flottes en cours et vous permet de donner des ordres de mission à vos vaisseaux à quai",
+        'description' => "Fleet Control Center \nIndicates current fleets and allows you to issue mission orders to your ships docked.\n\n".
+                        "Example to transport 100 iron and 50 gold to the colony located in [1;1;1] with 3 ships named 'MyShip' (slug: myship):".
+                        "\n`!fleet transport 1;1;1 myship 3 iron 100 gold 50`".
+                        "\n\nOptional parameters:".
+                        "\nspeed [between 10 and 100] => reduces the speed and consumption of your fleet to the desired percentage.".
+                        "\nboost => consumes 0.5 E2PZ per ship and grants +10% shield and +20% speed bonuses",
         'usage' =>  ":prefixfleet \n".
                     "**order** (`:prefixfleet order [FleetID] return`)\n".
                     //"**explore** (`:prefixfleet explore [coordinates]`)\n".
@@ -165,7 +176,7 @@ return [
     ],
     'top' => [
         'description' => 'Shows the best player for each category.',
-        'usage' => ":prefixtop [general/building/research/craft/defence/military]\n:prefixtop [general/building/research/craft/defence/military] alliance"
+        'usage' => ":prefixtop [general/building/research/craft/military]\n:prefixtop [general/building/research/craft/military] alliance"// /defence
     ],
     'trade'=> [
         'description' => "List all your active trades.\nDisplay a specific trade details with `:prefixtrade [id]`\nClose a trade before the end with `:prefixtrade [id] close`".

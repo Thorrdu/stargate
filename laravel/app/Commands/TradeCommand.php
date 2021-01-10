@@ -443,6 +443,8 @@ class TradeCommand extends CommandHandler implements CommandInterface
                         {
                             if(!is_null($tradeResource->unit))
                                 ${'player'.$tradeResource->player.'TradeString'} .= trans('craft.'.$tradeResource->unit->slug.'.name', [], $this->player->lang).': '.number_format($tradeResource->quantity)." ( ".number_format($tradeResource->trade_value)." )\n";
+                            elseif(!is_null($tradeResource->defence))
+                                ${'player'.$tradeResource->player.'TradeString'} .= trans('defence.'.$tradeResource->defence->slug.'.name', [], $this->player->lang).': '.number_format($tradeResource->quantity)." ( ".number_format($tradeResource->trade_value)." )\n";
                             else
                                 ${'player'.$tradeResource->player.'TradeString'} .= config('stargate.emotes.'.strtolower($tradeResource->resource))." ".ucfirst($tradeResource->resource).': '.number_format($tradeResource->quantity)." ( ".number_format($tradeResource->trade_value)." )\n";
                         }
@@ -498,24 +500,20 @@ class TradeCommand extends CommandHandler implements CommandInterface
             $now = Carbon::now();
             $tradeCreation = Carbon::createFromFormat("Y-m-d H:i:s",$trade->created_at);
             $closingDate = $tradeCreation->add('24h');
+
+            $warning = '';
+            if($trade->getFairness())
+                $status = trans('trade.status.balanced', [], $this->player->lang);
+            else
+            {
+                $status = trans('trade.status.unbalanced', [], $this->player->lang);
+                $warning = trans('trade.warning', [], $this->player->lang);
+            }
+
             if($closingDate->isPast())
             {
-
-                if($trade->extended && !is_null($this->player->trade_extend))
-                {
-
-                    $extendDate = Carbon::createFromFormat("Y-m-d H:i:s",$this->player->trade_extend);
-                    if($extendDate->isPast())
-                        $tradeEnding = trans('generic.closed', [], $this->player->lang);
-                    else
-                    {
-                        $tradeEnding = $now->diffForHumans($extendDate,[
-                            'parts' => 3,
-                            'short' => true, // short syntax as per current locale
-                            'syntax' => CarbonInterface::DIFF_ABSOLUTE
-                        ]);
-                    }
-                }
+                if(!empty($warning))
+                    $tradeEnding = $status;
                 else
                     $tradeEnding = trans('generic.closed', [], $this->player->lang);
             }
@@ -528,14 +526,7 @@ class TradeCommand extends CommandHandler implements CommandInterface
                 ]);
             }
 
-            $warning = '';
-            if($trade->getFairness())
-                $status = trans('trade.status.balanced', [], $this->player->lang);
-            else
-            {
-                $status = trans('trade.status.unbalanced', [], $this->player->lang);
-                $warning = trans('trade.warning', [], $this->player->lang);
-            }
+
 
             $embed['fields'][] = array(
                 'name' => trans('trade.tradeDetail', ['tradeID' => $trade->id], $this->player->lang),
