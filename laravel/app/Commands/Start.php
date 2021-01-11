@@ -110,16 +110,18 @@ class Start extends CommandHandler implements CommandInterface
             $newEmbed = $this->discord->factory(Embed::class,$embed);
             $this->paginatorMessage->addEmbed($newEmbed);
             $this->discord->removeListener('MESSAGE_REACTION_ADD',$this->listner);
+
+            Alert::create([
+                'type' => 'newplayer',
+                'news_fr' => trans('alert.newplayer.description', ['player' => $newPlayer->user_name], 'fr'),
+                'news_en' => trans('alert.newplayer.description', ['player' => $newPlayer->user_name], 'en'),
+                'publication_date' => Carbon::now()
+            ]);
         }
         catch(\Exception $e)
         {
             return 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
         }
-        Alert::create([
-            'type' => 'newplayer',
-            'news_fr' => trans('alert.newplayer', ['player' => $newPlayer->user_name], 'fr'),
-            'news_en' => trans('alert.newplayer', ['player' => $newPlayer->user_name], 'en'),
-            'publication_date' => Carbon::now()
-        ]);
+
     }
 }
