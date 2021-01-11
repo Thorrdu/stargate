@@ -88,10 +88,10 @@ class Profile extends CommandHandler implements CommandInterface
                             return trans('profile.nextVacation', ['time' => $nextVacationString], $this->player->lang);
                         }
 
-                        $fightLast2Hours = GateFight::Where([['active', true],['player_id_source',$this->player->id],['created_at', '>=', Carbon::now()->sub('12h')]])->orderBy('created_at','DESC')->get();
+                        $fightLast2Hours = GateFight::Where([['active', true],['player_id_source',$this->player->id],['updated_at', '>=', Carbon::now()->sub('12h')]])->orderBy('created_at','DESC')->get();
                         if($fightLast2Hours->count() > 0)
                         {
-                            $nextVacation = Carbon::createFromFormat("Y-m-d H:i:s",$fightLast2Hours)->add('12h');
+                            $nextVacation = Carbon::createFromFormat("Y-m-d H:i:s",$fightLast2Hours->updated_at)->add('12h');
                             $nextVacationString = $now->diffForHumans($nextVacation,[
                                 'parts' => 3,
                                 'short' => true, // short syntax as per current locale

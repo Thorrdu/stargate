@@ -1087,7 +1087,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                             $unitToUpdate = $wraithProbeExists->first();
                                             $unitToUpdate->pivot->number -= 1;
                                             if($unitToUpdate->pivot->number <= 0)
-                                                $this->player->activeColony->units->detach($unitToUpdate->id);
+                                                $this->player->activeColony->units()->detach($unitToUpdate->id);
                                             else
                                                 $unitToUpdate->pivot->save();
                                         }
