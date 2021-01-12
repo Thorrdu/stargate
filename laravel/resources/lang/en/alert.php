@@ -12,18 +12,11 @@ return [
     ],*/
     'battle' => [
         'title' => "Battle rumors",
-        'description' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.".
+        'descriptionwith' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.".
                         "\nDebris would still be visible around the battlefield left by the 2 empires.",
+        'descriptionwithout' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.",
     ],
-    'battlewithdebris' => [
-        'title' => "Battle rumors",
-        'description' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.".
-                        "\nDebris would still be visible around the battlefield left by the 2 empires.",
-    ],
-    'battlewithoutdebris' => [
-        'title' => "Battle rumors",
-        'description' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.",
-    ],
+
     'pirate' => [
         'title' => "Hostile activities",
         'description' => "Notice to the empires around galaxy :galaxy, a pirate fleet has been sighted not far from the system :coordinates",

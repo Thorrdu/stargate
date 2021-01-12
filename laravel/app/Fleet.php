@@ -1375,13 +1375,13 @@ class Fleet extends Model
             $reminder->player_id = $this->destinationPlayer->id;
             $reminder->save();
         }
-        $battleType = 'battlewithoutdebris';
+        $battleType = 'descriptionwithout';
         if(!empty($ruinFieldString))
-            $battleType = 'battlewithdebris';
+            $battleType = 'descriptionwith';
         Alert::create([
-            'type' => $battleType,
-            'news_fr' => trans('alert.battle.description', ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'fr'),
-            'news_en' => trans('alert.battle.description', ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'en'),
+            'type' => 'battle',
+            'news_fr' => trans('alert.battle.'.$battleType, ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'fr'),
+            'news_en' => trans('alert.battle.'.$battleType, ['player1' => $this->sourcePlayer->user_name,'player2' => $this->destinationPlayer->user_name,'galaxy' => $this->destinationColony->coordinates->galaxy], 'en'),
             'publication_date' => Carbon::now()
         ]);
 
