@@ -1305,6 +1305,8 @@ class Fleet extends Model
             $this->destinationColony->save();
             if(!$draw)
                 $this->ended = true;
+            else
+                $this->returning = true;
 
             $fleetLostReport = trans('fleet.attackArrived', [
                 'playerDest' => $this->destinationPlayer->user_name,

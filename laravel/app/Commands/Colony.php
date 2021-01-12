@@ -269,7 +269,7 @@ class Colony extends CommandHandler implements CommandInterface
                     if(is_null($this->player->premium_expiration))
                         return trans('premium.restrictedCommand', [], $this->player->lang);
 
-                    $newColonyName = str_replace(array("||","**","!!","[S]","[W]"),'',trim(join(' ', array_slice($this->args, 1))));
+                    $newColonyName = str_replace(array("||","[NPC]","**","!!","[S]","[W]"),'',trim(join(' ', array_slice($this->args, 1))));
 
                     if(strlen($newColonyName) < 2)
                         return trans('generic.nameTooShort',[],$this->player->lang);
