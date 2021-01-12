@@ -872,7 +872,7 @@ $discord->on('ready', function ($discord) use($beta){
                             'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
                         ],
                         "title" => 'Restart',
-                        "description" => 'Bot restarted',
+                        "description" => 'Shard '.$discord->commandClientOptions['discordOptions']['shardId'].' started',
                         'fields' => [],
                         'footer' => array(
                             'text'  => 'Stargate',
