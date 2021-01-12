@@ -10,6 +10,11 @@ return [
         'title' => "Aube d'une nouvelle ère",
         'description' => "::player1 à arraché la place de numéro 1 au détriment de ::player2.",
     ],*/
+    'battle' => [
+        'title' => "Battle rumors",
+        'description' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.".
+                        "\nDebris would still be visible around the battlefield left by the 2 empires.",
+    ],
     'battlewithdebris' => [
         'title' => "Battle rumors",
         'description' => "From a reliable source, a battle has taken place in galaxy :galaxy between the empires of :player1 and :player2.".
