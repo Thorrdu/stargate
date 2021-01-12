@@ -103,7 +103,7 @@ return [
     'colonizeCancel' => 'Mission de colonisation annulée',
     'tradeStorageTooLow' => 'Cette planète ne possède pas un entrepôt suffisament grand pour recevoir autant de :resource',
     'alreadySpied' => 'Vous avez espionné cette colonie trop récement. Vous pourrez à nouveau envoyer une sonde dans **:time**',
-    'digingStarted' => 'Vous avez commencé les travaux d\'excavation de votre Stargate, elle sera de nouveau opérationelle dans **48h**.',
+    'digingStarted' => 'Vous avez commencé les travaux d\'excavation de votre Stargate, elle sera de nouveau opérationelle dans **24h**.',
     'burialStarted' => "Vous avez commencé l'inhumation de votre Stargate. Elle sera complètement inopérante dans **12h**.\nCependant, tant qu'elle ne sera pas complètement ensevelie, des activations extérieures sont encore possible.",
     'digUpConfirm' => 'Souhaitez-vous déterrer votre Stargate ? Cette action prendra **24h**.',
     'burryConfirm' => "Souhaitez-vous enterrer votre Stargate ? Cette action prendra **12h**.\nAttention, dès que le processus aura commencé, vous ne pourrez plus l'utiliser mais des activations exétieures peuvent encore survenir durant l'inhumation.",

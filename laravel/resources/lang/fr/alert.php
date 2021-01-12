@@ -10,10 +10,14 @@ return [
         'title' => "Aube d'une nouvelle ère",
         'description' => "::player1 à arraché la place de numéro 1 au détriment de ::player2.",
     ],*/
-    'battle' => [
+    'battlewithdebris' => [
         'title' => "Rumeurs d'une bataille",
-        'description' => "De source sûr, une bataille à eu lieu dans la galaxie :galaxy entre les empires de :player1 et :player2.".
+        'description' => "De source sûre, une bataille à eu lieu dans la galaxie :galaxy entre les empires de :player1 et :player2.".
                         "\nDes débris seraient encore visibles autour du champ de bataille laissé par les 2 empires.",
+    ],
+    'battlewithoutdebris' => [
+        'title' => "Rumeurs d'une bataille",
+        'description' => "De source sûre, une bataille à eu lieu dans la galaxie :galaxy entre les empires de :player1 et :player2.",
     ],
     'pirate' => [
         'title' => "Activité hostile",

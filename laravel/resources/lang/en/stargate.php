@@ -103,7 +103,7 @@ return [
     'colonizeCancel' => 'Colonize Cancelled',
     'tradeStorageTooLow' => 'This planet has not enough storage capacity to receive that much :resource',
     'alreadySpied' => 'You spied this colony too recently. You\'ll be able to spy this colony again in **:time**',
-    'digingStarted' => 'You stargate diging up, your stargate will be fully operational again in **48h**.',
+    'digingStarted' => 'You stargate diging up, your stargate will be fully operational again in **24h**.',
     'burialStarted' => "You stargate your stargate burial. Your stargate will be fully inoperant in **12h**.\nHowever, external activation can still occur until the process is complete.",
     'digUpConfirm' => 'Do you want to dig up your Stargate ? This action will take **24h**.',
     'burryConfirm' => "Do you want to bury your Stargate? This action will take **12h**.\nWarning, As soon as the process starts, your Stargate will be out of service but external activation can occur until the process is complete.",

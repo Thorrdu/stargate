@@ -862,15 +862,36 @@ $discord->on('ready', function ($discord) use($beta){
     
     if(!$beta)
     {
-        /*
-        $mainGuild = $discord->guilds->get('id', 735390211130916904);
-        $channelLogs = $mainGuild->channels->get('id', 735391076432478238);
-        
-        $channelLogs->sendMessage("Stargate just started")->then(function ($logMessage) {
-            echo PHP_EOL.'Bot is ready';
-        }, function ($e) {
-        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
-        });*/
+        $discord->guilds->fetch(735390211130916904)->done(function(Guild $mainGuild) use($discord){
+            if(!is_null($mainGuild))
+            {
+                $mainGuild->channels->fetch(744551047342850179)->done(function(Channel $channelLogs) use($discord){ 
+                    $embed = [
+                        'author' => [
+                            'name' => 'Stargate',
+                            'icon_url' => 'https://cdn.discordapp.com/avatars/730815388400615455/8e1be04d2ff5de27405bd0b36edb5194.png'
+                        ],
+                        "title" => 'Restart',
+                        "description" => 'Bot restarted',
+                        'fields' => [],
+                        'footer' => array(
+                            'text'  => 'Stargate',
+                        ),
+                    ];
+                    try{
+                        $newEmbed = $discord->factory(Embed::class,$embed);
+                        $channelLogs->sendMessage('', false, $newEmbed)->then(function ($logMessage) {
+                            echo PHP_EOL.'Bot restarted';
+                        }, function ($e) {
+                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                        });
+                    }catch(\Exception $e)
+                    {
+                        echo 'File '.basename($e->getFile()).' - Line '.$e->getLine().' -  '.$e->getMessage();
+                    }
+                });
+            }
+        });
     }
 
 });
