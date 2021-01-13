@@ -29,6 +29,10 @@ return [
         'name' => "Laser cannon",
         'description' => "",
     ],
+    'lantean-satellite' => [
+        'name' => "Lantien satellite",
+        'description' => "",
+    ],
     'hidden' => '-- Hidden defence --',
     'unDiscovered' => 'Undiscovered',
     'buildingStarted' => 'Defence started, **:qtyx :name**. It will be done in **:time**',

@@ -29,6 +29,10 @@ return [
         'name' => "Canon laser",
         'description' => "",
     ],
+    'lantean-satellite' => [
+        'name' => "Satellite Lantien",
+        'description' => "",
+    ],
     'hidden' => '-- Défense cachée --',
     'unDiscovered' => 'Non découverte',
     'buildingStarted' => 'Construction de Défense commencée, **:qtyx :name**. Terminé dans **:time**',
