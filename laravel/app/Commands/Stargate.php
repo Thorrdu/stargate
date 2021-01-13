@@ -308,7 +308,7 @@ class Stargate extends CommandHandler implements CommandInterface
                 if(Str::startsWith('move',$this->args[0]) && !is_null($this->coordinateDestination->colony) && $this->coordinateDestination->colony->player->id != $this->player->id)
                     return trans('stargate.notAColonyOfYour', [], $this->player->lang);
 
-                if(($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != config('stargate.ownerId')) || (is_null($this->coordinateDestination->colony) && !Str::startsWith('explore',$this->args[0])))
+                if(($this->coordinateDestination->id == $this->player->activeColony->coordinates->id && $this->player->user_id != config('stargate.ownerId')) || (is_null($this->coordinateDestination->colony) && (!Str::startsWith('explore',$this->args[0]) && !Str::startsWith('colonize',$this->args[0]))))
                     return trans('stargate.failedDialing', [], $this->player->lang);
 
                 //Check Consommation E2PZ
