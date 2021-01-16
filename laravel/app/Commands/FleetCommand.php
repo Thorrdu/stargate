@@ -531,7 +531,7 @@ class FleetCommand extends CommandHandler implements CommandInterface
 
                 if(!is_null($this->coordinateDestination->colony) && $this->player->user_id != config('stargate.ownerId'))
                 {
-                    if(!is_null($this->coordinateDestination->colony->player->vacation))
+                    if(!is_null($this->coordinateDestination->colony->player->vacation) && !Str::startsWith('scavenge',$this->args[0]))
                         return trans('profile.playerVacation', [], $this->player->lang);
                 }
 
