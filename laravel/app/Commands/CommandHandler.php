@@ -145,7 +145,7 @@ class CommandHandler
                         $reminder = new Reminder;
                         $reminder->title = trans('reminder.titles.notification', [], $this->player->lang);
                         $reminder->reminder_date = Carbon::now()->addSecond(1);
-                        $reminder->reminder = "**Anti-Cheat System**\n\nSuite à un comportement suspect, votre compte à été suspendu.";
+                        $reminder->reminder = "**Anti-Cheat System**\n\nSuite à un comportement suspect, votre compte a été suspendu.";
                         $reminder->player_id = $this->player->id;
                         $reminder->save();
                     }

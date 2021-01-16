@@ -20,7 +20,7 @@ return [
     'extentionNotRequired' => 'Ce trade n\a pas besoin d\'une extension',
     'extentionGranted' => 'Extention accordée. Vous avez 48h pour ajuster le trade.',
     'unknownTrade' => 'Trade inconnu.',
-    'warn' => '**_Attention, Un trade injuste à été détecté. Il vous reste +-24h pour ajuster le trade avant d\'être banni du système de trade._**'."\nPlus d'info: `!trade :tradeID`",
+    'warn' => '**_Attention, Un trade injuste a été détecté. Il vous reste +-24h pour ajuster le trade avant d\'être banni du système de trade._**'."\nPlus d'info: `!trade :tradeID`",
     'ban' => 'N\'ayant pas régulariser le trade endéant les temps. Vous êtes désormais banni du système de trade...'."\nUne ultime chance peut être obtenue en réclamant un délai avec `!trade :tradeID extend`",
 
     'noPactWithThisPlayer' => 'Vous ne possédez pas de pacte commercial avec ce joueur...',

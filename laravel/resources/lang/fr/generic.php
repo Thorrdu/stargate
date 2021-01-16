@@ -78,7 +78,7 @@ return [
     "captchaLink" => "Pour passer outre la vérification anti-robot, merci de valider le captcha à cette adresse: :link",
     "captchaMessage" => "**Captcha actif**, veuillez vérifier vos messages privés ou récupérez le lien avec `!captcha`",
     "noCaptcha" => "Vous n'avez pas besoin de ceci pour le moment...",
-    "newCaptchaMessage" => "Un nouveau lien à été envoyé en DM.",
+    "newCaptchaMessage" => "Un nouveau lien a été envoyé en DM.",
     "closedList" => "Liste fermée",
     "missingArgs" => "Arguments manquants",
     "missingPermission" => "Permission manquantes",

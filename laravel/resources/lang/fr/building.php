@@ -110,12 +110,12 @@ return [
     'buildingRemoved' => 'La destruction de **:name** s\'est terminée sur :colony',
     'cantCancelRemove' => 'Vous ne pouvez annulez la destruction une fois commencée...',
     'queueIsFull' => 'La fille d\'attente de cette colonie est pleine. Gérez la file d\'attente via `!building queue`.',
-    'buildingQueueAdded' => '**:buildingName** à été ajouté à la file d\'attente.',
+    'buildingQueueAdded' => '**:buildingName** a été ajouté à la file d\'attente.',
     'emptyQueue' => 'La file d\'attente est vide.',
     'queueList' => 'File d\'attente',
-    'clearedQueue' => 'File d\'attente à été vidée.',
+    'clearedQueue' => 'File d\'attente a été vidée.',
     'howToClearQueue' => "`!build queue clear` pour vider la file d'attente.",
-    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Cause: :reason.\nSuite à cela, la liste d'attente à été vidée.",
+    'queueCanceled' => ":colony - **:buildingName** n'a pu être construit. Cause: :reason.\nSuite à cela, la liste d'attente a été vidée.",
     'estimatedQueuedTotal' => 'Temps total estimé: :totalTime',
     'cancelBuildConfirm' => "Etes vous certain de vouloir annuler la construction en cours ?\n25% des ressources investies lors de la construction seront perdues."
 ];

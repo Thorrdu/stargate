@@ -57,7 +57,7 @@ class DakaraSeeder extends Seeder
         DB::table('defences')->insert([
             'id' => 8,
             'name' => "Satellite Lantien",
-            'slug' => 'lantean-satellite',
+            'slug' => 'lanteansatellite',
             'type' => 'Space',
             'iron' => 10000000,
             'gold' => 5000000,

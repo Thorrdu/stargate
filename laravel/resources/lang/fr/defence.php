@@ -29,7 +29,7 @@ return [
         'name' => "Canon laser",
         'description' => "",
     ],
-    'lantean-satellite' => [
+    'lanteansatellite' => [
         'name' => "Satellite Lantien",
         'description' => "",
     ],

@@ -298,7 +298,7 @@ class Stargate extends CommandHandler implements CommandInterface
                     if(!$centerLevel || $centerLevel < 4 || $this->coordinateDestination->colony->stargate_buried)
                         return trans('stargate.failedDialing', [], $this->player->lang);
 
-                    if(!is_null($this->coordinateDestination->colony->player->vacation))
+                    if(!is_null($this->coordinateDestination->colony->player->vacation) && Str::startsWith('scavenge',$this->args[0]) )
                         return trans('profile.playerVacation', [], $this->player->lang);
                 }
 

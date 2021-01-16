@@ -72,7 +72,7 @@ return [
     "colonizeConfirmation" => "Send a colonization team to [:coordinateDestination] ?\n".
                             "Troops: :militaryUnits".
                             "\nCost: :consumption",
-    "attackSent" => "Your troops have been send on :planet [:coordinateDestination].\nA report will arrive soon.",
+    "attackSent" => "Your troops have been sent on :planet [:coordinateDestination].\nA report will arrive soon.",
     "attackCancelled" => "Attack cancelled",
     "attackerWinReport" => "Attack through Stargate [:destination] (:player)\n\n".
                             "Your troops emerged victorious from the fight against **:player** on planet **:planetDest [:destination]**\n\n".

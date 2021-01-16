@@ -18,7 +18,7 @@ return [
     ],
     'pirate' => [
         'title' => "Activité hostile",
-        'description' => "Avis aux empire de la galaxie :galaxy une flotte pirate à été apperçue non loins du système :coordinates",
+        'description' => "Avis aux empire de la galaxie :galaxy une flotte pirate a été apperçue non loins du système :coordinates",
     ],
     /*'conquest' => [
         'title' => "Un nouvel empire est né",

@@ -5,7 +5,7 @@ return [
     'wrongParameter' => "Mauvais paramètres, exemple: `!reminder 2h10m aller dormir`",
     'confirm' => "Vous serez rappelé dans `:time` de `:reason`",
     'listTitle' => 'Liste des reminders',
-    'removed' => 'Le reminder à été supprimé.',
+    'removed' => 'Le reminder a été supprimé.',
     'unknown' => 'Reminder inconnu.',
     'titles' => [
         'spacefightreport' => 'Rapport de combat (space) :planet [:coordinates] (:player)',

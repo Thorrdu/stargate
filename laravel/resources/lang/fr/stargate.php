@@ -33,7 +33,7 @@ return [
                                "Le craft **:name** requiert:\n:requirements",
     "exploreCriticalFailed" => "L'équipe envoyée sur [:coordinates] n'a envoyé aucun signe de vie",
     "tradeReceived" => "/!\ Incoming traveler /!\ \n\n".
-                       "Une activation extérieure à été détectée sur :planetDest [:coordinateDestination] en provenance de :planetSource [:coordinateSource] (:player)\n\n".
+                       "Une activation extérieure a été détectée sur :planetDest [:coordinateDestination] en provenance de :planetSource [:coordinateSource] (:player)\n\n".
                        "Les ressources suivantes vous ont été délivrées:\n:resources",
     "tradeSent" => "Vous avez envoyé les ressources suivantes depuis :planetSource [:coordinateSource] sur :planetDest [:coordinateDestination] (:player):\n:resources\nPour un coût de: :consumption",
     "tradeMessage" => "__Envoi de ressources depuis la planète :planetSource [:coordinateSource]__\n".

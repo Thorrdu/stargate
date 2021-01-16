@@ -353,7 +353,7 @@ class Shipyard extends CommandHandler implements CommandInterface
                         if($this->blueprintMaker['finalShip']->fire_power == 0
                         || $this->blueprintMaker['finalShip']->hull == 0
                         || $this->blueprintMaker['finalShip']->speed == 0)
-                        return trans('generic.missingComponement', [], $this->player->lang); //indiquer les compo minimums
+                        return trans('shipyard.missingComponement', [], $this->player->lang); //indiquer les compo minimums
 
                         //Proposition de plan
                         $now = Carbon::now();
