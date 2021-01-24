@@ -43,8 +43,8 @@ foreach($players as $player)
 	foreach($player->colonies as $colony)
 	{
 
-		$colony->calcProd();
-		$colony->save();
+		$colony->checkColony();
+		//$colony->save();
 		echo PHP_EOL.$colony->id;
 	}
 }

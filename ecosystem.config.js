@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "StargateS0",
       script: "stargateSharded.php",
-      args: "0 2",
+      args: "0 3",
       max_memory_restart: '500M', 
       interpreter: 'php',
       cwd: "./",
@@ -15,7 +15,7 @@ module.exports = {
     {
       name: "StargateS1",
       script: "stargateSharded.php",
-      args: "1 2",
+      args: "1 3",
       max_memory_restart: '375M', 
       interpreter: 'php',
       cwd: "./",
@@ -23,7 +23,7 @@ module.exports = {
       watch_delay: 1000,
       ignore_watch : ["vendor"],
     },
-    /*{
+    {
       name: "StargateS2",
       script: "stargateSharded.php",
       args: "2 3",
@@ -33,6 +33,6 @@ module.exports = {
       watch: false,
       watch_delay: 1000,
       ignore_watch : ["vendor"],
-    },*/
+    },
  
   ]}
