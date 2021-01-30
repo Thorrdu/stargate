@@ -1115,18 +1115,18 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 if($unitExists->count() > 0)
                                                 {
                                                     $unitToUpdate = $unitExists->first();
-                                                    $unitToUpdate->pivot->number += $tradeResource->quantity;
+                                                    $unitToUpdate->pivot->number += $tradeObject['quantity'];
                                                     $unitToUpdate->pivot->save();
                                                 }
                                                 else
                                                 {
-                                                    $this->coordinateDestination->colony->units()->attach([$tradeResource->unit_id => ['number' => $tradeResource->quantity]]);
+                                                    $this->coordinateDestination->colony->units()->attach([$tradeResource->unit_id => ['number' => $tradeObject['quantity']]]);
                                                 }
                                                 $unitExists = $this->player->activeColony->units->filter(function ($value) use($tradeResource){
                                                     return $value->id == $tradeResource->unit->id;
                                                 });
                                                 $unitTodown = $unitExists->first();
-                                                $unitTodown->pivot->number -= $tradeResource->quantity;
+                                                $unitTodown->pivot->number -= $tradeObject['quantity'];
                                                 if($unitTodown->pivot->number <= 0)
                                                     $this->player->activeColony->units()->detach($unitTodown->id);
                                                 else
