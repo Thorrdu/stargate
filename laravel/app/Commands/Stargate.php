@@ -739,7 +739,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 }
                                                 else
                                                 {
-                                                    $this->coordinateDestination->colony->defences()->attach([$tradeObject['unit_id'] => ['number' => $tradeObject['quantity']]]);
+                                                    $this->coordinateDestination->colony->defences()->attach([$tradeObject['defence_id'] => ['number' => $tradeObject['quantity']]]);
                                                 }
                                                 $defenceExists = $this->player->activeColony->defences->filter(function ($value) use($tradeDefence){
                                                     return $value->id == $tradeDefence->id;
@@ -1165,7 +1165,7 @@ class Stargate extends CommandHandler implements CommandInterface
                                                 }
                                                 else
                                                 {
-                                                    $this->coordinateDestination->colony->defences()->attach([$tradeObject['unit_id'] => ['number' => $tradeObject['quantity']]]);
+                                                    $this->coordinateDestination->colony->defences()->attach([$tradeObject['defence_id'] => ['number' => $tradeObject['quantity']]]);
                                                 }
                                                 $defenceExists = $this->player->activeColony->defences->filter(function ($value) use($tradeDefence){
                                                     return $value->id == $tradeDefence->id;
