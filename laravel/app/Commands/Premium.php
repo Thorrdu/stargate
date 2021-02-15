@@ -73,7 +73,7 @@ class Premium extends CommandHandler implements CommandInterface
                         if(preg_match("/[0-9]{18}/", $this->args[1], $playerMatch))
                         {
                             $this->playerGiven = Player::where('user_id', $playerMatch[0])->first();
-                            if(!is_null($this->playerGiven))
+                            if(!is_null($this->playerGiven) && $this->playerGiven->user_id != $this->player->user_id)
                             {
                                 $this->qtyToGive = 1;
                                 if(isset($this->args[2]) && (int)$this->args[2] > 0)
