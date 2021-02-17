@@ -451,7 +451,7 @@ class Fleet extends Model
                         $reminder->title = trans('reminder.titles.tradereport', [
                             'planet' => $this->destinationColony->name,
                             'coordinates' => $this->destinationColony->coordinates->humanCoordinates(),
-                            'player' => $this->sourcePlayer->player->user_name,
+                            'player' => $this->sourcePlayer->user_name,
                         ], $this->destinationColony->player->lang);
                         $reminder->embed = json_encode($embed);
                         $reminder->player_id = $this->destinationColony->player->id;
