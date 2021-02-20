@@ -1413,6 +1413,15 @@ class FleetCommand extends CommandHandler implements CommandInterface
                                     echo 'CONFIRMED';
                                     $this->player->activeColony->refresh();
 
+                                    $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
+                                    if($raidCapability['result'] == false)
+                                    {
+                                        $this->paginatorMessage->channel->sendMessage($raidCapability['message']);
+                                        $this->paginatorMessage->content = str_replace(trans('generic.awaiting', [], $this->player->lang),trans('generic.cancelled', [], $this->player->lang),$this->paginatorMessage->content);
+                                        $this->paginatorMessage->channel->messages->save($this->paginatorMessage);
+                                        return;
+                                    }
+
                                     if($this->boosted)
                                     {
                                         if($this->player->activeColony->E2PZ > $this->boostCost)

@@ -1633,7 +1633,15 @@ class Stargate extends CommandHandler implements CommandInterface
 
                                         $raidCapability = $this->canAttack($this->player->activeColony,$this->coordinateDestination->colony);
                                         if($raidCapability['result'] == false)
-                                            $messageReaction->message->channel->sendMessage($raidCapability['message']);
+                                        {
+                                            $newEmbed = $this->discord->factory(Embed::class,[
+                                                'title' => trans('generic.cancelled', [], $this->player->lang),
+                                                'description' => $raidCapability['message']
+                                                ]);
+                                            $messageReaction->message->addEmbed($newEmbed);
+                                            $messageReaction->message->deleteReaction(Message::REACT_DELETE_ALL);
+                                            return;
+                                        }
 
                                         //Check Consommation E2PZ
                                         if($this->player->activeColony->E2PZ < $travelCost)
