@@ -51,12 +51,12 @@ global $beta;
 $beta = false;
 if(basename($_SERVER['PHP_SELF']) == "beta_stargate.php")
     $beta = true;
-$token = 'NzMwODE1Mzg4NDAwNjE1NDU1.Xwc-3g.JOOyhOLsy99pafPsoTrfYPOyDZg';
+$token = 'REDACTED';
 $prefix = '!';
 
 if($beta)
 {
-    $token = 'NzQ1MDE1MzAwMTgwOTM0NzM2.XzrnkQ.77nbdwVfRZRYBsPCbIUaIs6YHfs';
+    $token = 'REDACTED';
     $prefix = '-';
 }
 
@@ -895,5 +895,6 @@ $discord->on('ready', function ($discord) use($beta){
     }
 
 });
+
 
 $discord->run();
